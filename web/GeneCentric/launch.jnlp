@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jnlp codebase="" href="launch.jnlp" spec="6.0+">
+    <information>
+        <title>GeneCentricViewer</title>
+        <vendor>Tabakoff Lab/University of Colorado Denver AMC</vendor>
+        <homepage href="http://phenogen.ucdenver.edu/PhenoGen/"/>
+        <description>GeneCentricViewer</description>
+        <description kind="short">GeneCentricViewer</description>
+        
+        
+    </information>
+    <update check="always"/>
+    
+    <resources>
+        <j2se version="1.7.0+"/>
+        <jar href="GeneCentricViewer.jar" main="true"/>
+</resources>
+    <applet-desc height="1200" main-class="genecentricviewer.GeneCentricViewer" name="GeneCentricViewer" width="1000">
+        
+    </applet-desc>
+</jnlp>

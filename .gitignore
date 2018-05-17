@@ -1,22 +1,91 @@
-# Compiled class file
+# Used by the app to store DB connection properties #
+# You do not want to check these in                 #
+# An example file will be provided                  #
+#####################################################
+*.properties
+web.xml
+context.xml
+build.xml
+.Rprofile
+googleAnalytics.jsp
+bugsense.jsp
+bedSort
+bedToBigBed
+bigBedToBed
+bigWigToBedGraph
+sitemap*.xml
+GeneCentricViewer.jar
+ExonCorrelationViewer2.jar
+
+# Users need to download platform specific tools from	#
+# Affymetrix and then current probeset files from 	#
+# http://phenogen.ucdenver.edu				#
+#########################################################
+affyPowerTools/bin/
+
+# These should be linked but we don't want to check in	#
+# data.							#
+#########################################################
+tmpData/
+userFiles
+LODPlots
+liftOver/
+hdf/
+MEME/
+ensembl_ucsc/
+perl/lib/ensembl*/
+mirDeep/
+web/GeneCentric/lib/
+web/exons/lib/
+WEB-INF/lib/
+nbproject/
+.idea
+
+
+# Demo Files #
+##############
+*.mp4
+*.webm
+*.ogg
+*.ogv
+
+
+
+# Compiled source #
+###################
+*.com
 *.class
+*.dll
+*.exe
+*.o
+*.so
 
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
 *.rar
+*.tar
+*.zip
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+/nbproject/private/
+/build/
