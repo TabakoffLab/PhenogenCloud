@@ -166,8 +166,8 @@ public class AsyncPathway implements Runnable {
             myParameterValues[0].setValue(method);
 
             myGeneListAnalysis.setParameterValues(myParameterValues);
-            myGeneListAnalysis.createGeneListAnalysis(conn);
-            myGeneListAnalysis.updateVisible(conn);
+            myGeneListAnalysis.createGeneListAnalysis(pool);
+            myGeneListAnalysis.updateVisible(pool);
             myEmail.sendEmail();
             conn.close();
         } catch (SendFailedException e) {
