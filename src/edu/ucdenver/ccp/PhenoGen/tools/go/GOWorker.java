@@ -150,7 +150,7 @@ public class GOWorker extends Thread {
         StringBuilder sb=new StringBuilder();
         try{
             conn=pool.getConnection();
-            myGeneArray = geneList.getGenesAsArray("Original",conn);
+            myGeneArray = geneList.getGenesAsArray("Original",pool);
             conn.close();
         }catch(SQLException e){
             

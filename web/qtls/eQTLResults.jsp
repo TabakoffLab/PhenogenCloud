@@ -152,7 +152,7 @@
 				myEQTLsBasedOnBoth :
 				myEQTLsBasedOnProbesetID); 
 
-	GeneList.Gene[] myGeneArray = selectedGeneList.getGenesAsGeneArray(dbConn); 
+	GeneList.Gene[] myGeneArray = selectedGeneList.getGenesAsGeneArray(pool);
 
 	Arrays.sort(myEQTLs);
 	Arrays.sort(myGeneArray);
