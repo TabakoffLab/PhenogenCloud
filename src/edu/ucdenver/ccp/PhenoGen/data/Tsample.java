@@ -625,7 +625,7 @@ public class Tsample {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTsample(Connection conn) throws SQLException {
+	/*public int createTsample(Connection conn) throws SQLException {
 
 		int tsample_sysuid = myDbUtils.getUniqueID("Tsample_seq", conn);
 
@@ -688,7 +688,7 @@ public class Tsample {
 		this.setTsample_sysuid(tsample_sysuid);
 
 		return tsample_sysuid;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the Tsample table.

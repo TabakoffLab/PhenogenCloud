@@ -1095,7 +1095,7 @@ log.debug("here in readSpreadsheet just discovered that isCompoundDesign is "+is
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created in the Experiment table
 	 */
-	public int createExperiment(User userLoggedIn, Hashtable<String, String> fieldValues, 
+	/* public int createExperiment(User userLoggedIn, Hashtable<String, String> fieldValues,
 				HashMap<String, String[]> multipleFieldValues, Connection conn) throws SQLException {
 	
 		log.debug("in Experiment create with fieldValues and multipleFieldValues");
@@ -1122,7 +1122,7 @@ log.debug("here in readSpreadsheet just discovered that isCompoundDesign is "+is
                 	myTpublic.createTpublic(conn);
 			*/
 
-	                int submis_id = myDbUtils.getUniqueID("submis_seq", conn);
+	/*                int submis_id = myDbUtils.getUniqueID("submis_seq", conn);
 			setSubid(submis_id);
                 	setCreated_by_login(userLoggedIn.getUser_name());
                 	setExp_name((String) fieldValues.get("experimentName"));
@@ -1181,7 +1181,7 @@ log.debug("here in readSpreadsheet just discovered that isCompoundDesign is "+is
                 conn.setAutoCommit(true);
 		return exp_id;
 		//return -99;
-	}
+	}*/
 
 
 
@@ -1213,7 +1213,7 @@ log.debug("here in readSpreadsheet just discovered that isCompoundDesign is "+is
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createExperiment(Connection conn) throws SQLException {
+	/*public int createExperiment(Connection conn) throws SQLException {
 
 		log.debug("in Experiment create");
 
@@ -1253,7 +1253,7 @@ log.debug("here in readSpreadsheet just discovered that isCompoundDesign is "+is
 		this.setExp_id(exp_id);
 
 		return exp_id;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the experiments table.

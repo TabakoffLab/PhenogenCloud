@@ -270,7 +270,7 @@ public class Tlabel {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTlabel(Connection conn) throws SQLException {
+	/*public int createTlabel(Connection conn) throws SQLException {
 
 		int tlabel_sysuid = myDbUtils.getUniqueID("Tlabel_seq", conn);
 
@@ -306,7 +306,7 @@ public class Tlabel {
 		this.setTlabel_sysuid(tlabel_sysuid);
 
 		return tlabel_sysuid;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the Tlabel table.

@@ -189,7 +189,7 @@ public class Tlabhyb {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTlabhyb(Connection conn) throws SQLException {
+	/*public int createTlabhyb(Connection conn) throws SQLException {
 
 		int tlabhyb_sysuid = myDbUtils.getUniqueID("Tlabhyb_seq", conn);
 
@@ -224,7 +224,7 @@ public class Tlabhyb {
 		this.setTlabhyb_sysuid(tlabhyb_sysuid);
 
 		return tlabhyb_sysuid;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the Tlabhyb table.

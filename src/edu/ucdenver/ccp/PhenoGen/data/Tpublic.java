@@ -236,7 +236,7 @@ public class Tpublic {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTpublic(Connection conn) throws SQLException {
+	/*public int createTpublic(Connection conn) throws SQLException {
 
 		int tpublic_sysuid = myDbUtils.getUniqueID("Tpublic_seq", conn);
 
@@ -278,7 +278,7 @@ public class Tpublic {
 		this.setTpublic_sysuid(tpublic_sysuid);
 
 		return tpublic_sysuid;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the Tpublic table.

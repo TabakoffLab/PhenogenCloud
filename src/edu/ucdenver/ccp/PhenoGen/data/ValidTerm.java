@@ -299,7 +299,7 @@ public class ValidTerm {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createValidTerm(Connection conn) throws SQLException {
+	/*public int createValidTerm(Connection conn) throws SQLException {
 
 		log.debug("in create ValidTerm");
 
@@ -334,7 +334,7 @@ public class ValidTerm {
 		this.setTerm_id(term_id);
 
 		return term_id;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the valid_terms table.

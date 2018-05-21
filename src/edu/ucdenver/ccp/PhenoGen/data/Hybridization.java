@@ -278,7 +278,7 @@ public class Hybridization {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createHybridization(Connection conn) throws SQLException {
+	/*public int createHybridization(Connection conn) throws SQLException {
 
 		int hybrid_id = myDbUtils.getUniqueID("hybridizations_seq", conn);
 
@@ -315,7 +315,7 @@ public class Hybridization {
 		this.setHybrid_id(hybrid_id);
 
 		return hybrid_id;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the hybridizations table.

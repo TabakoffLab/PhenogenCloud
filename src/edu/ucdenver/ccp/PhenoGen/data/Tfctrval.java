@@ -207,7 +207,7 @@ public class Tfctrval {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTfctrval(Connection conn) throws SQLException {
+	/*public int createTfctrval(Connection conn) throws SQLException {
 
 		int tfctrval_sysuid = myDbUtils.getUniqueID("Tfctrval_seq", conn);
 
@@ -244,7 +244,7 @@ public class Tfctrval {
 		this.setTfctrval_sysuid(tfctrval_sysuid);
 
 		return tfctrval_sysuid;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the Tfctrval table.

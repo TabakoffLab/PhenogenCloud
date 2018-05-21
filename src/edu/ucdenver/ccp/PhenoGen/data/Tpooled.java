@@ -189,7 +189,7 @@ public class Tpooled {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTpooled(Connection conn) throws SQLException {
+	/*public int createTpooled(Connection conn) throws SQLException {
 
 		int tpooled_sysuid = myDbUtils.getUniqueID("Tpooled_seq", conn);
 
@@ -224,7 +224,7 @@ public class Tpooled {
 		this.setTpooled_sysuid(tpooled_sysuid);
 
 		return tpooled_sysuid;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the Tpooled table.

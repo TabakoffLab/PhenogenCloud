@@ -241,7 +241,7 @@ public class Tntxsyn {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTntxsyn(Connection conn) throws SQLException {
+	/*public int createTntxsyn(Connection conn) throws SQLException {
 
 		int tntxsyn_tax_id = myDbUtils.getUniqueID("Tntxsyn_seq", conn);
 
@@ -275,7 +275,7 @@ public class Tntxsyn {
 		this.setTntxsyn_tax_id(tntxsyn_tax_id);
 
 		return tntxsyn_tax_id;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the Tntxsyn table.

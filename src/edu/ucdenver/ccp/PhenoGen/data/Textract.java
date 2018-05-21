@@ -230,7 +230,7 @@ public class Textract {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTextract(Connection conn) throws SQLException {
+	/*public int createTextract(Connection conn) throws SQLException {
 
 		int textract_sysuid = myDbUtils.getUniqueID("Textract_seq", conn);
 
@@ -265,7 +265,7 @@ public class Textract {
 		this.setTextract_sysuid(textract_sysuid);
 
 		return textract_sysuid;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the Textract table.

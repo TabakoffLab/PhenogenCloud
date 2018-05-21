@@ -229,7 +229,7 @@ public class Tarray {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTarray(Connection conn) throws SQLException {
+	/*public int createTarray(Connection conn) throws SQLException {
 
 		log.debug("In create Tarray");
 
@@ -265,7 +265,7 @@ public class Tarray {
 		this.setTarray_sysuid(tarray_sysuid);
 
 		return tarray_sysuid;
-	}
+	}*/
 
 	/**
 	 * Creates a record in the Tarray table for the designID specified.

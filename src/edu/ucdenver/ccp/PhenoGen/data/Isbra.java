@@ -73,7 +73,7 @@ public class Isbra {
    	* @throws            SQLException if a database error occurs
    	*/
 
-  	public int createIsbraGroup(String group_name, int userID, Connection conn) throws SQLException {
+  	/*public int createIsbraGroup(String group_name, int userID, Connection conn) throws SQLException {
         	log.debug("in createIsbraGroup."); 
 
 		int groupID = myDbUtils.getUniqueID("isbra_groups_seq", conn);
@@ -97,7 +97,7 @@ public class Isbra {
 	
 		return groupID;
 
-  	}
+  	}*/
 
   	/**
    	* Creates a record in the group_subjects table.

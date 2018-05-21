@@ -605,7 +605,7 @@ public class LitSearch{
         return myResults;
   }
 
-  public int createLitSearch (LitSearch myLitSearch, Connection conn) throws SQLException {
+  /*public int createLitSearch (LitSearch myLitSearch, Connection conn) throws SQLException {
 
 	search_id = myDbUtils.getUniqueID("gene_list_analyses_seq", conn);
 
@@ -641,9 +641,9 @@ public class LitSearch{
 		throw e;
         }
   	return search_id;
-  }
+  }*/
 
-  public int createCoReferenceResult (String coref_name, int cardinality, Connection conn) throws SQLException {
+  /*public int createCoReferenceResult (String coref_name, int cardinality, Connection conn) throws SQLException {
 
 	int coref_id = myDbUtils.getUniqueID("co_reference_results_seq", conn);
 
@@ -673,9 +673,9 @@ public class LitSearch{
 		throw e;
         }
 	return coref_id;
-  }
+  }*/
 
-  public int createLitSearchResult (String category, String gene_id, Connection conn) throws SQLException {
+  /*public int createLitSearchResult (String category, String gene_id, Connection conn) throws SQLException {
 
 	int result_id = myDbUtils.getUniqueID("lit_search_results_seq", conn);
 
@@ -707,7 +707,7 @@ public class LitSearch{
 		throw e;
         }
   return result_id;
-  }
+  }*/
 
   public void createCoReferencePubMedResults (int coref_id, List pubMedResults, Connection conn) throws SQLException {
 

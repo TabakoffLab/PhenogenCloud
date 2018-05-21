@@ -333,7 +333,7 @@ public class Tothers {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createTothers(Connection conn) throws SQLException {
+	/*public int createTothers(Connection conn) throws SQLException {
 
 		log.debug("In create Tothers");
 
@@ -378,7 +378,7 @@ public class Tothers {
 		this.setTothers_sysuid(tothers_sysuid);
 
 		return tothers_sysuid;
-	}
+	}*/
 
 	/**
 	 * Updates the sample id of a record in the Tothers table.
