@@ -164,7 +164,7 @@
         <% } else if (selectedDataset.getDataset_id() != -99 && selectedDatasetVersion.getVersion() != -99 && selectedGeneList.getGene_list_id() == -99) { 
         	if (geneListsForUser == null) {
                 	log.debug("geneListsForUser not set");
-			geneListsForUser = myGeneList.getGeneLists(userID, "All", "All", dbConn);
+			    geneListsForUser = myGeneList.getGeneLists(userID, "All", "All", pool);
         	}
 %>
                 <div class="datasetDataContainer">

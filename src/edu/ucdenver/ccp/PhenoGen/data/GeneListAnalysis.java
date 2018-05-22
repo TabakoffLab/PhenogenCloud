@@ -295,7 +295,7 @@ public class GeneListAnalysis {
             conn.close();
         } catch (SQLException e) {
             log.debug("SQL Error:", e);
-            throw new e;
+            throw e;
         }
         GeneListAnalysis[] myGeneListAnalysisResultArray = (GeneListAnalysis[]) myGeneListAnalysisResults.toArray(
                         new GeneListAnalysis[myGeneListAnalysisResults.size()]);
@@ -800,22 +800,16 @@ public class GeneListAnalysis {
      */
     public void deleteGeneListAnalysisResult(int analysis_id, DataSource pool) throws SQLException {
         log.info("in deleteGeneListAnalysisResult");
-        /
+
         // Had to do it this way because you can't delete the parameter_groups record before deleting the
         // gene_list_analyses record (it's a one-to-many)
         //
 
-        String query1 =
-                "delete from gene_list_analyses " +
-                        "where analysis_id = ? ";
+        String query1 = "delete from gene_list_analyses where analysis_id = ? ";
 
-        String query2 =
-                "delete from parameter_values pv  " +
-                        "where parameter_group_id = ?";
+        String query2 = "delete from parameter_values pv where parameter_group_id = ?";
 
-        String query3 =
-                "delete from parameter_groups pg  " +
-                        "where parameter_group_id = ?";
+        String query3 = "delete from parameter_groups pg where parameter_group_id = ?";
 
         PreparedStatement pstmt = null;
 

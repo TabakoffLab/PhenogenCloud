@@ -2365,7 +2365,7 @@ public class Array{
 	 * @param conn	the database connection to the PhenoGen database 
 	 * @return            an array of ArrayCount objects
 	 */
-	public Array[] setupAllArrayValues(Results myResults, Connection conn) throws SQLException {
+	public Array[] setupAllArrayValues(Results myResults, DataSource pool) throws SQLException {
 		Object[] dataRow;
         	Array [] myArrays = new Array[myResults.getNumRows()];
 
@@ -2379,8 +2379,8 @@ public class Array{
 			//log.debug("submitter = "+submitter);
 
 			User myUser = new User();
-                	int uploaded_by_user_id = myUser.getUser_id(submitter, conn);
-                	int owner_user_id = myUser.getPi_user_id(uploaded_by_user_id, conn);
+                	int uploaded_by_user_id = myUser.getUser_id(submitter, pool);
+                	int owner_user_id = myUser.getPi_user_id(uploaded_by_user_id, pool);
 
 			myArrays[i] = new Array();
 

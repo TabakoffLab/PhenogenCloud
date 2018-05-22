@@ -22,7 +22,7 @@
                 session.setAttribute("errorMsg", "GST-004");
                 response.sendRedirect(commonDir + "errorMsg.jsp");
         } 
-	GeneList[] myGeneLists = myGeneList.getGeneListsForPhenotype(itemID, dbConn);
+	GeneList[] myGeneLists = myGeneList.getGeneListsForPhenotype(itemID, pool);
 
 	if (action != null && (action.equals("Delete Phenotype"))) {
 		myParameterValue.deletePhenotypeValues(itemID, dbConn);
