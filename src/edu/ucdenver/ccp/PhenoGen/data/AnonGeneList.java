@@ -547,16 +547,14 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
         log.debug("filename = " + filename);
         //log.debug("query = " + query);
         String gene_id = "";
-        Connection conn = null;
-        try {
+
+        try(Connection conn = pool.getConnection()) {
             String statisticalMethod = "";
             String[] fields = null;
             String[] headers = null;
             int[] headerCodes = null;
             int startLine = 0;
             Hashtable<String, String> genesHash = new Hashtable<String, String>();
-
-            conn = pool.getConnection();
             conn.setAutoCommit(false);
             pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -580,7 +578,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
             pstmt.close();
 
             log.debug("creating alternate identifiers");
-            createAlternateIdentifiers(this, conn);
+            createAlternateIdentifiers(this, pool);
             conn.commit();
             conn.close();
         } catch (SQLException e) {
@@ -590,14 +588,6 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
             log.error("in exception of loadFromFile", e);
             conn.rollback();
             throw e;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
 
         return this.getGene_list_id();
