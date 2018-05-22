@@ -76,6 +76,8 @@ public class Results{
 		rsmd = rs.getMetaData();
   	}
 
+
+
 	/**
 	 * Constructs a Results object for the query and database connection.  
 	 * NOTE: close() must be called to close the PreparedStatement when this contructor is used.
