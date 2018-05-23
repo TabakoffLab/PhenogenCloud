@@ -1378,11 +1378,6 @@ public class GeneList {
     }
 
 
-    public GeneList[] getGeneListsForAllDatasetsForUser(int user_id, Connection conn) throws SQLException {
-
-
-    }
-
     /**
      * Retrieves the gene lists for a particular dataset version that are viewable by this user
      * (including from public datasets).  Sorts by create_date descending.

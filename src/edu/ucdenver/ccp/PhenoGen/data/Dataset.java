@@ -490,7 +490,7 @@ public class Dataset {
         return dataset_users;
     }
 
-    public void setArrays(edu.ucdenver.ccp.PhenoGen.data.Array[] inArrays, Connection conn, String userFilesRoot) {
+    public void setArrays(edu.ucdenver.ccp.PhenoGen.data.Array[] inArrays, DataSource pool, String userFilesRoot) {
         this.arrays = inArrays;
         boolean duplicates = false;
         HashMap<String, String> hm = new HashMap<String, String>();
@@ -502,10 +502,10 @@ public class Dataset {
                 hm.put(arrayName, "A");
             }
         }
-        if (duplicates && conn != null) {
+        if (duplicates ) {
             User creator = new User();
             try {
-                String path = this.getDatasetPath(creator.getUser(this.getCreator(), conn).getUserMainDir(userFilesRoot)) + this.getNameNoSpaces() + ".arrayFiles.txt";
+                String path = this.getDatasetPath(creator.getUser(this.getCreator(), pool).getUserMainDir(userFilesRoot)) + this.getNameNoSpaces() + ".arrayFiles.txt";
                 FileHandler myFH = new FileHandler();
                 try {
                     String[] contents = myFH.getFileContents(new File(path));
@@ -672,7 +672,7 @@ public class Dataset {
      * @return the DatasetVersion object
      * @throws SQLException if a database error occurs
      */
-    public DatasetVersion getDatasetVersionForParameterGroup(int parameter_group_id, Connection conn) throws SQLException {
+    public DatasetVersion getDatasetVersionForParameterGroup(int parameter_group_id, DataSource pool) throws SQLException {
 
         //log.debug("In getDatasetVersionForParameterGroup. parameter_group_id = " + parameter_group_id);
 
@@ -682,11 +682,15 @@ public class Dataset {
                         "where parameter_group_id = ?";
 
         //log.debug("query = "+query);
-
-        Results myResults = new Results(query, parameter_group_id, conn);
-        int version = myResults.getIntValueFromFirstRow();
-        myResults.close();
-
+        int version=-99;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, parameter_group_id, conn);
+            version = myResults.getIntValueFromFirstRow();
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
         DatasetVersion thisDatasetVersion = this.getDatasetVersion(version);
         thisDatasetVersion.setDataset(this);
 
@@ -721,7 +725,7 @@ public class Dataset {
      * @return A Dataset object with its values setup
      * @throws SQLException if a database error occurs
      */
-    public int getNextVersion(Connection conn) throws SQLException {
+    public int getNextVersion(DataSource pool) throws SQLException {
 
         log.debug("in getNextVersion");
 
@@ -729,13 +733,15 @@ public class Dataset {
                 "select max(version) + 1 " +
                         "from dataset_versions " +
                         "where dataset_id = ?";
-
-        Results myResults = new Results(query, this.getDataset_id(), conn);
-
-        int version = myResults.getIntValueFromFirstRow();
-
-        myResults.close();
-
+        int version = -99;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, this.getDataset_id(), conn);
+            version = myResults.getIntValueFromFirstRow();
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
         return version;
     }
 
@@ -771,35 +777,6 @@ public class Dataset {
         return thisDataset;
     }
 
-    /**
-     * Retrieves a Dataset object with the data values set to those retrieved from the database.
-     * Also retrieves
-     * the DatasetVersions for this Dataset AND does setVersion_path().
-     *
-     * @param dataset_id   the ID of the dataset
-     * @param userLoggedIn the User object of the user logged in
-     * @param conn         the database connection
-     * @return A Dataset object with its values setup
-     * @throws SQLException if a database error occurs
-     */
-    public Dataset getDataset(int dataset_id, User userLoggedIn, Connection conn, String userFileRoot) throws SQLException {
-        log.debug("in getDataset with userLoggedIn. dataset_id = " + dataset_id);
-        Dataset thisDataset = getDataset(dataset_id, conn, userFileRoot);
-        thisDataset.setPath(thisDataset.getDatasetPath(userLoggedIn.getUserMainDir()));
-
-        //log.debug("just set path to "+thisDataset.getPath());
-        if (thisDataset.getDatasetVersions() != null && thisDataset.getDatasetVersions().length > 0) {
-            for (int i = 0; i < thisDataset.getDatasetVersions().length; i++) {
-                DatasetVersion thisDatasetVersion = thisDataset.getDatasetVersions()[i];
-                thisDataset.getDatasetVersions()[i].setVersion_path(thisDataset.getPath(), thisDataset.getDatasetVersions()[i].getVersion());
-                // this makes sure the exp path and hybridIDs are available for the version
-                thisDatasetVersion.setDataset(thisDataset);
-            }
-        }
-        //log.debug("setting up parameter values in getDataset with userLoggedIn. dataset_id = " +dataset_id);
-        setupDatasetParameterValues(userLoggedIn.getUser_id(), thisDataset, conn);
-        return thisDataset;
-    }
 
 
     /**
@@ -824,117 +801,66 @@ public class Dataset {
                         datasetVersionDetailsGroupByClause;
 
         //log.debug("query = "+query);
-        Connection conn = pool.getConnection();
-        Results myResults = new Results(query, dataset_id, conn);
-        Dataset thisDataset = setupDatasetVersionValues(myResults, true)[0];
-        try {
-            conn.close();
-        } catch (Exception e) {
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, dataset_id, conn);
+            Dataset thisDataset = setupDatasetVersionValues(myResults, true)[0];
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        conn = pool.getConnection();
-        thisDataset.setHybridIDs(thisDataset.getDatasetHybridIDs(conn));
-        try {
-            conn.close();
-        } catch (Exception e) {
-        }
+        thisDataset.setHybridIDs(thisDataset.getDatasetHybridIDs(pool));
         if (!thisDataset.getHybridIDs().equals("()")) {
             if (array_type.equals("null")) {
-                conn = pool.getConnection();
-                thisDataset.setArray_type(new edu.ucdenver.ccp.PhenoGen.data.Array().getDatasetArrayType(thisDataset.getHybridIDs(), conn));
-                try {
-                    conn.close();
-                } catch (Exception e) {
-                }
+                thisDataset.setArray_type(new edu.ucdenver.ccp.PhenoGen.data.Array().getDatasetArrayType(thisDataset.getHybridIDs(), pool));
             }
             log.debug("in getDataset right before settingArrays");
-            conn = pool.getConnection();
-            thisDataset.setArrays(new edu.ucdenver.ccp.PhenoGen.data.Array().getArraysByHybridIDs(thisDataset.getHybridIDs(), conn), conn, userFilesRoot);
+            thisDataset.setArrays(new edu.ucdenver.ccp.PhenoGen.data.Array().getArraysByHybridIDs(thisDataset.getHybridIDs(), pool), pool, userFilesRoot);
             log.debug("num arrays = " + thisDataset.getArrays().length);
-            try {
-                conn.close();
-            } catch (Exception e) {
-            }
         }
 
-        myResults.close();
 
         //thisDataset.print();
 
         return thisDataset;
     }
 
-    /**
-     * Retrieves a Dataset object with the data values set to those retrieved from the database.
-     * Also retrieves the DatasetVersions for this Dataset.  NOTE THAT THIS DOES NOT
-     * setPath() of the Dataset or setVersion_path() of the versions
-     *
-     * @param dataset_id the ID of the dataset
-     * @param conn       the database connection
-     * @return A Dataset object with its values setup
-     * @throws SQLException if a database error occurs
-     */
-    public Dataset getDataset(int dataset_id, Connection conn, String userFilesRoot) throws SQLException {
 
-        log.debug("in getDataset as a Dataset object. dataset_id = " + dataset_id);
 
-        String query =
-                datasetVersionDetailsSelectClause +
-                        datasetVersionDetailsFromClause +
-                        datasetVersionWhereClause +
-                        "and ds.dataset_id = ? " +
-                        datasetVersionDetailsGroupByClause;
-
-        //log.debug("query = "+query);
-
-        Results myResults = new Results(query, dataset_id, conn);
-
-        Dataset thisDataset = setupDatasetVersionValues(myResults, true)[0];
-        thisDataset.setHybridIDs(thisDataset.getDatasetHybridIDs(conn));
-        if (!thisDataset.getHybridIDs().equals("()")) {
-            if (array_type.equals("null")) {
-                thisDataset.setArray_type(new edu.ucdenver.ccp.PhenoGen.data.Array().getDatasetArrayType(thisDataset.getHybridIDs(), conn));
-            }
-            log.debug("in getDataset right before settingArrays");
-            thisDataset.setArrays(new edu.ucdenver.ccp.PhenoGen.data.Array().getArraysByHybridIDs(thisDataset.getHybridIDs(), conn), conn, userFilesRoot);
-            log.debug("num arrays = " + thisDataset.getArrays().length);
-        }
-
-        myResults.close();
-
-        //thisDataset.print();
-
-        return thisDataset;
-    }
-
-    public void updateArrayType(int dataset_id, Connection conn) throws SQLException {
-
+    public void updateArrayType(int dataset_id, DataSource pool) throws SQLException {
         log.debug("in updateArrayType as a Dataset object. dataset_id = " + dataset_id);
         String arrayType = "";
         String query = this.selectArrayTypeID;
-        PreparedStatement ps = conn.prepareStatement(query);
-        ps.setInt(1, dataset_id);
-        ResultSet rs = ps.executeQuery();
-        if (rs.next()) {
-            int arrayTypeID = rs.getInt(1);
-            query = this.datasetArrayTypeUpdate;
-            PreparedStatement ps2 = conn.prepareStatement(query);
-            ps2.setInt(1, arrayTypeID);
-            ps2.setInt(2, dataset_id);
-            ps2.executeUpdate();
-            ps2.close();
-            query = "select Array_name from array_types where array_type_id=?";
-            ps2 = conn.prepareStatement(query);
-            ps2.setInt(1, arrayTypeID);
-            ResultSet rs2 = ps2.executeQuery();
-            if (rs2.next()) {
-                arrayType = rs2.getString(1);
-                if (arrayType != null && !arrayType.equals("")) {
-                    this.setArray_type(arrayType);
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement ps = conn.prepareStatement(query);
+            ps.setInt(1, dataset_id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                int arrayTypeID = rs.getInt(1);
+                query = this.datasetArrayTypeUpdate;
+                PreparedStatement ps2 = conn.prepareStatement(query);
+                ps2.setInt(1, arrayTypeID);
+                ps2.setInt(2, dataset_id);
+                ps2.executeUpdate();
+                ps2.close();
+                query = "select Array_name from array_types where array_type_id=?";
+                ps2 = conn.prepareStatement(query);
+                ps2.setInt(1, arrayTypeID);
+                ResultSet rs2 = ps2.executeQuery();
+                if (rs2.next()) {
+                    arrayType = rs2.getString(1);
+                    if (arrayType != null && !arrayType.equals("")) {
+                        this.setArray_type(arrayType);
+                    }
                 }
+                ps2.close();
             }
-            ps2.close();
+            ps.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        ps.close();
+
 
     }
 
@@ -981,7 +907,7 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      * @return an array of Group objects
      */
-    public Group[] getGroupings(Connection conn) throws SQLException {
+    public Group[] getGroupings(DataSource pool) throws SQLException {
 
         String query =
                 "select grpings.grouping_id, " +
@@ -993,14 +919,19 @@ public class Dataset {
                         "order by grpings.grouping_name";
 
         List<Group> myGroupList = new ArrayList<Group>();
-
-        Results myResults = new Results(query, this.getDataset_id(), conn);
-        String[] dataRow;
-        while ((dataRow = myResults.getNextRow()) != null) {
-            Group newGroup = new Group().setupGrouping(dataRow);
-            myGroupList.add(newGroup);
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, this.getDataset_id(), conn);
+            String[] dataRow;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                Group newGroup = new Group().setupGrouping(dataRow);
+                myGroupList.add(newGroup);
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
+
 
         Group[] myGroupArray = (Group[]) myObjectHandler.getAsArray(myGroupList, Group.class);
 
@@ -1048,15 +979,20 @@ public class Dataset {
         log.debug("in getGroupsInGrouping.grouping_id = " + grouping_id);
         //log.debug("query = "+query);
         List<Group> myGroupList = new ArrayList<Group>();
-
-        Results myResults = new Results(query, grouping_id, conn);
-        String[] dataRow;
-        while ((dataRow = myResults.getNextRow()) != null) {
-            Group newGroup = new Group().setupGroup(dataRow);
-            newGroup.setNumber_of_arrays(Integer.parseInt(dataRow[9]));
-            myGroupList.add(newGroup);
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, grouping_id, conn);
+            String[] dataRow;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                Group newGroup = new Group().setupGroup(dataRow);
+                newGroup.setNumber_of_arrays(Integer.parseInt(dataRow[9]));
+                myGroupList.add(newGroup);
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
+
 
         Group[] myGroupArray = (Group[]) myObjectHandler.getAsArray(myGroupList, Group.class);
 
@@ -1072,7 +1008,7 @@ public class Dataset {
      * @return the user_chip_id
      * @throws SQLException if a database error occurs
      */
-    public int getUser_chip_id(int hybrid_id, int user_id, Connection conn) throws SQLException {
+    public int getUser_chip_id(int hybrid_id, int user_id, DataSource pool) throws SQLException {
 
         //log.debug("in getUser_chip_id. ");
         //log.debug("hybrid_id = "+hybrid_id+", and user_id = "+user_id);
@@ -1081,13 +1017,17 @@ public class Dataset {
                         "from user_chips  " +
                         "where hybrid_id = ? " +
                         "and user_id = ?";
+        int user_chip_id = -99;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{hybrid_id, user_id}, conn);
 
-        Results myResults = new Results(query, new Object[]{hybrid_id, user_id}, conn);
+            user_chip_id = myResults.getIntValueFromFirstRow();
 
-        int user_chip_id = myResults.getIntValueFromFirstRow();
-
-        myResults.close();
-
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
         return user_chip_id;
     }
 
@@ -1100,7 +1040,7 @@ public class Dataset {
      * @return true if a record exists
      * @throws SQLException if a database error occurs
      */
-    public boolean checkUserChipExists(int hybrid_id, int user_id, Connection conn) throws SQLException {
+    public boolean checkUserChipExists(int hybrid_id, int user_id, DataSource pool) throws SQLException {
 
         //log.debug("in checkUserChipExists. ");
         //log.debug("hybrid_id = "+hybrid_id+", and user_id = "+user_id);
@@ -1109,14 +1049,20 @@ public class Dataset {
                         "from user_chips  " +
                         "where hybrid_id = ? " +
                         "and user_id = ?";
+        int user_chip_id = -99;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{hybrid_id, user_id}, conn);
 
-        Results myResults = new Results(query, new Object[]{hybrid_id, user_id}, conn);
+            user_chip_id = myResults.getIntValueFromFirstRow();
 
-        int user_chip_id = myResults.getIntValueFromFirstRow();
+            //log.debug("user_chip_id = " +user_chip_id + ", so returning " + (user_chip_id == -99 ? false : true));
 
-        //log.debug("user_chip_id = " +user_chip_id + ", so returning " + (user_chip_id == -99 ? false : true));
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        myResults.close();
 
         return (user_chip_id == -99 ? false : true);
 
@@ -1142,56 +1088,19 @@ public class Dataset {
 
         log.info("in getDatasetHybridIDsAsSet");
         //log.debug("query = "+query);
-        Connection conn = null;
         Set hybridIDsSet = null;
-        try {
-
-            conn = pool.getConnection();
+        try(Connection conn=pool.getConnection()) {
             Results myResults = new Results(query, this.getDataset_id(), conn);
             hybridIDsSet = myObjectHandler.getResultsAsSet(myResults, 0);
-
             myResults.close();
             conn.close();
         } catch (SQLException e) {
             throw e;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
         return hybridIDsSet;
     }
 
-    /**
-     * Gets the hybridIDs for this dataset.
-     *
-     * @param conn the database connection
-     * @return a Set of Strings containing the hybridIDs
-     * @throws SQLException if a database error occurs
-     */
-    public Set getDatasetHybridIDsAsSet(Connection conn) throws SQLException {
 
-        String query =
-                "select uc.hybrid_id " +
-                        "from user_chips uc, " +
-                        "dataset_chips dc " +
-                        "where uc.user_chip_id = dc.user_chip_id " +
-                        "and dc.dataset_id = ? " +
-                        "order by uc.hybrid_id";
-
-        log.info("in getDatasetHybridIDsAsSet");
-        //log.debug("query = "+query);
-
-        Results myResults = new Results(query, this.getDataset_id(), conn);
-        Set hybridIDsSet = myObjectHandler.getResultsAsSet(myResults, 0);
-
-        myResults.close();
-        return hybridIDsSet;
-    }
 
     /**
      * Gets the hybridIDs for this dataset.
@@ -1215,27 +1124,6 @@ public class Dataset {
         return hybridIDs;
     }
 
-    /**
-     * Gets the hybridIDs for this dataset.
-     *
-     * @param conn the database connection
-     * @return a comma-separated list of hybrid IDs already contained in this dataset
-     * @throws SQLException if a database error occurs
-     */
-    public String getDatasetHybridIDs(Connection conn) throws SQLException {
-
-        //log.info("in getDatasetHybridIDs");
-
-        Set hybridIDsSet = getDatasetHybridIDsAsSet(conn);
-        String hybridIDs = "(" +
-                myObjectHandler.getAsSeparatedString(hybridIDsSet, ",", "") +
-                ")";
-
-        if (hybridIDs.equals("()")) {
-            hybridIDs = "('')";
-        }
-        return hybridIDs;
-    }
 
     /**
      * Gets the dataset_chips (the UserChip objects) for this dataset.
@@ -1244,7 +1132,7 @@ public class Dataset {
      * @return an array of UserChip objects in this Dataset
      * @throws SQLException if a database error occurs
      */
-    public User.UserChip[] getDatasetChips(Connection conn) throws SQLException {
+    public User.UserChip[] getDatasetChips(DataSource pool) throws SQLException {
 
         String query =
                 "select uc.user_chip_id, " +
@@ -1258,12 +1146,16 @@ public class Dataset {
 
         //log.info("in getDatasetChips");
         //log.debug("query = "+query);
+        User.UserChip[] myUserChips = new User.UserChip[0];
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, this.getDataset_id(), conn);
+            myUserChips = new User().setupUserChipValues(myResults);
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        Results myResults = new Results(query, this.getDataset_id(), conn);
-
-        User.UserChip[] myUserChips = new User().setupUserChipValues(myResults);
-
-        myResults.close();
         return myUserChips;
     }
 
@@ -1422,24 +1314,25 @@ public class Dataset {
      * @param conn the database connection
      * @throws SQLException if a database error occurs
      */
-    public void deleteDataset(int userID, Connection conn) throws SQLException, Exception {
+    public void deleteDataset(int userID, DataSource pool) throws SQLException, Exception {
 
         int dataset_id = this.getDataset_id();
         String dsPath = this.getPath();
 
-        conn.setAutoCommit(false);
+
 
         log.info("in deleteDataset.  Dataset is " + this.getName() + ", and dsPath = " + dsPath);
 
-        deleteAllDatasetVersions(userID, conn);
-        deleteGroupsForDataset(conn);
-        deleteArraysForDataset(conn);
+        deleteAllDatasetVersions(userID, pool);
+        deleteGroupsForDataset(pool);
+        deleteArraysForDataset(pool);
 
         String query =
                 "delete from datasets " +
                         "where dataset_id = ? ";
 
-        try {
+        try (Connection conn=pool.getConnection()){
+            conn.setAutoCommit(false);
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -1459,12 +1352,13 @@ public class Dataset {
                     log.error("error sending message to administrator");
                 }
             }
+            conn.setAutoCommit(true);
         } catch (SQLException e) {
             log.error("In exception of deleteDataset", e);
             conn.rollback();
             throw e;
         }
-        conn.setAutoCommit(true);
+
     }
 
     /**
@@ -1473,7 +1367,7 @@ public class Dataset {
      * @param conn the database connection
      * @throws SQLException if a database error occurs
      */
-    public void deleteGroupsForDataset(Connection conn) throws SQLException {
+    public void deleteGroupsForDataset(DataSource pool) throws SQLException {
 
         log.info("in deleteGroupsForDataset. dataset_id = " + this.dataset_id);
         String[] query = new String[3];
@@ -1492,16 +1386,21 @@ public class Dataset {
         query[2] =
                 "delete from groupings " +
                         "where dataset_id = ?";
-
-        for (int i = 0; i < 3; i++) {
-            log.debug("query = " + query[i]);
-            PreparedStatement pstmt = conn.prepareStatement(query[i],
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, this.dataset_id);
-            pstmt.executeUpdate();
-            pstmt.close();
+        try(Connection conn=pool.getConnection()){
+            for (int i = 0; i < 3; i++) {
+                log.debug("query = " + query[i]);
+                PreparedStatement pstmt = conn.prepareStatement(query[i],
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, this.dataset_id);
+                pstmt.executeUpdate();
+                pstmt.close();
+            }
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
+
 
     }
 
@@ -1511,7 +1410,7 @@ public class Dataset {
      * @param conn the database connection
      * @throws SQLException if a database error occurs
      */
-    public void deleteArraysForDataset(Connection conn) throws SQLException {
+    public void deleteArraysForDataset(DataSource pool) throws SQLException {
 
         log.info("in deleteArraysForDataset");
         String query =
@@ -1519,12 +1418,18 @@ public class Dataset {
                         "where dataset_id = ?";
 
         log.debug("dataset_id = " + this.dataset_id + ", query = " + query);
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setInt(1, this.dataset_id);
-        pstmt.executeUpdate();
-        pstmt.close();
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, this.dataset_id);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+
     }
 
     /**
@@ -1536,12 +1441,11 @@ public class Dataset {
      * @param conn             the database connection
      * @throws SQLException if a database error occurs
      */
-    public void deleteClusterAnalysis(int parameterGroupID, String clusterPath, Connection conn) throws SQLException, Exception {
+    public void deleteClusterAnalysis(int parameterGroupID, String clusterPath, DataSource pool) throws SQLException, Exception {
 
         log.debug("in deleteClusterAnalysis. parameterGroupID = " + parameterGroupID +
                 ", and clusterPath = " + clusterPath);
-
-        new ParameterValue().deleteParameterValues(parameterGroupID, conn);
+        new ParameterValue().deleteParameterValues(parameterGroupID, pool);
 
         boolean success = new FileHandler().deleteAllFilesPlusDirectory(new File(clusterPath));
         if (!success) {
@@ -1566,7 +1470,7 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      */
 
-    public void deleteDataset_chip(int user_id, int hybrid_id, Connection conn) throws SQLException {
+    public void deleteDataset_chip(int user_id, int hybrid_id, DataSource pool) throws SQLException {
         log.debug("in deleteDataset_chip");
 
         String query =
@@ -1579,18 +1483,23 @@ public class Dataset {
                         "and hybrid_id = ?)";
 
         //log.debug("query = "+query);
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, this.getDataset_id());
+            pstmt.setInt(2, user_id);
+            pstmt.setInt(3, hybrid_id);
 
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setInt(1, this.getDataset_id());
-        pstmt.setInt(2, user_id);
-        pstmt.setInt(3, hybrid_id);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        pstmt.executeUpdate();
-        pstmt.close();
 
-        updateQc_complete("N", conn);
+        updateQc_complete("N", pool);
 
     }
 
@@ -1601,7 +1510,7 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      */
 
-    public void deleteAllDatasetVersions(int userID, Connection conn) throws SQLException, Exception {
+    public void deleteAllDatasetVersions(int userID, DataSource pool) throws SQLException, Exception {
         log.debug("in deleteAllDatasetVersions");
 
         String query =
@@ -1611,15 +1520,21 @@ public class Dataset {
                         "order by version";
 
         //log.debug("query = "+query);
-        Results myResults = new Results(query, this.dataset_id, conn);
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, this.dataset_id, conn);
 
-        log.debug("Number of versions to delete = " + myResults.getNumRows());
+            log.debug("Number of versions to delete = " + myResults.getNumRows());
 
-        while ((dataRow = myResults.getNextRow()) != null) {
-            int version = Integer.parseInt(dataRow[0]);
-            (this.new DatasetVersion(version)).deleteDatasetVersion(userID, conn);
+            while ((dataRow = myResults.getNextRow()) != null) {
+                int version = Integer.parseInt(dataRow[0]);
+                (this.new DatasetVersion(version)).deleteDatasetVersion(userID, pool);
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
+
     }
 
 
@@ -1633,7 +1548,7 @@ public class Dataset {
      * @param    userFilesRoot    the location of the userFiles directory
      * @param    conn    the database connection
      */
-    public void setupArrayRecords(String[] hybridIDs, User userLoggedIn, String userFilesRoot, Connection conn) throws IOException, SQLException {
+    public void setupArrayRecords(String[] hybridIDs, User userLoggedIn, String userFilesRoot, DataSource pool) throws IOException, SQLException {
 
         log.debug("in setupArrayRecords");
 
@@ -1652,7 +1567,7 @@ public class Dataset {
         log.debug("hybridIDsString = " + hybridIDsString);
 
         edu.ucdenver.ccp.PhenoGen.data.Array[] myArraysToSetup =
-                myArray.getArraysForDataset(hybridIDsString, conn);
+                myArray.getArraysForDataset(hybridIDsString, pool);
 
         for (int j = 0; j < myArraysToSetup.length; j++) {
             String fileName = myArraysToSetup[j].getFile_name();
@@ -1667,7 +1582,7 @@ public class Dataset {
             } else {
                 //log.debug("file does exist");
             }
-            if (!checkUserChipExists(hybrid_id, userID, conn)) {
+            if (!checkUserChipExists(hybrid_id, userID, pool)) {
                 hybridIDsWithoutUserChips.add(Integer.toString(hybrid_id));
             }
         }
@@ -1679,7 +1594,7 @@ public class Dataset {
             log.debug("allHybridIDsString = " + allHybridIDsString);
 
             edu.ucdenver.ccp.PhenoGen.data.Array[] myArraysWithoutFiles =
-                    myArray.getArraysByHybridIDs(allHybridIDsString, conn);
+                    myArray.getArraysByHybridIDs(allHybridIDsString, pool);
 
             Hashtable<String, String> user_arrays = new Hashtable<String, String>();
             for (int j = 0; j < myArraysWithoutFiles.length; j++) {
@@ -1692,10 +1607,10 @@ public class Dataset {
                 //              myArraysWithoutFiles[j].getHybrid_id());
             }
             userLoggedIn.setUser_chips(user_arrays);
-            userLoggedIn.createUser_chips(conn);
+            userLoggedIn.createUser_chips(pool);
 
             arrayList = Arrays.asList(myArraysWithoutFiles);
-            userLoggedIn.updateArrayApproval(arrayList, conn);
+            userLoggedIn.updateArrayApproval(arrayList, pool);
 
 			/*  As of R2.4 (March 2011), no longer need to copy files
                         if (hybridIDsWithoutFiles.size() > 0) {
@@ -1870,38 +1785,45 @@ public class Dataset {
      * @return the Dataset object created with the dataset_id, platform, organism, and created_by_user_id set
      * @throws SQLException if a database error occurs
      */
-    public Dataset createDummyDataset(Connection conn) throws SQLException {
-
-        int dataset_id = myDbUtils.getUniqueID("datasets_seq", conn);
+    public Dataset createDummyDataset(DataSource pool) throws SQLException {
+        int dataset_id = -99;
+        //int dataset_id = myDbUtils.getUniqueID("datasets_seq", conn);
 
         String query =
                 "insert into datasets " +
-                        "(dataset_id, name, description, create_date, created_by_user_id, " +
+                        "( name, description, create_date, created_by_user_id, " +
                         "platform, qc_complete, organism) values " +
-                        "(?, ?, ?, ?, ?, " +
+                        "( ?, ?, ?, ?, " +
                         "?, ?, ?)";
 
 
         log.debug("in Dataset.createDummyDataset. dataset_id = " + dataset_id);
 
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            //pstmt.setInt(1, dataset_id);
+            pstmt.setString(1, "Dummy" + dataset_id);
+            pstmt.setString(2, "DummyDescription" + dataset_id);
 
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setInt(1, dataset_id);
-        pstmt.setString(2, "Dummy" + dataset_id);
-        pstmt.setString(3, "DummyDescription" + dataset_id);
+            // Column 4 is the create_date
+            pstmt.setTimestamp(3, now);
+            pstmt.setInt(4, this.getCreated_by_user_id());
+            pstmt.setString(5, this.getPlatform());
+            pstmt.setString(6, "N");
+            pstmt.setString(7, this.getOrganism());
 
-        // Column 4 is the create_date
-        pstmt.setTimestamp(4, now);
-        pstmt.setInt(5, this.getCreated_by_user_id());
-        pstmt.setString(6, this.getPlatform());
-        pstmt.setString(7, "N");
-        pstmt.setString(8, this.getOrganism());
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                dataset_id = rs.getInt(1);
+            }
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        pstmt.executeUpdate();
-        pstmt.close();
 
         this.setDataset_id(dataset_id);
 
@@ -1916,7 +1838,7 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      */
 
-    public void updateDummyDataset(int dataset_id, Connection conn) throws SQLException {
+    public void updateDummyDataset(int dataset_id, DataSource pool) throws SQLException {
 
         String query =
                 "update datasets " +
@@ -1925,17 +1847,22 @@ public class Dataset {
                         "where dataset_id = ?";
 
         log.debug("in Dataset.updateDummyDataset. dataset_id = " + dataset_id);
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
 
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
+            pstmt.setString(1, this.getName());
+            pstmt.setString(2, this.getDescription());
+            pstmt.setInt(3, dataset_id);
 
-        pstmt.setString(1, this.getName());
-        pstmt.setString(2, this.getDescription());
-        pstmt.setInt(3, dataset_id);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        pstmt.executeUpdate();
-        pstmt.close();
 
     }
 
@@ -1947,39 +1874,44 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      */
 
-    public int createDataset(Connection conn) throws SQLException {
-
-        int dataset_id = myDbUtils.getUniqueID("datasets_seq", conn);
+    public int createDataset(DataSource pool) throws SQLException {
+        int dataset_id = -99;
+        //int dataset_id = myDbUtils.getUniqueID("datasets_seq", conn);
 
         String query =
                 "insert into datasets " +
-                        "(dataset_id, name, description, create_date, created_by_user_id, " +
+                        "( name, description, create_date, created_by_user_id, " +
                         "platform, qc_complete, organism) values " +
-                        "(?, ?, ?, ?, ?, " +
+                        "( ?, ?, ?, ?, " +
                         "?, ?, ?)";
 
 
         log.debug("in Dataset.createDataset. dataset_id = " + dataset_id);
 
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            //pstmt.setInt(1, dataset_id);
+            pstmt.setString(1, this.getName());
+            pstmt.setString(2, this.getDescription());
 
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setInt(1, dataset_id);
-        pstmt.setString(2, this.getName());
-        pstmt.setString(3, this.getDescription());
+            // Column 4 is the create_date
+            pstmt.setTimestamp(3, now);
+            pstmt.setInt(4, this.getCreated_by_user_id());
+            pstmt.setString(5, this.getPlatform());
+            pstmt.setString(6, this.getQc_complete());
+            pstmt.setString(7, this.getOrganism());
 
-        // Column 4 is the create_date
-        pstmt.setTimestamp(4, now);
-        pstmt.setInt(5, this.getCreated_by_user_id());
-        pstmt.setString(6, this.getPlatform());
-        pstmt.setString(7, this.getQc_complete());
-        pstmt.setString(8, this.getOrganism());
-
-        pstmt.executeUpdate();
-        pstmt.close();
-
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                dataset_id = rs.getInt(1);
+            }
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
         return dataset_id;
     }
 
@@ -1991,7 +1923,7 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      */
 
-    public void createDataset_chip(int user_chip_id, Connection conn) throws SQLException {
+    public void createDataset_chip(int user_chip_id, DataSource pool) throws SQLException {
         //log.info("in createDataset_chip. user_chip_id = " + user_chip_id + ", dataset_id = "+this.getDataset_id());
 
         String query =
@@ -1999,15 +1931,20 @@ public class Dataset {
                         "(dataset_id, user_chip_id) " +
                         "values " +
                         "(?, ?)";
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, this.getDataset_id());
+            pstmt.setInt(2, user_chip_id);
 
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setInt(1, this.getDataset_id());
-        pstmt.setInt(2, user_chip_id);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        pstmt.executeUpdate();
-        pstmt.close();
 
     }
 
@@ -2024,16 +1961,15 @@ public class Dataset {
      */
 
     public int createNewGrouping(String criterion, String grouping_name,
-                                 LinkedHashMap groupValues, Hashtable groupNames, Connection conn) throws SQLException {
+                                 LinkedHashMap groupValues, Hashtable groupNames, DataSource pool) throws SQLException {
 
         log.info("in createNewGrouping. ");
         //log.debug("groupNames = "); myDebugger.print(groupNames);
         //log.debug("groupValues = "); myDebugger.print(groupValues);
         int grouping_id = -99;
 
-        conn.setAutoCommit(false);
-        try {
-            grouping_id = createGrouping(criterion, grouping_name, conn);
+        grouping_id = createGrouping(criterion, grouping_name, pool);
+
             //log.debug("here grouping_id = "+grouping_id);
             //
             // Create groups and chip_groups records containing the user_chip_id and the group
@@ -2048,19 +1984,11 @@ public class Dataset {
                 //int group_num = (Integer) groupValues.get(user_chip_id);
                 //log.debug("group_num = "+group_num);
                 //log.debug("groupName = "+(String)groupNames.get(Integer.toString(group_num)));
-                int group_id = createGroup(grouping_id,
-                        group_num,
-                        (String) groupNames.get(Integer.toString(group_num)),
-                        conn);
+                int group_id = createGroup(grouping_id, group_num,
+                        (String) groupNames.get(Integer.toString(group_num)), pool);
                 //log.debug("group_id = "+group_id);
-                createChip_group(user_chip_id, group_id, conn);
+                createChip_group(user_chip_id, group_id, pool);
             }
-            conn.commit();
-        } catch (Exception e) {
-            log.debug("got Exception while creating grouping", e);
-            conn.rollback();
-        }
-        conn.setAutoCommit(true);
 
         return grouping_id;
     }
@@ -2075,29 +2003,36 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      */
 
-    public int createGrouping(String criterion, String grouping_name, Connection conn) throws SQLException {
+    public int createGrouping(String criterion, String grouping_name, DataSource pool) throws SQLException {
         log.info("in createGrouping. ");
         log.debug("criterion = " + criterion + ", grouping_name = " + grouping_name + ", dataset_id = " + this.getDataset_id());
-
-        int grouping_id = myDbUtils.getUniqueID("groupings_seq", conn);
+        int grouping_id=-99;
+        //int grouping_id = myDbUtils.getUniqueID("groupings_seq", conn);
         log.debug("grouping_id = " + grouping_id);
 
         String query =
                 "insert into groupings " +
-                        "(grouping_id, dataset_id, criterion, grouping_name) " +
+                        "( dataset_id, criterion, grouping_name) " +
                         "values " +
-                        "(?, ?, ?, ?)";
+                        "( ?, ?, ?)";
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            //pstmt.setInt(1, grouping_id);
+            pstmt.setInt(1, this.getDataset_id());
+            pstmt.setString(2, criterion);
+            pstmt.setString(3, grouping_name);
 
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setInt(1, grouping_id);
-        pstmt.setInt(2, this.getDataset_id());
-        pstmt.setString(3, criterion);
-        pstmt.setString(4, grouping_name);
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                grouping_id = rs.getInt(1);
+            }
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        pstmt.executeUpdate();
-        pstmt.close();
 
         return grouping_id;
     }
@@ -2113,40 +2048,42 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      */
 
-    public int createGroup(int grouping_id, int group_number, String group_name, Connection conn) throws SQLException {
+    public int createGroup(int grouping_id, int group_number, String group_name, DataSource pool) throws SQLException {
         //log.info("in createGroup. ");
         //log.debug("grouping_id = " + grouping_id + ", group_number = "+group_number);
-
-        int group_id = myDbUtils.getUniqueID("groups_seq", conn);
+        int group_id=-99;
+        //int group_id = myDbUtils.getUniqueID("groups_seq", conn);
 
         String query =
                 "insert into groups " +
-                        "(group_id, grouping_id, group_number, group_name, has_expression_data, has_genotype_data, parent) " +
+                        "( grouping_id, group_number, group_name, has_expression_data, has_genotype_data, parent) " +
                         "values " +
-                        "(?, ?, ?, ?, 'Y', 'N', '')";
-
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setInt(1, group_id);
-        pstmt.setInt(2, grouping_id);
-        pstmt.setInt(3, group_number);
-        pstmt.setString(4, group_name);
-
-        try {
+                        "( ?, ?, ?, 'Y', 'N', '')";
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            //pstmt.setInt(1, group_id);
+            pstmt.setInt(1, grouping_id);
+            pstmt.setInt(2, group_number);
+            pstmt.setString(3, group_name);
             pstmt.executeUpdate();
-        } catch (SQLException e) {
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                group_id = rs.getInt(1);
+            }
+            pstmt.close();
+        }catch(SQLException e){
             if (e.getErrorCode() == 1) {
-                group_id = getGroupID(grouping_id, group_number, conn);
+                group_id = getGroupID(grouping_id, group_number, pool);
             } else {
                 log.error("Got a SQLException while in createGroup for group_number = " +
                         group_number + ", and grouping_id = " + grouping_id);
                 log.debug("Error code = " + e.getErrorCode());
                 throw e;
             }
+
         }
-        pstmt.close();
-        //log.debug("group_id = "+group_id);
 
         return group_id;
     }
@@ -2161,22 +2098,24 @@ public class Dataset {
      * @return the group_id
      */
 
-    public int getGroupID(int grouping_id, int group_number, Connection conn) throws SQLException {
+    public int getGroupID(int grouping_id, int group_number, DataSource pool) throws SQLException {
 
         String query =
                 "select group_id " +
                         "from groups " +
                         "where grouping_id = ? " +
                         "and group_number = ?";
-
-        Results myResults = new Results(query, new Object[]{grouping_id, group_number}, conn);
-
         int group_id = -99;
-        while ((dataRow = myResults.getNextRow()) != null) {
-            group_id = Integer.parseInt(dataRow[0]);
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{grouping_id, group_number}, conn);
+            while ((dataRow = myResults.getNextRow()) != null) {
+                group_id = Integer.parseInt(dataRow[0]);
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-
-        myResults.close();
 
         return group_id;
     }
@@ -2191,7 +2130,7 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      */
 
-    public void createChip_group(int user_chip_id, int group_id, Connection conn) throws SQLException {
+    public void createChip_group(int user_chip_id, int group_id, DataSource pool) throws SQLException {
         //log.info("in createChip_group. user_chip_id = " + user_chip_id +
         //	", group_id = " + group_id + ", dataset_id = "+this.getDataset_id());
 
@@ -2200,17 +2139,20 @@ public class Dataset {
                         "(dataset_id, user_chip_id, group_id) " +
                         "values " +
                         "(?, ?, ?)";
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, this.getDataset_id());
+            pstmt.setInt(2, user_chip_id);
+            pstmt.setInt(3, group_id);
 
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setInt(1, this.getDataset_id());
-        pstmt.setInt(2, user_chip_id);
-        pstmt.setInt(3, group_id);
-
-        pstmt.executeUpdate();
-        pstmt.close();
-
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
     }
 
     /**
@@ -2221,7 +2163,7 @@ public class Dataset {
      * @return An array of Datasets that include the arrays specified.
      * @throws SQLException if a database error occurs
      */
-    public Dataset[] getDatasetsUsingArrayIDs(String hybridIDs, Connection conn) throws SQLException {
+    public Dataset[] getDatasetsUsingArrayIDs(String hybridIDs, DataSource pool) throws SQLException {
 
         log.info("in getDatasetsUsingArrayIDs. hybridIDs = " + hybridIDs);
 
@@ -2240,42 +2182,46 @@ public class Dataset {
         log.debug("query = " + query);
 
         int i = 0;
-
-        Results myResults = new Results(query, conn);
         Dataset[] myDatasetArray = new Dataset[myResults.getNumRows()];
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, conn);
+            while ((dataRow = myResults.getNextRow()) != null) {
+                int dataset_id = Integer.parseInt(dataRow[0]);
+                //log.debug("getting dataset for dataset_id = "+dataset_id);
 
-        while ((dataRow = myResults.getNextRow()) != null) {
-            int dataset_id = Integer.parseInt(dataRow[0]);
-            //log.debug("getting dataset for dataset_id = "+dataset_id);
+                String fromString =
+                        "from datasets ds left join " +
+                                "dataset_chips dc on ds.dataset_id = dc.dataset_id, " +
+                                "users u, " +
+                                "organisms org ";
+                query =
+                        datasetSelectClause +
+                                fromString + " " +
+                                "where ds.dataset_id = ? " +
+                                "and ds.created_by_user_id = u.user_id " +
+                                "and ds.organism = org.organism " +
+                                "and ds.name != 'Dummy'||ds.dataset_id " +
+                                datasetGroupByClause;
 
-            String fromString =
-                    "from datasets ds left join " +
-                            "dataset_chips dc on ds.dataset_id = dc.dataset_id, " +
-                            "users u, " +
-                            "organisms org ";
-            query =
-                    datasetSelectClause +
-                            fromString + " " +
-                            "where ds.dataset_id = ? " +
-                            "and ds.created_by_user_id = u.user_id " +
-                            "and ds.organism = org.organism " +
-                            "and ds.name != 'Dummy'||ds.dataset_id " +
-                            datasetGroupByClause;
+                log.debug("query = " + query);
 
-            log.debug("query = " + query);
-
-            Results myResults2 = new Results(query, dataset_id, conn);
-            if (myResults2 != null && myResults2.getNumRows() > 0) {
-                String[] dataRow2 = null;
-                while ((dataRow2 = myResults2.getNextRow()) != null) {
-                    myDatasetArray[i] = setupDatasetValues(dataRow2);
+                Results myResults2 = new Results(query, dataset_id, conn);
+                if (myResults2 != null && myResults2.getNumRows() > 0) {
+                    String[] dataRow2 = null;
+                    while ((dataRow2 = myResults2.getNextRow()) != null) {
+                        myDatasetArray[i] = setupDatasetValues(dataRow2);
+                    }
+                    i++;
                 }
-                i++;
+                myResults2.close();
             }
-            myResults2.close();
+
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
 
-        myResults.close();
         return myDatasetArray;
     }
 
@@ -2288,7 +2234,7 @@ public class Dataset {
      * @return a Hashtable showing the program and the number of seconds the program is expected to run
      * @throws SQLException if a database error occurs
      */
-    public Hashtable getExpectedDuration(int num_arrays, int num_probes, Connection conn) throws SQLException {
+    public Hashtable getExpectedDuration(int num_arrays, int num_probes, DataSource pool) throws SQLException {
 
         String query =
                 "select program, round(avg_duration * 1.25) " +
@@ -2303,13 +2249,18 @@ public class Dataset {
         Hashtable<String, String> myHash = new Hashtable<String, String>();
 
         //log.debug("in getExpectedDuration query = " + query);
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{num_arrays, num_arrays, num_probes, num_probes}, conn);
 
-        Results myResults = new Results(query, new Object[]{num_arrays, num_arrays, num_probes, num_probes}, conn);
-
-        while ((dataRow = myResults.getNextRow()) != null) {
-            myHash.put(dataRow[0], dataRow[1]);
+            while ((dataRow = myResults.getNextRow()) != null) {
+                myHash.put(dataRow[0], dataRow[1]);
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
+
 
         return myHash;
     }
@@ -2324,7 +2275,7 @@ public class Dataset {
      * @return the number of seconds the program is expected to run
      * @throws SQLException if a database error occurs
      */
-    public int getExpectedDuration(String program, int num_arrays, int num_probes, Connection conn) throws SQLException {
+    public int getExpectedDuration(String program, int num_arrays, int num_probes, DataSource pool) throws SQLException {
 
         String query =
                 "select round(avg_duration * 1.25) " +
@@ -2339,15 +2290,17 @@ public class Dataset {
         Hashtable myHash = new Hashtable();
 
         //log.debug("in getExpectedDuration passing in program name.  query = " + query);
-
-        Results myResults = new Results(query, new Object[]{num_arrays, num_arrays, num_probes, num_probes, program}, conn);
-        int expectedDuration = 0;
-
-        while ((dataRow = myResults.getNextRow()) != null) {
-            expectedDuration = Integer.parseInt(dataRow[0]);
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{num_arrays, num_arrays, num_probes, num_probes, program}, conn);
+            int expectedDuration = 0;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                expectedDuration = Integer.parseInt(dataRow[0]);
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
-
         return expectedDuration;
     }
 
@@ -2361,7 +2314,7 @@ public class Dataset {
      * @param conn       the database connection
      * @throws SQLException if a database error occurs
      */
-    public void updateDuration(String program, int num_arrays, int num_probes, int duration, Connection conn) throws SQLException {
+    public void updateDuration(String program, int num_arrays, int num_probes, int duration, DataSource pool) throws SQLException {
 
         String query =
                 "update run_times " +
@@ -2377,17 +2330,23 @@ public class Dataset {
         //log.debug("query = "+query);
         //log.debug("program = "+program + " and duration = "+duration +
         //		", and num_arrays = "+num_arrays +", and num_probes = "+num_probes);
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setInt(1, duration);
-        pstmt.setString(2, program);
-        pstmt.setInt(3, num_arrays);
-        pstmt.setInt(4, num_arrays);
-        pstmt.setInt(5, num_probes);
-        pstmt.setInt(6, num_probes);
-        pstmt.executeUpdate();
-        pstmt.close();
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, duration);
+            pstmt.setString(2, program);
+            pstmt.setInt(3, num_arrays);
+            pstmt.setInt(4, num_arrays);
+            pstmt.setInt(5, num_probes);
+            pstmt.setInt(6, num_probes);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+
 
     }
 
@@ -2400,7 +2359,7 @@ public class Dataset {
      * @return true if a dataset by this name already exists, or false otherwise
      * @throws SQLException if a database error occurs
      */
-    public boolean datasetNameExists(String expName, int userID, Connection conn) throws SQLException {
+    public boolean datasetNameExists(String expName, int userID, DataSource pool) throws SQLException {
 
         String query =
                 "select ds.dataset_id " +
@@ -2410,13 +2369,18 @@ public class Dataset {
                         "and ds.name != 'Dummy'||ds.dataset_id";
 
         boolean alreadyExists = false;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{expName, userID}, conn);
 
-        Results myResults = new Results(query, new Object[]{expName, userID}, conn);
-
-        if (myResults.getNumRows() != 0) {
-            alreadyExists = true;
+            if (myResults.getNumRows() != 0) {
+                alreadyExists = true;
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
+
 
         return alreadyExists;
     }
@@ -2429,26 +2393,30 @@ public class Dataset {
      * @return the id of the grouping that already exists
      * @throws SQLException if a database error occurs
      */
-    public int checkGroupingExists(
-            LinkedHashMap groupValues,
-            Connection conn) throws SQLException {
+    public int checkGroupingExists( LinkedHashMap groupValues, DataSource pool) throws SQLException {
 
         //
         // First get the grouping values for the dataset
         // Then loop through the groups and check their values.
         //
         log.debug("in checkGroupingExists");
-        //log.debug("groupValues = "); myDebugger.print(groupValues);
-
-        Group[] groupings = getGroupings(conn);
         int answer = -99;
-        for (int i = 0; i < groupings.length; i++) {
-            answer = checkGroupValues(groupValues, new Group().getChipAssignments(groupings[i].getGrouping_id(), conn));
-            // If an existing grouping is found, break out of this loop;
-            if (answer != -99) {
-                break;
+        //log.debug("groupValues = "); myDebugger.print(groupValues);
+        try(Connection conn=pool.getConnection()){
+            Group[] groupings = getGroupings(conn);
+
+            for (int i = 0; i < groupings.length; i++) {
+                answer = checkGroupValues(groupValues, new Group().getChipAssignments(groupings[i].getGrouping_id(), conn));
+                // If an existing grouping is found, break out of this loop;
+                if (answer != -99) {
+                    break;
+                }
             }
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
+
 
         log.debug("answer = " + answer);
 
@@ -2475,7 +2443,7 @@ public class Dataset {
             String analysis_level,
             String annotation_level,
             String codeLinkParameter1,
-            Connection conn) throws SQLException {
+            DataSource pool) throws SQLException {
 
         log.debug("in checkNormalizationExists");
 
@@ -2537,24 +2505,30 @@ public class Dataset {
                         "order by dv.version";
 
         //log.debug("query = " + query);
-
-        Results myResults = (this.getPlatform().equals(CODELINK_PLATFORM) ?
-                new Results(query, new Object[]{this.getDataset_id(), normalize_method, grouping_id, codeLinkParameter1}, conn) :
-                (new edu.ucdenver.ccp.PhenoGen.data.Array().EXON_ARRAY_TYPES.contains(this.getArray_type()) ?
-                        new Results(query, new Object[]{this.getDataset_id(), normalize_method, grouping_id, probeMask, analysis_level, annotation_level}, conn) :
-                        new Results(query, new Object[]{this.getDataset_id(), normalize_method, grouping_id, probeMask}, conn)));
-
         String answer = "";
+        try(Connection conn=pool.getConnection()){
+            Results myResults = (this.getPlatform().equals(CODELINK_PLATFORM) ?
+                    new Results(query, new Object[]{this.getDataset_id(), normalize_method, grouping_id, codeLinkParameter1}, conn) :
+                    (new edu.ucdenver.ccp.PhenoGen.data.Array().EXON_ARRAY_TYPES.contains(this.getArray_type()) ?
+                            new Results(query, new Object[]{this.getDataset_id(), normalize_method, grouping_id, probeMask, analysis_level, annotation_level}, conn) :
+                            new Results(query, new Object[]{this.getDataset_id(), normalize_method, grouping_id, probeMask}, conn)));
 
-        if (myResults.getNumRows() != 0) {
-            while ((dataRow = myResults.getNextRow()) != null) {
-                answer = dataRow[2];
+
+
+            if (myResults.getNumRows() != 0) {
+                while ((dataRow = myResults.getNextRow()) != null) {
+                    answer = dataRow[2];
+                }
+            } else {
+                log.debug("no version rows were returned");
             }
-        } else {
-            log.debug("no version rows were returned");
+
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
 
-        myResults.close();
 
         return answer;
     }
@@ -2635,49 +2609,6 @@ public class Dataset {
         return datasetArray;
     }
 
-    public Dataset[] getAllDatasetsForUser(User userLoggedIn, DataSource pool) throws SQLException {
-        Connection conn = null;
-        Dataset[] datasetArray = null;
-        try {
-            conn = pool.getConnection();
-            datasetArray = this.getAllDatasetsForUser(userLoggedIn, conn);
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            log.error("Error:getAllDatasetsForUser:", e);
-            Email myAdminEmail = new Email();
-            String fullerrmsg = e.getMessage();
-            StackTraceElement[] tmpEx = e.getStackTrace();
-            for (int i = 0; i < tmpEx.length; i++) {
-                fullerrmsg = fullerrmsg + "\n" + tmpEx[i];
-            }
-            myAdminEmail.setSubject("Exception thrown getAllDatasetsForUser()");
-            myAdminEmail.setContent("There was an error getAllDatasetsForUser().\n" + fullerrmsg);
-            try {
-                myAdminEmail.sendEmailToAdministrator("");
-            } catch (Exception mailException) {
-                log.error("error sending message", mailException);
-            }
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (Exception er) {
-                    log.error("Error closing connection", er);
-                }
-            }
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (Exception er) {
-                    log.error("Error closing connection", er);
-                }
-            }
-        }
-        return datasetArray;
-    }
 
     /**
      * Retrieves all the datasets and dataset versions created by a user, whether they are visible or not.
@@ -2689,81 +2620,74 @@ public class Dataset {
      * @return an array of Dataset objects
      */
 
-    public Dataset[] getAllDatasetsForUser(User userLoggedIn, Connection conn) throws SQLException {
+    public Dataset[] getAllDatasetsForUser(User userLoggedIn, DataSource pool) throws SQLException {
 
         int user_id = userLoggedIn.getUser_id();
 
         log.debug("in getAllDatasetsForUser user_id = " + user_id);
 
-        String query =
-/*
-			datasetVersionSelectClause +
-			datasetVersionFromClause +
-			datasetVersionWhereClause;
-*/
-
-                datasetVersionDetailsSelectClause +
+        String query = datasetVersionDetailsSelectClause +
                         datasetVersionDetailsFromClause +
                         datasetVersionWhereClause;
-
-
         query = query +
                 "and (ds.created_by_user_id = ? " +
                 "or ds.created_by_user_id = " +
                 "	(select user_id " +
                 "	from users " +
                 "	where user_name = 'public')) ";
-        // March 25, 2011 I have no idea why this is here!
-//			"and dv.number_of_groups is not null ";
 
         query = query +
-//	datasetVersionGroupByClause +
                 datasetVersionDetailsGroupByClause +
                 "order by ds.create_date desc, ds.name";
 
         //log.debug("query  = " + query );
 
         Dataset[] datasetArray = null;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = (new Results(query, user_id, conn));
+            log.debug("got Dataset results.");
+            datasetArray = setupDatasetVersionValues(myResults, true);
 
-        Results myResults = (new Results(query, user_id, conn));
-        log.debug("got Dataset results.");
-        datasetArray = setupDatasetVersionValues(myResults, true);
+            ParameterValue[] allParameterValues = new ParameterValue().getParameterValuesForAllDatasetsForUser(user_id, pool);
+            GeneList[] allGeneLists = new GeneList().getGeneListsForAllDatasetsForUser(user_id, pool);
+            log.debug("got genelist results.");
+            //log.debug("allParameterValues is this long: " + allParameterValues.length);
+            //log.debug("allGeneLists is this long: " + allGeneLists.length);
 
-        ParameterValue[] allParameterValues = new ParameterValue().getParameterValuesForAllDatasetsForUser(user_id, conn);
-        GeneList[] allGeneLists = new GeneList().getGeneListsForAllDatasetsForUser(user_id, conn);
-        log.debug("got genelist results.");
-        //log.debug("allParameterValues is this long: " + allParameterValues.length);
-        //log.debug("allGeneLists is this long: " + allGeneLists.length);
-
-        for (Dataset thisDataset : datasetArray) {
-            thisDataset.setPath(thisDataset.getDatasetPath(userLoggedIn.getUserMainDir()));
-            for (DatasetVersion thisVersion : thisDataset.getDatasetVersions()) {
-                thisVersion.setVersion_path(thisDataset.getPath(), thisVersion.getVersion());
-                List<ParameterValue> pvList = new ArrayList<ParameterValue>();
-                List<GeneList> glList = new ArrayList<GeneList>();
-                for (ParameterValue thisParameterValue : allParameterValues) {
-                    if (thisParameterValue.getDataset_id() == thisDataset.getDataset_id() &&
-                            thisParameterValue.getVersion() == thisVersion.getVersion()) {
-                        pvList.add(thisParameterValue);
+            for (Dataset thisDataset : datasetArray) {
+                thisDataset.setPath(thisDataset.getDatasetPath(userLoggedIn.getUserMainDir()));
+                for (DatasetVersion thisVersion : thisDataset.getDatasetVersions()) {
+                    thisVersion.setVersion_path(thisDataset.getPath(), thisVersion.getVersion());
+                    List<ParameterValue> pvList = new ArrayList<ParameterValue>();
+                    List<GeneList> glList = new ArrayList<GeneList>();
+                    for (ParameterValue thisParameterValue : allParameterValues) {
+                        if (thisParameterValue.getDataset_id() == thisDataset.getDataset_id() &&
+                                thisParameterValue.getVersion() == thisVersion.getVersion()) {
+                            pvList.add(thisParameterValue);
+                        }
                     }
-                }
-                for (GeneList thisGeneList : allGeneLists) {
-                    if (thisGeneList.getDataset_id() == thisDataset.getDataset_id() &&
-                            thisGeneList.getVersion() == thisVersion.getVersion()) {
-                        glList.add(thisGeneList);
+                    for (GeneList thisGeneList : allGeneLists) {
+                        if (thisGeneList.getDataset_id() == thisDataset.getDataset_id() &&
+                                thisGeneList.getVersion() == thisVersion.getVersion()) {
+                            glList.add(thisGeneList);
+                        }
                     }
+                    ParameterValue[] pvArray = (ParameterValue[]) myObjectHandler.getAsArray(pvList, ParameterValue.class);
+                    GeneList[] glArray = (GeneList[]) myObjectHandler.getAsArray(glList, GeneList.class);
+                    glArray = new GeneList().sortGeneLists(glArray, "geneListName", "A");
+                    thisVersion.setParameters(pvArray);
+                    thisVersion.setGeneLists(glArray);
                 }
-                ParameterValue[] pvArray = (ParameterValue[]) myObjectHandler.getAsArray(pvList, ParameterValue.class);
-                GeneList[] glArray = (GeneList[]) myObjectHandler.getAsArray(glList, GeneList.class);
-                glArray = new GeneList().sortGeneLists(glArray, "geneListName", "A");
-                thisVersion.setParameters(pvArray);
-                thisVersion.setGeneLists(glArray);
+                setupDatasetParameterValues(userLoggedIn.getUser_id(), thisDataset, pool);
+                log.debug("setup param values");
             }
-            setupDatasetParameterValues(userLoggedIn.getUser_id(), thisDataset, conn);
-            log.debug("setup param values");
+
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
 
-        myResults.close();
 
         return datasetArray;
     }
@@ -2790,7 +2714,15 @@ public class Dataset {
         return false;
     }
 
-
+    /**
+     * Sets the parameter value-related attributes for the dataset and the dataset versions
+     *
+     * @param user_id     the identifier of the user logged in
+     * @param thisDataset a Dataset object
+     * @param conn        the database connection
+     * @throws SQLException if a database error occurs
+     * @return an array of Dataset objects
+     */
     public Dataset setupDatasetParameterValues(int user_id, Dataset thisDataset, DataSource pool) throws SQLException {
         log.debug("in setupDatasetParameterValues for a dataset");
         for (DatasetVersion thisDatasetVersion : thisDataset.getDatasetVersions()) {
@@ -2801,25 +2733,6 @@ public class Dataset {
         return thisDataset;
     }
 
-    /**
-     * Sets the parameter value-related attributes for the dataset and the dataset versions
-     *
-     * @param user_id     the identifier of the user logged in
-     * @param thisDataset a Dataset object
-     * @param conn        the database connection
-     * @throws SQLException if a database error occurs
-     * @return an array of Dataset objects
-     */
-
-    public Dataset setupDatasetParameterValues(int user_id, Dataset thisDataset, Connection conn) throws SQLException {
-        log.debug("in setupDatasetParameterValues for a dataset");
-        for (DatasetVersion thisDatasetVersion : thisDataset.getDatasetVersions()) {
-            thisDatasetVersion.setParameters(new ParameterValue().getParameterValuesForDatasetVersion(thisDatasetVersion, conn));
-            thisDatasetVersion.setGeneLists(new GeneList().getGeneListsForDatasetVersion(thisDatasetVersion, conn));
-            thisDatasetVersion.setGroupCounts(thisDatasetVersion.getGroupCounts(conn));
-        }
-        return thisDataset;
-    }
 
     /**
      * Creates an array of Dataset objects and sets the data values to those retrieved from the database.
@@ -2897,24 +2810,26 @@ public class Dataset {
      * @return the number of matching strains
      */
 
-    public int getNumStrains(int parameterGroupID, Connection conn) throws SQLException {
+    public int getNumStrains(int parameterGroupID, DataSource pool) throws SQLException {
 
         String query =
                 "select count(*) " +
                         "from parameter_values " +
                         "where parameter_group_id = ? " +
                         "and category = 'Phenotype Group Value'";
-
-        Results myResults = new Results(query, parameterGroupID, conn);
-
         int numStrains = 0;
-        while ((dataRow = myResults.getNextRow()) != null) {
-            numStrains = Integer.parseInt(dataRow[0]);
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, parameterGroupID, conn);
+            while ((dataRow = myResults.getNextRow()) != null) {
+                numStrains = Integer.parseInt(dataRow[0]);
+            }
+            log.debug("in getNumStrains for parameterGroupID = " + parameterGroupID + " NumStrains = " + numStrains);
+
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        log.debug("in getNumStrains for parameterGroupID = " + parameterGroupID + " NumStrains = " + numStrains);
-
-        myResults.close();
-
         return numStrains;
     }
 
@@ -2926,7 +2841,7 @@ public class Dataset {
      * @param conn     the database connection
      * @throws SQLException if a database error occurs
      */
-    public void updateQc_complete(String qc_value, Connection conn) throws SQLException {
+    public void updateQc_complete(String qc_value, DataSource pool) throws SQLException {
 
         String query =
                 "update datasets " +
@@ -2934,13 +2849,19 @@ public class Dataset {
                         "where dataset_id = ?";
 
         log.debug("in updateQc_complete.  dataset_id = " + this.getDataset_id() + ", qc_value = " + qc_value);
-        PreparedStatement pstmt = conn.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
-        pstmt.setString(1, qc_value);
-        pstmt.setInt(2, this.getDataset_id());
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            pstmt.setString(1, qc_value);
+            pstmt.setInt(2, this.getDataset_id());
 
-        pstmt.executeUpdate();
+            pstmt.executeUpdate();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+
 
     }
 
@@ -3240,20 +3161,7 @@ public class Dataset {
             return false;
         }
 
-        public boolean hasFilterStatsResults(int userID, Connection conn) {
-            DataSource pool = null;
-            try {
-                // Create a JNDI Initial context to be able to lookup the DataSource
-                InitialContext ctx = new InitialContext();
-                // Lookup the DataSource, which will be backed by a pool
-                //   that the application server provides.
-                pool = (DataSource) ctx.lookup("java:comp/env/jdbc/DevDB");
-                if (pool == null) {
-                    log.error("Unknown DataSource 'jdbc/DevDB'", new Exception("Unknown DataSource 'jdbc/DevDB'"));
-                }
-            } catch (NamingException ex) {
-                ex.printStackTrace();
-            }
+        public boolean hasFilterStatsResults(int userID, DataSource pool) {
             if (this.getFilterStats(userID, pool) != null && this.getFilterStats(userID, pool).length > 0) {
                 return true;
             } else {
@@ -3366,7 +3274,7 @@ public class Dataset {
          * @throws SQLException if a database error occurs
          */
 
-        public void createDatasetVersion(Connection conn) throws SQLException {
+        public void createDatasetVersion(DataSource pool) throws SQLException {
 
             log.debug("in createDatasetVersion.");
 
@@ -3378,21 +3286,26 @@ public class Dataset {
                             "?, ?)";
 
             java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+            try(Connection conn=pool.getConnection()){
+                PreparedStatement pstmt = conn.prepareStatement(query,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
 
-            PreparedStatement pstmt = conn.prepareStatement(query,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, this.getDataset().getDataset_id());
+                pstmt.setInt(2, this.version);
+                pstmt.setTimestamp(3, now);
+                pstmt.setInt(4, this.visible);
+                pstmt.setString(5, this.version_name);
+                pstmt.setString(6, this.version_type);
+                pstmt.setInt(7, this.grouping_id);
 
-            pstmt.setInt(1, this.getDataset().getDataset_id());
-            pstmt.setInt(2, this.version);
-            pstmt.setTimestamp(3, now);
-            pstmt.setInt(4, this.visible);
-            pstmt.setString(5, this.version_name);
-            pstmt.setString(6, this.version_type);
-            pstmt.setInt(7, this.grouping_id);
+                pstmt.executeUpdate();
+                pstmt.close();
+            }catch(SQLException e){
+                log.debug("SQL Exception:",e);
+                throw e;
+            }
 
-            pstmt.executeUpdate();
-            pstmt.close();
         }
 
         /**
@@ -3486,22 +3399,7 @@ public class Dataset {
          */
 
         //TODO Modify to delete DatasetFilterStats entries
-        public void deleteDatasetVersion(int userID, Connection conn) throws SQLException, Exception {
-            DataSource pool = null;
-            try {
-                // Create a JNDI Initial context to be able to lookup the DataSource
-                InitialContext ctx = new InitialContext();
-                // Lookup the DataSource, which will be backed by a pool
-                //   that the application server provides.
-                pool = (DataSource) ctx.lookup("java:comp/env/jdbc/DevDB");
-                if (pool == null) {
-                    log.error("Unknown DataSource 'jdbc/DevDB'", new Exception("Unknown DataSource 'jdbc/DevDB'"));
-                }
-            } catch (NamingException ex) {
-                ex.printStackTrace();
-            }
-            conn.setAutoCommit(false);
-
+        public void deleteDatasetVersion(int userID, DataSource pool) throws SQLException, Exception {
             int version = this.getVersion();
             String dsPath = this.getDataset().getPath();
 
@@ -3515,72 +3413,79 @@ public class Dataset {
                     ", and path is " + dsPath + "v" + version +
                     " and genelist dir is " + analysisPath);
 
-            try {
-                if (new edu.ucdenver.ccp.PhenoGen.data.Array().EXON_ARRAY_TYPES.contains(this.getDataset().getArray_type())) {
-                    //delete DSFilterStats
-                    if (filterstats == null || filterstats.length == 0) {
-                        this.getFilterStatsFromDB(userID, pool);
+            try(Connection conn=pool.getConnection()) {
+                conn.setAutoCommit(false);
+                boolean skipDelete=false;
+                try {
+                    if (new edu.ucdenver.ccp.PhenoGen.data.Array().EXON_ARRAY_TYPES.contains(this.getDataset().getArray_type())) {
+                        //delete DSFilterStats
+                        if (filterstats == null || filterstats.length == 0) {
+                            this.getFilterStatsFromDB(userID, pool);
+                        }
+
+                        for (int i = 0; i < filterstats.length; i++) {
+                            filterstats[i].deleteFromDB(pool);
+                        }
+                        if (!this.getDataset().getCreator().equals("public")) {
+                            String execute = "{call filterprep.cleanupafterdelete(" + this.getDataset().getDataset_id() + "," + version + ") }";
+                            CallableStatement cs = conn.prepareCall(execute);
+                            cs.execute();
+                            cs.close();
+                        }
                     }
 
-                    for (int i = 0; i < filterstats.length; i++) {
-                        filterstats[i].deleteFromDB(pool);
+                    new GeneList().deleteGeneListsForDatasetVersion(this, conn);
+                    new ParameterValue().deleteParameterGroupsForDatasetVersion(this, conn);
+                    new SessionHandler().deleteSessionActivitiesForDatasetVersion(this, conn);
+
+                    String query = "delete from dataset_versions " +
+                            "where dataset_id = ? " +
+                            "and version = ?";
+
+                    PreparedStatement pstmt = conn.prepareStatement(query,
+                            ResultSet.TYPE_SCROLL_INSENSITIVE,
+                            ResultSet.CONCUR_UPDATABLE);
+                    pstmt.setInt(1, this.getDataset().getDataset_id());
+                    pstmt.setInt(2, version);
+
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                    conn.commit();
+                }catch(SQLException e){
+                    skipDelete=true;
+                    conn.rollback();
+                    conn.setAutoCommit(true);
+                    log.debug("SQL Exception:",e);
+                    throw e;
+                }
+                if(!skipDelete) {
+                    boolean success = new FileHandler().deleteAllFilesPlusDirectory(new File(dsPath + "v" + version));
+                    if (!success) {
+                        Email myEmail = new Email();
+                        myEmail.setSubject("Error deleting files for dataset version");
+                        myEmail.setContent("Path is " + dsPath + "v" + version);
+                        try {
+                            myEmail.sendEmailToAdministrator("");
+                        } catch (Exception e) {
+                            log.error("error sending message to administrator");
+                        }
                     }
-                    if (!this.getDataset().getCreator().equals("public")) {
-                        String execute = "{call filterprep.cleanupafterdelete(" + this.getDataset().getDataset_id() + "," + version + ") }";
-                        CallableStatement cs = conn.prepareCall(execute);
-                        cs.execute();
-                        cs.close();
+                    success = new FileHandler().deleteAllFilesPlusDirectory(new File(analysisPath));
+                    if (!success) {
+                        Email myEmail = new Email();
+                        myEmail.setSubject("Error deleting files for analysis of dataset version");
+                        myEmail.setContent("Path is " + analysisPath);
+                        try {
+                            myEmail.sendEmailToAdministrator("");
+                        } catch (Exception e) {
+                            log.error("error sending message to administrator");
+                        }
                     }
                 }
-
-                new GeneList().deleteGeneListsForDatasetVersion(this, conn);
-
-                new ParameterValue().deleteParameterGroupsForDatasetVersion(this, conn);
-                new SessionHandler().deleteSessionActivitiesForDatasetVersion(this, conn);
-
-                String query =
-                        "delete from dataset_versions " +
-                                "where dataset_id = ? " +
-                                "and version = ?";
-
-                PreparedStatement pstmt = conn.prepareStatement(query,
-                        ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.CONCUR_UPDATABLE);
-                pstmt.setInt(1, this.getDataset().getDataset_id());
-                pstmt.setInt(2, version);
-
-                pstmt.executeUpdate();
-                pstmt.close();
-                conn.commit();
-                boolean success = new FileHandler().deleteAllFilesPlusDirectory(new File(dsPath + "v" + version));
-
-                if (!success) {
-                    Email myEmail = new Email();
-                    myEmail.setSubject("Error deleting files for dataset version");
-                    myEmail.setContent("Path is " + dsPath + "v" + version);
-                    try {
-                        myEmail.sendEmailToAdministrator("");
-                    } catch (Exception e) {
-                        log.error("error sending message to administrator");
-                    }
-                }
-                success = new FileHandler().deleteAllFilesPlusDirectory(new File(analysisPath));
-                if (!success) {
-                    Email myEmail = new Email();
-                    myEmail.setSubject("Error deleting files for analysis of dataset version");
-                    myEmail.setContent("Path is " + analysisPath);
-                    try {
-                        myEmail.sendEmailToAdministrator("");
-                    } catch (Exception e) {
-                        log.error("error sending message to administrator");
-                    }
-                }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 log.error("In exception of deleteDatasetVersion", e);
-                conn.rollback();
                 throw e;
             }
-            conn.setAutoCommit(true);
         }
 
 
@@ -3592,21 +3497,23 @@ public class Dataset {
          * @return number of arrays excluded in a group
          * @throws SQLException
          */
-        public long getNumberOfExcludedArrays(int grouping_id, Connection conn) throws SQLException {
-
+        public long getNumberOfExcludedArrays(int grouping_id, DataSource pool) throws SQLException {
             long NumberOfExcludedArrays = 0;
-
             String query = "select count(user_chip_id) from chip_groups cg , groups g where " +
                     " g.group_number = 0 and " +
                     " g.group_name= 'Exclude' and " +
                     " cg.group_id = g.group_id and" +
                     " g.grouping_id= ?";
 
-            Results myResults = new Results(query, grouping_id, conn);
-            NumberOfExcludedArrays = myResults.getIntValueFromFirstRow();
+            try(Connection conn=pool.getConnection()){
+                Results myResults = new Results(query, grouping_id, conn);
+                NumberOfExcludedArrays = myResults.getIntValueFromFirstRow();
 
-            myResults.close();
-
+                myResults.close();
+            }catch(SQLException e){
+                log.debug("SQL Exception:",e);
+                throw e;
+            }
             return NumberOfExcludedArrays;
         }
 
@@ -3617,8 +3524,7 @@ public class Dataset {
          * @param conn the database connection
          * @throws SQLException if a database error occurs
          */
-        public void updateVisible(Connection conn) throws SQLException {
-
+        public void updateVisible(DataSource pool) throws SQLException {
             String query =
                     "update dataset_versions " +
                             "set visible = 1 " +
@@ -3627,14 +3533,17 @@ public class Dataset {
 
             log.debug("in updateVisible.  dataset = " +
                     this.getDataset().getDataset_id() + ": " + this.getDataset().getName());
-            PreparedStatement pstmt = conn.prepareStatement(query,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, this.getDataset().getDataset_id());
-            pstmt.setInt(2, this.getVersion());
-
-            pstmt.executeUpdate();
-
+            try(Connection conn=pool.getConnection()){
+                PreparedStatement pstmt = conn.prepareStatement(query,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, this.getDataset().getDataset_id());
+                pstmt.setInt(2, this.getVersion());
+                pstmt.executeUpdate();
+            }catch(SQLException e){
+                log.debug("SQL Exception:",e);
+                throw e;
+            }
         }
 
         /**
@@ -3643,8 +3552,7 @@ public class Dataset {
          * @param conn the database connection
          * @throws SQLException if a database error occurs
          */
-        public void updateVisibleToError(Connection conn) throws SQLException {
-
+        public void updateVisibleToError(DataSource pool) throws SQLException {
             String query =
                     "update dataset_versions " +
                             "set visible = -1 " +
@@ -3653,14 +3561,18 @@ public class Dataset {
 
             log.debug("in updateVisibleToError.  dataset = " +
                     this.getDataset().getDataset_id() + ": " + this.getDataset().getName());
-            PreparedStatement pstmt = conn.prepareStatement(query,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, this.getDataset().getDataset_id());
-            pstmt.setInt(2, this.getVersion());
+            try(Connection conn=pool.getConnection()){
+                PreparedStatement pstmt = conn.prepareStatement(query,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, this.getDataset().getDataset_id());
+                pstmt.setInt(2, this.getVersion());
 
-            pstmt.executeUpdate();
-
+                pstmt.executeUpdate();
+            }catch(SQLException e){
+                log.debug("SQL Exception:",e);
+                throw e;
+            }
         }
 
         /**
@@ -3854,25 +3766,25 @@ public class Dataset {
          * @return the identifier of the master parameter group
          * @throws SQLException if a database error occurs
          */
-        public int getMasterParameterGroupID(Connection conn) throws SQLException {
+        public int getMasterParameterGroupID(DataSource pool) throws SQLException {
 
             log.debug("In getMasterParameterGroupID. dataset_id = " + this.getDataset().getDataset_id() + ", version = " + this.getVersion());
-
             String query =
                     "select parameter_group_id " +
                             "from parameter_groups " +
                             "where dataset_id = ? " +
                             "and version = ? " +
                             "and master = 1";
-
             //log.debug("query = "+query);
-
-            Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
-
-            int parameter_group_id = myResults.getIntValueFromFirstRow();
-
-            myResults.close();
-
+            int parameter_group_id = -99;
+            try(Connection conn=pool.getConnection()){
+                Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
+                parameter_group_id = myResults.getIntValueFromFirstRow();
+                myResults.close();
+            }catch(SQLException e){
+                log.debug("SQL Exception:",e);
+                throw e;
+            }
             return parameter_group_id;
         }
 
@@ -3914,66 +3826,17 @@ public class Dataset {
             //log.debug("query = "+query);
 
             //log.debug("dataset_id = "+this.getDataset().getDataset_id() + ", version = "+ this.getVersion());
-            Connection conn = null;
             int[] groupCount = new int[0];
-            try {
-                conn = pool.getConnection();
+            try (Connection conn=pool.getConnection()) {
                 Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
 
                 groupCount = myObjectHandler.getResultsAsIntArray(myResults, 1);
 
                 myResults.close();
-                conn.close();
-                conn = null;
+
             } catch (SQLException e) {
                 throw e;
-            } finally {
-                if (conn != null && !conn.isClosed()) {
-                    try {
-                        conn.close();
-                        conn = null;
-                    } catch (SQLException e) {
-                    }
-                }
             }
-
-            return groupCount;
-        }
-
-
-        /**
-         * Retrieves the number of datafiles in each group for this dataset version.
-         *
-         * @param conn the database connection
-         * @throws SQLException if a database error occurs
-         * @return an array containing the number of datafiles in each group.
-         * Note that this array is ordered by the group's number (e.g., 1, 2, 3).
-         */
-
-        public int[] getGroupCounts(Connection conn) throws SQLException {
-
-            //log.debug("in get GroupCounts. " );
-
-            String query =
-                    "select grps.group_number, count(*) " +
-                            "from groups grps, chip_groups cg, dataset_versions dv " +
-                            "where dv.grouping_id = grps.grouping_id " +
-                            "and dv.dataset_id = ? " +
-                            "and dv.version = ? " +
-                            "and grps.group_number != 0 " +
-                            "and cg.group_id = grps.group_id " +
-                            "group by grps.group_number " +
-                            "order by grps.group_number";
-
-            //log.debug("query = "+query);
-
-            //log.debug("dataset_id = "+this.getDataset().getDataset_id() + ", version = "+ this.getVersion());
-            Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
-
-            int[] groupCount = myObjectHandler.getResultsAsIntArray(myResults, 1);
-
-            myResults.close();
-
             return groupCount;
         }
 
@@ -3988,8 +3851,7 @@ public class Dataset {
         public Group[] getGroups(DataSource pool) throws SQLException {
 
             log.debug("in getGroups for a dataset version");
-            String query =
-                    "select grpings.grouping_id, " +
+            String query = "select grpings.grouping_id, " +
                             "grpings.grouping_name, " +
                             "grpings.criterion, " +
                             "grps.group_id, " +
@@ -4009,9 +3871,8 @@ public class Dataset {
             //log.debug("query = "+query);
             List<Group> myGroupList = new ArrayList<Group>();
 
-            Connection conn = null;
-            try {
-                conn = pool.getConnection();
+
+            try(Connection conn=pool.getConnection()) {
                 Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
                 String[] dataRow;
                 while ((dataRow = myResults.getNextRow()) != null) {
@@ -4019,17 +3880,10 @@ public class Dataset {
                     myGroupList.add(newGroup);
                 }
                 myResults.close();
-                conn.close();
+
             } catch (SQLException e) {
+
                 throw e;
-            } finally {
-                if (conn != null && !conn.isClosed()) {
-                    try {
-                        conn.close();
-                        conn = null;
-                    } catch (SQLException e) {
-                    }
-                }
             }
 
             Group[] myGroupArray = (Group[]) myObjectHandler.getAsArray(myGroupList, Group.class);
@@ -4037,49 +3891,7 @@ public class Dataset {
             return myGroupArray;
         }
 
-        /**
-         * Retrieves the groups for this dataset version
-         *
-         * @param conn the database connection
-         * @throws SQLException if a database error occurs
-         * @return an array of Group objects
-         */
-        public Group[] getGroups(Connection conn) throws SQLException {
 
-            log.debug("in getGroups for a dataset version");
-            String query =
-                    "select grpings.grouping_id, " +
-                            "grpings.grouping_name, " +
-                            "grpings.criterion, " +
-                            "grps.group_id, " +
-                            "grps.group_number, " +
-                            "grps.group_name, " +
-                            "grps.has_expression_data, " +
-                            "grps.has_genotype_data, " +
-                            "grps.parent " +
-                            "from groups grps, groupings grpings, dataset_versions dv " +
-                            "where dv.grouping_id = grps.grouping_id " +
-                            "and grpings.grouping_id = grps.grouping_id " +
-                            "and grpings.dataset_id = dv.dataset_id " +
-                            "and dv.dataset_id = ? " +
-                            "and dv.version = ? " +
-                            "order by to_number(grps.group_number)";
-
-            //log.debug("query = "+query);
-            List<Group> myGroupList = new ArrayList<Group>();
-
-            Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
-            String[] dataRow;
-            while ((dataRow = myResults.getNextRow()) != null) {
-                Group newGroup = new Group().setupGroup(dataRow);
-                myGroupList.add(newGroup);
-            }
-            myResults.close();
-
-            Group[] myGroupArray = (Group[]) myObjectHandler.getAsArray(myGroupList, Group.class);
-
-            return myGroupArray;
-        }
 
         /**
          * Retrieves the groups for this dataset version
@@ -4088,7 +3900,7 @@ public class Dataset {
          * @throws SQLException if a database error occurs
          * @return a Hashtable of the parent name pointing to a list of group names
          */
-        public Hashtable<String, List<String>> getParentsWithGroups(Connection conn) throws SQLException {
+        public Hashtable<String, List<String>> getParentsWithGroups(DataSource pool) throws SQLException {
 
             log.debug("in getParentsWithGroups for a dataset version");
             String query =
@@ -4101,13 +3913,15 @@ public class Dataset {
                             "order by 1, 2";
 
             log.debug("query = " + query);
-
-            Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
-
-            Hashtable<String, List<String>> myHashtable = myObjectHandler.getResultsAsHashtablePlusList(myResults);
-
-            myResults.close();
-
+            Hashtable<String, List<String>> myHashtable = null;
+            try(Connection conn=pool.getConnection()){
+                Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
+                myHashtable = myObjectHandler.getResultsAsHashtablePlusList(myResults);
+                myResults.close();
+            }catch(SQLException e){
+                log.debug("SQL Exception:",e);
+                throw e;
+            }
             return myHashtable;
         }
 
@@ -4137,32 +3951,6 @@ public class Dataset {
             return outGroupArray;
         }
 
-
-        /**
-         * Retrieves the groups for this dataset version that have expression data.
-         *
-         * @param conn the database connection
-         * @throws SQLException if a database error occurs
-         * @return an array of Group objects
-         */
-        public Group[] getGroupsWithExpressionData(Connection conn) throws SQLException {
-
-            log.debug("in getGroupsWithExpressionData for a dataset version");
-
-            Group[] inGroupArray = getGroups(conn);
-
-            List<Group> myGroupList = new ArrayList<Group>();
-            for (int i = 0; i < inGroupArray.length; i++) {
-                if (inGroupArray[i].getHas_expression_data().equals("Y")) {
-                    myGroupList.add(inGroupArray[i]);
-                }
-            }
-
-            Group[] outGroupArray = (Group[]) myObjectHandler.getAsArray(myGroupList, Group.class);
-
-            return outGroupArray;
-        }
-
         /**
          * Retrieves the groups for this dataset version that have genotype data.
          *
@@ -4170,11 +3958,11 @@ public class Dataset {
          * @throws SQLException if a database error occurs
          * @return an array of Group objects
          */
-        public Group[] getGroupsWithGenotypeData(Connection conn) throws SQLException {
+        public Group[] getGroupsWithGenotypeData(DataSource pool) throws SQLException {
 
             log.debug("in getGroupsWithGenotypeData for a dataset version");
 
-            Group[] inGroupArray = getGroups(conn);
+            Group[] inGroupArray = getGroups(pool);
 
             List<Group> myGroupList = new ArrayList<Group>();
             for (int i = 0; i < inGroupArray.length; i++) {
@@ -4197,8 +3985,7 @@ public class Dataset {
          * @return an array of UserChip objects contained in the given set of groups
          * @throws SQLException if a database error occurs
          */
-        public User.UserChip[] getChipsInOldDataset(String groupList, Connection conn) throws SQLException {
-
+        public User.UserChip[] getChipsInOldDataset(String groupList, DataSource pool) throws SQLException {
             String query =
                     "select uc.user_chip_id, " +
                             "uc.hybrid_id, " +
@@ -4222,17 +4009,18 @@ public class Dataset {
                             "and u.user_name = 'public' " +
                             "and cg.user_chip_id = to_char(uc.user_chip_id) " +
                             "order by uc.hybrid_id";
-
-
             log.info("in getChipsInOldDataset. dataset_id = " + this.getDataset().getDataset_id() +
                     ", and version = " + this.getVersion());
             //log.debug("query = "+query);
+            try(Connection conn=pool.getConnection()){
+                Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
+                User.UserChip[] myUserChips = new User().setupUserChipValues(myResults);
+                myResults.close();
+            }catch(SQLException e){
+                log.debug("SQL Exception:",e);
+                throw e;
+            }
 
-            Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
-
-            User.UserChip[] myUserChips = new User().setupUserChipValues(myResults);
-
-            myResults.close();
             return myUserChips;
         }
 
@@ -4605,60 +4393,19 @@ public class Dataset {
                     "select grouping_id, grouping_name, criterion, dataset_id " +
                             "from groupings " +
                             "where grouping_id = ?";
-            Connection conn = null;
+
             Group newGroup = null;
-            try {
-                conn = pool.getConnection();
+            try(Connection conn=pool.getConnection()) {
                 //log.debug("query = "+query);
                 Results myResults = new Results(query, grouping_id, conn);
                 String[] dataRow;
-
                 while ((dataRow = myResults.getNextRow()) != null) {
                     newGroup = new Group().setupGrouping(dataRow);
                 }
                 myResults.close();
-                conn.close();
-                conn = null;
             } catch (SQLException e) {
                 throw e;
-            } finally {
-                if (conn != null && !conn.isClosed()) {
-                    try {
-                        conn.close();
-                        conn = null;
-                    } catch (SQLException e) {
-                    }
-                }
             }
-
-            return newGroup;
-        }
-
-
-        /**
-         * Retrieves the grouping object for the grouping_id.
-         *
-         * @param grouping_id the identifier of the grouping
-         * @param conn        the database connection
-         * @return the grouping object
-         * @throws SQLException if a database error occurs
-         */
-        public Group getGrouping(int grouping_id, Connection conn) throws SQLException {
-
-            //log.debug("in Group.getGrouping. grouping_id = " + grouping_id);
-            String query =
-                    "select grouping_id, grouping_name, criterion, dataset_id " +
-                            "from groupings " +
-                            "where grouping_id = ?";
-
-            //log.debug("query = "+query);
-            Results myResults = new Results(query, grouping_id, conn);
-            String[] dataRow;
-            Group newGroup = null;
-            while ((dataRow = myResults.getNextRow()) != null) {
-                newGroup = new Group().setupGrouping(dataRow);
-            }
-            myResults.close();
 
             return newGroup;
         }
@@ -4672,10 +4419,10 @@ public class Dataset {
          * @return an array of UserChip objects
          * @throws SQLException if a database error occurs
          */
-        public User.UserChip[] getChipAssignments(int grouping_id, Connection conn) throws SQLException {
+        public User.UserChip[] getChipAssignments(int grouping_id, DataSource pool) throws SQLException {
             log.debug("in getChipAssignments passing in grouping_id. it is" + grouping_id);
             setGrouping_id(grouping_id);
-            return getChipAssignments(conn);
+            return getChipAssignments(pool);
         }
 
 
@@ -4686,7 +4433,7 @@ public class Dataset {
          * @return an array of UserChip objects
          * @throws SQLException if a database error occurs
          */
-        public User.UserChip[] getChipAssignments(Connection conn) throws SQLException {
+        public User.UserChip[] getChipAssignments(DataSource pool) throws SQLException {
 
             log.debug("in getChipAssignments");
             String query =
@@ -4719,20 +4466,25 @@ public class Dataset {
 
             log.info("In getChipAssignments grouping_id = " + this.grouping_id);
             //log.debug("query = "+ query);
+            try(Connection conn=pool.getConnection()){
+                Results myResults = new Results(query, this.grouping_id, conn);
+                String[] dataRow;
 
-            Results myResults = new Results(query, this.grouping_id, conn);
-            String[] dataRow;
+                while ((dataRow = myResults.getNextRow()) != null) {
+                    Group newGroup = new Group().setupGroup(dataRow);
+                    User.UserChip newUserChip = new User().new UserChip(Integer.parseInt(dataRow[9]));
+                    newUserChip.setHybrid_id(Integer.parseInt(dataRow[10]));
+                    newUserChip.setHybrid_name(dataRow[11]);
+                    newUserChip.setGroup(newGroup);
+                    myUserChipList.add(newUserChip);
+                }
 
-            while ((dataRow = myResults.getNextRow()) != null) {
-                Group newGroup = new Group().setupGroup(dataRow);
-                User.UserChip newUserChip = new User().new UserChip(Integer.parseInt(dataRow[9]));
-                newUserChip.setHybrid_id(Integer.parseInt(dataRow[10]));
-                newUserChip.setHybrid_name(dataRow[11]);
-                newUserChip.setGroup(newGroup);
-                myUserChipList.add(newUserChip);
+                myResults.close();
+            }catch(SQLException e){
+                log.debug("SQL Exception:",e);
+                throw e;
             }
 
-            myResults.close();
 
             User.UserChip[] myUserChipArray = myObjectHandler.getAsArray(myUserChipList, User.UserChip.class);
             //log.debug("myUserChipArray= "); new Debugger().print(myUserChipArray);

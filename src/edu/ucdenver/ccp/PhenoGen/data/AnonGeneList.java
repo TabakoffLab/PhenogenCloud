@@ -586,7 +586,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
                 log.error("Got a duplicate key SQLException while in loadFromFile for gene_id = " + gene_id);
             }
             log.error("in exception of loadFromFile", e);
-            conn.rollback();
+            //conn.rollback();
             throw e;
         }
 
