@@ -1471,7 +1471,7 @@ public class GeneList {
             Results myResults = new Results(query, gene_list_id, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
-                User thisUser = new User().getUser(Integer.parseInt(dataRow[0]), conn);
+                User thisUser = new User().getUser(Integer.parseInt(dataRow[0]), pool);
                 thisUser.setChecked(Integer.parseInt(dataRow[2]));
                 userList.add(thisUser);
             }

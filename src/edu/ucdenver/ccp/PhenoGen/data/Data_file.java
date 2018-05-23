@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
 
 import edu.ucdenver.ccp.PhenoGen.util.DbUtils;
 
@@ -129,7 +130,7 @@ public class Data_file {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	an array of Data_file objects
 	 */
-	public Data_file[] getAllData_files(Connection conn) throws SQLException {
+	public Data_file[] getAllData_files(DataSource pool) throws SQLException {
 
 		log.debug("In getAllData_file");
 
@@ -142,13 +143,15 @@ public class Data_file {
 			"order by file_id";
 
 		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, conn);
-
-		Data_file[] myData_file = setupData_fileValues(myResults);
-
-		myResults.close();
-
+		Data_file[] myData_file = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, conn);
+			myData_file = setupData_fileValues(myResults);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myData_file;
 	}
 
@@ -159,7 +162,7 @@ public class Data_file {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Data_file object
 	 */
-	public Data_file getData_fileForHybridId(int hybrid_id, Connection conn) throws SQLException {
+	public Data_file getData_fileForHybridId(int hybrid_id, DataSource pool) throws SQLException {
 
 		log.debug("In getData_fileForHybridId");
 
@@ -172,13 +175,15 @@ public class Data_file {
 			"where hybrid_id = ?";
 
 		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, hybrid_id, conn);
-
-		Data_file myData_file = (myResults != null && myResults.getNumRows() > 0 ? setupData_fileValues(myResults)[0] : null);
-
-		myResults.close();
-
+		Data_file myData_file = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, hybrid_id, conn);
+			myData_file = (myResults != null && myResults.getNumRows() > 0 ? setupData_fileValues(myResults)[0] : null);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myData_file;
 	}
 
@@ -189,10 +194,8 @@ public class Data_file {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Data_file object
 	 */
-	public Data_file getData_file(int file_id, Connection conn) throws SQLException {
-
+	public Data_file getData_file(int file_id, DataSource pool) throws SQLException {
 		log.debug("In getOne Data_file");
-
 		String query = 
 			"select "+
 			"file_id, path, "+
@@ -200,15 +203,16 @@ public class Data_file {
 			"created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') "+
 			"from data_files "+ 
 			"where file_id = ?";
-
 		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, file_id, conn);
-
-		Data_file myData_file = setupData_fileValues(myResults)[0];
-
-		myResults.close();
-
+		Data_file myData_file = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, file_id, conn);
+			myData_file = setupData_fileValues(myResults)[0];
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myData_file;
 	}
 
@@ -218,40 +222,46 @@ public class Data_file {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createData_file(Connection conn) throws SQLException {
+	public int createData_file(DataSource pool) throws SQLException {
 
 		log.debug("In create Data_file");
 
-		int file_id = myDbUtils.getUniqueID("data_files_seq", conn);
+		//int file_id = myDbUtils.getUniqueID("data_files_seq", conn);
 
 		String query = 
 			"insert into data_files "+
-			"(file_id, path, hybrid_id, trans_hybrid_id, created_by_login, "+
+			"( path, hybrid_id, trans_hybrid_id, created_by_login, "+
 			"create_date) "+
 			"values "+
-			"(?, ?, ?, ?, ?, "+
+			"( ?, ?, ?, ?, "+
 			"?)";
 
 		//log.debug("query =  " + query);
 
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
+		int file_id = -99;
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
-		pstmt.setInt(1, file_id);
-		pstmt.setString(2, path);
-		pstmt.setInt(3, hybrid_id);
-		myDbUtils.setToNullIfZero(pstmt, 4, trans_hybrid_id);
-		pstmt.setString(5, created_by_login);
-		pstmt.setTimestamp(6, now);
+			//pstmt.setInt(1, file_id);
+			pstmt.setString(1, path);
+			pstmt.setInt(2, hybrid_id);
+			myDbUtils.setToNullIfZero(pstmt, 3, trans_hybrid_id);
+			pstmt.setString(4, created_by_login);
+			pstmt.setTimestamp(5, now);
 
-		pstmt.executeUpdate();
-		log.debug("just created data_file");
-		pstmt.close();
-
+			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs.next()) {
+				file_id = rs.getInt(1);
+			}
+			log.debug("just created data_file");
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		this.setFile_id(file_id);
-
 		return file_id;
 	}
 
@@ -260,33 +270,31 @@ public class Data_file {
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void update(Connection conn) throws SQLException {
-
+	public void update(DataSource pool) throws SQLException {
 		String query = 
 			"update data_files "+
 			"set file_id = ?, path = ?, hybrid_id = ?, trans_hybrid_id = ?, created_by_login = ?, "+
 			"create_date = ? "+
 			"where file_id = ?";
-
 		//log.debug("query =  " + query);
-
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
-
-		pstmt.setInt(1, file_id);
-		pstmt.setString(2, path);
-		pstmt.setInt(3, hybrid_id);
-		myDbUtils.setToNullIfZero(pstmt, 4, trans_hybrid_id);
-		pstmt.setString(5, created_by_login);
-		pstmt.setTimestamp(6, now);
-		pstmt.setInt(7, file_id);
-
-		pstmt.executeUpdate();
-		pstmt.close();
-
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			pstmt.setInt(1, file_id);
+			pstmt.setString(2, path);
+			pstmt.setInt(3, hybrid_id);
+			myDbUtils.setToNullIfZero(pstmt, 4, trans_hybrid_id);
+			pstmt.setString(5, created_by_login);
+			pstmt.setTimestamp(6, now);
+			pstmt.setInt(7, file_id);
+			pstmt.executeUpdate();
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 	}
 
 	/**
@@ -294,14 +302,12 @@ public class Data_file {
 	 * @param conn	the database connection
 	 * @throws            SQLException if an error occurs while accessing the database
 	 */
-	public void deleteData_file(Connection conn) throws SQLException {
+	public void deleteData_file(DataSource pool) throws SQLException {
 
 		log.info("in deleteData_file");
 
-		//conn.setAutoCommit(false);
-
 		PreparedStatement pstmt = null;
-		try {
+		try(Connection conn=pool.getConnection()) {
 			String query = 
 				"delete from data_files " + 
 				"where file_id = ?";
@@ -313,15 +319,11 @@ public class Data_file {
 			pstmt.setInt(1, file_id);
 			pstmt.executeQuery();
 			pstmt.close();
-
-			//conn.commit();
 		} catch (SQLException e) {
 			log.debug("error in deleteData_file");
-			//conn.rollback();
-			pstmt.close();
 			throw e;
 		}
-		//conn.setAutoCommit(true);
+
 	}
 
 	/**
@@ -330,27 +332,26 @@ public class Data_file {
 	 * @param conn	the database connection
 	 * @throws            SQLException if an error occurs while accessing the database
 	 */
-	public void deleteAllData_filesForHybridization(int hybrid_id, Connection conn) throws SQLException {
+	public void deleteAllData_filesForHybridization(int hybrid_id, DataSource pool) throws SQLException {
 
 		log.info("in deleteAllData_filesForHybridization");
 
 		//Make sure committing is handled in calling method!
-
 		String query = 
 			"select file_id "+
 			"from data_files "+
 			"where hybrid_id = ?";
-
-		Results myResults = new Results(query, hybrid_id, conn);
-
-		String[] dataRow;
-
-		while ((dataRow = myResults.getNextRow()) != null) {
-			new Data_file(Integer.parseInt(dataRow[0])).deleteData_file(conn);
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, hybrid_id, conn);
+			String[] dataRow;
+			while ((dataRow = myResults.getNextRow()) != null) {
+				new Data_file(Integer.parseInt(dataRow[0])).deleteData_file(pool);
+			}
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
 		}
-
-		myResults.close();
-
 	}
 
 	/**
@@ -395,11 +396,11 @@ public class Data_file {
 	 * @throws	IOException if an error occurs while copying the file
 	 * @throws      SQLException if an error occurs while accessing the database
 	 */
-	public void putFileInPlace(File tempFile, File dummyFile, File centralLocation, int hybridID, String userName, Connection conn) throws IOException, SQLException {
+	public void putFileInPlace(File tempFile, File dummyFile, File centralLocation, int hybridID, String userName, DataSource pool) throws IOException, SQLException {
 		log.debug("in Data_file putFileInPlace. dummyFile = "+dummyFile);
 		createDummyFile(dummyFile, centralLocation);
 		new FileHandler().copyFile(tempFile, centralLocation);
-                Data_file thisData_file = new Data_file().getData_fileForHybridId(hybridID, conn);
+                Data_file thisData_file = new Data_file().getData_fileForHybridId(hybridID, pool);
                 if (thisData_file != null) {
                 	thisData_file.setPath(dummyFile.getName());
                         log.debug("setting Path to  "+dummyFile.getName());
@@ -410,7 +411,7 @@ public class Data_file {
                         myData_file.setPath(dummyFile.getName());
                         myData_file.setHybrid_id(hybridID);
                         myData_file.setCreated_by_login(userName);
-                        int file_id = myData_file.createData_file(conn); 
+                        int file_id = myData_file.createData_file(pool);
                         log.debug("created new file ID = "+file_id);
                 }
 	}
@@ -432,13 +433,13 @@ public class Data_file {
 	/** Upload data file
 	 *
 	 */
-	public String uploadDataFile(HttpSession session, String nextFileName, int hybridID, Experiment selectedExperiment, Connection conn) throws Exception {
+	public String uploadDataFile(HttpSession session, String nextFileName, int hybridID, Experiment selectedExperiment, DataSource pool) throws Exception {
 		String userFilesRoot = (String) session.getAttribute("userFilesRoot");
 		User userLoggedIn = (User) session.getAttribute("userLoggedIn");
 		log.debug("userLoggedIn = "+userLoggedIn);
 	        String experimentUploadDir = userLoggedIn.getUserExperimentUploadDir();
                 edu.ucdenver.ccp.PhenoGen.data.Array thisArray =
-                                new edu.ucdenver.ccp.PhenoGen.data.Array().getSampleDetailsForHybridID(hybridID, conn);
+                                new edu.ucdenver.ccp.PhenoGen.data.Array().getSampleDetailsForHybridID(hybridID, pool);
                 log.debug("thisArray submitter = "+thisArray.getSubmitter());
 		String rawDataFileLocation = thisArray.getRawDataFileLocation(userFilesRoot);
 		String arrayDatafilesDir = thisArray.getArrayDataFilesLocation(userFilesRoot);
@@ -453,8 +454,8 @@ public class Data_file {
 		File centralFile = new File(centralLocation);
                 log.debug("celFileName = "+celFileName);
 
-                boolean celFileIsUnique = fileNameIsUnique(nextFileName, hybridID, selectedExperiment.getExp_id(), conn);
-		boolean celFileIsUnique2 = fileNameIsUnique(nextFileName, hybridID, conn);
+                boolean celFileIsUnique = fileNameIsUnique(nextFileName, hybridID, selectedExperiment.getExp_id(), pool);
+		boolean celFileIsUnique2 = fileNameIsUnique(nextFileName, hybridID, pool);
 		log.debug("celFileIsUnique = "+celFileIsUnique);
                 log.debug("celFileIsUnique2 = "+celFileIsUnique2);
                 if (!celFileIsUnique) {
@@ -474,7 +475,7 @@ public class Data_file {
                                 return ("GL-002");
 			} else {
                         	try {
-                                	putFileInPlace(tempFile, celFile, centralFile, hybridID, selectedExperiment.getCreated_by_login(), conn);
+                                	putFileInPlace(tempFile, celFile, centralFile, hybridID, selectedExperiment.getCreated_by_login(), pool);
 					return("");
 				} catch (Exception e) {
 					log.error("did not successfully upload CEL Files because of Error.");
@@ -493,7 +494,7 @@ public class Data_file {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 * @return	true if the file name is unique, false otherwise
 	 */
-	public boolean fileNameIsUnique(String file_name, int hybridID, int expID, Connection conn) throws SQLException {
+	public boolean fileNameIsUnique(String file_name, int hybridID, int expID, DataSource pool) throws SQLException {
 		log.debug("in Data_file fileNameIsUnique. name = "+file_name);
 		String query = 
 			"select file_id "+
@@ -503,13 +504,15 @@ public class Data_file {
 			"and path = ?"; 
 		
 		log.debug("query = "+query);
-	
-		Results myResults = new Results(query, new Object[] {expID, hybridID, file_name}, conn);
-
-		int existingID = myResults.getIntValueFromFirstRow();
-
-		myResults.close();
-
+		int existingID = -99;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, new Object[] {expID, hybridID, file_name}, conn);
+			existingID = myResults.getIntValueFromFirstRow();
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return (existingID == -99 ? true : false);
 	}
 
@@ -521,7 +524,7 @@ public class Data_file {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 * @return	true if the file name is unique, false otherwise
 	 */
-	public boolean fileNameIsUnique(String file_name, int hybridID, Connection conn) throws SQLException {
+	public boolean fileNameIsUnique(String file_name, int hybridID, DataSource pool) throws SQLException {
 		log.debug("in Data_file fileNameIsUnique. name = "+file_name);
 		String query = 
 			"select file_id "+
@@ -530,13 +533,15 @@ public class Data_file {
 			"and hybrid_id != ?";
 		
 		log.debug("query = "+query);
-	
-		Results myResults = new Results(query, new Object[] {file_name, hybridID}, conn);
-
-		int existingID = myResults.getIntValueFromFirstRow();
-
-		myResults.close();
-
+		int existingID = -99;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, new Object[] {file_name, hybridID}, conn);
+			existingID = myResults.getIntValueFromFirstRow();
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return (existingID == -99 ? true : false);
 	}
 

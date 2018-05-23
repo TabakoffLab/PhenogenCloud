@@ -173,7 +173,7 @@ public class Array_design_file {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createArray_design_file(Connection conn) throws SQLException {
+	/*public int createArray_design_file(Connection conn) throws SQLException {
 
 		log.debug("In create Array_design_file");
 
@@ -204,7 +204,7 @@ public class Array_design_file {
 		this.setFile_id(file_id);
 
 		return file_id;
-	}
+	}*/
 
 	/**
 	 * Updates a record in the array_design_files table.

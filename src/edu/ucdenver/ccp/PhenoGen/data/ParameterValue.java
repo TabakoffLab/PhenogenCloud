@@ -807,7 +807,7 @@ public class ParameterValue implements Comparable {
      * @return the probeMask parameter used in normalizing Affymetrix datasets
      * @throws SQLException if a database error occurs
      */
-    public String getProbeMaskParameter(int dataset_id, int version, Connection conn) throws SQLException {
+    public String getProbeMaskParameter(int dataset_id, int version, DataSource pool) throws SQLException {
         log.info("In getProbeMaskParameter. dataset_id = " + dataset_id + ", and version = " + version);
         String value="F";
 
