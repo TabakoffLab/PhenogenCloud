@@ -1625,7 +1625,7 @@ public class User {
                 while (rs.next()) {
                     int geneListID = rs.getInt(1);
                     log.debug("geneListID created by this user = " + geneListID);
-                    new GeneList().deleteGeneList(geneListID, conn);
+                    new GeneList().deleteGeneList(geneListID, pool);
                 }
                 pstmt.close();
 

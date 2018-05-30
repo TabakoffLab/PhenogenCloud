@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -132,25 +133,23 @@ public class Protocol_value {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	an array of Protocol_value objects
 	 */
-	public Protocol_value[] getAllProtocol_values(Connection conn) throws SQLException {
-
+	public Protocol_value[] getAllProtocol_values(DataSource pool) throws SQLException {
 		log.debug("In getAllProtocol_values");
-
 		String query = 
 			"select "+
 			"value_id, protocol_id, value_type, value, description, "+
 			"created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') "+
 			"from protocol_values "+ 
 			"order by value_id";
-
-		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, conn);
-
-		Protocol_value[] myProtocol_values = setupProtocol_valueValues(myResults);
-
-		myResults.close();
-
+		Protocol_value[] myProtocol_values = new Protocol_value[0];
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, conn);
+			myProtocol_values = setupProtocol_valueValues(myResults);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myProtocol_values;
 	}
 
@@ -161,25 +160,23 @@ public class Protocol_value {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Protocol_value object
 	 */
-	public Protocol_value getProtocol_value(int value_id, Connection conn) throws SQLException {
-
+	public Protocol_value getProtocol_value(int value_id, DataSource pool) throws SQLException {
 		log.debug("In getOne Protocol_value");
-
 		String query = 
 			"select "+
 			"value_id, protocol_id, value_type, value, description, "+
 			"created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') "+
 			"from protocol_values "+ 
 			"where value_id = ?";
-
-		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, value_id, conn);
-
-		Protocol_value myProtocol_value = setupProtocol_valueValues(myResults)[0];
-
-		myResults.close();
-
+		Protocol_value myProtocol_value = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, value_id, conn);
+			myProtocol_value = setupProtocol_valueValues(myResults)[0];
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myProtocol_value;
 	}
 
@@ -189,38 +186,37 @@ public class Protocol_value {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	the identifier of the record created
 	 */
-	public int createProtocol_value(Connection conn) throws SQLException {
-
+	public int createProtocol_value(DataSource pool) throws SQLException {
 		log.debug("In create Protocol_values");
-
-		int value_id = myDbUtils.getUniqueID("protocol_values_seq", conn);
+		//int value_id = myDbUtils.getUniqueID("protocol_values_seq", conn);
+		int value_id=-99;
 
 		String query = 
 			"insert into protocol_values "+
-			"(value_id, protocol_id, value_type, value, description, "+
+			"( protocol_id, value_type, value, description, "+
 			"created_by_login, create_date) "+
 			"values "+
-			"(?, ?, ?, ?, ?, "+
+			"( ?, ?, ?, ?, "+
 			"?, ?, ?)";
-
-		//log.debug("query =  " + query);
-
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
-
-		pstmt.setInt(1, value_id);
-		pstmt.setInt(2, protocol_id);
-		pstmt.setInt(3, value_type);
-		pstmt.setString(4, value);
-		pstmt.setString(5, description);
-		pstmt.setString(6, created_by_login);
-		pstmt.setTimestamp(7, now);
-
-		pstmt.executeUpdate();
-		pstmt.close();
-
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+			pstmt.setInt(1, protocol_id);
+			pstmt.setInt(2, value_type);
+			pstmt.setString(3, value);
+			pstmt.setString(4, description);
+			pstmt.setString(5, created_by_login);
+			pstmt.setTimestamp(6, now);
+			pstmt.executeUpdate();
+			ResultSet rs = pstmt.getGeneratedKeys();
+			if (rs.next()) {
+				value_id = rs.getInt(1);
+			}
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		this.setValue_id(value_id);
 
 		return value_id;
@@ -231,7 +227,7 @@ public class Protocol_value {
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void update(Connection conn) throws SQLException {
+	public void update(DataSource pool) throws SQLException {
 
 		String query = 
 			"update protocol_values "+
@@ -242,23 +238,25 @@ public class Protocol_value {
 		log.debug("query =  " + query);
 
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
-
-		pstmt.setInt(1, value_id);
-		pstmt.setInt(2, protocol_id);
-		pstmt.setInt(3, value_type);
-		pstmt.setString(4, value);
-		pstmt.setString(5, description);
-		pstmt.setString(6, created_by_login);
-		pstmt.setTimestamp(7, now);
-		pstmt.setInt(8, value_id);
-
-		pstmt.executeUpdate();
-		pstmt.close();
-
+			pstmt.setInt(1, value_id);
+			pstmt.setInt(2, protocol_id);
+			pstmt.setInt(3, value_type);
+			pstmt.setString(4, value);
+			pstmt.setString(5, description);
+			pstmt.setString(6, created_by_login);
+			pstmt.setTimestamp(7, now);
+			pstmt.setInt(8, value_id);
+			pstmt.executeUpdate();
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 	}
 
 	/**
@@ -266,20 +264,16 @@ public class Protocol_value {
 	 * @param conn	the database connection
 	 * @throws            SQLException if an error occurs while accessing the database
 	 */
-	public void deleteProtocol_value(Connection conn) throws SQLException {
+	public void deleteProtocol_value(DataSource pool) throws SQLException {
 
 		//log.info("in deleteProtocol_values");
 
 		//conn.setAutoCommit(false);
-
+		String query =
+				"delete from protocol_values " +
+						"where value_id = ?";
 		PreparedStatement pstmt = null;
-		try {
-
-
-			String query = 
-				"delete from protocol_values " + 
-				"where value_id = ?";
-
+		try(Connection conn=pool.getConnection()) {
 			pstmt = conn.prepareStatement(query, 
 				ResultSet.TYPE_SCROLL_INSENSITIVE, 
 				ResultSet.CONCUR_UPDATABLE); 
@@ -287,15 +281,10 @@ public class Protocol_value {
 			pstmt.setInt(1, value_id);
 			pstmt.executeQuery();
 			pstmt.close();
-
-			//conn.commit();
 		} catch (SQLException e) {
 			log.debug("error in deleteProtocol_values");
-			//conn.rollback();
-			pstmt.close();
 			throw e;
 		}
-		//conn.setAutoCommit(true);
 	}
 
 	/**
@@ -304,7 +293,7 @@ public class Protocol_value {
 	 * @param conn	the database connection
 	 * @throws            SQLException if an error occurs while accessing the database
 	 */
-	public void deleteAllProtocol_valuesForProtocol(int protocol_id, Connection conn) throws SQLException {
+	public void deleteAllProtocol_valuesForProtocol(int protocol_id, DataSource pool) throws SQLException {
 
 		log.info("in deleteAllProtocol_valuesForProtocol");
 
@@ -314,16 +303,18 @@ public class Protocol_value {
 			"select value_id "+
 			"from protocol_values "+
 			"where protocol_id = ?";
-
-		Results myResults = new Results(query, protocol_id, conn);
-
-		String[] dataRow;
-
-		while ((dataRow = myResults.getNextRow()) != null) {
-			new Protocol_value(Integer.parseInt(dataRow[0])).deleteProtocol_value(conn);
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, protocol_id, conn);
+			String[] dataRow;
+			while ((dataRow = myResults.getNextRow()) != null) {
+				new Protocol_value(Integer.parseInt(dataRow[0])).deleteProtocol_value(pool);
+			}
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
 		}
 
-		myResults.close();
 
 	}
 
@@ -334,7 +325,7 @@ public class Protocol_value {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 * @return	the value_id of a Protocol_value that currently exists
 	 */
-	public int checkRecordExists(Protocol_value myProtocol_value, Connection conn) throws SQLException {
+	public int checkRecordExists(Protocol_value myProtocol_value, DataSource pool) throws SQLException {
 
 		log.debug("in checkRecordExists");
 
@@ -342,16 +333,22 @@ public class Protocol_value {
 			"select value_id "+
 			"from protocol_values "+
 			"where  = ?";
+		int pk = -1;
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query,
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_UPDATABLE);
 
+			ResultSet rs = pstmt.executeQuery();
 
-		ResultSet rs = pstmt.executeQuery();
+			pk = (rs.next() ? rs.getInt(1) : -1);
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		int pk = (rs.next() ? rs.getInt(1) : -1);
-		pstmt.close();
 		return pk;
 	}
 

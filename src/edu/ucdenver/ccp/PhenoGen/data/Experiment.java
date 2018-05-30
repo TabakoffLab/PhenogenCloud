@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import javax.sql.DataSource;
 
 import java.text.SimpleDateFormat;
 
@@ -35,7 +36,7 @@ import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 
 import edu.ucdenver.ccp.PhenoGen.util.DbUtils;
-import edu.ucdenver.ccp.PhenoGen.web.SessionHandler; 
+import edu.ucdenver.ccp.PhenoGen.web.SessionHandler;
 
 import edu.ucdenver.ccp.util.Debugger;
 
@@ -49,409 +50,423 @@ import org.apache.log4j.Logger;
 
 /**
  * Class for handling data related to Experiment
- *  @author  Cheryl Hornbaker
+ *
+ * @author Cheryl Hornbaker
  */
 
 public class Experiment {
 
-	private Logger log=null;
+    private Logger log = null;
 
-	private DbUtils myDbUtils = new DbUtils();
-	private Debugger myDebugger = new Debugger();
-	private ObjectHandler myObjectHandler = new ObjectHandler();
-        private PrintWriter writer = null;
+    private DbUtils myDbUtils = new DbUtils();
+    private Debugger myDebugger = new Debugger();
+    private ObjectHandler myObjectHandler = new ObjectHandler();
+    private PrintWriter writer = null;
 
-	public Experiment() {
-		log = Logger.getRootLogger();
-	}
+    public Experiment() {
+        log = Logger.getRootLogger();
+    }
 
-	public Experiment(int exp_id) {
-		log = Logger.getRootLogger();
-		this.setExp_id(exp_id);
-	}
+    public Experiment(int exp_id) {
+        log = Logger.getRootLogger();
+        this.setExp_id(exp_id);
+    }
 
-	private int exp_id;
-	private int subid;
-        private String created_by_login;
-        private String exp_name;
-        private java.sql.Timestamp hold_date;
-        private String comp_status;
-	private String accno;
-	private String exp_description;
-  	private String expName;
-  	private String expNameNoSpaces;
-  	private String platform;
-  	private String exp_create_date_as_string;
-  	private int num_samples;
-  	private int num_files;
-  	private int num_arrays;
-  	private String proc_status;
-  	private String organism;
-  	private String array_type;
-	private java.sql.Timestamp exp_create_date;
-	private String sortColumn ="";
-	private String sortOrder ="A";
+    private int exp_id;
+    private int subid;
+    private String created_by_login;
+    private String exp_name;
+    private java.sql.Timestamp hold_date;
+    private String comp_status;
+    private String accno;
+    private String exp_description;
+    private String expName;
+    private String expNameNoSpaces;
+    private String platform;
+    private String exp_create_date_as_string;
+    private int num_samples;
+    private int num_files;
+    private int num_arrays;
+    private String proc_status;
+    private String organism;
+    private String array_type;
+    private java.sql.Timestamp exp_create_date;
+    private String sortColumn = "";
+    private String sortOrder = "A";
 
-	public void setExp_id(int inInt) {
-		this.exp_id = inInt;
-	}
+    public void setExp_id(int inInt) {
+        this.exp_id = inInt;
+    }
 
-	public int getExp_id() {
-		return this.exp_id;
-	}
+    public int getExp_id() {
+        return this.exp_id;
+    }
 
-	public void setSubid(int inInt) {
-		this.subid = inInt;
-	}
+    public void setSubid(int inInt) {
+        this.subid = inInt;
+    }
 
-	public int getSubid() {
-		return this.subid;
-	}
+    public int getSubid() {
+        return this.subid;
+    }
 
-        public void setCreated_by_login(String inString) {
-                this.created_by_login = inString;
+    public void setCreated_by_login(String inString) {
+        this.created_by_login = inString;
+    }
+
+    public String getCreated_by_login() {
+        return this.created_by_login;
+    }
+
+    public void setExp_name(String inString) {
+        this.exp_name = inString;
+    }
+
+    public String getExp_name() {
+        return this.exp_name;
+    }
+
+    public void setHold_date(java.sql.Timestamp inTimestamp) {
+        this.hold_date = inTimestamp;
+    }
+
+    public java.sql.Timestamp getHold_date() {
+        return this.hold_date;
+    }
+
+    public void setProc_status(String inString) {
+        this.proc_status = inString;
+    }
+
+    public String getProc_status() {
+        return this.proc_status;
+    }
+
+    public void setComp_status(String inString) {
+        this.comp_status = inString;
+    }
+
+    public String getComp_status() {
+        return this.comp_status;
+    }
+
+    public void setAccno(String inString) {
+        this.accno = inString;
+    }
+
+    public String getAccno() {
+        return this.accno;
+    }
+
+    public void setExp_description(String inString) {
+        this.exp_description = inString;
+    }
+
+    public String getExp_description() {
+        return this.exp_description;
+    }
+
+    public void setExpName(String inString) {
+        this.expName = inString;
+    }
+
+    public String getExpName() {
+        return expName;
+    }
+
+    public void setExpNameNoSpaces(String inString) {
+        this.expNameNoSpaces = inString;
+    }
+
+    public String getExpNameNoSpaces() {
+        return expNameNoSpaces;
+    }
+
+    public void setExp_create_date(java.sql.Timestamp inTimestamp) {
+        this.exp_create_date = inTimestamp;
+    }
+
+    public java.sql.Timestamp getExp_create_date() {
+        return this.exp_create_date;
+    }
+
+    public void setPlatform(String inString) {
+        this.platform = inString;
+    }
+
+    public String getPlatform() {
+        return platform;
+    }
+
+    public void setExp_create_date_as_string(String inString) {
+        this.exp_create_date_as_string = inString;
+    }
+
+    public String getExp_create_date_as_string() {
+        return exp_create_date_as_string;
+    }
+
+    public void setNum_samples(int inInt) {
+        this.num_samples = inInt;
+    }
+
+    public int getNum_samples() {
+        return num_samples;
+    }
+
+    public void setNum_files(int inInt) {
+        this.num_files = inInt;
+    }
+
+    public int getNum_files() {
+        return num_files;
+    }
+
+    public void setNum_arrays(int inInt) {
+        this.num_arrays = inInt;
+    }
+
+    public int getNum_arrays() {
+        return num_arrays;
+    }
+
+    public void setOrganism(String inString) {
+        this.organism = inString;
+    }
+
+    public String getOrganism() {
+        return organism;
+    }
+
+    /**
+     * This is derived by querying the database for the type of arrays used in the dataset.
+     *
+     * @param inString the type of array used in the dataset
+     */
+    public void setArray_type(String inString) {
+        this.array_type = inString;
+    }
+
+    /**
+     * This is derived by querying the database for the type of arrays used in the dataset.
+     *
+     * @return inString    the type of array used in the dataset
+     */
+    public String getArray_type() {
+        return array_type;
+    }
+
+    public void setSortColumn(String inString) {
+        this.sortColumn = inString;
+    }
+
+    public String getSortColumn() {
+        return this.sortColumn;
+    }
+
+    public void setSortOrder(String inString) {
+        this.sortOrder = inString;
+    }
+
+    public String getSortOrder() {
+        return this.sortOrder;
+    }
+
+    private String selectClause =
+            "select " +
+                    "exp.exp_id, subid, accno, exp_description, " +
+                    "exp.created_by_login, to_char(exp.exp_create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                    "exp.exp_name, " +
+                    "nvl(samples.num_samples, 0) num_samples, " +
+                    "nvl(files.num_files, 0) num_files, " +
+                    "exp.proc_status, " +
+                    "nvl(arrays.num_arrays, 0) num_arrays ";
+
+    private String fromClause =
+            "from experiments exp " +
+                    "left join " +
+                    // had to use this nested aggregate function instead of experimentDetails because you can't group by a CLOB
+                    "	(select exp_id, " +
+                    " 	count(file_id) num_files " +
+                    "	from experimentDetails " +
+                    "	group by exp_id) files " +
+                    "	on exp.exp_id = files.exp_id " +
+                    "left join " +
+                    // had to use this nested aggregate function instead of experimentDetails because you can't group by a CLOB
+                    "	(select exp_id, " +
+                    " 	count(hybrid_id) num_arrays " +
+                    "	from experimentDetails " +
+                    "	group by exp_id) arrays " +
+                    "	on exp.exp_id = arrays.exp_id " +
+                    "left join " +
+                    // had to use this nested aggregate function instead of experimentDetails because you can't group by a CLOB
+                    // and experimentDetails assumes all tables are inner joined -- at this point, files may not yet
+                    // have been uploaded
+                    "	(select e.exp_id, " +
+                    "	count(s.tsample_sysuid) num_samples " +
+                    "	from experiments e, tsample s " +
+                    "	where e.exp_id = s.tsample_exprid " +
+                    "	group by exp_id, tsample_exprid) samples " +
+                    "	on exp.exp_id = samples.exp_id ";
+
+    private String whereClause =
+            // have no default where clauses, but put this here so all others start with 'and'
+            "where 1=1 ";
+
+    private String orderByClause =
+            "order by upper(exp.exp_name)";
+
+    /**
+     * Get the protocols that are actually used in an experiment.
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return an array of Protocol objects
+     */
+
+    public Protocol[] getUsedProtocols(DataSource pool) throws SQLException {
+
+        log.debug("in getUsedProtocols");
+
+        String query =
+                "select 0, 0, p.protocol_name, '', '', '', '', vt.value " +
+                        "from experimentdetails, protocols p, valid_terms vt " +
+                        "where exp_id = ? " +
+                        "and vt.term_id = p.protocol_type " +
+                        "and tsample_protocolid = p.protocol_id " +
+                        "union " +
+                        "select 0, 0, p.protocol_name, '', '', '', '', vt.value " +
+                        "from experimentdetails, protocols p, valid_terms vt " +
+                        "where exp_id = ? " +
+                        "and vt.term_id = p.protocol_type " +
+                        "and tsample_growth_protocolid = p.protocol_id " +
+                        "union " +
+                        "select 0, 0, p.protocol_name, '', '', '', '', vt.value " +
+                        "from experimentdetails, protocols p, valid_terms vt " +
+                        "where exp_id = ? " +
+                        "and vt.term_id = p.protocol_type " +
+                        "and textract_protocolid = p.protocol_id " +
+                        "union " +
+                        "select 0, 0, p.protocol_name, '', '', '', '', vt.value " +
+                        "from experimentdetails, protocols p, valid_terms vt " +
+                        "where exp_id = ? " +
+                        "and vt.term_id = p.protocol_type " +
+                        "and tlabel_protocolid = p.protocol_id " +
+                        "union " +
+                        "select 0, 0, p.protocol_name, '', '', '', '', vt.value " +
+                        "from experimentdetails, protocols p, valid_terms vt " +
+                        "where exp_id = ? " +
+                        "and vt.term_id = p.protocol_type " +
+                        "and hybrid_protocol_id = p.protocol_id " +
+                        "union " +
+                        "select 0, 0, p.protocol_name, '', '', '', '', vt.value " +
+                        "from experimentdetails, protocols p, valid_terms vt " +
+                        "where exp_id = ? " +
+                        "and vt.term_id = p.protocol_type " +
+                        "and hybrid_scan_protocol_id = p.protocol_id " +
+                        "order by 2";
+
+        log.debug("query = " + query);
+        Protocol[] myProtocols = new Protocol[0];
+        try (Connection conn = pool.getConnection()) {
+            Results myResults = new Results(query, new Object[]{this.exp_id, this.exp_id, this.exp_id, this.exp_id, this.exp_id, this.exp_id}, conn);
+
+            log.debug("numRows = " + myResults.getNumRows());
+            myProtocols = new Protocol().setupProtocolValues(myResults);
+
+            log.debug("numProtocols = " + myProtocols.length);
+
+            myResults.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
         }
 
-        public String getCreated_by_login() {
-                return this.created_by_login;
+
+        return myProtocols;
+    }
+
+    /**
+     * Go through the data fields hashtable and validate each field
+     *
+     * @param rowNum           the row being checked
+     * @param thisHash         a hashtable of data fields
+     * @param className        the name of the class that contains the validation methods
+     * @param expID            the identifier of this experiment
+     * @param isCompoundDesign true if this experiment is a compound design experiment
+     * @param conn             the database connection
+     * @return TRUE if there are no errors, FALSE otherwise
+     */
+    private boolean validateData(int rowNum, LinkedHashMap<String, String> thisHash, String className, int expID, boolean isCompoundDesign, DataSource pool) {
+        log.debug("in validateData for " + className + ".  rowNum = " + rowNum);
+        boolean returnVal = true;
+        for (Iterator itr = thisHash.keySet().iterator(); itr.hasNext(); ) {
+            String key = (String) itr.next();
+            String value = (String) thisHash.get(key);
+            log.debug("key is " + key + ", value = " + value);
+            try {
+                // Using reflection to call appropriate validation method
+                // 1. get a class instance
+                // 2. get the method (e.g., validateSample_id) with the appropriate parameters
+                // 3. call the method
+                Class thisClass = Class.forName(className);
+                try {
+                    Method thisMethod = thisClass.getDeclaredMethod("validate" + key, new Class[]{String.class, int.class, DataSource.class});
+                    thisMethod.invoke(thisClass.newInstance(), new Object[]{value, expID, pool});
+                } catch (NoSuchMethodException e2) {
+                    //log.debug("didn't find 1st class");
+                    try {
+                        Method thisMethod = thisClass.getDeclaredMethod("validate" + key, new Class[]{String.class, DataSource.class});
+                        thisMethod.invoke(thisClass.newInstance(), new Object[]{value, pool});
+                    } catch (NoSuchMethodException e3) {
+                        //log.debug("didn't find 2nd class");
+                        try {
+                            Method thisMethod = thisClass.getDeclaredMethod("validate" + key, new Class[]{String.class, boolean.class, DataSource.class});
+
+                            thisMethod.invoke(thisClass.newInstance(), new Object[]{value, isCompoundDesign, pool});
+                        } catch (NoSuchMethodException e4) {
+                            //log.debug("didn't find 3rd class");
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // don't log the stack trace for exceptions generated by the call
+                if (!e.getClass().getName().equals("java.lang.reflect.InvocationTargetException")) {
+                    log.debug("error  = ", e);
+                }
+                //log.debug("before writing line");
+                //this.writer.println("Line " + rowNum + ":  " + e.getCause().getMessage());
+                if (e.getCause().getMessage() != null) {
+                    //log.debug("there is a cause and a message.  error  = ", e);
+                    this.writer.println("Line " + rowNum + ":  " + e.getCause().getMessage());
+                    if (e.getCause().getMessage().indexOf("ERROR") > -1) {
+                        returnVal = false;
+                    }
+                } else {
+                    //log.debug(" there is only a message, not a cause.  error  = ", e);
+                    this.writer.println("Line " + rowNum + ":  " + e.getMessage());
+                    if (e.getMessage().indexOf("ERROR") > -1) {
+                        returnVal = false;
+                    }
+                }
+                //log.debug("after writing line");
+            }
         }
+        return returnVal;
+    }
 
-        public void setExp_name(String inString) {
-                this.exp_name = inString;
-        }
-
-        public String getExp_name() {
-                return this.exp_name;
-        }
-
-        public void setHold_date(java.sql.Timestamp inTimestamp) {
-                this.hold_date = inTimestamp;
-        }
-
-        public java.sql.Timestamp getHold_date() {
-                return this.hold_date;
-        }
-
-        public void setProc_status(String inString) {
-                this.proc_status = inString;
-        }
-
-        public String getProc_status() {
-                return this.proc_status;
-        }
-
-        public void setComp_status(String inString) {
-                this.comp_status = inString;
-        }
-
-        public String getComp_status() {
-                return this.comp_status;
-        }
-
-	public void setAccno(String inString) {
-		this.accno = inString;
-	}
-
-	public String getAccno() {
-		return this.accno;
-	}
-
-	public void setExp_description(String inString) {
-		this.exp_description = inString;
-	}
-
-	public String getExp_description() {
-		return this.exp_description;
-	}
-
-  	public void setExpName(String inString) {
-    		this.expName = inString;
-  	}
-
-  	public String getExpName() {
-    		return expName; 
-  	}
-
-  	public void setExpNameNoSpaces(String inString) {
-    		this.expNameNoSpaces = inString;
-  	}
-
-  	public String getExpNameNoSpaces() {
-    		return expNameNoSpaces; 
-  	}
-
-	public void setExp_create_date(java.sql.Timestamp inTimestamp) {
-		this.exp_create_date = inTimestamp;
-	}
-
-	public java.sql.Timestamp getExp_create_date() {
-		return this.exp_create_date;
-	}
-
-  	public void setPlatform(String inString) {
-    		this.platform = inString;
-  	}
-
-  	public String getPlatform() {
-    		return platform;
-  	}
-
-  	public void setExp_create_date_as_string(String inString) {
-    		this.exp_create_date_as_string = inString;
-  	}
-
-  	public String getExp_create_date_as_string() {
-    		return exp_create_date_as_string; 
-  	}
-
-  	public void setNum_samples(int inInt) {
-    		this.num_samples = inInt;
-  	}
-
-  	public int getNum_samples() {
-    		return num_samples; 
-  	}
-
-  	public void setNum_files(int inInt) {
-    		this.num_files = inInt;
-  	}
-
-  	public int getNum_files() {
-    		return num_files; 
-  	}
-
-  	public void setNum_arrays(int inInt) {
-    		this.num_arrays = inInt;
-  	}
-
-  	public int getNum_arrays() {
-    		return num_arrays; 
-  	}
-
-  	public void setOrganism(String inString) {
-    		this.organism = inString;
-  	}
-
-  	public String getOrganism() {
-    		return organism;
-  	}
-
-	/** This is derived by querying the database for the type of arrays used in the dataset. 
-	 * @param inString	the type of array used in the dataset
-	 */
-	public void setArray_type(String inString) {
-		this.array_type = inString;
-	}
-
-	/** This is derived by querying the database for the type of arrays used in the dataset. 
-	 * @return inString	the type of array used in the dataset
-	 */
-	public String getArray_type() {
-		return array_type;
-	}
-
-	public void setSortColumn(String inString) {
-		this.sortColumn = inString;
-	}
-
-	public String getSortColumn() {
-		return this.sortColumn;
-	}
-
-	public void setSortOrder(String inString) {
-		this.sortOrder = inString;
-	}
-
-	public String getSortOrder() {
-		return this.sortOrder;
-	}
-	
-	private String selectClause = 
-			"select "+
-			"exp.exp_id, subid, accno, exp_description, "+
-			"exp.created_by_login, to_char(exp.exp_create_date, 'mm/dd/yyyy hh12:mi AM'), "+
-			"exp.exp_name, "+ 
-			"nvl(samples.num_samples, 0) num_samples, "+
-			"nvl(files.num_files, 0) num_files, "+
-			"exp.proc_status, "+
-			"nvl(arrays.num_arrays, 0) num_arrays ";
-
-	private String fromClause = 
-			"from experiments exp "+
-			"left join "+
-				// had to use this nested aggregate function instead of experimentDetails because you can't group by a CLOB 
-			"	(select exp_id, "+
-			" 	count(file_id) num_files "+
-			"	from experimentDetails "+
-			"	group by exp_id) files "+
-			"	on exp.exp_id = files.exp_id "+
-			"left join "+
-				// had to use this nested aggregate function instead of experimentDetails because you can't group by a CLOB 
-			"	(select exp_id, "+
-			" 	count(hybrid_id) num_arrays "+
-			"	from experimentDetails "+
-			"	group by exp_id) arrays "+
-			"	on exp.exp_id = arrays.exp_id "+
-			"left join "+
-				// had to use this nested aggregate function instead of experimentDetails because you can't group by a CLOB 
-				// and experimentDetails assumes all tables are inner joined -- at this point, files may not yet 
-				// have been uploaded
-			"	(select e.exp_id, "+
-			"	count(s.tsample_sysuid) num_samples "+
-			"	from experiments e, tsample s "+
-			"	where e.exp_id = s.tsample_exprid "+
-			"	group by exp_id, tsample_exprid) samples "+
-			"	on exp.exp_id = samples.exp_id ";
-
-	private String whereClause = 
-			// have no default where clauses, but put this here so all others start with 'and'
-                	"where 1=1 ";
-
-	private String orderByClause =
-			"order by upper(exp.exp_name)"; 
-
-	/**
-	 * Get the protocols that are actually used in an experiment.
-	 * @param conn 	the database connection
-	 * @return	an array of Protocol objects
-	 * @throws SQLException	if an error occurs while accessing the database
-	 */
-
-	public Protocol[] getUsedProtocols (Connection conn) throws SQLException{
-	
-		log.debug("in getUsedProtocols");
-		
-		String query = 
-		"select 0, 0, p.protocol_name, '', '', '', '', vt.value "+ 
-		"from experimentdetails, protocols p, valid_terms vt "+ 
-		"where exp_id = ? "+
-		"and vt.term_id = p.protocol_type "+ 
-		"and tsample_protocolid = p.protocol_id "+ 
-		"union "+
-		"select 0, 0, p.protocol_name, '', '', '', '', vt.value "+ 
-		"from experimentdetails, protocols p, valid_terms vt "+ 
-		"where exp_id = ? "+
-		"and vt.term_id = p.protocol_type "+ 
-		"and tsample_growth_protocolid = p.protocol_id "+ 
-		"union "+
-		"select 0, 0, p.protocol_name, '', '', '', '', vt.value "+ 
-		"from experimentdetails, protocols p, valid_terms vt "+ 
-		"where exp_id = ? "+
-		"and vt.term_id = p.protocol_type "+ 
-		"and textract_protocolid = p.protocol_id "+ 
-		"union "+
-		"select 0, 0, p.protocol_name, '', '', '', '', vt.value "+ 
-		"from experimentdetails, protocols p, valid_terms vt "+ 
-		"where exp_id = ? "+
-		"and vt.term_id = p.protocol_type "+ 
-		"and tlabel_protocolid = p.protocol_id "+ 
-		"union "+
-		"select 0, 0, p.protocol_name, '', '', '', '', vt.value "+ 
-		"from experimentdetails, protocols p, valid_terms vt "+ 
-		"where exp_id = ? "+
-		"and vt.term_id = p.protocol_type "+ 
-		"and hybrid_protocol_id = p.protocol_id "+ 
-		"union "+
-		"select 0, 0, p.protocol_name, '', '', '', '', vt.value "+ 
-		"from experimentdetails, protocols p, valid_terms vt "+ 
-		"where exp_id = ? "+
-		"and vt.term_id = p.protocol_type "+ 
-		"and hybrid_scan_protocol_id = p.protocol_id "+ 
-		"order by 2";
-	
-		log.debug("query = "+query);
-
-		Results myResults = new Results(query, new Object[] {this.exp_id, this.exp_id, this.exp_id, this.exp_id, this.exp_id, this.exp_id}, conn);
-
-		log.debug("numRows = "+myResults.getNumRows());
-		Protocol[] myProtocols = new Protocol().setupProtocolValues(myResults);
-
-		log.debug("numProtocols = "+myProtocols.length);
-
-		myResults.close();
-
-		return myProtocols;
-	}
-
-	/**
-	 * Go through the data fields hashtable and validate each field
-	 * @param rowNum 	the row being checked
-	 * @param thisHash 	a hashtable of data fields
-	 * @param className 	the name of the class that contains the validation methods
-	 * @param expID 	the identifier of this experiment
-	 * @param isCompoundDesign 	true if this experiment is a compound design experiment
-	 * @param conn 	the database connection
-	 * @return	TRUE if there are no errors, FALSE otherwise
-	 */
-	private boolean validateData(int rowNum, LinkedHashMap<String, String> thisHash, String className, int expID, boolean isCompoundDesign, Connection conn) {
-		log.debug("in validateData for "+className + ".  rowNum = " + rowNum);
-		boolean returnVal = true;
-		for (Iterator itr=thisHash.keySet().iterator(); itr.hasNext();) {
-			String key = (String) itr.next();
-			String value = (String) thisHash.get(key);
-			log.debug("key is " + key + ", value = " + value);
-			try {
-				// Using reflection to call appropriate validation method
-         			// 1. get a class instance 
-         			// 2. get the method (e.g., validateSample_id) with the appropriate parameters
-         			// 3. call the method
-				Class thisClass = Class.forName(className);
-				try {
-         				Method thisMethod = thisClass.getDeclaredMethod("validate" + key, new Class[] {String.class, int.class, Connection.class});
-         				thisMethod.invoke(thisClass.newInstance(), new Object[] {value, expID, conn});
-				} catch (NoSuchMethodException e2) { 
-					//log.debug("didn't find 1st class");
-					try {
-         					Method thisMethod = thisClass.getDeclaredMethod("validate" + key, new Class[] {String.class, Connection.class});
-         					thisMethod.invoke(thisClass.newInstance(), new Object[] {value, conn});
-					} catch (NoSuchMethodException e3) { 
-						//log.debug("didn't find 2nd class");
-						try {
-         						Method thisMethod = thisClass.getDeclaredMethod("validate" + key, new Class[] {String.class, boolean.class, Connection.class});
-
-         						thisMethod.invoke(thisClass.newInstance(), new Object[] {value, isCompoundDesign, conn});
-						} catch (NoSuchMethodException e4) { 
-							//log.debug("didn't find 3rd class");
-						}
-					}
-				}
-			} catch (Exception e) {
-				// don't log the stack trace for exceptions generated by the call  
-				if (!e.getClass().getName().equals("java.lang.reflect.InvocationTargetException")) {
-					log.debug("error  = ", e);
-				}
-				//log.debug("before writing line");
-				//this.writer.println("Line " + rowNum + ":  " + e.getCause().getMessage());
-				if (e.getCause().getMessage() != null) {
-					//log.debug("there is a cause and a message.  error  = ", e);
-					this.writer.println("Line " + rowNum + ":  " + e.getCause().getMessage());
-					if (e.getCause().getMessage().indexOf("ERROR") > -1) {
-						returnVal = false;
-					}	
-				} else {
-					//log.debug(" there is only a message, not a cause.  error  = ", e);
-					this.writer.println("Line " + rowNum + ":  " + e.getMessage());
-					if (e.getMessage().indexOf("ERROR") > -1) {
-						returnVal = false;
-					}	
-				} 
-				//log.debug("after writing line");
-			}
-		} 
-		return returnVal;
-	}
-
-	public int[] fillInTothers(String value, String type, String user, Connection conn) throws SQLException { 
-		log.debug("in fillInTothers. value = " + value + ", and type = " + type);
-		int[] answers = new int[2];
-		ValidTerm myValidTerm = new ValidTerm();
-		if (myObjectHandler.getAsSet(myValidTerm.getFromValidTerm(type, conn), "Value").contains(value)) {
-			log.debug("found the value in ValidTerm");
-			answers[0] = myValidTerm.getSysuid(value, type, conn);
-			answers[1] = -99;
-		} else {
-			log.debug("did not find the value in ValidTerm, so creating a Tothers record");
-			answers[0] = myValidTerm.getSysuid("other", type, conn);
+    public int[] fillInTothers(String value, String type, String user, DataSource pool) throws SQLException {
+        log.debug("in fillInTothers. value = " + value + ", and type = " + type);
+        int[] answers = new int[2];
+        ValidTerm myValidTerm = new ValidTerm();
+        if (myObjectHandler.getAsSet(myValidTerm.getFromValidTerm(type, pool), "Value").contains(value)) {
+            log.debug("found the value in ValidTerm");
+            answers[0] = myValidTerm.getSysuid(value, type, pool);
+            answers[1] = -99;
+        } else {
+            log.debug("did not find the value in ValidTerm, so creating a Tothers record  ****Should not happen****");
+            //REMOVE Shouldn't be creating tothers anymore
+			/*answers[0] = myValidTerm.getSysuid("other", type, pool);
 			int tothers_id = -99;
 			Tothers tothers = new Tothers();
 			tothers.setTothers_id(type);
@@ -459,21 +474,22 @@ public class Experiment {
 			tothers.setTothers_descr(value);
 			tothers.setTothers_user(user);
 			tothers_id = tothers.createTothers(conn);
-			answers[1] = tothers_id;
-		}
-		log.debug("answers = "); myDebugger.print(answers);
-		return answers;
-	}
+			answers[1] = tothers_id;*/
+        }
+        log.debug("answers = ");
+        myDebugger.print(answers);
+        return answers;
+    }
 
-	/**
-	 * Reads the uploaded spreadsheet
-	 * @param spreadsheet 	the spreadsheet
-	 * @param userLoggedIn 	the User object of the person logged in
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	an array of String containing the warnings and errors
-	 */
-	public String[] readSpreadsheet (File spreadsheet, User userLoggedIn, Connection conn) throws SQLException, IOException, BiffException, DataException {
+    /**
+     * Reads the uploaded spreadsheet
+     * @param spreadsheet    the spreadsheet
+     * @param userLoggedIn    the User object of the person logged in
+     * @param conn    the database connection
+     * @throws SQLException    if an error occurs while accessing the database
+     * @return an array of String containing the warnings and errors
+     */
+	/*public String[] readSpreadsheet (File spreadsheet, User userLoggedIn, Connection conn) throws SQLException, IOException, BiffException, DataException {
 
 		log.debug("in readSpreadsheet");
 		String[] fileContents = null;
@@ -816,285 +832,317 @@ log.debug("here in readSpreadsheet just discovered that isCompoundDesign is "+is
                 	conn.setAutoCommit(true);
 		}
 
-/*
+*//*
 		log.debug("checking error file " + msgFile);
 		boolean errorFound = myFileHandler.fileContainsString(new File(msgFile), "ERROR");
-*/
+*//*
 		fileContents = myFileHandler.getFileContents(new File(msgFile));
-		/*
+		*//*
 		for (int i=0; i<fileContents.length; i++) {
 			System.out.println(fileContents[i]);
 		}
-		*/
+		*//*
 		return fileContents;
-	}
+	}*/
 
-	/**
-	 * Gets all the Experiments for a particular user
-	 * @param user the login name of the user
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	an array of Experiment objects
-	 */
-	public Experiment[] getAllExperimentsForUser(String user, Connection conn) throws SQLException {
+    /**
+     * Gets all the Experiments for a particular user
+     *
+     * @param user the login name of the user
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return an array of Experiment objects
+     */
+    public Experiment[] getAllExperimentsForUser(String user, DataSource pool) throws SQLException {
 
-		log.debug("In getAllExperimentsForUser. user = " + user);
+        log.debug("In getAllExperimentsForUser. user = " + user);
 
-		String query = 
-			selectClause +
-			fromClause +
-			whereClause +
-			"and created_by_login like ? ||'%' "+ 
-			orderByClause;
-
-		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, user, conn);
-
-		Experiment[] myExperiment = setupExperimentValues(myResults);
-
-		myResults.close();
-
-		return myExperiment;
-	}
-	
-	/**
-	 * Gets all the Experiments by experiment Ids using a String object delimited by commas 
-	 * @param experimentIds
-	 * @param conn
-	 * @return array of Experiments
-	 * @throws SQLException
-	 */
-    public Experiment[] getExperimentsByExperimentIds(String experimentIds, Connection conn) throws SQLException {
-	   log.debug("In getExperimentsByExperimentIds = " + experimentIds);
-	   
-       String query = 
+        String query =
                 selectClause +
-                fromClause +
-                whereClause +
-                "and exp.exp_id in ("+experimentIds+") "+ 
-                orderByClause;
+                        fromClause +
+                        whereClause +
+                        "and created_by_login like ? ||'%' " +
+                        orderByClause;
 
-       log.debug("query =  " + query);
+        //log.debug("query =  " + query);
+        Experiment[] myExperiment = new Experiment[0];
+        try (Connection conn = pool.getConnection()) {
+            Results myResults = new Results(query, user, conn);
+            myExperiment = setupExperimentValues(myResults);
+            myResults.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
+        }
+        return myExperiment;
+    }
 
-       Results myResults;
-       
-       myResults = new Results(query, conn);
-       
-       Experiment[] experiments = setupExperimentValues(myResults);
-       
-       myResults.close();
-       
-       return experiments;
-			
-}
+    /**
+     * Gets all the Experiments by experiment Ids using a String object delimited by commas
+     *
+     * @param experimentIds
+     * @param conn
+     * @return array of Experiments
+     * @throws SQLException
+     */
+    public Experiment[] getExperimentsByExperimentIds(String experimentIds, DataSource pool) throws SQLException {
+        log.debug("In getExperimentsByExperimentIds = " + experimentIds);
 
-	
+        String query =
+                selectClause +
+                        fromClause +
+                        whereClause +
+                        "and exp.exp_id in (" + experimentIds + ") " +
+                        orderByClause;
 
-	/**
-	 * Returns one Experiment object from an array of Experiment objects
-	 * @param myExperiments	an array of Experiment objects 
-	 * @param expID	the expID of the object to return
-	 * @return            a Experiment object
-	 */
-	public Experiment getExperimentFromMyExperiments(Experiment[] myExperiments, int expID) {
-        	//
-        	// Return the Experiment object that contains the expID from the myExperiments
-        	//
-		log.debug("in getExperimentFromMyExperiments. expID = "+expID);
-
-		// Decided not to sort and do a binarySearch 'cuz then experimentsForUser is sorted by exprid instead of exp_name
-		for (int i=0; i<myExperiments.length; i++) {
-			if (myExperiments[i].getExp_id() == expID) {
-				return myExperiments[i];
-			}
-		}
-
-        	return new Experiment(-99);
-	}
-
-	/**
-	 * Gets the Experiment name for this exp_id
-	 * @param exp_id	 the identifier of the Experiment
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	a string containing the Experiment name
-	 */
-	public String getExperimentName(int exp_id, Connection conn) throws SQLException {
-
-		log.debug("in getExperimentName");
-
-		String query = 
-			"select "+
-			"exp_name "+
-			"from experiments "+ 
-			"where exp_id = ?";
-	
-		//log.debug("query = "+query);
-
-		Results myResults = new Results(query, exp_id, conn);
-
-		String expName = myResults.getStringValueFromFirstRow();
-
-		myResults.close();
-
-		return expName;
-	}
-
-	/**
-	 * Gets the Experiment object for this exp_id
-	 * @param exp_id	 the identifier of the Experiment
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	a Experiment object
-	 */
-	public Experiment getExperiment(int exp_id, Connection conn) throws SQLException {
-
-		log.debug("In getOne Experiment. exprid = " + exp_id);
-
-		String query = 
-			selectClause +
-			fromClause +
-			whereClause +
-			"and exp.exp_id = ? " +
-			orderByClause;
-
-		//log.debug("query = "+query);
-
-		Results myResults = new Results(query, exp_id, conn);
-
-		Experiment myExperiment = setupExperimentValues(myResults)[0];
-
-		myResults.close();
-
-		return myExperiment;
-	}
+        log.debug("query =  " + query);
+        Experiment[] experiments = new Experiment[0];
+        try (Connection conn = pool.getConnection()) {
+            Results myResults;
+            myResults = new Results(query, conn);
+            experiments = setupExperimentValues(myResults);
+            myResults.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
+        }
 
 
-	/**
-	 * Gets the Experiment object for this experiment name
-	 * @param exp_name	the name of the Experiment
-         * @param userLoggedIn  the User object of the user logged in
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	a Experiment object
-	 */
-	public Experiment getExperimentByName(String exp_name, User userLoggedIn, Connection conn) throws SQLException {
-	
-		log.debug("in getExperimentByName");
+        return experiments;
 
-		String query = 
-			"select "+
-			"exp_id, subid, accno, exp_description, "+
-			"created_by_login, to_char(exp_create_date, 'mm/dd/yyyy hh12:mi AM'), "+
-			"exp_name "+ 
-			"from experiments "+ 
-			"where created_by_login like ? "+
-			"and exp_name = ?";
-	
-		//log.debug("query = "+query);
-
-                Results myResults = new Results(query, new Object[] {userLoggedIn.getUser_name(), exp_name}, conn);
-
-		Experiment myExperiment = setupExperimentValues(myResults)[0];
-
-		myResults.close();
-
-		return myExperiment;
-	}
+    }
 
 
-	/**
-	 * Determines whether Experiment is a compound design type or not
-	 * @param expName the name of the Experiment
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	true if it is a compound design
-	 */
-	public int isCompoundDesign(String expName, Connection conn) throws SQLException {
-		log.debug("in Experiment isCompoundDesign. expName=" + expName);
+    /**
+     * Returns one Experiment object from an array of Experiment objects
+     *
+     * @param myExperiments an array of Experiment objects
+     * @param expID         the expID of the object to return
+     * @return a Experiment object
+     */
+    public Experiment getExperimentFromMyExperiments(Experiment[] myExperiments, int expID) {
+        //
+        // Return the Experiment object that contains the expID from the myExperiments
+        //
+        log.debug("in getExperimentFromMyExperiments. expID = " + expID);
 
-                String query =
-                	"select 1 "+
-                        "from experiments exp, Texprtyp t, valid_terms val "+
-                        "where exp_name = ? "+
-                        "and exp.exp_id = t.texprtyp_exprid "+
-			"and t.texprtyp_id = val.term_id "+
-			"and val.category = 'EXPERIMENT_TYPE' "+
-			"and t.texprtyp_del_status = 'U' "+
+        // Decided not to sort and do a binarySearch 'cuz then experimentsForUser is sorted by exprid instead of exp_name
+        for (int i = 0; i < myExperiments.length; i++) {
+            if (myExperiments[i].getExp_id() == expID) {
+                return myExperiments[i];
+            }
+        }
+
+        return new Experiment(-99);
+    }
+
+    /**
+     * Gets the Experiment name for this exp_id
+     *
+     * @param exp_id the identifier of the Experiment
+     * @param conn   the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return a string containing the Experiment name
+     */
+    public String getExperimentName(int exp_id, DataSource pool) throws SQLException {
+
+        log.debug("in getExperimentName");
+
+        String query =
+                "select " +
+                        "exp_name " +
+                        "from experiments " +
+                        "where exp_id = ?";
+
+        //log.debug("query = "+query);
+        String expName ="";
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, exp_id, conn);
+            expName = myResults.getStringValueFromFirstRow();
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+
+
+        return expName;
+    }
+
+    /**
+     * Gets the Experiment object for this exp_id
+     *
+     * @param exp_id the identifier of the Experiment
+     * @param conn   the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return a Experiment object
+     */
+    public Experiment getExperiment(int exp_id, DataSource pool) throws SQLException {
+
+        log.debug("In getOne Experiment. exprid = " + exp_id);
+
+        String query =
+                selectClause +
+                        fromClause +
+                        whereClause +
+                        "and exp.exp_id = ? " +
+                        orderByClause;
+        Experiment myExperiment= null;
+        try(Connection conn=pool.getConnection()){
+            //log.debug("query = "+query);
+            Results myResults = new Results(query, exp_id, conn);
+            myExperiment = setupExperimentValues(myResults)[0];
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+        return myExperiment;
+    }
+
+
+    /**
+     * Gets the Experiment object for this experiment name
+     *
+     * @param exp_name     the name of the Experiment
+     * @param userLoggedIn the User object of the user logged in
+     * @param conn         the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return a Experiment object
+     */
+    public Experiment getExperimentByName(String exp_name, User userLoggedIn, DataSource pool) throws SQLException {
+
+        log.debug("in getExperimentByName");
+
+        String query =
+                "select " +
+                        "exp_id, subid, accno, exp_description, " +
+                        "created_by_login, to_char(exp_create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "exp_name " +
+                        "from experiments " +
+                        "where created_by_login like ? " +
+                        "and exp_name = ?";
+
+        //log.debug("query = "+query);
+        Experiment myExperiment = null;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{userLoggedIn.getUser_name(), exp_name}, conn);
+            myExperiment = setupExperimentValues(myResults)[0];
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+        return myExperiment;
+    }
+
+
+    /**
+     * Determines whether Experiment is a compound design type or not
+     *
+     * @param expName the name of the Experiment
+     * @param conn    the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return true if it is a compound design
+     */
+    public int isCompoundDesign(String expName, DataSource pool) throws SQLException {
+        log.debug("in Experiment isCompoundDesign. expName=" + expName);
+
+        String query =
+                "select 1 " +
+                        "from experiments exp, Texprtyp t, valid_terms val " +
+                        "where exp_name = ? " +
+                        "and exp.exp_id = t.texprtyp_exprid " +
+                        "and t.texprtyp_id = val.term_id " +
+                        "and val.category = 'EXPERIMENT_TYPE' " +
+                        "and t.texprtyp_del_status = 'U' " +
                         "and val.value = 'compound treatment design'";
 
-		//log.debug("query = "+query);
-		Results myResults = new Results(query, expName, conn);
-		int value = myResults.getIntValueFromFirstRow();
-		log.debug("this Experiment isCompoundDesign. answer =" + value);
+        //log.debug("query = "+query);
+        int value = -99;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, expName, conn);
+            value = myResults.getIntValueFromFirstRow();
+            log.debug("this Experiment isCompoundDesign. answer =" + value);
 
-		myResults.close();
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-		return value;
-	}
 
-	/**
-	 * Checks to see if the design types and factors chosen are in sync
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	a message stating what the problem is
-	 */
-	public List<String[]> getCombinations(Connection conn) throws SQLException {
-	
-		log.debug("in Experiment getCombinations");
+        return value;
+    }
 
-		List<String[]> validCombos = new ArrayList<String[]>();
-		validCombos.add(new String[] {"cell type comparison design", "cell type"});
-		validCombos.add(new String[] {"compound treatment design", "compound"});
-		validCombos.add(new String[] {"compound treatment design", "dose"});
-		validCombos.add(new String[] {"disease state design", "disease state"});
-		validCombos.add(new String[] {"dose response design", "compound"});
-		validCombos.add(new String[] {"dose response design", "dose"});
-		validCombos.add(new String[] {"genotyping design", "genotype"});
-		validCombos.add(new String[] {"strain or line design", "strain"});
+    /**
+     * Checks to see if the design types and factors chosen are in sync
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return a message stating what the problem is
+     */
+    public List<String[]> getCombinations(DataSource pool) throws SQLException {
 
-		String query =
-			"select dt.term_id, dt.value, f.term_id, f.value "+
-			"from valid_terms dt, valid_terms f "+
-			"where dt.value = ? "+
-			"and f.value = ? "+
-			"and dt.category = 'EXPERIMENT_TYPE' "+
-			"and f.category = 'EXPERIMENTAL_FACTOR'";
-		
-		String[] dataRow;
-		List<String[]> myCombos = new ArrayList<String[]>();
-                Results myResults = null;
-		for (Iterator itr = validCombos.iterator(); itr.hasNext();) {
-			String[] validCombo = (String[]) itr.next();
-			String thisDesignType = validCombo[0];
-			String thisFactor = validCombo[1];
+        log.debug("in Experiment getCombinations");
 
-                	myResults = new Results(query, new Object[] {thisDesignType, thisFactor}, conn);
+        List<String[]> validCombos = new ArrayList<String[]>();
+        validCombos.add(new String[]{"cell type comparison design", "cell type"});
+        validCombos.add(new String[]{"compound treatment design", "compound"});
+        validCombos.add(new String[]{"compound treatment design", "dose"});
+        validCombos.add(new String[]{"disease state design", "disease state"});
+        validCombos.add(new String[]{"dose response design", "compound"});
+        validCombos.add(new String[]{"dose response design", "dose"});
+        validCombos.add(new String[]{"genotyping design", "genotype"});
+        validCombos.add(new String[]{"strain or line design", "strain"});
 
-                	while ((dataRow = myResults.getNextRow()) != null) {
-				String[] thisArray = new String[4];
-				for (int i=0; i<dataRow.length; i++) {
-                        		thisArray[i] = dataRow[i];
-				}
-				myCombos.add(thisArray);
-                	}
-		}
+        String query =
+                "select dt.term_id, dt.value, f.term_id, f.value " +
+                        "from valid_terms dt, valid_terms f " +
+                        "where dt.value = ? " +
+                        "and f.value = ? " +
+                        "and dt.category = 'EXPERIMENT_TYPE' " +
+                        "and f.category = 'EXPERIMENTAL_FACTOR'";
 
+        String[] dataRow;
+        List<String[]> myCombos = new ArrayList<String[]>();
+        Results myResults = null;
+        try(Connection conn=pool.getConnection()){
+            for (Iterator itr = validCombos.iterator(); itr.hasNext(); ) {
+                String[] validCombo = (String[]) itr.next();
+                String thisDesignType = validCombo[0];
+                String thisFactor = validCombo[1];
+
+                myResults = new Results(query, new Object[]{thisDesignType, thisFactor}, conn);
+
+                while ((dataRow = myResults.getNextRow()) != null) {
+                    String[] thisArray = new String[4];
+                    for (int i = 0; i < dataRow.length; i++) {
+                        thisArray[i] = dataRow[i];
+                    }
+                    myCombos.add(thisArray);
+                }
                 myResults.close();
+            }
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-		return myCombos;
-	}
 
-	/**
-	 * Creates an experiment object by inserting records into experiments, Texpfctr, Texprtyp, Tpublic, Tauthor tables
-	 * @param userLoggedIn the User object of the person logged into the website
-	 * @param fieldValues fieldNames mapped to their values
-	 * @param multipleFieldValues fieldNames mapped to their multiple values
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	the identifier of the record created in the Experiment table
-	 */
+        return myCombos;
+    }
+
+    /**
+     * Creates an experiment object by inserting records into experiments, Texpfctr, Texprtyp, Tpublic, Tauthor tables
+     *
+     * @param userLoggedIn        the User object of the person logged into the website
+     * @param fieldValues         fieldNames mapped to their values
+     * @param multipleFieldValues fieldNames mapped to their multiple values
+     * @param conn                the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return the identifier of the record created in the Experiment table
+     */
 	/* public int createExperiment(User userLoggedIn, Hashtable<String, String> fieldValues,
 				HashMap<String, String[]> multipleFieldValues, Connection conn) throws SQLException {
 	
@@ -1182,37 +1230,35 @@ log.debug("here in readSpreadsheet just discovered that isCompoundDesign is "+is
 		return exp_id;
 		//return -99;
 	}*/
+    private void handleTothers(String field, String type, int expID, User userLoggedIn, DataSource pool) throws SQLException {
+        log.debug("in handleTothers. field = " + field + ", type = " + type + ", exp = " + expID);
 
-
-
-        private void handleTothers (String field, String type, int expID, User userLoggedIn, Connection conn) throws SQLException {
-                log.debug("in handleTothers. field = "+field + ", type = " + type + ", exp = "+expID);
-
-                if (field != null && !field.equals("")) {
-                        Tothers existingTothers = new Tothers().getTothersForExpByType(expID, type, conn);
-                        if (existingTothers != null) {
-                                log.debug("one already exists, so deleting it");
-                                existingTothers.deleteAndCommit(conn);
-                        }
-                        Tothers tothers = new Tothers();
-                        tothers.setTothers_exprid(expID);
-                        tothers.setTothers_id(type);
-                        tothers.setTothers_value(field);
-                        tothers.setTothers_descr(field);
-                        tothers.setTothers_user(userLoggedIn.getUser_name_and_domain());
-                        log.debug("just created a new tothers ");
-                        tothers.createTothers(conn);
-                } else {
-                        log.debug("field is null");
-                }
+        if (field != null && !field.equals("")) {
+            Tothers existingTothers = new Tothers().getTothersForExpByType(expID, type, pool);
+            if (existingTothers != null) {
+                log.debug("one already exists, so deleting it");
+                existingTothers.deleteAndCommit(pool);
+            }
+            // Should not be creating tothers at this point
+            /*Tothers tothers = new Tothers();
+            tothers.setTothers_exprid(expID);
+            tothers.setTothers_id(type);
+            tothers.setTothers_value(field);
+            tothers.setTothers_descr(field);
+            tothers.setTothers_user(userLoggedIn.getUser_name_and_domain());
+            log.debug("just created a new tothers ");
+            tothers.createTothers(conn);*/
+        } else {
+            log.debug("field is null");
         }
+    }
 
-	/**
-	 * Creates a record in the experiments table.
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	the identifier of the record created
-	 */
+    /**
+     * Creates a record in the experiments table.
+     * @param conn    the database connection
+     * @throws SQLException    if an error occurs while accessing the database
+     * @return the identifier of the record created
+     */
 	/*public int createExperiment(Connection conn) throws SQLException {
 
 		log.debug("in Experiment create");
@@ -1255,239 +1301,253 @@ log.debug("here in readSpreadsheet just discovered that isCompoundDesign is "+is
 		return exp_id;
 	}*/
 
-	/**
-	 * Updates a record in the experiments table.
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 */
-	public void update(Connection conn) throws SQLException {
+    /**
+     * Updates a record in the experiments table.
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     */
+    public void update(DataSource pool) throws SQLException {
 
-		String query = 
-			"update experiments "+
-			"set exp_id = ?, subid = ?, exp_name = ?, accno = ?, exp_description = ?, "+
-			"hold_date = ?, proc_status = ?, comp_status = ?, created_by_login = ? "+
-			"where exp_id = ?";
+        String query =
+                "update experiments " +
+                        "set exp_id = ?, subid = ?, exp_name = ?, accno = ?, exp_description = ?, " +
+                        "hold_date = ?, proc_status = ?, comp_status = ?, created_by_login = ? " +
+                        "where exp_id = ?";
 
-		//log.debug("query =  " + query);
+        //log.debug("query =  " + query);
 
-		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+        java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, exp_id);
+            pstmt.setInt(2, subid);
+            pstmt.setString(3, exp_name);
+            pstmt.setString(4, accno);
+            pstmt.setString(5, exp_description);
+            pstmt.setTimestamp(6, hold_date);
+            pstmt.setString(7, proc_status);
+            pstmt.setString(8, comp_status);
+            pstmt.setString(9, created_by_login);
+            pstmt.setInt(10, exp_id);
 
-		pstmt.setInt(1, exp_id);
-		pstmt.setInt(2, subid);
-		pstmt.setString(3, exp_name);
-		pstmt.setString(4, accno);
-		pstmt.setString(5, exp_description);
-		pstmt.setTimestamp(6, hold_date);
-		pstmt.setString(7, proc_status);
-		pstmt.setString(8, comp_status);
-		pstmt.setString(9, created_by_login);
-		pstmt.setInt(10, exp_id);
+            pstmt.executeUpdate();
+            pstmt.close();
+        }catch(SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
+        }
+    }
 
-		pstmt.executeUpdate();
-		pstmt.close();
+    /**
+     * Deletes the record in the experiments table and also deletes child records in related tables.
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     */
 
-	}
+    public void deleteExperiment(DataSource pool) throws SQLException {
+        log.info("in deleteExperiment");
+        PreparedStatement pstmt = null;
+        try(Connection conn=pool.getConnection()){
+            conn.setAutoCommit(false);
+            try {
+                new Tpublic().deleteAllTpublicForExperiment(subid, pool);
+                new Texpfctr().deleteAllTexpfctrForExperiment(exp_id, pool);
+                new Texprtyp().deleteAllTexprtypForExperiment(exp_id, pool);
+                new Tsample().deleteAllTsampleForExperiment(exp_id, pool);
+                new Experiment_protocol().deleteAllExperiment_protocolsForExperiment(exp_id, pool);
+                new SessionHandler().deleteSessionActivitiesForExperiment(exp_id, pool);
 
-	/**
-	 * Deletes the record in the experiments table and also deletes child records in related tables.
-	 * @param conn	the database connection
-	 * @throws            SQLException if an error occurs while accessing the database
-	 */
+                String query =
+                        "delete from experiments " +
+                                "where exp_id = ?";
 
-	public void deleteExperiment(Connection conn) throws SQLException {
+                pstmt = conn.prepareStatement(query,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
 
-		log.info("in deleteExperiment");
+                pstmt.setInt(1, exp_id);
+                pstmt.executeQuery();
+                pstmt.close();
 
-		conn.setAutoCommit(false);
+                conn.commit();
+            } catch (SQLException e) {
+                log.debug("error in deleteExperiment");
+                conn.rollback();
+                pstmt.close();
+                throw e;
+            }
+            conn.setAutoCommit(true);
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-		PreparedStatement pstmt = null;
+    }
 
-		try {
-                        new Tpublic().deleteAllTpublicForExperiment(subid, conn);
-                        new Texpfctr().deleteAllTexpfctrForExperiment(exp_id, conn);
-                        new Texprtyp().deleteAllTexprtypForExperiment(exp_id, conn);
-                        new Tsample().deleteAllTsampleForExperiment(exp_id, conn);
-                        new Experiment_protocol().deleteAllExperiment_protocolsForExperiment(exp_id, conn);
-  			new SessionHandler().deleteSessionActivitiesForExperiment(exp_id, conn);
+    /**
+     * Checks to see if an experiment with the same combination already exists.
+     *
+     * @param userLoggedIn the Object of the user that is logged in
+     * @param expName      the name of the experiment
+     * @param conn         the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return the exp_id of an experiment that currently exists
+     */
+    public int checkRecordExists(User userLoggedIn, String expName, DataSource pool) throws SQLException {
 
-			String query = 
-				"delete from experiments " + 
-				"where exp_id = ?";
+        log.debug("in checkRecordExists.user = " + userLoggedIn.getUser_name() + ", and expName = " + expName);
 
-			pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE, 
-				ResultSet.CONCUR_UPDATABLE); 
+        String query =
+                "select exp_id " +
+                        "from experiments " +
+                        "where exp_name = ? " +
+                        "and created_by_login like ? ||'%'";
 
-			pstmt.setInt(1, exp_id);
-			pstmt.executeQuery();
-			pstmt.close();
+        log.debug("query = " + query);
+        int pk = -99;
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
 
-			conn.commit();
-		} catch (SQLException e) {
-			log.debug("error in deleteExperiment");
-			conn.rollback();
-			pstmt.close();
-			throw e;
-		}
-		conn.setAutoCommit(true);
-	}
+            pstmt.setString(1, expName);
+            pstmt.setString(2, userLoggedIn.getUser_name());
+            ResultSet rs = pstmt.executeQuery();
+            pk = (rs.next() ? rs.getInt(1) : -99);
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+        log.debug("returning this id from checkRecordExists:  " + pk);
+        return pk;
+    }
 
-	/**
-	 * Checks to see if an experiment with the same combination already exists.
-	 * @param userLoggedIn	the Object of the user that is logged in
-	 * @param expName	the name of the experiment
-	 * @param conn	the database connection
-	 * @throws            SQLException if an error occurs while accessing the database
-	 * @return	the exp_id of an experiment that currently exists
-	 */
-	public int checkRecordExists(User userLoggedIn, String expName, Connection conn) throws SQLException {
+    /**
+     * Creates an array of Experiment objects and sets the data values to those retrieved from the database.
+     *
+     * @param myResults the Results object corresponding to a set of Experiment
+     * @return An array of Experiment objects with their values setup
+     */
+    private Experiment[] setupExperimentValues(Results myResults) {
 
-		log.debug("in checkRecordExists.user = "+userLoggedIn.getUser_name() + ", and expName = "+expName);
+        //log.debug("in setupExperimentValues");
 
-		String query = 
-			"select exp_id "+
-			"from experiments "+
-			"where exp_name = ? "+
-			"and created_by_login like ? ||'%'"; 
+        List<Experiment> experimentList = new ArrayList<Experiment>();
 
-		log.debug("query = "+query);
-		PreparedStatement pstmt = conn.prepareStatement(query,
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_UPDATABLE);
+        Object[] dataRowWithClob;
 
-		pstmt.setString(1, expName);
-		pstmt.setString(2, userLoggedIn.getUser_name());
-		ResultSet rs = pstmt.executeQuery();
+        while ((dataRowWithClob = myResults.getNextRowWithClob()) != null) {
 
-		int pk = (rs.next() ? rs.getInt(1) : -99);
-		pstmt.close();
-		log.debug("returning this id from checkRecordExists:  " + pk);
-		return pk;
-	}
+            //log.debug("dataRowWithClob= "); myDebugger.print(dataRowWithClob);
 
-	/**
-	 * Creates an array of Experiment objects and sets the data values to those retrieved from the database.
-	 * @param myResults	the Results object corresponding to a set of Experiment
-	 * @return	An array of Experiment objects with their values setup 
-	 */
-	private Experiment[] setupExperimentValues(Results myResults) {
+            Experiment thisExperiment = new Experiment();
 
-		//log.debug("in setupExperimentValues");
+            thisExperiment.setExp_id(Integer.parseInt((String) dataRowWithClob[0]));
+            thisExperiment.setSubid(Integer.parseInt((String) dataRowWithClob[1]));
+            thisExperiment.setAccno((String) dataRowWithClob[2]);
+            thisExperiment.setExp_description(myResults.getClobAsString(dataRowWithClob[3]));
+            thisExperiment.setCreated_by_login((String) dataRowWithClob[4]);
+            thisExperiment.setExp_create_date_as_string((String) dataRowWithClob[5]);
+            thisExperiment.setExp_create_date(myObjectHandler.getDisplayDateAsTimestamp((String) dataRowWithClob[5]));
+            thisExperiment.setExpName((String) dataRowWithClob[6]);
+            thisExperiment.setExpNameNoSpaces(myObjectHandler.removeBadCharacters((String) dataRowWithClob[6]));
+            if (dataRowWithClob.length > 7 && dataRowWithClob[7] != null && !((String) dataRowWithClob[7]).equals("")) {
+                thisExperiment.setNum_samples(Integer.parseInt((String) dataRowWithClob[7]));
+            }
+            if (dataRowWithClob.length > 8 && dataRowWithClob[8] != null && !((String) dataRowWithClob[8]).equals("")) {
+                thisExperiment.setNum_files(Integer.parseInt((String) dataRowWithClob[8]));
+            }
+            if (dataRowWithClob.length > 9 && dataRowWithClob[9] != null && !((String) dataRowWithClob[9]).equals("")) {
+                thisExperiment.setProc_status((String) dataRowWithClob[9]);
+            }
+            if (dataRowWithClob.length > 10 && dataRowWithClob[10] != null && !((String) dataRowWithClob[10]).equals("")) {
+                thisExperiment.setNum_arrays(Integer.parseInt((String) dataRowWithClob[10]));
+            }
 
-		List<Experiment> experimentList = new ArrayList<Experiment>();
+            experimentList.add(thisExperiment);
+        }
 
-		Object[] dataRowWithClob;
+        Experiment[] experimentArray = (Experiment[]) experimentList.toArray(new Experiment[experimentList.size()]);
 
-		while ((dataRowWithClob = myResults.getNextRowWithClob()) != null) {
+        return experimentArray;
+    }
 
-			//log.debug("dataRowWithClob= "); myDebugger.print(dataRowWithClob);
+    /**
+     * Compares Experiment based on different fields.
+     */
+    public class ExperimentSortComparator implements Comparator<Experiment> {
+        int compare;
+        Experiment experiment1, experiment2;
 
-			Experiment thisExperiment = new Experiment();
+        public int compare(Experiment object1, Experiment object2) {
+            log.debug("in comparator");
+            String sortColumn = getSortColumn();
+            String sortOrder = getSortOrder();
 
-			thisExperiment.setExp_id(Integer.parseInt((String) dataRowWithClob[0]));
-			thisExperiment.setSubid(Integer.parseInt((String) dataRowWithClob[1]));
-			thisExperiment.setAccno((String) dataRowWithClob[2]);
-			thisExperiment.setExp_description(myResults.getClobAsString(dataRowWithClob[3]));
-			thisExperiment.setCreated_by_login((String) dataRowWithClob[4]);
-        		thisExperiment.setExp_create_date_as_string((String) dataRowWithClob[5]);
-                        thisExperiment.setExp_create_date(myObjectHandler.getDisplayDateAsTimestamp((String) dataRowWithClob[5]));
-                        thisExperiment.setExpName((String) dataRowWithClob[6]);
-                        thisExperiment.setExpNameNoSpaces(myObjectHandler.removeBadCharacters((String) dataRowWithClob[6]));
-			if (dataRowWithClob.length > 7 && dataRowWithClob[7] != null && !((String) dataRowWithClob[7]).equals("")) {
-                        	thisExperiment.setNum_samples(Integer.parseInt((String) dataRowWithClob[7]));
-			}
-			if (dataRowWithClob.length > 8 && dataRowWithClob[8] != null && !((String) dataRowWithClob[8]).equals("")) {
-                        	thisExperiment.setNum_files(Integer.parseInt((String) dataRowWithClob[8]));
-			}
-			if (dataRowWithClob.length > 9 && dataRowWithClob[9] != null && !((String) dataRowWithClob[9]).equals("")) {
-                        	thisExperiment.setProc_status((String) dataRowWithClob[9]);
-			}
-			if (dataRowWithClob.length > 10 && dataRowWithClob[10] != null && !((String) dataRowWithClob[10]).equals("")) {
-                        	thisExperiment.setNum_arrays(Integer.parseInt((String) dataRowWithClob[10]));
-			}
+            if (sortOrder.equals("A")) {
+                experiment1 = object1;
+                experiment2 = object2;
+                // default for null columns for ascending order
+                compare = 1;
+            } else {
+                experiment2 = object1;
+                experiment1 = object2;
+                // default for null columns for ascending order
+                compare = -1;
+            }
 
-			experimentList.add(thisExperiment);
-		}
+            log.debug("experiment1 = " + experiment1 + "experiment2 = " + experiment2);
 
-		Experiment[] experimentArray = (Experiment[]) experimentList.toArray(new Experiment[experimentList.size()]);
+            if (sortColumn.equals("exp_id")) {
+                compare = new Integer(experiment1.getExp_id()).compareTo(new Integer(experiment2.getExp_id()));
+            } else if (sortColumn.equals("subid")) {
+                compare = new Integer(experiment1.getSubid()).compareTo(new Integer(experiment2.getSubid()));
+            } else if (sortColumn.equals("accno")) {
+                compare = experiment1.getAccno().compareTo(experiment2.getAccno());
+            } else if (sortColumn.equals("exp_description")) {
+                compare = experiment1.getExp_description().compareTo(experiment2.getExp_description());
+            } else if (sortColumn.equals("exp_create_date")) {
+                compare = experiment1.getExp_create_date().compareTo(experiment2.getExp_create_date());
+            }
+            return compare;
+        }
+    }
 
-		return experimentArray;
-	}
-
-	/**
-	 * Compares Experiment based on different fields.
-	 */
-	public class ExperimentSortComparator implements Comparator<Experiment> {
-		int compare;
-		Experiment experiment1, experiment2;
-
-		public int compare(Experiment object1, Experiment object2) {
-			log.debug("in comparator");
-			String sortColumn = getSortColumn();
-			String sortOrder = getSortOrder();
-
-			if (sortOrder.equals("A")) {
-				experiment1 = object1;
-				experiment2 = object2;
-				// default for null columns for ascending order
-				compare = 1;
-			} else {
-				experiment2 = object1;
-				experiment1 = object2;
-				// default for null columns for ascending order
-				compare = -1;
-			}
-
-			log.debug("experiment1 = " +experiment1+ "experiment2 = " +experiment2);
-
-			if (sortColumn.equals("exp_id")) {
-				compare = new Integer(experiment1.getExp_id()).compareTo(new Integer(experiment2.getExp_id()));
-			} else if (sortColumn.equals("subid")) {
-				compare = new Integer(experiment1.getSubid()).compareTo(new Integer(experiment2.getSubid()));
-			} else if (sortColumn.equals("accno")) {
-				compare = experiment1.getAccno().compareTo(experiment2.getAccno());
-			} else if (sortColumn.equals("exp_description")) {
-				compare = experiment1.getExp_description().compareTo(experiment2.getExp_description());
-			} else if (sortColumn.equals("exp_create_date")) {
-				compare = experiment1.getExp_create_date().compareTo(experiment2.getExp_create_date());
-			}
-			return compare;
-		}
-	}
-
-	public Experiment[] sortExperiments (Experiment[] myExperiments, String sortColumn, String sortOrder) {
-		setSortColumn(sortColumn);
-		setSortOrder(sortOrder);
-		Arrays.sort(myExperiments, new ExperimentSortComparator());
-		return myExperiments;
-	}
-
-
-	/**
-	 * Converts Experiment object to a String.
-	 */
-	public String toString() {
-		return "This Experiment has exp_id = " + exp_id;
-	}
-
-	/**
-	 * Prints Experiment object to the log.
-	 */
-	public void print() {
-		log.debug(toString());
-	}
+    public Experiment[] sortExperiments(Experiment[] myExperiments, String sortColumn, String sortOrder) {
+        setSortColumn(sortColumn);
+        setSortOrder(sortOrder);
+        Arrays.sort(myExperiments, new ExperimentSortComparator());
+        return myExperiments;
+    }
 
 
-	/**
-	 * Determines equality of Experiment objects.
-	 */
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Experiment)) return false;
-		return (this.exp_id == ((Experiment)obj).exp_id);
+    /**
+     * Converts Experiment object to a String.
+     */
+    public String toString() {
+        return "This Experiment has exp_id = " + exp_id;
+    }
 
-	}
+    /**
+     * Prints Experiment object to the log.
+     */
+    public void print() {
+        log.debug(toString());
+    }
+
+
+    /**
+     * Determines equality of Experiment objects.
+     */
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Experiment)) return false;
+        return (this.exp_id == ((Experiment) obj).exp_id);
+
+    }
 }

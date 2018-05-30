@@ -59,11 +59,6 @@ public class GeneListAnalysis {
         getGeneListAnalysis(analysis_id, pool);
     }
 
-    public GeneListAnalysis(int analysis_id, Connection conn) throws SQLException {
-        log = Logger.getRootLogger();
-        getGeneListAnalysis(analysis_id, conn);
-    }
-
     public int getAnalysis_id() {
         return analysis_id;
     }
@@ -288,7 +283,7 @@ public class GeneListAnalysis {
 
             while ((dataRow = myResults.getNextRow()) != null) {
                 GeneListAnalysis newGeneListAnalysis = setupGeneListAnalysisValues(dataRow);
-                newGeneListAnalysis.setAnalysisGeneList(new GeneList().getGeneList(newGeneListAnalysis.getGene_list_id(), conn));
+                newGeneListAnalysis.setAnalysisGeneList(new GeneList().getGeneList(newGeneListAnalysis.getGene_list_id(), pool));
                 myGeneListAnalysisResults.add(newGeneListAnalysis);
             }
             myResults.close();
@@ -319,7 +314,6 @@ public class GeneListAnalysis {
 
     public GeneListAnalysis[] getGeneListAnalysisResults(int user_id, int gene_list_id,
                                                          String analysis_type, DataSource pool) throws SQLException {
-        Connection conn = null;
         SQLException err = null;
         GeneListAnalysis[] ret = new GeneListAnalysis[0];
         try(Connection conn = pool.getConnection() ) {
@@ -436,8 +430,6 @@ public class GeneListAnalysis {
             myResults.close();
 
             ret = myGeneListAnalysisResults.toArray(new GeneListAnalysis[myGeneListAnalysisResults.size()]);
-            conn.close();
-            conn = null;
             log.debug("finished getGeneListAnalysisResults");
         } catch (SQLException e) {
             log.debug("SQL Exception:",e);
@@ -630,14 +622,12 @@ public class GeneListAnalysis {
                         "where analysis_id = ?";
 
         log.debug("in updateVisible.  analysis = " + this.getDescription());
-        Connection conn = null;
         try(Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
             pstmt.setInt(1, this.getAnalysis_id());
             pstmt.executeUpdate();
-            conn.close();
         } catch (SQLException e) {
             log.debug("SQL Error:",e);
             throw(e);
@@ -665,8 +655,6 @@ public class GeneListAnalysis {
             pstmt.setString(1, this.getStatus());
             pstmt.setInt(2, this.getAnalysis_id());
             pstmt.executeUpdate();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             log.debug("SQL Error:",e);
             throw(e);
@@ -760,31 +748,34 @@ public class GeneListAnalysis {
         PreparedStatement pstmt = null;
         try(Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
-            int paramGroupID = thisGLA.getParameter_group_id();
+            try {
+                int paramGroupID = thisGLA.getParameter_group_id();
 
-            pstmt = conn.prepareStatement(query1,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, analysis_id);
-            pstmt.executeUpdate();
+                pstmt = conn.prepareStatement(query1,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, analysis_id);
+                pstmt.executeUpdate();
 
-            pstmt = conn.prepareStatement(query2,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, paramGroupID);
-            pstmt.executeUpdate();
+                pstmt = conn.prepareStatement(query2,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, paramGroupID);
+                pstmt.executeUpdate();
 
-            pstmt = conn.prepareStatement(query3,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, paramGroupID);
-            pstmt.executeUpdate();
-            pstmt.close();
-            conn.commit();
-            conn.close();
-        } catch (SQLException e) {
-            log.error("In exception of deleteGeneListAnalysisResult", e);
-            conn.rollback();
+                pstmt = conn.prepareStatement(query3,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, paramGroupID);
+                pstmt.executeUpdate();
+                pstmt.close();
+                conn.commit();
+            }catch(SQLException e){
+                log.error("In exception of deleteGeneListAnalysisResult", e);
+                conn.rollback();
+                throw e;
+            }
+        } catch (Exception e) {
             throw e;
         }
 
@@ -817,33 +808,32 @@ public class GeneListAnalysis {
 
         try( Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
+            try {
+                int paramGroupID = thisGLA.getParameter_group_id();
 
-
-            int paramGroupID = thisGLA.getParameter_group_id();
-
-            pstmt = conn.prepareStatement(query1,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, analysis_id);
-            pstmt.executeUpdate();
-
-            pstmt = conn.prepareStatement(query2,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, paramGroupID);
-            pstmt.executeUpdate();
-
-            pstmt = conn.prepareStatement(query3,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, paramGroupID);
-            pstmt.executeUpdate();
-            conn.commit();
-            conn.setAutoCommit(true);
-            conn.close();
-        } catch (SQLException e) {
-            log.error("In exception of deleteGeneListAnalysisResult", e);
-            conn.rollback();
+                pstmt = conn.prepareStatement(query1,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, analysis_id);
+                pstmt.executeUpdate();
+                pstmt = conn.prepareStatement(query2,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, paramGroupID);
+                pstmt.executeUpdate();
+                pstmt = conn.prepareStatement(query3,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                pstmt.setInt(1, paramGroupID);
+                pstmt.executeUpdate();
+                conn.commit();
+                conn.setAutoCommit(true);
+            }catch(SQLException e){
+                log.error("In exception of deleteGeneListAnalysisResult", e);
+                conn.rollback();
+                throw e;
+            }
+        } catch (Exception e) {
             throw e;
         }
     }
@@ -996,11 +986,9 @@ public class GeneListAnalysis {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                deleteGeneListAnalysisResult(rs.getInt(1), conn);
+                deleteGeneListAnalysisResult(rs.getInt(1), pool);
             }
             pstmt.close();
-
-            conn.close();
         } catch (SQLException e) {
             log.debug("SQL Error:",e);
             throw(e);
