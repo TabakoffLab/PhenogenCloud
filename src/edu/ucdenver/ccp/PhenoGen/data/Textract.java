@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,213 +24,221 @@ import org.apache.log4j.Logger;
 
 /**
  * Class for handling data related to Textract
- *  @author  Cheryl Hornbaker
+ *
+ * @author Cheryl Hornbaker
  */
 
 public class Textract {
 
-	private Logger log=null;
+    private Logger log = null;
 
-	private DbUtils myDbUtils = new DbUtils();
-	private Debugger myDebugger = new Debugger();
-	private ObjectHandler myObjectHandler = new ObjectHandler();
+    private DbUtils myDbUtils = new DbUtils();
+    private Debugger myDebugger = new Debugger();
+    private ObjectHandler myObjectHandler = new ObjectHandler();
 
-	public Textract() {
-		log = Logger.getRootLogger();
-	}
+    public Textract() {
+        log = Logger.getRootLogger();
+    }
 
-	public Textract(int textract_sysuid) {
-		log = Logger.getRootLogger();
-		this.setTextract_sysuid(textract_sysuid);
-	}
+    public Textract(int textract_sysuid) {
+        log = Logger.getRootLogger();
+        this.setTextract_sysuid(textract_sysuid);
+    }
 
 
-	private int textract_sysuid;
-	private String textract_id;
-	private int textract_protocolid;
-	private int textract_pool_protocolid;
-	private String textract_del_status = "U";
-	private String textract_user;
-	private String textract_exp_name;
-	private java.sql.Timestamp textract_last_change;
-	private String sortColumn ="";
-	private String sortOrder ="A";
+    private int textract_sysuid;
+    private String textract_id;
+    private int textract_protocolid;
+    private int textract_pool_protocolid;
+    private String textract_del_status = "U";
+    private String textract_user;
+    private String textract_exp_name;
+    private java.sql.Timestamp textract_last_change;
+    private String sortColumn = "";
+    private String sortOrder = "A";
 
-	public void setTextract_sysuid(int inInt) {
-		this.textract_sysuid = inInt;
-	}
+    public void setTextract_sysuid(int inInt) {
+        this.textract_sysuid = inInt;
+    }
 
-	public int getTextract_sysuid() {
-		return this.textract_sysuid;
-	}
+    public int getTextract_sysuid() {
+        return this.textract_sysuid;
+    }
 
-	public void setTextract_id(String inString) {
-		this.textract_id = inString;
-	}
+    public void setTextract_id(String inString) {
+        this.textract_id = inString;
+    }
 
-	public String getTextract_id() {
-		return this.textract_id;
-	}
+    public String getTextract_id() {
+        return this.textract_id;
+    }
 
-	public void setTextract_protocolid(int inInt) {
-		this.textract_protocolid = inInt;
-	}
+    public void setTextract_protocolid(int inInt) {
+        this.textract_protocolid = inInt;
+    }
 
-	public int getTextract_protocolid() {
-		return this.textract_protocolid;
-	}
+    public int getTextract_protocolid() {
+        return this.textract_protocolid;
+    }
 
-	public void setTextract_pool_protocolid(int inInt) {
-		this.textract_pool_protocolid = inInt;
-	}
+    public void setTextract_pool_protocolid(int inInt) {
+        this.textract_pool_protocolid = inInt;
+    }
 
-	public int getTextract_pool_protocolid() {
-		return this.textract_pool_protocolid;
-	}
+    public int getTextract_pool_protocolid() {
+        return this.textract_pool_protocolid;
+    }
 
-	public void setTextract_del_status(String inString) {
-		this.textract_del_status = inString;
-	}
+    public void setTextract_del_status(String inString) {
+        this.textract_del_status = inString;
+    }
 
-	public String getTextract_del_status() {
-		return this.textract_del_status;
-	}
+    public String getTextract_del_status() {
+        return this.textract_del_status;
+    }
 
-	public void setTextract_user(String inString) {
-		this.textract_user = inString;
-	}
+    public void setTextract_user(String inString) {
+        this.textract_user = inString;
+    }
 
-	public String getTextract_user() {
-		return this.textract_user;
-	}
+    public String getTextract_user() {
+        return this.textract_user;
+    }
 
-	public void setTextract_exp_name(String inString) {
-		this.textract_exp_name = inString;
-	}
+    public void setTextract_exp_name(String inString) {
+        this.textract_exp_name = inString;
+    }
 
-	public String getTextract_exp_name() {
-		return this.textract_exp_name;
-	}
+    public String getTextract_exp_name() {
+        return this.textract_exp_name;
+    }
 
-	public void setTextract_last_change(java.sql.Timestamp inTimestamp) {
-		this.textract_last_change = inTimestamp;
-	}
+    public void setTextract_last_change(java.sql.Timestamp inTimestamp) {
+        this.textract_last_change = inTimestamp;
+    }
 
-	public java.sql.Timestamp getTextract_last_change() {
-		return this.textract_last_change;
-	}
+    public java.sql.Timestamp getTextract_last_change() {
+        return this.textract_last_change;
+    }
 
-	public void setSortColumn(String inString) {
-		this.sortColumn = inString;
-	}
+    public void setSortColumn(String inString) {
+        this.sortColumn = inString;
+    }
 
-	public String getSortColumn() {
-		return this.sortColumn;
-	}
+    public String getSortColumn() {
+        return this.sortColumn;
+    }
 
-	public void setSortOrder(String inString) {
-		this.sortOrder = inString;
-	}
+    public void setSortOrder(String inString) {
+        this.sortOrder = inString;
+    }
 
-	public String getSortOrder() {
-		return this.sortOrder;
-	}
+    public String getSortOrder() {
+        return this.sortOrder;
+    }
 
-	public void validateExtract_name(String value, int expID, Connection conn) throws DataException, SQLException {
-		log.debug("in validateExtract_name. name = "+value);
-		if (myObjectHandler.isEmpty(value)) {
-			throw new DataException("ERROR: Extract Name must be entered.");
-		} else if (!isUnique(value, expID, conn)) {
-			throw new DataException("ERROR: All Extract Names in this experiment must be unique.");
-		}
-	}
+    public void validateExtract_name(String value, int expID, DataSource pool) throws DataException, SQLException {
+        log.debug("in validateExtract_name. name = " + value);
+        if (myObjectHandler.isEmpty(value)) {
+            throw new DataException("ERROR: Extract Name must be entered.");
+        } else if (!isUnique(value, expID, pool)) {
+            throw new DataException("ERROR: All Extract Names in this experiment must be unique.");
+        }
+    }
 
-	private boolean isUnique(String extract_name, int expID, Connection conn) throws DataException, SQLException {
-		log.debug("checking if Textract isUnique. name = "+extract_name + " and expID = "+expID);
-		String query = 
-			"select textract_sysuid "+
-			"from textract, tpooled, tsample "+
-			"where tsample_exprid = ? "+
-			"and textract_sysuid = tpooled_extractid "+
-			"and tsample_sysuid = tpooled_sampleid "+
-			"and textract_id = ?"; 
-	
-		log.debug("query = " + query);
+    private boolean isUnique(String extract_name, int expID, DataSource pool) throws DataException, SQLException {
+        log.debug("checking if Textract isUnique. name = " + extract_name + " and expID = " + expID);
+        String query =
+                "select textract_sysuid " +
+                        "from textract, tpooled, tsample " +
+                        "where tsample_exprid = ? " +
+                        "and textract_sysuid = tpooled_extractid " +
+                        "and tsample_sysuid = tpooled_sampleid " +
+                        "and textract_id = ?";
 
-		Results myResults = new Results(query, new Object[] {expID, extract_name}, conn);
+        log.debug("query = " + query);
+        int existingID = -99;
+        try (Connection conn = pool.getConnection()) {
+            Results myResults = new Results(query, new Object[]{expID, extract_name}, conn);
+            existingID = myResults.getIntValueFromFirstRow();
+            log.debug("existingID = " + existingID);
+            myResults.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
+        }
+        return (existingID == -99 ? true : false);
+    }
 
-		int existingID = myResults.getIntValueFromFirstRow();
+    /**
+     * Gets all the Textract
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return an array of Textract objects
+     */
+    public Textract[] getAllTextract(DataSource pool) throws SQLException {
 
-		log.debug("existingID = " + existingID);
+        log.debug("In getAllTextract");
 
-		myResults.close();
+        String query =
+                "select " +
+                        "textract_sysuid, textract_id, textract_protocolid, textract_pool_protocolid, textract_del_status, " +
+                        "textract_user, to_char(textract_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "from experimentdetails " +
+                        "order by textract_sysuid";
 
-		return (existingID == -99 ? true : false);
-	}
+        //log.debug("query =  " + query);
+        Textract[] myTextract = new Textract[0];
+        try (Connection conn = pool.getConnection()) {
+            Results myResults = new Results(query, conn);
+            myTextract = setupTextractValues(myResults);
+            myResults.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
+        }
+        return myTextract;
+    }
 
-	/**
-	 * Gets all the Textract
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	an array of Textract objects
-	 */
-	public Textract[] getAllTextract(Connection conn) throws SQLException {
+    /**
+     * Gets the Textract object for this textract_sysuid
+     *
+     * @param textract_sysuid the identifier of the Textract
+     * @param conn            the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return a Textract object
+     */
+    public Textract getTextract(int textract_sysuid, DataSource pool) throws SQLException {
 
-		log.debug("In getAllTextract");
+        log.debug("In getOne Textract");
 
-		String query = 
-			"select "+
-			"textract_sysuid, textract_id, textract_protocolid, textract_pool_protocolid, textract_del_status, "+
-			"textract_user, to_char(textract_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name "+
-			"from experimentdetails "+ 
-			"order by textract_sysuid";
+        String query =
+                "select " +
+                        "textract_sysuid, textract_id, textract_protocolid, textract_pool_protocolid, textract_del_status, " +
+                        "textract_user, to_char(textract_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "from experimentdetails " +
+                        "where textract_sysuid = ?";
 
-		//log.debug("query =  " + query);
+        //log.debug("query =  " + query);
+        Textract myTextract = null;
+        try (Connection conn = pool.getConnection()) {
+            Results myResults = new Results(query, textract_sysuid, conn);
+            myTextract = setupTextractValues(myResults)[0];
+            myResults.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
+        }
+        return myTextract;
+    }
 
-		Results myResults = new Results(query, conn);
-
-		Textract[] myTextract = setupTextractValues(myResults);
-
-		myResults.close();
-
-		return myTextract;
-	}
-
-	/**
-	 * Gets the Textract object for this textract_sysuid
-	 * @param textract_sysuid	 the identifier of the Textract
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	a Textract object
-	 */
-	public Textract getTextract(int textract_sysuid, Connection conn) throws SQLException {
-
-		log.debug("In getOne Textract");
-
-		String query = 
-			"select "+
-			"textract_sysuid, textract_id, textract_protocolid, textract_pool_protocolid, textract_del_status, "+
-			"textract_user, to_char(textract_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name "+
-			"from experimentdetails "+ 
-			"where textract_sysuid = ?";
-
-		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, textract_sysuid, conn);
-
-		Textract myTextract = setupTextractValues(myResults)[0];
-
-		myResults.close();
-
-		return myTextract;
-	}
-
-	/**
-	 * Creates a record in the Textract table.
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	the identifier of the record created
-	 */
+    /**
+     * Creates a record in the Textract table.
+     * @param conn    the database connection
+     * @throws SQLException    if an error occurs while accessing the database
+     * @return the identifier of the record created
+     */
 	/*public int createTextract(Connection conn) throws SQLException {
 
 		int textract_sysuid = myDbUtils.getUniqueID("Textract_seq", conn);
@@ -267,286 +276,288 @@ public class Textract {
 		return textract_sysuid;
 	}*/
 
-	/**
-	 * Updates a record in the Textract table.
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 */
-	public void update(Connection conn) throws SQLException {
+    /**
+     * Updates a record in the Textract table.
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     */
+    public void update(DataSource pool) throws SQLException {
 
-		String query = 
+        String query =
 
-			"update Textract "+
-			"set textract_sysuid = ?, textract_id = ?, textract_protocolid = ?, textract_pool_protocolid = ?, textract_del_status = ?, "+
-			"textract_user = ?, textract_last_change = ? "+
-			"where textract_sysuid = ?";
+                "update Textract " +
+                        "set textract_id = ?, textract_protocolid = ?, textract_pool_protocolid = ?, textract_del_status = ?, " +
+                        "textract_user = ?, textract_last_change = ? " +
+                        "where textract_sysuid = ?";
 
-		log.debug("query =  " + query);
+        log.debug("query =  " + query);
 
-		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+        java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
 
-		pstmt.setInt(1, textract_sysuid);
-		pstmt.setString(2, textract_id);
-		myDbUtils.setToNullIfZero(pstmt, 3, textract_protocolid);
-		myDbUtils.setToNullIfZero(pstmt, 4, textract_pool_protocolid);
-		pstmt.setString(5, textract_del_status);
-		pstmt.setString(6, textract_user);
-		pstmt.setTimestamp(7, now);
-		pstmt.setInt(8, textract_sysuid);
-
-		pstmt.executeUpdate();
-		pstmt.close();
-
-	}
-
-	/**
-	 * Deletes the record in the Textract table and also deletes child records in related tables.
-	 * @param conn	the database connection
-	 * @throws            SQLException if an error occurs while accessing the database
-	 */
-
-	public void deleteTextract(Connection conn) throws SQLException {
-
-		log.info("in deleteTextract");
-
-		//conn.setAutoCommit(false);
-
-		PreparedStatement pstmt = null;
-		try {
-                        new Tlabel().deleteAllTlabelForTextract(textract_sysuid, conn);
-			log.debug("deleting Tpooled with this extract id : " + textract_sysuid);
-                        new Tpooled().deleteAllTpooledForTextract(textract_sysuid, conn);
-
-			String query = 
-				"delete from Textract " + 
-				"where textract_sysuid = ?";
-
-			pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE, 
-				ResultSet.CONCUR_UPDATABLE); 
-
-			pstmt.setInt(1, textract_sysuid);
-			pstmt.executeQuery();
-			pstmt.close();
-
-			//conn.commit();
-		} catch (SQLException e) {
-			log.debug("error in deleteTextract");
-			//conn.rollback();
-			pstmt.close();
-			throw e;
-		}
-		//conn.setAutoCommit(true);
-	}
-
-        /**
-         * Selects the records in the Textract table that are children of Protocol.
-         * @param protocol_id       identifier of the Protocol table
-         * @param conn  the database connection
-         * @throws            SQLException if an error occurs while accessing the database
-         */
-        public Textract[] getAllTextractForProtocol(int protocol_id, Connection conn) throws SQLException {
-
-                log.info("in getAllTextractForProtocol");
-
-                String query =
-			"select "+
-			"textract_sysuid, textract_id, textract_protocolid, textract_pool_protocolid, textract_del_status, "+
-			"textract_user, "+
-			"to_char(textract_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name "+
-			"from experimentdetails "+ 
-                        "where (textract_protocolid = ? or "+
-                        "textract_pool_protocolid = ?) "+
-			"and textract_del_status = 'U' "+
-			"order by textract_id";
-
-		log.debug("query =  " + query);
-
-                Results myResults = new Results(query, new Object[] {protocol_id, protocol_id}, conn);
-
-		Textract[] myTextract = setupTextractValues(myResults);
-
-		myResults.close();
-
-		return myTextract;
-
+            pstmt.setString(1, textract_id);
+            myDbUtils.setToNullIfZero(pstmt, 2, textract_protocolid);
+            myDbUtils.setToNullIfZero(pstmt, 3, textract_pool_protocolid);
+            pstmt.setString(4, textract_del_status);
+            pstmt.setString(5, textract_user);
+            pstmt.setTimestamp(6, now);
+            pstmt.setInt(7, textract_sysuid);
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
         }
+    }
 
-        /**
-         * Deletes the records in the Textract table that are children of Protocol.
-         * @param protocol_id       identifier of the Protocol table
-         * @param conn  the database connection
-         * @throws            SQLException if an error occurs while accessing the database
-         */
-        public void deleteAllTextractForProtocol(int protocol_id, Connection conn) throws SQLException {
+    /**
+     * Deletes the record in the Textract table and also deletes child records in related tables.
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     */
 
-                log.info("in deleteAllTextractForProtocol");
+    public void deleteTextract(DataSource pool) throws SQLException {
 
-                //Make sure committing is handled in calling method!
+        log.info("in deleteTextract");
+        String query =
+                "delete from Textract " +
+                        "where textract_sysuid = ?";
+        new Tlabel().deleteAllTlabelForTextract(textract_sysuid, pool);
+        log.debug("deleting Tpooled with this extract id : " + textract_sysuid);
+        new Tpooled().deleteAllTpooledForTextract(textract_sysuid, pool);
+        PreparedStatement pstmt = null;
+        try (Connection conn = pool.getConnection()) {
+            pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
 
-                String query =
-                        "select textract_sysuid "+
-                        "from Textract "+
-                        "where textract_protocolid = ? "+
+            pstmt.setInt(1, textract_sysuid);
+            pstmt.executeQuery();
+            pstmt.close();
+        } catch (SQLException e) {
+            log.debug("error in deleteTextract");
+            throw e;
+        }
+    }
+
+    /**
+     * Selects the records in the Textract table that are children of Protocol.
+     *
+     * @param protocol_id identifier of the Protocol table
+     * @param conn        the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     */
+    public Textract[] getAllTextractForProtocol(int protocol_id, DataSource pool) throws SQLException {
+
+        log.info("in getAllTextractForProtocol");
+
+        String query =
+                "select " +
+                        "textract_sysuid, textract_id, textract_protocolid, textract_pool_protocolid, textract_del_status, " +
+                        "textract_user, " +
+                        "to_char(textract_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "from experimentdetails " +
+                        "where (textract_protocolid = ? or " +
+                        "textract_pool_protocolid = ?) " +
+                        "and textract_del_status = 'U' " +
+                        "order by textract_id";
+
+        log.debug("query =  " + query);
+        Textract[] myTextract = new Textract[0];
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{protocol_id, protocol_id}, conn);
+            myTextract = setupTextractValues(myResults);
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+        return myTextract;
+
+    }
+
+    /**
+     * Deletes the records in the Textract table that are children of Protocol.
+     *
+     * @param protocol_id identifier of the Protocol table
+     * @param conn        the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     */
+    public void deleteAllTextractForProtocol(int protocol_id, DataSource pool) throws SQLException {
+
+        log.info("in deleteAllTextractForProtocol");
+
+        //Make sure committing is handled in calling method!
+
+        String query =
+                "select textract_sysuid " +
+                        "from Textract " +
+                        "where textract_protocolid = ? " +
                         "or textract_pool_protocolid = ?";
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{protocol_id, protocol_id}, conn);
+            String[] dataRow;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                new Textract(Integer.parseInt(dataRow[0])).deleteTextract(pool);
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+    }
 
-                Results myResults = new Results(query, new Object[] {protocol_id, protocol_id}, conn);
+    /**
+     * Checks to see if a Textract with the same  combination already exists.
+     *
+     * @param myTextract the Textract object being tested
+     * @param conn       the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return the textract_sysuid of a Textract that currently exists
+     */
+    public int checkRecordExists(Textract myTextract, DataSource pool) throws SQLException {
 
-                String[] dataRow;
+        log.debug("in checkRecordExists");
 
-                while ((dataRow = myResults.getNextRow()) != null) {
-                        new Textract(Integer.parseInt(dataRow[0])).deleteTextract(conn);
-                }
+        String query =
+                "select textract_sysuid " +
+                        "from Textract " +
+                        "where  = ?";
+        int pk = -1;
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = pstmt.executeQuery();
+            pk = (rs.next() ? rs.getInt(1) : -1);
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+        return pk;
+    }
 
-                myResults.close();
+    /**
+     * Creates an array of Textract objects and sets the data values to those retrieved from the database.
+     *
+     * @param myResults the Results object corresponding to a set of Textract
+     * @return An array of Textract objects with their values setup
+     */
+    private Textract[] setupTextractValues(Results myResults) {
 
+        //log.debug("in setupTextractValues");
+
+        List<Textract> TextractList = new ArrayList<Textract>();
+
+        String[] dataRow;
+
+        while ((dataRow = myResults.getNextRow()) != null) {
+
+            //log.debug("dataRow= "); myDebugger.print(dataRow);
+
+            Textract thisTextract = new Textract();
+
+            thisTextract.setTextract_sysuid(Integer.parseInt(dataRow[0]));
+            thisTextract.setTextract_id(dataRow[1]);
+            if (dataRow[2] != null && !dataRow[2].equals("")) {
+                thisTextract.setTextract_protocolid(Integer.parseInt(dataRow[2]));
+            }
+            if (dataRow[3] != null && !dataRow[3].equals("")) {
+                thisTextract.setTextract_pool_protocolid(Integer.parseInt(dataRow[3]));
+            }
+            thisTextract.setTextract_del_status(dataRow[4]);
+            thisTextract.setTextract_user(dataRow[5]);
+            thisTextract.setTextract_last_change(new ObjectHandler().getOracleDateAsTimestamp(dataRow[6]));
+            thisTextract.setTextract_exp_name(dataRow[7]);
+
+            TextractList.add(thisTextract);
         }
 
-	/**
-	 * Checks to see if a Textract with the same  combination already exists.
-	 * @param myTextract	the Textract object being tested
-	 * @param conn	the database connection
-	 * @throws            SQLException if an error occurs while accessing the database
-	 * @return	the textract_sysuid of a Textract that currently exists
-	 */
-	public int checkRecordExists(Textract myTextract, Connection conn) throws SQLException {
+        Textract[] TextractArray = (Textract[]) TextractList.toArray(new Textract[TextractList.size()]);
 
-		log.debug("in checkRecordExists");
+        return TextractArray;
+    }
 
-		String query = 
-			"select textract_sysuid "+
-			"from Textract "+
-			"where  = ?";
+    /**
+     * Compares Textract based on different fields.
+     */
+    public class TextractSortComparator implements Comparator<Textract> {
+        int compare;
+        Textract textract1, textract2;
 
-		PreparedStatement pstmt = conn.prepareStatement(query,
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_UPDATABLE);
+        public int compare(Textract object1, Textract object2) {
+            String sortColumn = getSortColumn();
+            String sortOrder = getSortOrder();
 
+            if (sortOrder.equals("A")) {
+                textract1 = object1;
+                textract2 = object2;
+                // default for null columns for ascending order
+                compare = 1;
+            } else {
+                textract2 = object1;
+                textract1 = object2;
+                // default for null columns for ascending order
+                compare = -1;
+            }
 
-		ResultSet rs = pstmt.executeQuery();
+            //log.debug("textract1 = " +textract1+ "textract2 = " +textract2);
 
-		int pk = (rs.next() ? rs.getInt(1) : -1);
-		pstmt.close();
-		return pk;
-	}
+            if (sortColumn.equals("textract_sysuid")) {
+                compare = new Integer(textract1.getTextract_sysuid()).compareTo(new Integer(textract2.getTextract_sysuid()));
+            } else if (sortColumn.equals("textract_id")) {
+                compare = textract1.getTextract_id().compareTo(textract2.getTextract_id());
+            } else if (sortColumn.equals("textract_protocolid")) {
+                compare = new Integer(textract1.getTextract_protocolid()).compareTo(new Integer(textract2.getTextract_protocolid()));
+            } else if (sortColumn.equals("textract_pool_protocolid")) {
+                compare = new Integer(textract1.getTextract_pool_protocolid()).compareTo(new Integer(textract2.getTextract_pool_protocolid()));
+            } else if (sortColumn.equals("textract_del_status")) {
+                compare = textract1.getTextract_del_status().compareTo(textract2.getTextract_del_status());
+            } else if (sortColumn.equals("textract_user")) {
+                compare = textract1.getTextract_user().compareTo(textract2.getTextract_user());
+            } else if (sortColumn.equals("textract_last_change")) {
+                compare = textract1.getTextract_last_change().compareTo(textract2.getTextract_last_change());
+            }
+            return compare;
+        }
+    }
 
-	/**
-	 * Creates an array of Textract objects and sets the data values to those retrieved from the database.
-	 * @param myResults	the Results object corresponding to a set of Textract
-	 * @return	An array of Textract objects with their values setup 
-	 */
-	private Textract[] setupTextractValues(Results myResults) {
-
-		//log.debug("in setupTextractValues");
-
-		List<Textract> TextractList = new ArrayList<Textract>();
-
-		String[] dataRow;
-
-		while ((dataRow = myResults.getNextRow()) != null) {
-
-			//log.debug("dataRow= "); myDebugger.print(dataRow);
-
-			Textract thisTextract = new Textract();
-
-			thisTextract.setTextract_sysuid(Integer.parseInt(dataRow[0]));
-			thisTextract.setTextract_id(dataRow[1]);
-			if (dataRow[2] != null && !dataRow[2].equals("")) {  
-				thisTextract.setTextract_protocolid(Integer.parseInt(dataRow[2]));
-			}
-			if (dataRow[3] != null && !dataRow[3].equals("")) {  
-				thisTextract.setTextract_pool_protocolid(Integer.parseInt(dataRow[3]));
-			}
-			thisTextract.setTextract_del_status(dataRow[4]);
-			thisTextract.setTextract_user(dataRow[5]);
-			thisTextract.setTextract_last_change(new ObjectHandler().getOracleDateAsTimestamp(dataRow[6]));
-			thisTextract.setTextract_exp_name(dataRow[7]);
-
-			TextractList.add(thisTextract);
-		}
-
-		Textract[] TextractArray = (Textract[]) TextractList.toArray(new Textract[TextractList.size()]);
-
-		return TextractArray;
-	}
-
-	/**
-	 * Compares Textract based on different fields.
-	 */
-	public class TextractSortComparator implements Comparator<Textract> {
-		int compare;
-		Textract textract1, textract2;
-
-		public int compare(Textract object1, Textract object2) {
-			String sortColumn = getSortColumn();
-			String sortOrder = getSortOrder();
-
-			if (sortOrder.equals("A")) {
-				textract1 = object1;
-				textract2 = object2;
-				// default for null columns for ascending order
-				compare = 1;
-			} else {
-				textract2 = object1;
-				textract1 = object2;
-				// default for null columns for ascending order
-				compare = -1;
-			}
-
-			//log.debug("textract1 = " +textract1+ "textract2 = " +textract2);
-
-			if (sortColumn.equals("textract_sysuid")) {
-				compare = new Integer(textract1.getTextract_sysuid()).compareTo(new Integer(textract2.getTextract_sysuid()));
-			} else if (sortColumn.equals("textract_id")) {
-				compare = textract1.getTextract_id().compareTo(textract2.getTextract_id());
-			} else if (sortColumn.equals("textract_protocolid")) {
-				compare = new Integer(textract1.getTextract_protocolid()).compareTo(new Integer(textract2.getTextract_protocolid()));
-			} else if (sortColumn.equals("textract_pool_protocolid")) {
-				compare = new Integer(textract1.getTextract_pool_protocolid()).compareTo(new Integer(textract2.getTextract_pool_protocolid()));
-			} else if (sortColumn.equals("textract_del_status")) {
-				compare = textract1.getTextract_del_status().compareTo(textract2.getTextract_del_status());
-			} else if (sortColumn.equals("textract_user")) {
-				compare = textract1.getTextract_user().compareTo(textract2.getTextract_user());
-			} else if (sortColumn.equals("textract_last_change")) {
-				compare = textract1.getTextract_last_change().compareTo(textract2.getTextract_last_change());
-			}
-			return compare;
-		}
-	}
-
-	public Textract[] sortTextract (Textract[] myTextract, String sortColumn, String sortOrder) {
-		setSortColumn(sortColumn);
-		setSortOrder(sortOrder);
-		Arrays.sort(myTextract, new TextractSortComparator());
-		return myTextract;
-	}
+    public Textract[] sortTextract(Textract[] myTextract, String sortColumn, String sortOrder) {
+        setSortColumn(sortColumn);
+        setSortOrder(sortOrder);
+        Arrays.sort(myTextract, new TextractSortComparator());
+        return myTextract;
+    }
 
 
-	/**
-	 * Converts Textract object to a String.
-	 */
-	public String toString() {
-		return "This Textract has textract_sysuid = " + textract_sysuid;
-	}
+    /**
+     * Converts Textract object to a String.
+     */
+    public String toString() {
+        return "This Textract has textract_sysuid = " + textract_sysuid;
+    }
 
-	/**
-	 * Prints Textract object to the log.
-	 */
-	public void print() {
-		log.debug(toString());
-	}
+    /**
+     * Prints Textract object to the log.
+     */
+    public void print() {
+        log.debug(toString());
+    }
 
 
-	/**
-	 * Determines equality of Textract objects.
-	 */
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Textract)) return false;
-		return (this.textract_sysuid == ((Textract)obj).textract_sysuid);
+    /**
+     * Determines equality of Textract objects.
+     */
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Textract)) return false;
+        return (this.textract_sysuid == ((Textract) obj).textract_sysuid);
 
-	}
+    }
 }

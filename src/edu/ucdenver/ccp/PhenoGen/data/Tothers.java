@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -208,7 +209,7 @@ public class Tothers {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Tothers record
 	 */
-	public Tothers getTothersForSampleByType(int sampleID, String type, Connection conn) throws SQLException {
+	public Tothers getTothersForSampleByType(int sampleID, String type, DataSource pool) throws SQLException {
 
 		log.debug("In getTothersForSample. sampleID=" + sampleID + ", type = " + type);
 
@@ -224,13 +225,15 @@ public class Tothers {
 			"order by tothers_id, tothers_value";
 
 		log.debug("query =  " + query);
-
-		Results myResults = new Results(query, new Object[] {sampleID, type}, conn);
-
-		Tothers myTother = (myResults != null && myResults.getNumRows() > 0 ? setupTothersValues(myResults)[0] : null);
-
-		myResults.close();
-
+		Tothers myTother =null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, new Object[] {sampleID, type}, conn);
+			myTother = (myResults != null && myResults.getNumRows() > 0 ? setupTothersValues(myResults)[0] : null);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myTother;
 	}
 
@@ -242,7 +245,7 @@ public class Tothers {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Tothers record
 	 */
-	public Tothers getTothersForExpByType(int expID, String type, Connection conn) throws SQLException {
+	public Tothers getTothersForExpByType(int expID, String type, DataSource pool) throws SQLException {
 
 		log.debug("In getTothersForExp. expID=" + expID + ", type = " + type);
 
@@ -258,13 +261,15 @@ public class Tothers {
 			"order by tothers_id, tothers_value";
 
 		log.debug("query =  " + query);
-
-		Results myResults = new Results(query, new Object[] {expID, type}, conn);
-
-		Tothers myTother = (myResults != null && myResults.getNumRows() > 0 ? setupTothersValues(myResults)[0] : null);
-
-		myResults.close();
-
+		Tothers myTother = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, new Object[] {expID, type}, conn);
+			myTother = (myResults != null && myResults.getNumRows() > 0 ? setupTothersValues(myResults)[0] : null);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myTother;
 	}
 
@@ -274,7 +279,7 @@ public class Tothers {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	an array of Tothers objects
 	 */
-	public Tothers[] getAllTothers(Connection conn) throws SQLException {
+	public Tothers[] getAllTothers(DataSource pool) throws SQLException {
 
 		log.debug("In getAllTothers");
 
@@ -287,13 +292,15 @@ public class Tothers {
 			"order by tothers_id, tothers_value";
 
 		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, conn);
-
-		Tothers[] myTothers = setupTothersValues(myResults);
-
-		myResults.close();
-
+		Tothers[] myTothers = new Tothers[0];
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, conn);
+			myTothers = setupTothersValues(myResults);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myTothers;
 	}
 
@@ -304,7 +311,7 @@ public class Tothers {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Tothers object
 	 */
-	public Tothers getTothers(int tothers_sysuid, Connection conn) throws SQLException {
+	public Tothers getTothers(int tothers_sysuid, DataSource pool) throws SQLException {
 
 		log.debug("In getOne Tothers");
 
@@ -317,13 +324,15 @@ public class Tothers {
 			"where tothers_sysuid = ?";
 
 		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, tothers_sysuid, conn);
-
-		Tothers myTothers = setupTothersValues(myResults)[0];
-
-		myResults.close();
-
+		Tothers myTothers = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, tothers_sysuid, conn);
+			myTothers = setupTothersValues(myResults)[0];
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myTothers;
 	}
 
@@ -385,7 +394,7 @@ public class Tothers {
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void updateTothers_sampleid(Connection conn) throws SQLException {
+	public void updateTothers_sampleid(DataSource pool) throws SQLException {
 
 		log.debug("in updateTothers_sampleid.  sysuid = " + tothers_sysuid + ", and sampleid = " + tothers_sampleid);
 		String query = 
@@ -394,20 +403,22 @@ public class Tothers {
 			"where tothers_sysuid = ?";
 
 		//log.debug("query =  " + query);
-
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
+			pstmt.setInt(1, tothers_sampleid);
+			pstmt.setTimestamp(2, now);
+			pstmt.setInt(3, tothers_sysuid);
 
-		pstmt.setInt(1, tothers_sampleid);
-		pstmt.setTimestamp(2, now);
-		pstmt.setInt(3, tothers_sysuid);
-
-		pstmt.executeUpdate();
-		pstmt.close();
-
+			pstmt.executeUpdate();
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 	}
 
 	/**
@@ -415,12 +426,12 @@ public class Tothers {
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void update(Connection conn) throws SQLException {
+	public void update(DataSource pool) throws SQLException {
 
 		log.debug("in update tothers.  sysuid = " + tothers_sysuid + ", and sampleid = " + tothers_sampleid);
 		String query = 
 			"update Tothers "+
-			"set tothers_sysuid = ?, tothers_id = ?, tothers_value = ?, tothers_descr = ?, tothers_exprid = ?, "+
+			"set tothers_id = ?, tothers_value = ?, tothers_descr = ?, tothers_exprid = ?, "+
 			"tothers_sampleid = ?, tothers_publicid = ?, tothers_qcid = ?, tothers_tardesinid = ?, tothers_tareltypid = ?, "+
 			"tothers_header_prtclid = ?, tothers_detail_prtclid = ?, tothers_del_status = ?, tothers_user = ?, tothers_last_change = ? "+
 			"where tothers_sysuid = ?";
@@ -428,31 +439,33 @@ public class Tothers {
 		//log.debug("query =  " + query);
 
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
+			pstmt.setString(1, tothers_id);
+			pstmt.setString(2, tothers_value);
+			pstmt.setString(3, tothers_descr);
+			pstmt.setInt(4, tothers_exprid);
+			pstmt.setInt(5, tothers_sampleid);
+			pstmt.setInt(6, tothers_publicid);
+			pstmt.setInt(7, tothers_qcid);
+			pstmt.setInt(8, tothers_tardesinid);
+			pstmt.setInt(9, tothers_tareltypid);
+			pstmt.setInt(10, tothers_header_prtclid);
+			pstmt.setInt(11, tothers_detail_prtclid);
+			pstmt.setString(12, tothers_del_status);
+			pstmt.setString(13, tothers_user);
+			pstmt.setTimestamp(14, now);
+			pstmt.setInt(15, tothers_sysuid);
+			pstmt.executeUpdate();
+			pstmt.close();
 
-		pstmt.setInt(1, tothers_sysuid);
-		pstmt.setString(2, tothers_id);
-		pstmt.setString(3, tothers_value);
-		pstmt.setString(4, tothers_descr);
-		pstmt.setInt(5, tothers_exprid);
-		pstmt.setInt(6, tothers_sampleid);
-		pstmt.setInt(7, tothers_publicid);
-		pstmt.setInt(8, tothers_qcid);
-		pstmt.setInt(9, tothers_tardesinid);
-		pstmt.setInt(10, tothers_tareltypid);
-		pstmt.setInt(11, tothers_header_prtclid);
-		pstmt.setInt(12, tothers_detail_prtclid);
-		pstmt.setString(13, tothers_del_status);
-		pstmt.setString(14, tothers_user);
-		pstmt.setTimestamp(15, now);
-		pstmt.setInt(16, tothers_sysuid);
-
-		pstmt.executeUpdate();
-		pstmt.close();
-
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 	}
 
 	/**
@@ -460,17 +473,9 @@ public class Tothers {
 	 * @param conn	the database connection
 	 * @throws            SQLException if an error occurs while accessing the database
 	 */
-	public void deleteAndCommit(Connection conn) throws SQLException {
+	public void deleteAndCommit(DataSource pool) throws SQLException {
 		log.debug("in deleteAndCommit");
-
-		try {
-			deleteTothers(conn);
-			conn.commit();
-		} catch (SQLException e) {
-			log.debug("got error deleting Tothers", e);
-			conn.rollback();
-			throw e;
-		}
+		deleteTothers(pool);
 	}
 
 	/**
@@ -478,22 +483,24 @@ public class Tothers {
 	 * @param conn	the database connection
 	 * @throws            SQLException if an error occurs while accessing the database
 	 */
-	public void deleteTothers(Connection conn) throws SQLException {
+	public void deleteTothers(DataSource pool) throws SQLException {
 
 		log.info("in deleteTothers");
-
 		String query = 
 			"delete from Tothers " + 
 			"where tothers_sysuid = ?";
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE, 
-				ResultSet.CONCUR_UPDATABLE); 
-
-		pstmt.setInt(1, tothers_sysuid);
-		pstmt.executeQuery();
-		pstmt.close();
-
+			pstmt.setInt(1, tothers_sysuid);
+			pstmt.executeQuery();
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 	}
 
 	/**
@@ -503,7 +510,7 @@ public class Tothers {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 * @return	the tothers_sysuid of a Tothers that currently exists
 	 */
-	public int checkRecordExists(Tothers myTothers, Connection conn) throws SQLException {
+	public int checkRecordExists(Tothers myTothers, DataSource pool) throws SQLException {
 
 		log.debug("in checkRecordExists");
 
@@ -511,17 +518,19 @@ public class Tothers {
 			"select tothers_sysuid "+
 			"from Tothers "+
 			"where tothers_sysuid = ?";
-
-		PreparedStatement pstmt = conn.prepareStatement(query,
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_UPDATABLE);
-
-		pstmt.setInt(1, tothers_sysuid);
-
-		ResultSet rs = pstmt.executeQuery();
-
-		int pk = (rs.next() ? rs.getInt(1) : -1);
-		pstmt.close();
+		int pk = -1;
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			pstmt.setInt(1, tothers_sysuid);
+			ResultSet rs = pstmt.executeQuery();
+			pk = (rs.next() ? rs.getInt(1) : -1);
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return pk;
 	}
 

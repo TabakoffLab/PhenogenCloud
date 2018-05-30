@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,219 +24,226 @@ import org.apache.log4j.Logger;
 
 /**
  * Class for handling data related to Tpublic
- *  @author  Cheryl Hornbaker
+ *
+ * @author Cheryl Hornbaker
  */
 
 public class Tpublic {
 
-	private Logger log=null;
+    private Logger log = null;
 
-	private DbUtils myDbUtils = new DbUtils();
-	private Debugger myDebugger = new Debugger();
+    private DbUtils myDbUtils = new DbUtils();
+    private Debugger myDebugger = new Debugger();
 
-	public Tpublic() {
-		log = Logger.getRootLogger();
-	}
+    public Tpublic() {
+        log = Logger.getRootLogger();
+    }
 
-	public Tpublic(int tpublic_sysuid) {
-		log = Logger.getRootLogger();
-		this.setTpublic_sysuid(tpublic_sysuid);
-	}
-
-
-	private int tpublic_sysuid;
-	private int tpublic_subid;
-	private String tpublic_title;
-	private int tpublic_status;
-	private int tpublic_publication;
-	private int tpublic_year;
-	private String tpublic_volume;
-	private int tpublic_first_page;
-	private int tpublic_last_page;
-	private String tpublic_del_status = "U";
-	private String tpublic_user;
-	private java.sql.Timestamp tpublic_last_change;
-	private String sortColumn ="";
-	private String sortOrder ="A";
-
-	public void setTpublic_sysuid(int inInt) {
-		this.tpublic_sysuid = inInt;
-	}
-
-	public int getTpublic_sysuid() {
-		return this.tpublic_sysuid;
-	}
-
-	public void setTpublic_subid(int inInt) {
-		this.tpublic_subid = inInt;
-	}
-
-	public int getTpublic_subid() {
-		return this.tpublic_subid;
-	}
-
-	public void setTpublic_title(String inString) {
-		this.tpublic_title = inString;
-	}
-
-	public String getTpublic_title() {
-		return this.tpublic_title;
-	}
-
-	public void setTpublic_status(int inInt) {
-		this.tpublic_status = inInt;
-	}
-
-	public int getTpublic_status() {
-		return this.tpublic_status;
-	}
-
-	public void setTpublic_publication(int inInt) {
-		this.tpublic_publication = inInt;
-	}
-
-	public int getTpublic_publication() {
-		return this.tpublic_publication;
-	}
-
-	public void setTpublic_year(int inInt) {
-		this.tpublic_year = inInt;
-	}
-
-	public int getTpublic_year() {
-		return this.tpublic_year;
-	}
-
-	public void setTpublic_volume(String inString) {
-		this.tpublic_volume = inString;
-	}
-
-	public String getTpublic_volume() {
-		return this.tpublic_volume;
-	}
-
-	public void setTpublic_first_page(int inInt) {
-		this.tpublic_first_page = inInt;
-	}
-
-	public int getTpublic_first_page() {
-		return this.tpublic_first_page;
-	}
-
-	public void setTpublic_last_page(int inInt) {
-		this.tpublic_last_page = inInt;
-	}
-
-	public int getTpublic_last_page() {
-		return this.tpublic_last_page;
-	}
-
-	public void setTpublic_del_status(String inString) {
-		this.tpublic_del_status = inString;
-	}
-
-	public String getTpublic_del_status() {
-		return this.tpublic_del_status;
-	}
-
-	public void setTpublic_user(String inString) {
-		this.tpublic_user = inString;
-	}
-
-	public String getTpublic_user() {
-		return this.tpublic_user;
-	}
-
-	public void setTpublic_last_change(java.sql.Timestamp inTimestamp) {
-		this.tpublic_last_change = inTimestamp;
-	}
-
-	public java.sql.Timestamp getTpublic_last_change() {
-		return this.tpublic_last_change;
-	}
-
-	public void setSortColumn(String inString) {
-		this.sortColumn = inString;
-	}
-
-	public String getSortColumn() {
-		return this.sortColumn;
-	}
-
-	public void setSortOrder(String inString) {
-		this.sortOrder = inString;
-	}
-
-	public String getSortOrder() {
-		return this.sortOrder;
-	}
+    public Tpublic(int tpublic_sysuid) {
+        log = Logger.getRootLogger();
+        this.setTpublic_sysuid(tpublic_sysuid);
+    }
 
 
-	/**
-	 * Gets all the Tpublic
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	an array of Tpublic objects
-	 */
-	public Tpublic[] getAllTpublic(Connection conn) throws SQLException {
+    private int tpublic_sysuid;
+    private int tpublic_subid;
+    private String tpublic_title;
+    private int tpublic_status;
+    private int tpublic_publication;
+    private int tpublic_year;
+    private String tpublic_volume;
+    private int tpublic_first_page;
+    private int tpublic_last_page;
+    private String tpublic_del_status = "U";
+    private String tpublic_user;
+    private java.sql.Timestamp tpublic_last_change;
+    private String sortColumn = "";
+    private String sortOrder = "A";
 
-		log.debug("In getAllTpublic");
+    public void setTpublic_sysuid(int inInt) {
+        this.tpublic_sysuid = inInt;
+    }
 
-		String query = 
-			"select "+
-			"tpublic_sysuid, tpublic_subid, tpublic_title, tpublic_status, tpublic_publication, "+
-			"tpublic_year, tpublic_volume, tpublic_first_page, tpublic_last_page, tpublic_del_status, "+
-			"tpublic_user, to_char(tpublic_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
-			"from Tpublic "+ 
-			"order by tpublic_sysuid";
+    public int getTpublic_sysuid() {
+        return this.tpublic_sysuid;
+    }
 
-		//log.debug("query =  " + query);
+    public void setTpublic_subid(int inInt) {
+        this.tpublic_subid = inInt;
+    }
 
-		Results myResults = new Results(query, conn);
+    public int getTpublic_subid() {
+        return this.tpublic_subid;
+    }
 
-		Tpublic[] myTpublic = setupTpublicValues(myResults);
+    public void setTpublic_title(String inString) {
+        this.tpublic_title = inString;
+    }
 
-		myResults.close();
+    public String getTpublic_title() {
+        return this.tpublic_title;
+    }
 
-		return myTpublic;
-	}
+    public void setTpublic_status(int inInt) {
+        this.tpublic_status = inInt;
+    }
 
-	/**
-	 * Gets the Tpublic object for this tpublic_sysuid
-	 * @param tpublic_sysuid	 the identifier of the Tpublic
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	a Tpublic object
-	 */
-	public Tpublic getTpublic(int tpublic_sysuid, Connection conn) throws SQLException {
+    public int getTpublic_status() {
+        return this.tpublic_status;
+    }
 
-		log.debug("In getOne Tpublic");
+    public void setTpublic_publication(int inInt) {
+        this.tpublic_publication = inInt;
+    }
 
-		String query = 
-			"select "+
-			"tpublic_sysuid, tpublic_subid, tpublic_title, tpublic_status, tpublic_publication, "+
-			"tpublic_year, tpublic_volume, tpublic_first_page, tpublic_last_page, tpublic_del_status, "+
-			"tpublic_user, to_char(tpublic_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
-			"from Tpublic "+ 
-			"where tpublic_sysuid = ?";
+    public int getTpublic_publication() {
+        return this.tpublic_publication;
+    }
 
-		//log.debug("query =  " + query);
+    public void setTpublic_year(int inInt) {
+        this.tpublic_year = inInt;
+    }
 
-		Results myResults = new Results(query, tpublic_sysuid, conn);
+    public int getTpublic_year() {
+        return this.tpublic_year;
+    }
 
-		Tpublic myTpublic = setupTpublicValues(myResults)[0];
+    public void setTpublic_volume(String inString) {
+        this.tpublic_volume = inString;
+    }
 
-		myResults.close();
+    public String getTpublic_volume() {
+        return this.tpublic_volume;
+    }
 
-		return myTpublic;
-	}
+    public void setTpublic_first_page(int inInt) {
+        this.tpublic_first_page = inInt;
+    }
 
-	/**
-	 * Creates a record in the Tpublic table.
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 * @return	the identifier of the record created
-	 */
+    public int getTpublic_first_page() {
+        return this.tpublic_first_page;
+    }
+
+    public void setTpublic_last_page(int inInt) {
+        this.tpublic_last_page = inInt;
+    }
+
+    public int getTpublic_last_page() {
+        return this.tpublic_last_page;
+    }
+
+    public void setTpublic_del_status(String inString) {
+        this.tpublic_del_status = inString;
+    }
+
+    public String getTpublic_del_status() {
+        return this.tpublic_del_status;
+    }
+
+    public void setTpublic_user(String inString) {
+        this.tpublic_user = inString;
+    }
+
+    public String getTpublic_user() {
+        return this.tpublic_user;
+    }
+
+    public void setTpublic_last_change(java.sql.Timestamp inTimestamp) {
+        this.tpublic_last_change = inTimestamp;
+    }
+
+    public java.sql.Timestamp getTpublic_last_change() {
+        return this.tpublic_last_change;
+    }
+
+    public void setSortColumn(String inString) {
+        this.sortColumn = inString;
+    }
+
+    public String getSortColumn() {
+        return this.sortColumn;
+    }
+
+    public void setSortOrder(String inString) {
+        this.sortOrder = inString;
+    }
+
+    public String getSortOrder() {
+        return this.sortOrder;
+    }
+
+
+    /**
+     * Gets all the Tpublic
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return an array of Tpublic objects
+     */
+    public Tpublic[] getAllTpublic(DataSource pool) throws SQLException {
+
+        log.debug("In getAllTpublic");
+
+        String query =
+                "select " +
+                        "tpublic_sysuid, tpublic_subid, tpublic_title, tpublic_status, tpublic_publication, " +
+                        "tpublic_year, tpublic_volume, tpublic_first_page, tpublic_last_page, tpublic_del_status, " +
+                        "tpublic_user, to_char(tpublic_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "from Tpublic " +
+                        "order by tpublic_sysuid";
+
+        //log.debug("query =  " + query);
+        Tpublic[] myTpublic = new Tpublic[0];
+        try (Connection conn = pool.getConnection()) {
+            Results myResults = new Results(query, conn);
+            myTpublic = setupTpublicValues(myResults);
+            myResults.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
+        }
+        return myTpublic;
+    }
+
+    /**
+     * Gets the Tpublic object for this tpublic_sysuid
+     *
+     * @param tpublic_sysuid the identifier of the Tpublic
+     * @param conn           the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return a Tpublic object
+     */
+    public Tpublic getTpublic(int tpublic_sysuid, DataSource pool) throws SQLException {
+
+        log.debug("In getOne Tpublic");
+
+        String query =
+                "select " +
+                        "tpublic_sysuid, tpublic_subid, tpublic_title, tpublic_status, tpublic_publication, " +
+                        "tpublic_year, tpublic_volume, tpublic_first_page, tpublic_last_page, tpublic_del_status, " +
+                        "tpublic_user, to_char(tpublic_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "from Tpublic " +
+                        "where tpublic_sysuid = ?";
+
+        //log.debug("query =  " + query);
+        Tpublic myTpublic = null;
+        try (Connection conn = pool.getConnection()) {
+            Results myResults = new Results(query, tpublic_sysuid, conn);
+            myTpublic = setupTpublicValues(myResults)[0];
+            myResults.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
+        }
+        return myTpublic;
+    }
+
+    /**
+     * Creates a record in the Tpublic table.
+     * @param conn    the database connection
+     * @throws SQLException    if an error occurs while accessing the database
+     * @return the identifier of the record created
+     */
 	/*public int createTpublic(Connection conn) throws SQLException {
 
 		int tpublic_sysuid = myDbUtils.getUniqueID("Tpublic_seq", conn);
@@ -280,267 +288,268 @@ public class Tpublic {
 		return tpublic_sysuid;
 	}*/
 
-	/**
-	 * Updates a record in the Tpublic table.
-	 * @param conn 	the database connection
-	 * @throws SQLException	if an error occurs while accessing the database
-	 */
-	public void update(Connection conn) throws SQLException {
+    /**
+     * Updates a record in the Tpublic table.
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     */
+    public void update(DataSource pool) throws SQLException {
 
-		String query = 
+        String query =
 
-			"update Tpublic "+
-			"set tpublic_sysuid = ?, tpublic_subid = ?, tpublic_title = ?, tpublic_status = ?, tpublic_publication = ?, "+
-			"tpublic_year = ?, tpublic_volume = ?, tpublic_first_page = ?, tpublic_last_page = ?, tpublic_del_status = ?, "+
-			"tpublic_user = ?, tpublic_last_change = ? "+
-			"where tpublic_sysuid = ?";
+                "update Tpublic " +
+                        "set tpublic_subid = ?, tpublic_title = ?, tpublic_status = ?, tpublic_publication = ?, " +
+                        "tpublic_year = ?, tpublic_volume = ?, tpublic_first_page = ?, tpublic_last_page = ?, tpublic_del_status = ?, " +
+                        "tpublic_user = ?, tpublic_last_change = ? " +
+                        "where tpublic_sysuid = ?";
 
-		log.debug("query =  " + query);
+        log.debug("query =  " + query);
 
-		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+        java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            pstmt.setInt(1, tpublic_subid);
+            pstmt.setString(2, tpublic_title);
+            pstmt.setInt(3, tpublic_status);
+            pstmt.setInt(4, tpublic_publication);
+            pstmt.setInt(5, tpublic_year);
+            pstmt.setString(6, tpublic_volume);
+            pstmt.setInt(7, tpublic_first_page);
+            pstmt.setInt(8, tpublic_last_page);
+            pstmt.setString(9, tpublic_del_status);
+            pstmt.setString(10, tpublic_user);
+            pstmt.setTimestamp(11, now);
+            pstmt.setInt(12, tpublic_sysuid);
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
-
-		pstmt.setInt(1, tpublic_sysuid);
-		pstmt.setInt(2, tpublic_subid);
-		pstmt.setString(3, tpublic_title);
-		pstmt.setInt(4, tpublic_status);
-		pstmt.setInt(5, tpublic_publication);
-		pstmt.setInt(6, tpublic_year);
-		pstmt.setString(7, tpublic_volume);
-		pstmt.setInt(8, tpublic_first_page);
-		pstmt.setInt(9, tpublic_last_page);
-		pstmt.setString(10, tpublic_del_status);
-		pstmt.setString(11, tpublic_user);
-		pstmt.setTimestamp(12, now);
-		pstmt.setInt(13, tpublic_sysuid);
-
-		pstmt.executeUpdate();
-		pstmt.close();
-
-	}
-
-
-        /**
-         * Deletes the record in the Tpublic table and also deletes child records in related tables.
-         * @param conn  the database connection
-         * @throws            SQLException if an error occurs while accessing the database
-         */
-        public void deleteTpublic(Connection conn) throws SQLException {
-
-                log.info("in deleteTpublic");
-
-                //conn.setAutoCommit(false);
-
-                PreparedStatement pstmt = null;
-                try {
-
-                        //new Tauthor().deleteAllTauthorForTpublic(tpublic_sysuid, conn);
-
-                        String query =
-				"delete from Tpublic " + 
-				"where tpublic_sysuid = ?";
-
-                        pstmt = conn.prepareStatement(query,
-                                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                                ResultSet.CONCUR_UPDATABLE);
-
-                        pstmt.setInt(1, tpublic_sysuid);
-                        pstmt.executeQuery();
-                        pstmt.close();
-
-                        //conn.commit();
-                } catch (SQLException e) {
-                        log.debug("error in deleteTpublic");
-                        //conn.rollback();
-                        pstmt.close();
-                        throw e;
-                }
-                //conn.setAutoCommit(true);
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
+            throw e;
         }
 
-        /**
-         * Deletes the records in the Tpublic table that are children of Experiment.
-         * @param subid        the subid from the Experiment table
-         * @param conn  the database connection
-         * @throws            SQLException if an error occurs while accessing the database
-         */
-        public void deleteAllTpublicForExperiment(int subid, Connection conn) throws SQLException {
 
-                log.info("in deleteAllTpublicForExperiment");
+    }
 
-                //Make sure committing is handled in calling method!
 
-                String query =
-                        "select tpublic_sysuid "+
-                        "from Tpublic "+
+    /**
+     * Deletes the record in the Tpublic table and also deletes child records in related tables.
+     *
+     * @param conn the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     */
+    public void deleteTpublic(DataSource pool) throws SQLException {
+        log.info("in deleteTpublic");
+        String query =
+                "delete from Tpublic " +
+                        "where tpublic_sysuid = ?";
+        PreparedStatement pstmt = null;
+        try (Connection conn = pool.getConnection()) {
+            //new Tauthor().deleteAllTauthorForTpublic(tpublic_sysuid, conn);
+            pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+
+            pstmt.setInt(1, tpublic_sysuid);
+            pstmt.executeQuery();
+            pstmt.close();
+            //conn.commit();
+        } catch (SQLException e) {
+            log.debug("error in deleteTpublic");
+            throw e;
+        }
+    }
+
+    /**
+     * Deletes the records in the Tpublic table that are children of Experiment.
+     *
+     * @param subid the subid from the Experiment table
+     * @param conn  the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     */
+    public void deleteAllTpublicForExperiment(int subid, DataSource pool) throws SQLException {
+
+        log.info("in deleteAllTpublicForExperiment");
+
+        //Make sure committing is handled in calling method!
+
+        String query =
+                "select tpublic_sysuid " +
+                        "from Tpublic " +
                         "where tpublic_subid = ?";
-
-                Results myResults = new Results(query, subid, conn);
-
-                String[] dataRow;
-
-                while ((dataRow = myResults.getNextRow()) != null) {
-                        new Tpublic(tpublic_sysuid).deleteTpublic(conn);
-                }
-
-                myResults.close();
-
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, subid, conn);
+            String[] dataRow;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                new Tpublic(tpublic_sysuid).deleteTpublic(pool);
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
 
-	/**
-	 * Checks to see if a Tpublic with the same  combination already exists.
-	 * @param myTpublic	the Tpublic object being tested
-	 * @param conn	the database connection
-	 * @throws            SQLException if an error occurs while accessing the database
-	 * @return	the tpublic_sysuid of a Tpublic that currently exists
-	 */
-	public int checkRecordExists(Tpublic myTpublic, Connection conn) throws SQLException {
 
-		log.debug("in checkRecordExists");
+    }
 
-		String query = 
-			"select tpublic_sysuid "+
-			"from Tpublic "+
-			"where  = ?";
+    /**
+     * Checks to see if a Tpublic with the same  combination already exists.
+     *
+     * @param myTpublic the Tpublic object being tested
+     * @param conn      the database connection
+     * @throws SQLException if an error occurs while accessing the database
+     * @return the tpublic_sysuid of a Tpublic that currently exists
+     */
+    public int checkRecordExists(Tpublic myTpublic, DataSource pool) throws SQLException {
 
-		PreparedStatement pstmt = conn.prepareStatement(query,
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_UPDATABLE);
+        log.debug("in checkRecordExists");
 
+        String query =
+                "select tpublic_sysuid " +
+                        "from Tpublic " +
+                        "where  = ?";
+        int pk = -1;
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            ResultSet rs = pstmt.executeQuery();
+            pk = (rs.next() ? rs.getInt(1) : -1);
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+        return pk;
+    }
 
-		ResultSet rs = pstmt.executeQuery();
+    /**
+     * Creates an array of Tpublic objects and sets the data values to those retrieved from the database.
+     *
+     * @param myResults the Results object corresponding to a set of Tpublic
+     * @return An array of Tpublic objects with their values setup
+     */
+    private Tpublic[] setupTpublicValues(Results myResults) {
 
-		int pk = (rs.next() ? rs.getInt(1) : -1);
-		pstmt.close();
-		return pk;
-	}
+        //log.debug("in setupTpublicValues");
 
-	/**
-	 * Creates an array of Tpublic objects and sets the data values to those retrieved from the database.
-	 * @param myResults	the Results object corresponding to a set of Tpublic
-	 * @return	An array of Tpublic objects with their values setup 
-	 */
-	private Tpublic[] setupTpublicValues(Results myResults) {
+        List<Tpublic> TpublicList = new ArrayList<Tpublic>();
 
-		//log.debug("in setupTpublicValues");
+        String[] dataRow;
 
-		List<Tpublic> TpublicList = new ArrayList<Tpublic>();
+        while ((dataRow = myResults.getNextRow()) != null) {
 
-		String[] dataRow;
+            //log.debug("dataRow= "); myDebugger.print(dataRow);
 
-		while ((dataRow = myResults.getNextRow()) != null) {
+            Tpublic thisTpublic = new Tpublic();
 
-			//log.debug("dataRow= "); myDebugger.print(dataRow);
+            thisTpublic.setTpublic_sysuid(Integer.parseInt(dataRow[0]));
+            thisTpublic.setTpublic_subid(Integer.parseInt(dataRow[1]));
+            thisTpublic.setTpublic_title(dataRow[2]);
+            thisTpublic.setTpublic_status(Integer.parseInt(dataRow[3]));
+            thisTpublic.setTpublic_publication(Integer.parseInt(dataRow[4]));
+            thisTpublic.setTpublic_year(Integer.parseInt(dataRow[5]));
+            thisTpublic.setTpublic_volume(dataRow[6]);
+            thisTpublic.setTpublic_first_page(Integer.parseInt(dataRow[7]));
+            thisTpublic.setTpublic_last_page(Integer.parseInt(dataRow[8]));
+            thisTpublic.setTpublic_del_status(dataRow[9]);
+            thisTpublic.setTpublic_user(dataRow[10]);
+            thisTpublic.setTpublic_last_change(new ObjectHandler().getOracleDateAsTimestamp(dataRow[11]));
 
-			Tpublic thisTpublic = new Tpublic();
+            TpublicList.add(thisTpublic);
+        }
 
-			thisTpublic.setTpublic_sysuid(Integer.parseInt(dataRow[0]));
-			thisTpublic.setTpublic_subid(Integer.parseInt(dataRow[1]));
-			thisTpublic.setTpublic_title(dataRow[2]);
-			thisTpublic.setTpublic_status(Integer.parseInt(dataRow[3]));
-			thisTpublic.setTpublic_publication(Integer.parseInt(dataRow[4]));
-			thisTpublic.setTpublic_year(Integer.parseInt(dataRow[5]));
-			thisTpublic.setTpublic_volume(dataRow[6]);
-			thisTpublic.setTpublic_first_page(Integer.parseInt(dataRow[7]));
-			thisTpublic.setTpublic_last_page(Integer.parseInt(dataRow[8]));
-			thisTpublic.setTpublic_del_status(dataRow[9]);
-			thisTpublic.setTpublic_user(dataRow[10]);
-			thisTpublic.setTpublic_last_change(new ObjectHandler().getOracleDateAsTimestamp(dataRow[11]));
+        Tpublic[] TpublicArray = (Tpublic[]) TpublicList.toArray(new Tpublic[TpublicList.size()]);
 
-			TpublicList.add(thisTpublic);
-		}
+        return TpublicArray;
+    }
 
-		Tpublic[] TpublicArray = (Tpublic[]) TpublicList.toArray(new Tpublic[TpublicList.size()]);
+    /**
+     * Compares Tpublic based on different fields.
+     */
+    public class TpublicSortComparator implements Comparator<Tpublic> {
+        int compare;
+        Tpublic tpublic1, tpublic2;
 
-		return TpublicArray;
-	}
+        public int compare(Tpublic object1, Tpublic object2) {
+            String sortColumn = getSortColumn();
+            String sortOrder = getSortOrder();
 
-	/**
-	 * Compares Tpublic based on different fields.
-	 */
-	public class TpublicSortComparator implements Comparator<Tpublic> {
-		int compare;
-		Tpublic tpublic1, tpublic2;
+            if (sortOrder.equals("A")) {
+                tpublic1 = object1;
+                tpublic2 = object2;
+                // default for null columns for ascending order
+                compare = 1;
+            } else {
+                tpublic2 = object1;
+                tpublic1 = object2;
+                // default for null columns for ascending order
+                compare = -1;
+            }
 
-		public int compare(Tpublic object1, Tpublic object2) {
-			String sortColumn = getSortColumn();
-			String sortOrder = getSortOrder();
+            //log.debug("tpublic1 = " +tpublic1+ "tpublic2 = " +tpublic2);
 
-			if (sortOrder.equals("A")) {
-				tpublic1 = object1;
-				tpublic2 = object2;
-				// default for null columns for ascending order
-				compare = 1;
-			} else {
-				tpublic2 = object1;
-				tpublic1 = object2;
-				// default for null columns for ascending order
-				compare = -1;
-			}
+            if (sortColumn.equals("tpublic_sysuid")) {
+                compare = new Integer(tpublic1.getTpublic_sysuid()).compareTo(new Integer(tpublic2.getTpublic_sysuid()));
+            } else if (sortColumn.equals("tpublic_subid")) {
+                compare = new Integer(tpublic1.getTpublic_subid()).compareTo(new Integer(tpublic2.getTpublic_subid()));
+            } else if (sortColumn.equals("tpublic_title")) {
+                compare = tpublic1.getTpublic_title().compareTo(tpublic2.getTpublic_title());
+            } else if (sortColumn.equals("tpublic_status")) {
+                compare = new Integer(tpublic1.getTpublic_status()).compareTo(new Integer(tpublic2.getTpublic_status()));
+            } else if (sortColumn.equals("tpublic_publication")) {
+                compare = new Integer(tpublic1.getTpublic_publication()).compareTo(new Integer(tpublic2.getTpublic_publication()));
+            } else if (sortColumn.equals("tpublic_year")) {
+                compare = new Integer(tpublic1.getTpublic_year()).compareTo(new Integer(tpublic2.getTpublic_year()));
+            } else if (sortColumn.equals("tpublic_volume")) {
+                compare = tpublic1.getTpublic_volume().compareTo(tpublic2.getTpublic_volume());
+            } else if (sortColumn.equals("tpublic_first_page")) {
+                compare = new Integer(tpublic1.getTpublic_first_page()).compareTo(new Integer(tpublic2.getTpublic_first_page()));
+            } else if (sortColumn.equals("tpublic_last_page")) {
+                compare = new Integer(tpublic1.getTpublic_last_page()).compareTo(new Integer(tpublic2.getTpublic_last_page()));
+            } else if (sortColumn.equals("tpublic_del_status")) {
+                compare = tpublic1.getTpublic_del_status().compareTo(tpublic2.getTpublic_del_status());
+            } else if (sortColumn.equals("tpublic_user")) {
+                compare = tpublic1.getTpublic_user().compareTo(tpublic2.getTpublic_user());
+            } else if (sortColumn.equals("tpublic_last_change")) {
+                compare = tpublic1.getTpublic_last_change().compareTo(tpublic2.getTpublic_last_change());
+            }
+            return compare;
+        }
+    }
 
-			//log.debug("tpublic1 = " +tpublic1+ "tpublic2 = " +tpublic2);
-
-			if (sortColumn.equals("tpublic_sysuid")) {
-				compare = new Integer(tpublic1.getTpublic_sysuid()).compareTo(new Integer(tpublic2.getTpublic_sysuid()));
-			} else if (sortColumn.equals("tpublic_subid")) {
-				compare = new Integer(tpublic1.getTpublic_subid()).compareTo(new Integer(tpublic2.getTpublic_subid()));
-			} else if (sortColumn.equals("tpublic_title")) {
-				compare = tpublic1.getTpublic_title().compareTo(tpublic2.getTpublic_title());
-			} else if (sortColumn.equals("tpublic_status")) {
-				compare = new Integer(tpublic1.getTpublic_status()).compareTo(new Integer(tpublic2.getTpublic_status()));
-			} else if (sortColumn.equals("tpublic_publication")) {
-				compare = new Integer(tpublic1.getTpublic_publication()).compareTo(new Integer(tpublic2.getTpublic_publication()));
-			} else if (sortColumn.equals("tpublic_year")) {
-				compare = new Integer(tpublic1.getTpublic_year()).compareTo(new Integer(tpublic2.getTpublic_year()));
-			} else if (sortColumn.equals("tpublic_volume")) {
-				compare = tpublic1.getTpublic_volume().compareTo(tpublic2.getTpublic_volume());
-			} else if (sortColumn.equals("tpublic_first_page")) {
-				compare = new Integer(tpublic1.getTpublic_first_page()).compareTo(new Integer(tpublic2.getTpublic_first_page()));
-			} else if (sortColumn.equals("tpublic_last_page")) {
-				compare = new Integer(tpublic1.getTpublic_last_page()).compareTo(new Integer(tpublic2.getTpublic_last_page()));
-			} else if (sortColumn.equals("tpublic_del_status")) {
-				compare = tpublic1.getTpublic_del_status().compareTo(tpublic2.getTpublic_del_status());
-			} else if (sortColumn.equals("tpublic_user")) {
-				compare = tpublic1.getTpublic_user().compareTo(tpublic2.getTpublic_user());
-			} else if (sortColumn.equals("tpublic_last_change")) {
-				compare = tpublic1.getTpublic_last_change().compareTo(tpublic2.getTpublic_last_change());
-			}
-			return compare;
-		}
-	}
-
-	public Tpublic[] sortTpublic (Tpublic[] myTpublic, String sortColumn, String sortOrder) {
-		setSortColumn(sortColumn);
-		setSortOrder(sortOrder);
-		Arrays.sort(myTpublic, new TpublicSortComparator());
-		return myTpublic;
-	}
-
-
-	/**
-	 * Converts Tpublic object to a String.
-	 */
-	public String toString() {
-		return "This Tpublic has tpublic_sysuid = " + tpublic_sysuid;
-	}
-
-	/**
-	 * Prints Tpublic object to the log.
-	 */
-	public void print() {
-		log.debug(toString());
-	}
+    public Tpublic[] sortTpublic(Tpublic[] myTpublic, String sortColumn, String sortOrder) {
+        setSortColumn(sortColumn);
+        setSortOrder(sortOrder);
+        Arrays.sort(myTpublic, new TpublicSortComparator());
+        return myTpublic;
+    }
 
 
-	/**
-	 * Determines equality of Tpublic objects.
-	 */
-	public boolean equals(Object obj) {
-		if (!(obj instanceof Tpublic)) return false;
-		return (this.tpublic_sysuid == ((Tpublic)obj).tpublic_sysuid);
+    /**
+     * Converts Tpublic object to a String.
+     */
+    public String toString() {
+        return "This Tpublic has tpublic_sysuid = " + tpublic_sysuid;
+    }
 
-	}
+    /**
+     * Prints Tpublic object to the log.
+     */
+    public void print() {
+        log.debug(toString());
+    }
+
+
+    /**
+     * Determines equality of Tpublic objects.
+     */
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Tpublic)) return false;
+        return (this.tpublic_sysuid == ((Tpublic) obj).tpublic_sysuid);
+
+    }
 }

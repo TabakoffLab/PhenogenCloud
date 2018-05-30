@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,7 +134,7 @@ public class Tntxsyn {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	an array of Tntxsyn objects
 	 */
-	public Tntxsyn[] getAllTntxsyn(Connection conn) throws SQLException {
+	public Tntxsyn[] getAllTntxsyn(DataSource pool) throws SQLException {
 
 		log.debug("In getAllTntxsyn");
 
@@ -149,13 +150,15 @@ public class Tntxsyn {
 			"order by tntxsyn_tax_id";
 
 		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, conn);
-
-		Tntxsyn[] myTntxsyn = setupTntxsynValues(myResults);
-
-		myResults.close();
-
+		Tntxsyn[] myTntxsyn = new Tntxsyn[0];
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, conn);
+			myTntxsyn = setupTntxsynValues(myResults);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myTntxsyn;
 	}
 
@@ -165,10 +168,10 @@ public class Tntxsyn {
    	* @throws            SQLException if a database error occurs
    	* @return            a LinkedHashMap of values
    	*/
-	public LinkedHashMap<String, String> getValuesAsSelectOptions(Connection conn) throws SQLException {
+	public LinkedHashMap<String, String> getValuesAsSelectOptions(DataSource pool) throws SQLException {
         	//log.debug("in getValuesAsSelectOptions");
 
-		Tntxsyn[] thisArray = getAllTntxsyn(conn);
+		Tntxsyn[] thisArray = getAllTntxsyn(pool);
         	LinkedHashMap<String, String> optionHash = new LinkedHashMap<String, String>();
 
         	for (int i=0; i<thisArray.length; i++) {
@@ -184,7 +187,7 @@ public class Tntxsyn {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Tntxsyn object
 	 */
-	public Tntxsyn getTaxID(String tntxsyn_name_txt, Connection conn) throws SQLException {
+	public Tntxsyn getTaxID(String tntxsyn_name_txt, DataSource pool) throws SQLException {
 
 		log.debug("In getTaxID");
 
@@ -196,12 +199,16 @@ public class Tntxsyn {
 			"where tntxsyn_name_txt = ?";
 
 		//log.debug("query =  " + query);
+		Tntxsyn myTntxsyn = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, new Object[] {tntxsyn_name_txt}, conn);
+			myTntxsyn = setupTntxsynValues(myResults)[0];
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		Results myResults = new Results(query, new Object[] {tntxsyn_name_txt}, conn);
-
-		Tntxsyn myTntxsyn = setupTntxsynValues(myResults)[0];
-
-		myResults.close();
 
 		return myTntxsyn;
 	}
@@ -213,7 +220,7 @@ public class Tntxsyn {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Tntxsyn object
 	 */
-	public Tntxsyn getTntxsyn(int tntxsyn_tax_id, Connection conn) throws SQLException {
+	public Tntxsyn getTntxsyn(int tntxsyn_tax_id, DataSource pool) throws SQLException {
 
 		log.debug("In getOne Tntxsyn");
 
@@ -225,12 +232,16 @@ public class Tntxsyn {
 			"where tntxsyn_tax_id = ?";
 
 		//log.debug("query =  " + query);
+		Tntxsyn myTntxsyn = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, tntxsyn_tax_id, conn);
+			myTntxsyn = setupTntxsynValues(myResults)[0];
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		Results myResults = new Results(query, tntxsyn_tax_id, conn);
-
-		Tntxsyn myTntxsyn = setupTntxsynValues(myResults)[0];
-
-		myResults.close();
 
 		return myTntxsyn;
 	}
@@ -282,34 +293,37 @@ public class Tntxsyn {
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void update(Connection conn) throws SQLException {
+	public void update(DataSource pool) throws SQLException {
 
 		String query = 
 
 			"update Tntxsyn "+
-			"set tntxsyn_tax_id = ?, tntxsyn_name_txt = ?, tntxsyn_name_class = ?, tntxsyn_unique_name = ?, tntxsyn_upper_name_txt = ?, "+
+			"set tntxsyn_name_txt = ?, tntxsyn_name_class = ?, tntxsyn_unique_name = ?, tntxsyn_upper_name_txt = ?, "+
 			"tntxsyn_user = ?, tntxsyn_last_change = ? "+
 			"where tntxsyn_tax_id = ?";
 
 		log.debug("query =  " + query);
 
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			//pstmt.setInt(1, tntxsyn_tax_id);
+			pstmt.setString(1, tntxsyn_name_txt);
+			pstmt.setString(2, tntxsyn_name_class);
+			pstmt.setString(3, tntxsyn_unique_name);
+			pstmt.setString(4, tntxsyn_upper_name_txt);
+			pstmt.setString(5, tntxsyn_user);
+			pstmt.setTimestamp(6, now);
+			pstmt.setInt(7, tntxsyn_tax_id);
+			pstmt.executeUpdate();
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
-
-		pstmt.setInt(1, tntxsyn_tax_id);
-		pstmt.setString(2, tntxsyn_name_txt);
-		pstmt.setString(3, tntxsyn_name_class);
-		pstmt.setString(4, tntxsyn_unique_name);
-		pstmt.setString(5, tntxsyn_upper_name_txt);
-		pstmt.setString(6, tntxsyn_user);
-		pstmt.setTimestamp(7, now);
-		pstmt.setInt(8, tntxsyn_tax_id);
-
-		pstmt.executeUpdate();
-		pstmt.close();
 
 	}
 
@@ -319,36 +333,34 @@ public class Tntxsyn {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 */
 
-	public void delete(Connection conn) throws SQLException {
+	public void delete(DataSource pool) throws SQLException {
 
 		log.info("in deleteTntxsyn");
 
 		//conn.setAutoCommit(false);
 
 		PreparedStatement pstmt = null;
-		try {
-                        new Tsample().deleteAllTsampleForTntxsyn(tntxsyn_tax_id, conn);
+		try(Connection conn=pool.getConnection()) {
+			new Tsample().deleteAllTsampleForTntxsyn(tntxsyn_tax_id, pool);
 
 			String query = 
 				"delete from Tntxsyn " + 
 				"where tntxsyn_tax_id = ?";
+			try {
+				pstmt = conn.prepareStatement(query,
+						ResultSet.TYPE_SCROLL_INSENSITIVE,
+						ResultSet.CONCUR_UPDATABLE);
 
-			pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE, 
-				ResultSet.CONCUR_UPDATABLE); 
-
-			pstmt.setInt(1, tntxsyn_tax_id);
-			pstmt.executeQuery();
-			pstmt.close();
-
-			//conn.commit();
-		} catch (SQLException e) {
-			log.debug("error in deleteTntxsyn");
-			//conn.rollback();
-			pstmt.close();
+				pstmt.setInt(1, tntxsyn_tax_id);
+				pstmt.executeQuery();
+				pstmt.close();
+			}catch(SQLException e){
+				log.debug("error in deleteTntxsyn");
+				throw e;
+			}
+		} catch (Exception e) {
 			throw e;
 		}
-		//conn.setAutoCommit(true);
 	}
 
 	/**
@@ -358,7 +370,7 @@ public class Tntxsyn {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 * @return	the tntxsyn_tax_id of a Tntxsyn that currently exists
 	 */
-	public int checkRecordExists(Tntxsyn myTntxsyn, Connection conn) throws SQLException {
+	public int checkRecordExists(Tntxsyn myTntxsyn, DataSource pool) throws SQLException {
 
 		log.debug("in checkRecordExists");
 
@@ -366,16 +378,19 @@ public class Tntxsyn {
 			"select tntxsyn_tax_id "+
 			"from Tntxsyn "+
 			"where ";
+		int pk = -1;
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			ResultSet rs = pstmt.executeQuery();
 
-		PreparedStatement pstmt = conn.prepareStatement(query,
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_UPDATABLE);
-
-
-		ResultSet rs = pstmt.executeQuery();
-
-		int pk = (rs.next() ? rs.getInt(1) : -1);
-		pstmt.close();
+			pk = (rs.next() ? rs.getInt(1) : -1);
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return pk;
 	}
 
