@@ -525,7 +525,7 @@ public class Promoter {
 
         PreparedStatement pstmt = null;
 
-        try {
+        try(Connection conn=pool.getConnection()) {
             for (int i = 0; i < query.length; i++) {
                 log.debug("i = " + i + ", query = " + query[i]);
                 pstmt = conn.prepareStatement(query[i],

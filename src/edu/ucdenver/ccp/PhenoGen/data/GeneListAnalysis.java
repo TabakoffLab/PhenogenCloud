@@ -976,7 +976,7 @@ public class GeneListAnalysis {
         String select = "select analysis_id " +
                 "from gene_list_analyses " +
                 "where gene_list_id = ?";
-        try(Connection conn =pool.getConnection()) {
+        try(Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(select,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);

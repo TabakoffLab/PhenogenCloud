@@ -272,11 +272,10 @@ public class ValidTerm {
                         "and category = ?";
 
         //log.debug("query =  " + query);
+        ValidTerm myValidTerm = null;
         try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{value, category}, conn);
-
-            ValidTerm myValidTerm = setupValidTermValues(myResults)[0];
-
+            myValidTerm = setupValidTermValues(myResults)[0];
             myResults.close();
         } catch (SQLException e) {
             log.debug("SQL Exception:", e);
@@ -304,9 +303,10 @@ public class ValidTerm {
                         "from valid_terms " +
                         "where term_id = ? ";
         //log.debug("query =  " + query);
+        ValidTerm myValidTerm = null;
         try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, term_id, conn);
-            ValidTerm myValidTerm = setupValidTermValues(myResults)[0];
+            myValidTerm = setupValidTermValues(myResults)[0];
             myResults.close();
         } catch (SQLException e) {
             log.debug("SQL Exception:", e);
@@ -413,7 +413,7 @@ public class ValidTerm {
         try (Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
             try {
-                pstmt = conn.prepareStatement(query,
+                PreparedStatement pstmt = conn.prepareStatement(query,
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_UPDATABLE);
 

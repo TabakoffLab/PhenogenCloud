@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -190,7 +191,7 @@ public class LitSearch {
         return pubMedResults;
     }
 
-    public void createCategories(LitSearch myLitSearch, Connection conn) throws SQLException {
+    public void createCategories(LitSearch myLitSearch, DataSource pool) throws SQLException {
 
         log.debug("in LitSearch.createCategories");
         String insertCategories =
@@ -209,7 +210,7 @@ public class LitSearch {
         PreparedStatement pstmtKeywords = null;
         log.debug("# of categories = " + myLitSearch.getCategories().size());
 
-        try {
+        try (Connection conn=pool.getConnection()) {
             pstmtCategories = conn.prepareStatement(insertCategories,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -257,7 +258,7 @@ public class LitSearch {
      * @throws SQLException if a database error occurs
      */
 
-    public String[] getAlternateIdentifiersUsedInCoReference(String gene_id, int coref_id, Connection conn) throws SQLException {
+    public String[] getAlternateIdentifiersUsedInCoReference(String gene_id, int coref_id, DataSource pool) throws SQLException {
 
         String query =
                 "select distinct ai.alternate_id " +
@@ -278,16 +279,20 @@ public class LitSearch {
         log.debug("in getAlternateIDs used in Coref");
 
         String[] dataRow;
-        Results myResults = new Results(query, new Object[]{gene_id, coref_id}, conn);
-        String[] myIdentifiers = new String[myResults.getNumRows()];
-
-        int i = 0;
-        while ((dataRow = myResults.getNextRow()) != null) {
-            myIdentifiers[i] = dataRow[0];
-            i++;
+        String[] myIdentifiers = new String[0];
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{gene_id, coref_id}, conn);
+            myIdentifiers = new String[myResults.getNumRows()];
+            int i = 0;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                myIdentifiers[i] = dataRow[0];
+                i++;
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
-
         return myIdentifiers;
     }
 
@@ -301,7 +306,7 @@ public class LitSearch {
      * @throws SQLException if a database error occurs
      */
 
-    public String[] getAlternateIdentifiersUsedInLitSearch(String gene_id, int search_id, Connection conn) throws SQLException {
+    public String[] getAlternateIdentifiersUsedInLitSearch(String gene_id, int search_id, DataSource pool) throws SQLException {
 
         String query =
                 "select distinct ai.alternate_id " +
@@ -316,19 +321,24 @@ public class LitSearch {
                         "select '" +
                         gene_id +
                         "' from dual";
-
         log.debug("in getAlternateIDs used in litsearch");
-
         String[] dataRow;
-        Results myResults = new Results(query, new Object[]{search_id, gene_id}, conn);
-        String[] myIdentifiers = new String[myResults.getNumRows()];
+        String[] myIdentifiers = new String[0];
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{search_id, gene_id}, conn);
+            myIdentifiers = new String[myResults.getNumRows()];
 
-        int i = 0;
-        while ((dataRow = myResults.getNextRow()) != null) {
-            myIdentifiers[i] = dataRow[0];
-            i++;
+            int i = 0;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                myIdentifiers[i] = dataRow[0];
+                i++;
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
+
 
         return myIdentifiers;
     }
@@ -343,7 +353,7 @@ public class LitSearch {
      * @throws SQLException if a database error occurs
      */
 
-    public String[] getKeywordsUsedInLitSearch(int search_id, String category, Connection conn) throws SQLException {
+    public String[] getKeywordsUsedInLitSearch(int search_id, String category, DataSource pool) throws SQLException {
 
         String query =
                 "select distinct k.keyword " +
@@ -359,15 +369,22 @@ public class LitSearch {
         //log.debug("query = " + query);
 
         String[] dataRow;
-        Results myResults = new Results(query, new Object[]{search_id}, conn);
-        String[] myKeywords = new String[myResults.getNumRows()];
+        String[] myKeywords = new String[0];
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{search_id}, conn);
+            myKeywords = new String[myResults.getNumRows()];
 
-        int i = 0;
-        while ((dataRow = myResults.getNextRow()) != null) {
-            myKeywords[i] = dataRow[0];
-            i++;
+            int i = 0;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                myKeywords[i] = dataRow[0];
+                i++;
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
+
 
         return myKeywords;
     }
@@ -380,7 +397,7 @@ public class LitSearch {
      * @return a LinkedHashMap of categories mapped to the number of articles
      * @throws SQLException if a database error occurs
      */
-    public LinkedHashMap getCategories(int search_id, Connection conn) throws SQLException {
+    public LinkedHashMap getCategories(int search_id, DataSource pool) throws SQLException {
 
         String query =
                 "select cat.category, count(distinct lsr.category) " +
@@ -395,13 +412,20 @@ public class LitSearch {
         log.debug("in getCategories");
 
         String[] dataRow;
-        Results myResults = new Results(query, new Object[]{search_id}, conn);
         LinkedHashMap<String, String> myCategories = new LinkedHashMap<String, String>();
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{search_id}, conn);
 
-        while ((dataRow = myResults.getNextRow()) != null) {
-            myCategories.put(dataRow[0], dataRow[1]);
+
+            while ((dataRow = myResults.getNextRow()) != null) {
+                myCategories.put(dataRow[0], dataRow[1]);
+            }
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        myResults.close();
+
 
         return myCategories;
     }
@@ -415,7 +439,7 @@ public class LitSearch {
      * @return a Results object
      * @throws SQLException if a database error occurs
      */
-    public Results getCoRefAbstracts(int coref_id, String databaseLink, Connection conn) throws SQLException {
+    public Results getCoRefAbstracts(int coref_id, String databaseLink, DataSource pool) throws SQLException {
         String query =
                 "select 'Articles co-referencing these genes:  '||'|||'||coref.name column1, " +
                         "pmr.pubmed_id, " +
@@ -430,9 +454,13 @@ public class LitSearch {
 
         log.debug("in getCoRefAbstracts");
         //log.debug("query = " + query);
-
-        Results myResults = new Results(query, coref_id, conn);
-
+        Results myResults = null;
+        try(Connection conn=pool.getConnection()){
+            myResults = new Results(query, coref_id, conn);
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
         return myResults;
     }
 
@@ -447,7 +475,7 @@ public class LitSearch {
      * @return a Results object
      * @throws SQLException if a database error occurs
      */
-    public Results getAbstracts(int search_id, String gene, String category, String databaseLink, Connection conn) throws SQLException {
+    public Results getAbstracts(int search_id, String gene, String category, String databaseLink, DataSource pool) throws SQLException {
 
         String whereClauses = "";
         if (!gene.equals("")) {
@@ -489,9 +517,13 @@ public class LitSearch {
         }
 
         Object[] parameters = (Object[]) parameterList.toArray(new Object[parameterList.size()]);
-
-        Results myResults = new Results(query, parameters, conn);
-
+        Results myResults = null;
+        try(Connection conn=pool.getConnection()){
+            myResults = new Results(query, parameters, conn);
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
         return myResults;
     }
 
@@ -504,7 +536,7 @@ public class LitSearch {
      * @return a Results object
      * @throws SQLException if a database error occurs
      */
-    public Results getCoReferences(int search_id, Connection conn) throws SQLException {
+    public Results getCoReferences(int search_id,DataSource pool) throws SQLException {
 
         String query =
                 "select crr.coref_id, " +
@@ -521,12 +553,17 @@ public class LitSearch {
 
         log.debug("in getCoReferences");
         //log.debug("query = "+ query);
-        Results myResults = new Results(query, search_id, conn);
-
+        Results myResults = null;
+        try(Connection conn=pool.getConnection()){
+            myResults = new Results(query, search_id, conn);
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
         return myResults;
     }
 
-    public Results getPubMedCountsByCategory(int search_id, Connection conn) throws SQLException {
+    public Results getPubMedCountsByCategory(int search_id, DataSource pool) throws SQLException {
 
         //
         // gets the genes, all of the alternate identifiers retrieved for that gene,
@@ -590,13 +627,17 @@ public class LitSearch {
 
         log.debug("in getPubMedCountsByCategory");
         //log.debug("query = "+ query);
-
-        Results myResults = new Results(query, new Object[]{search_id, search_id, search_id}, conn);
-
+        Results myResults = null;
+        try(Connection conn=pool.getConnection()){
+            myResults = new Results(query, new Object[]{search_id, search_id, search_id}, conn);
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
         return myResults;
     }
 
-    public Results getCategoriesAndKeywords(int search_id, Connection conn) throws SQLException {
+    public Results getCategoriesAndKeywords(int search_id, DataSource pool) throws SQLException {
 
         String query =
                 "select c.category, k.keyword " +
@@ -607,8 +648,13 @@ public class LitSearch {
                         "order by c.category, k.keyword ";
 
         log.debug("in getCategoriesAndKeywords ");
-
-        Results myResults = new Results(query, new Object[]{search_id, search_id}, conn);
+        Results myResults = null;
+        try(Connection conn=pool.getConnection()){
+            myResults = new Results(query, new Object[]{search_id, search_id}, conn);
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
         return myResults;
     }
@@ -717,7 +763,7 @@ public class LitSearch {
   return result_id;
   }*/
 
-    public void createCoReferencePubMedResults(int coref_id, List pubMedResults, Connection conn) throws SQLException {
+  /*  public void createCoReferencePubMedResults(int coref_id, List pubMedResults, Connection conn) throws SQLException {
 
         String query =
                 "insert into co_reference_pubmed_results " +
@@ -780,7 +826,7 @@ public class LitSearch {
             log.error("In exception of createPubMedResult", e);
             throw e;
         }
-    }
+    }*/
 
     public void deleteLitSearch(int search_id, DataSource pool) throws SQLException {
 
@@ -939,25 +985,26 @@ public class LitSearch {
 
         try (Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
-            for (int i = 0; i < query.length; i++) {
-                //log.debug("i = " + i + ", query = " + query[i]);
-                pstmt = conn.prepareStatement(query[i],
-                        ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.CONCUR_UPDATABLE);
-                pstmt.setInt(1, gene_list_id);
+            try {
+                for (int i = 0; i < query.length; i++) {
+                    //log.debug("i = " + i + ", query = " + query[i]);
+                    pstmt = conn.prepareStatement(query[i],
+                            ResultSet.TYPE_SCROLL_INSENSITIVE,
+                            ResultSet.CONCUR_UPDATABLE);
+                    pstmt.setInt(1, gene_list_id);
 
-                pstmt.executeUpdate();
-                pstmt.close();
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                }
+            }catch(SQLException e){
+                log.error("In exception of deleteAllLitSearchesForGeneList", e);
+                conn.rollback();
             }
             conn.commit();
             conn.setAutoCommit(true);
         } catch (SQLException e) {
-            log.error("In exception of deleteAllLitSearchesForGeneList", e);
-            conn.rollback();
             throw e;
         }
-
-        conn.setAutoCommit(true);
     }
 
     public String[] getAllLitSearchesForUserStatements(String typeOfQuery) {
@@ -1065,7 +1112,7 @@ public class LitSearch {
         return query;
     }
 
-    public List<List<String[]>> getAllLitSearchesForUser(int userID, Connection conn) throws SQLException {
+    public List<List<String[]>> getAllLitSearchesForUser(int userID, DataSource pool) throws SQLException {
 
         log.debug("in getAllLitSearchesForUser. userID = " + userID);
 
@@ -1079,7 +1126,7 @@ public class LitSearch {
 
         List<List<String[]>> allResults = null;
 
-        try {
+        try (Connection conn=pool.getConnection()) {
             allResults = new Results().getAllResults(query, userID, conn);
 
         } catch (SQLException e) {
@@ -1091,7 +1138,7 @@ public class LitSearch {
 
     }
 
-    public void deleteAllLitSearchesForUser(int userID, Connection conn) throws SQLException {
+    public void deleteAllLitSearchesForUser(int userID, DataSource pool) throws SQLException {
 
         log.debug("in deleteAllLitSearchesForUser. userID = " + userID);
 
@@ -1099,7 +1146,7 @@ public class LitSearch {
 
         PreparedStatement pstmt = null;
 
-        try {
+        try(Connection conn=pool.getConnection()) {
             for (int i = 0; i < query.length; i++) {
                 log.debug("i = " + i + ", query = " + query[i]);
                 pstmt = conn.prepareStatement(query[i],
@@ -1108,12 +1155,13 @@ public class LitSearch {
                 pstmt.setInt(1, userID);
 
                 pstmt.executeUpdate();
+                pstmt.close();
             }
         } catch (SQLException e) {
             log.error("In exception of deleteAllLitSearchesForUser", e);
             throw e;
         }
-        pstmt.close();
+
     }
 
     public void callLiterature() throws Exception {
@@ -1136,7 +1184,7 @@ public class LitSearch {
     }
 
 
-    public void processResults(Connection conn) throws SQLException {
+    /*public void processResults(Connection conn) throws SQLException {
         log.debug("in LitSearch.processResults. genelistID = " + this.getGene_list_id());
         GeneList myGeneList = new GeneList();
 
@@ -1256,7 +1304,7 @@ public class LitSearch {
             log.error("In exception of updateVisible for LitSearch", e);
             throw e;
         }
-    }
+    }*/
 
 
 }
