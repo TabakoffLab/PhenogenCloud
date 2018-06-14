@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,8 +118,8 @@ public class PdfUtil extends PdfPageEventHelper {
 		log.debug("in createReport");
 				
         	LitSearch myLitSearch = new LitSearch();
-		
-		java.sql.Connection dbConn = (java.sql.Connection)request.getSession().getAttribute("dbConn");
+
+		DataSource pool = (DataSource) request.getSession().getAttribute("dbPool");
 
 		Object previousClobKey = null;
 		Object[] dataRowWithClob = null;;
@@ -180,9 +181,9 @@ public class PdfUtil extends PdfPageEventHelper {
 						// Get all the alternateIDs for this gene_id, so they can be highlighted in the abstract
 						//
 						alternateIDs = myLitSearch.getAlternateIdentifiersUsedInLitSearch(
-											keySplit[0], itemID, dbConn);
+											keySplit[0], itemID, pool);
 							
-						keywords = myLitSearch.getKeywordsUsedInLitSearch(itemID, category, dbConn);
+						keywords = myLitSearch.getKeywordsUsedInLitSearch(itemID, category, pool);
 
 					} 
 				} 

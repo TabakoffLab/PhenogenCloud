@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
+
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -132,7 +135,7 @@ public class Tlabhyb {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	an array of Tlabhyb objects
 	 */
-	public Tlabhyb[] getAllTlabhyb(Connection conn) throws SQLException {
+	public Tlabhyb[] getAllTlabhyb(DataSource pool) throws SQLException {
 
 		log.debug("In getAllTlabhyb");
 
@@ -144,13 +147,15 @@ public class Tlabhyb {
 			"order by tlabhyb_sysuid";
 
 		//log.debug("query =  " + query);
-
-		Results myResults = new Results(query, conn);
-
-		Tlabhyb[] myTlabhyb = setupTlabhybValues(myResults);
-
-		myResults.close();
-
+		Tlabhyb[] myTlabhyb = new Tlabhyb[0];
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, conn);
+			myTlabhyb = setupTlabhybValues(myResults);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myTlabhyb;
 	}
 
@@ -161,7 +166,7 @@ public class Tlabhyb {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Tlabhyb object
 	 */
-	public Tlabhyb getTlabhyb(int tlabhyb_sysuid, Connection conn) throws SQLException {
+	public Tlabhyb getTlabhyb(int tlabhyb_sysuid, DataSource pool) throws SQLException {
 
 		log.debug("In getOne Tlabhyb");
 
@@ -173,12 +178,16 @@ public class Tlabhyb {
 			"where tlabhyb_sysuid = ?";
 
 		//log.debug("query =  " + query);
+		Tlabhyb myTlabhyb = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, tlabhyb_sysuid, conn);
+			myTlabhyb = setupTlabhybValues(myResults)[0];
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		Results myResults = new Results(query, tlabhyb_sysuid, conn);
-
-		Tlabhyb myTlabhyb = setupTlabhybValues(myResults)[0];
-
-		myResults.close();
 
 		return myTlabhyb;
 	}
@@ -231,12 +240,12 @@ public class Tlabhyb {
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void update(Connection conn) throws SQLException {
+	public void update(DataSource pool) throws SQLException {
 
 		String query = 
 
 			"update Tlabhyb "+
-			"set tlabhyb_sysuid = ?, tlabhyb_labelid = ?, tlabhyb_hybridid = ?, tlabhyb_subid = ?, tlabhyb_del_status = ?, "+
+			"set tlabhyb_labelid = ?, tlabhyb_hybridid = ?, tlabhyb_subid = ?, tlabhyb_del_status = ?, "+
 			"tlabhyb_user = ?, tlabhyb_last_change = ? "+
 			"where tlabhyb_sysuid = ?";
 
@@ -244,21 +253,27 @@ public class Tlabhyb {
 
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		pstmt.setInt(1, tlabhyb_sysuid);
-		pstmt.setInt(2, tlabhyb_labelid);
-		pstmt.setInt(3, tlabhyb_hybridid);
-		pstmt.setInt(4, tlabhyb_subid);
-		pstmt.setString(5, tlabhyb_del_status);
-		pstmt.setString(6, tlabhyb_user);
-		pstmt.setTimestamp(7, now);
-		pstmt.setInt(8, tlabhyb_sysuid);
+			//pstmt.setInt(1, tlabhyb_sysuid);
+			pstmt.setInt(1, tlabhyb_labelid);
+			pstmt.setInt(2, tlabhyb_hybridid);
+			pstmt.setInt(3, tlabhyb_subid);
+			pstmt.setString(4, tlabhyb_del_status);
+			pstmt.setString(5, tlabhyb_user);
+			pstmt.setTimestamp(6, now);
+			pstmt.setInt(7, tlabhyb_sysuid);
 
-		pstmt.executeUpdate();
-		pstmt.close();
+			pstmt.executeUpdate();
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
+
 
 	}
 
@@ -268,18 +283,16 @@ public class Tlabhyb {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 */
 
-	public void deleteTlabhyb(Connection conn) throws SQLException {
+	public void deleteTlabhyb(DataSource pool) throws SQLException {
 
 		log.info("in deleteTlabhyb");
 
 		//conn.setAutoCommit(false);
-
+		String query =
+				"delete from Tlabhyb " +
+						"where tlabhyb_sysuid = ?";
 		PreparedStatement pstmt = null;
-		try {
-			String query = 
-				"delete from Tlabhyb " + 
-				"where tlabhyb_sysuid = ?";
-
+		try(Connection conn=pool.getConnection()) {
 			pstmt = conn.prepareStatement(query, 
 				ResultSet.TYPE_SCROLL_INSENSITIVE, 
 				ResultSet.CONCUR_UPDATABLE); 
@@ -287,15 +300,10 @@ public class Tlabhyb {
 			pstmt.setInt(1, tlabhyb_sysuid);
 			pstmt.executeQuery();
 			pstmt.close();
-
-			//conn.commit();
 		} catch (SQLException e) {
 			log.debug("error in deleteTlabhyb");
-			//conn.rollback();
-			pstmt.close();
 			throw e;
 		}
-		//conn.setAutoCommit(true);
 	}
 
         /**
@@ -304,7 +312,7 @@ public class Tlabhyb {
          * @param conn  the database connection
          * @throws            SQLException if an error occurs while accessing the database
          */
-        public void deleteAllTlabhybForHybridization(int hybrid_id, Connection conn) throws SQLException {
+        public void deleteAllTlabhybForHybridization(int hybrid_id, DataSource pool) throws SQLException {
 
                 log.info("in deleteAllTlabhybForHybridization");
 
@@ -314,17 +322,22 @@ public class Tlabhyb {
                         "select tlabhyb_sysuid "+
                         "from Tlabhyb "+
                         "where tlabhyb_hybridid = ?";
+			try(Connection conn=pool.getConnection()){
+				Results myResults = new Results(query, hybrid_id, conn);
 
-                Results myResults = new Results(query, hybrid_id, conn);
+				String[] dataRow;
 
-                String[] dataRow;
+				while ((dataRow = myResults.getNextRow()) != null) {
+					log.debug("deleting labhyb for this hybridID: "+dataRow[0]);
+					new Tlabhyb(Integer.parseInt(dataRow[0])).deleteTlabhyb(pool);
+				}
 
-                while ((dataRow = myResults.getNextRow()) != null) {
-			log.debug("deleting labhyb for this hybridID: "+dataRow[0]);
-                        new Tlabhyb(Integer.parseInt(dataRow[0])).deleteTlabhyb(conn);
-                }
+				myResults.close();
+			}catch(SQLException e){
+			    log.debug("SQL Exception:",e);
+			    throw e;
+			}
 
-                myResults.close();
 
         }
         /**
@@ -333,7 +346,7 @@ public class Tlabhyb {
          * @param conn  the database connection
          * @throws            SQLException if an error occurs while accessing the database
          */
-        public void deleteAllTlabhybForTlabel(int tlabel_sysuid, Connection conn) throws SQLException {
+        public void deleteAllTlabhybForTlabel(int tlabel_sysuid, DataSource pool) throws SQLException {
 
                 log.info("in deleteAllTlabhybForTlabel");
 
@@ -343,28 +356,26 @@ public class Tlabhyb {
                         "select tlabhyb_sysuid "+
                         "from Tlabhyb "+
                         "where tlabhyb_labelid = ?";
+				try(Connection conn=pool.getConnection()){
+					Results myResults = new Results(query, tlabel_sysuid, conn);
+					String[] dataRow;
+					while ((dataRow = myResults.getNextRow()) != null) {
+						new Tlabhyb(Integer.parseInt(dataRow[0])).deleteTlabhyb(pool);
+					}
+					query = "select tlabhyb_hybridid "+
+									"from Tlabhyb "+
+									"where tlabhyb_labelid = ?";
+					myResults = new Results(query, tlabel_sysuid, conn);
+					while ((dataRow = myResults.getNextRow()) != null) {
+						log.debug("deleting Hybridizations for this labhyb labelid: "+tlabel_sysuid + ". This hybridID is "+dataRow[0]);
+						new Hybridization(Integer.parseInt(dataRow[0])).deleteHybridization(pool);
+					}
+					myResults.close();
+				}catch(SQLException e){
+				    log.debug("SQL Exception:",e);
+				    throw e;
+				}
 
-                Results myResults = new Results(query, tlabel_sysuid, conn);
-
-                String[] dataRow;
-
-                while ((dataRow = myResults.getNextRow()) != null) {
-                        new Tlabhyb(Integer.parseInt(dataRow[0])).deleteTlabhyb(conn);
-                }
-
-                query =
-                        "select tlabhyb_hybridid "+
-                        "from Tlabhyb "+
-                        "where tlabhyb_labelid = ?";
-
-                myResults = new Results(query, tlabel_sysuid, conn);
-
-                while ((dataRow = myResults.getNextRow()) != null) {
-			log.debug("deleting Hybridizations for this labhyb labelid: "+tlabel_sysuid + ". This hybridID is "+dataRow[0]);
-                        new Hybridization(Integer.parseInt(dataRow[0])).deleteHybridization(conn);
-                }
-
-                myResults.close();
 
         }
 
@@ -375,7 +386,7 @@ public class Tlabhyb {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 * @return	the tlabhyb_sysuid of a Tlabhyb that currently exists
 	 */
-	public int checkRecordExists(Tlabhyb myTlabhyb, Connection conn) throws SQLException {
+	public int checkRecordExists(Tlabhyb myTlabhyb, DataSource pool) throws SQLException {
 
 		log.debug("in checkRecordExists");
 
@@ -383,16 +394,21 @@ public class Tlabhyb {
 			"select tlabhyb_sysuid "+
 			"from Tlabhyb "+
 			"where  = ?";
+		int pk = -1;
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query,
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_UPDATABLE);
 
+			ResultSet rs = pstmt.executeQuery();
 
-		ResultSet rs = pstmt.executeQuery();
-
-		int pk = (rs.next() ? rs.getInt(1) : -1);
-		pstmt.close();
+			pk = (rs.next() ? rs.getInt(1) : -1);
+			pstmt.close();
+		}catch(SQLException e) {
+			log.debug("SQL Exception:", e);
+			throw e;
+		}
 		return pk;
 	}
 

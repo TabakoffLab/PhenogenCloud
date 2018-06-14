@@ -178,9 +178,9 @@ public class IDecoderClient {
             
             return resultsHashMap;
         }	
-        private HashMap<Identifier, Set<Identifier>> doSearch(int geneListID, Connection conn) throws SQLException {
+        /*private HashMap<Identifier, Set<Identifier>> doSearch(int geneListID, DataSource pool) throws SQLException {
             log.debug("in doSearch passing gene list ID");
-            GeneList thisGL = new GeneList().getGeneList(geneListID, conn);
+            GeneList thisGL = new GeneList().getGeneList(geneListID, pool);
             String organism = thisGL.getOrganism();
             log.debug("geneList = "+thisGL.getGene_list_name());
             String countQuery2 = 
@@ -245,7 +245,7 @@ public class IDecoderClient {
                 //myResults.close();
             
             return doSearch(organism,conn);
-        }
+        }*/
         
         private HashMap<Identifier, Set<Identifier>> doSearchCaseInsensitive(int geneListID, DataSource pool) throws SQLException {
             log.debug("in doSearch passing gene list ID");
@@ -2023,70 +2023,7 @@ public class IDecoderClient {
 		return resultsHashMap;
 	}
         
-	/** 
-	 * Get a Set of Identifiers for a particular list of targets, although it is not organized by target.
-	 * Useful if you want a list of all possible target values by gene ID, as is needed
-	 * when calling the Literature module.
-	 * <p>
-	 * This starts by calling doSearch() 
-	 * which returns a HashMap of ALL Identifiers found in the search.  This method then
-	 * restricts the Identifiers to those in a list of targets.
-	 * </p>
-	 *
-	 * @param geneListID	the identifier of the gene list
-	 * @param targets	names of databases to which the values should be translated
-	 * @param conn		database connection
-	 * @return		a Set of Identifier objects, each containing a Set of Identifiers for a particular list of targets
-	 *<br><pre>
-	 *      ------------------     ------------------------------------------------------------------------------------------------|
-	 *      | Identifier CDX4 |--> | Gene Symbol Identifier CDX4 |SwissProt Identifier P18111 | SwissProt Identifier Q8VCF7 |...   |
-	 *      ------------------|    ------------------------------------------------------------------------------------------------|
-	 *      | Identifier CDX3 | ...|      
-	 *      ------------------      
-	 * </pre>
-	 * @throws	SQLException if there is a problem accessing the database
-	 *                      
-	 */
-	public Set<Identifier> getIdentifiersByInputID(int geneListID, String[] targets, Connection conn) throws SQLException {
 
-		log.debug("in getIdentifiersByInputID passing in geneListID");
-
-		setTargets(targets);
-		//log.debug("targetsList = "+targetsList);
-
-		HashMap<Identifier, Set<Identifier>> startHashMap = doSearch(geneListID, conn);
-		//log.debug("startHashMap = "); myDebugger.print(startHashMap);
-		Set<Identifier> setOfInputIdentifiers = new HashSet<Identifier>();
-		for (Iterator inputIDitr = startHashMap.keySet().iterator(); inputIDitr.hasNext();) {
-			Identifier inputID = (Identifier) inputIDitr.next();
-			Set<Identifier> allRelatedIdentifiers = (Set<Identifier>) startHashMap.get(inputID);
-			//log.debug("allRelatedIdentifiers = "); myDebugger.print(allRelatedIdentifiers);
-
-			//Identifier thisInputIdentifier = new Identifier(inputID);
-			Set<Identifier> setOfRelatedIdentifiers = new LinkedHashSet<Identifier>();
-			Set<Identifier> setOfLocationIdentifiers = new LinkedHashSet<Identifier>();
-
-			for (Iterator identifierItr = allRelatedIdentifiers.iterator(); identifierItr.hasNext();) {
-				Identifier nextIdentifier = (Identifier) identifierItr.next();
-				String identifierType = nextIdentifier.getIdentifierTypeName();
-
-				if (targetsList.contains(identifierType)) { 
-					setOfRelatedIdentifiers.add(nextIdentifier);
-				} 
-				if (targetsList.contains("Location") && 
-						((nextIdentifier.getChromosome() != null &&
-						!nextIdentifier.getChromosome().equals("")) ||
-					(nextIdentifier.getMapLocation() != null && 
-					!nextIdentifier.getMapLocation().equals("")))) {
-					setOfLocationIdentifiers.add(nextIdentifier);
-				} 
-			}
-			inputID.setRelatedIdentifiers(setOfRelatedIdentifiers);
-			inputID.setLocationIdentifiers(setOfLocationIdentifiers);
-			setOfInputIdentifiers.add(inputID);
-		}
-		return setOfInputIdentifiers;
-	}
         /** 
 	 * Get a Set of Identifiers for a particular list of targets, although it is not organized by target.
 	 * Useful if you want a list of all possible target values by gene ID, as is needed
@@ -2151,8 +2088,31 @@ public class IDecoderClient {
 		}
 		return setOfInputIdentifiers;
 	}
-        
-        
+
+	/**
+	 * Get a Set of Identifiers for a particular list of targets, although it is not organized by target.
+	 * Useful if you want a list of all possible target values by gene ID, as is needed
+	 * when calling the Literature module.
+	 * <p>
+	 * This starts by calling doSearch()
+	 * which returns a HashMap of ALL Identifiers found in the search.  This method then
+	 * restricts the Identifiers to those in a list of targets.
+	 * </p>
+	 *
+	 * @param geneListID	the identifier of the gene list
+	 * @param targets	names of databases to which the values should be translated
+	 * @param conn		database connection
+	 * @return		a Set of Identifier objects, each containing a Set of Identifiers for a particular list of targets
+	 *<br><pre>
+	 *      ------------------     ------------------------------------------------------------------------------------------------|
+	 *      | Identifier CDX4 |--> | Gene Symbol Identifier CDX4 |SwissProt Identifier P18111 | SwissProt Identifier Q8VCF7 |...   |
+	 *      ------------------|    ------------------------------------------------------------------------------------------------|
+	 *      | Identifier CDX3 | ...|
+	 *      ------------------
+	 * </pre>
+	 * @throws	SQLException if there is a problem accessing the database
+	 *
+	 */
         public Set<Identifier> getIdentifiersByInputID(String geneID,String organism, String[] targets, DataSource pool) throws SQLException {
             log.debug("in getIdentifiersByInputID passing in gene ID");
 
@@ -2195,145 +2155,7 @@ public class IDecoderClient {
                 }catch(Exception e){}
 		return setOfInputIdentifiers;
         }
-        /** 
-	 * Get a Set of Identifiers for a particular list of targets, although it is not organized by target.
-	 * Useful if you want a list of all possible target values by gene ID, as is needed
-	 * when calling the Literature module.
-	 * <p>
-	 * This starts by calling doSearch() 
-	 * which returns a HashMap of ALL Identifiers found in the search.  This method then
-	 * restricts the Identifiers to those in a list of targets.
-	 * </p>
-	 *
-	 * @param geneListID	the identifier of the gene list
-	 * @param targets	names of databases to which the values should be translated
-	 * @param conn		database connection
-	 * @return		a Set of Identifier objects, each containing a Set of Identifiers for a particular list of targets
-	 *<br><pre>
-	 *      ------------------     ------------------------------------------------------------------------------------------------|
-	 *      | Identifier CDX4 |--> | Gene Symbol Identifier CDX4 |SwissProt Identifier P18111 | SwissProt Identifier Q8VCF7 |...   |
-	 *      ------------------|    ------------------------------------------------------------------------------------------------|
-	 *      | Identifier CDX3 | ...|      
-	 *      ------------------      
-	 * </pre>
-	 * @throws	SQLException if there is a problem accessing the database
-	 *                      
-	 */
 
-	public Set<Identifier> getIdentifiersByInputID(String geneID,String organism, String[] targets, Connection conn) throws SQLException {
-
-		log.debug("in getIdentifiersByInputID passing in gene ID");
-
-		setTargets(targets);
-		log.debug("targetsList = "+targetsList);
-
-		HashMap<Identifier, Set<Identifier>> startHashMap = doSearch(geneID,organism, conn);
-		log.debug("startHashMap = "); myDebugger.print(startHashMap);
-		Set<Identifier> setOfInputIdentifiers = new HashSet<Identifier>();
-		for (Iterator inputIDitr = startHashMap.keySet().iterator(); inputIDitr.hasNext();) {
-			Identifier inputID = (Identifier) inputIDitr.next();
-			Set<Identifier> allRelatedIdentifiers = (Set<Identifier>) startHashMap.get(inputID);
-			log.debug("allRelatedIdentifiers = "); myDebugger.print(allRelatedIdentifiers);
-
-			//Identifier thisInputIdentifier = new Identifier(inputID);
-			Set<Identifier> setOfRelatedIdentifiers = new LinkedHashSet<Identifier>();
-			Set<Identifier> setOfLocationIdentifiers = new LinkedHashSet<Identifier>();
-
-			for (Iterator identifierItr = allRelatedIdentifiers.iterator(); identifierItr.hasNext();) {
-				Identifier nextIdentifier = (Identifier) identifierItr.next();
-				String identifierType = nextIdentifier.getIdentifierTypeName();
-
-				if (targetsList.contains(identifierType)) { 
-					setOfRelatedIdentifiers.add(nextIdentifier);
-				} 
-				if (targetsList.contains("Location") && 
-						((nextIdentifier.getChromosome() != null &&
-						!nextIdentifier.getChromosome().equals("")) ||
-					(nextIdentifier.getMapLocation() != null && 
-					!nextIdentifier.getMapLocation().equals("")))) {
-					setOfLocationIdentifiers.add(nextIdentifier);
-				} 
-			}
-			inputID.setRelatedIdentifiers(setOfRelatedIdentifiers);
-			inputID.setLocationIdentifiers(setOfLocationIdentifiers);
-			setOfInputIdentifiers.add(inputID);
-		}
-		return setOfInputIdentifiers;
-	}
-
-        
-        /** 
-	 * Get a Set of Identifiers for a particular list of targets, although it is not organized by target.  Also restrict the
-	 * list by geneChipName.
-	 * <p>
-	 * This starts by calling {@link #getIdentifiersByInputID(int geneListID, String[] targets, Connection conn) getIdentifiersByInputID} which returns 
-	 * a Set of Identifiers for the given list of targets.
-	 * This then further restricts the Identifiers by geneChipName. 
-	 * </p>
-	 *
-	 * @param geneListID	identifier of the gene list
-	 * @param targets	names of databases to which the values should be translated
-	 * @param geneChipName	name of the array from which this Identifier comes
-	 * @param conn		database connection
-	 * @return		a Set of Identifiers which maps to a Set of related Identifiers for a particular list of targets and gene_chip
-	 *<br><pre>
-	 *      ------------------       ------------------------------------------------------------------------------------------------|
-	 *      |Identifier CDX4 |---->  | Affy MOE430v2 Identifier 154_at |Affy MOE430v2 Identifier 15592_at | ...                      |
-	 *      -----------------|       ------------------------------------------------------------------------------------------------|
-	 *      |Identifier CDX3 | ...|      
-	 *      ------------------      
-	 * </pre>
-	 * @throws	SQLException if there is a problem accessing the database
-	 *                      
-	 */
-	public Set<Identifier> getIdentifiersByInputID(int geneListID, String[] targets, String geneChipName, Connection conn) throws SQLException {
-
-		log.debug("in getIdentifiersByInputID passing in geneChipName also");
-		//log.debug("geneChipName = "+geneChipName);
-
-		Set<Identifier> startSet = getIdentifiersByInputID(geneListID, targets, conn);
-		for (Iterator inputIDitr = startSet.iterator(); inputIDitr.hasNext();) {
-			Identifier inputID = (Identifier) inputIDitr.next();
-			Set<Identifier> allRelatedIdentifiers = inputID.getRelatedIdentifiers();
-			//log.debug("here are all the RelatedIDs for "+inputID.getIdentifier()+": "); myDebugger.print(allRelatedIdentifiers);
-			//log.debug("before parsing out identifiers by genechip, there are "+inputID.getRelatedIdentifiers().size()+" related identifiers for "+inputID.getIdentifier()); 
-
-			Set<Identifier> setOfRelatedIdentifiers = new LinkedHashSet<Identifier>();
-
-			for (Iterator identifierItr = allRelatedIdentifiers.iterator(); identifierItr.hasNext();) {
-				Identifier relatedIdentifier = (Identifier) identifierItr.next();
-				//
-				// If there is an Affy or CodeLink related identifier, only return it if 
-				// it's from the desired chip.  If the related identifier is not Affy 
-				// or CodeLink, return it anyway. 
-				//
-				if (relatedIdentifier.getIdentifierTypeName().equals("Affymetrix ID") ||
-					relatedIdentifier.getIdentifierTypeName().equals("CodeLink ID")) {
-					//log.debug("here related identifier type IS affy or cl, so gene chip= "+relatedIdentifier.getGene_chip_name());
-					// For Exon arrays, the relatedIdentifier.getGene_chip_name() will end in either .probeset or .transcript,
-					// and the geneChipName will not
-					//log.debug("inputID = "+inputID.getIdentifier());
-					//log.debug("relatedId = "+relatedIdentifier.getIdentifier());
-					
-					if (relatedIdentifier.getGene_chip_name() == null) {
-						//log.debug("geneChipName is null ");
-					} else {
-						//log.debug("geneChipName is not null. it is " + relatedIdentifier.getGene_chip_name());
-						if (relatedIdentifier.getGene_chip_name().startsWith(geneChipName)) {
-							setOfRelatedIdentifiers.add(relatedIdentifier);
-						}
-					}
-				} else {
-					//log.debug("here related identifier type is NOT affy or cl, so type = "+relatedIdentifier.getIdentifierTypeName());
-					setOfRelatedIdentifiers.add(relatedIdentifier);
-				}
-			}
-			inputID.setRelatedIdentifiers(setOfRelatedIdentifiers);
-			//log.debug("after parsing out identifiers by genechip, there are "+(inputID.getRelatedIdentifiers() != null ? inputID.getRelatedIdentifiers().size() : "0")+" related identifiers for "+inputID.getIdentifier()); 
-		}
-		return startSet;
-	}
-        
 	/** 
 	 * Get a Set of Identifiers for a particular list of targets, although it is not organized by target.  Also restrict the
 	 * list by geneChipName.
@@ -2567,50 +2389,7 @@ public class IDecoderClient {
 	}
         
         
-	/** 
-	 * Get a Set of Identifiers for all input IDs for a particular list of targets and gene chip, 
-	 * although it is not organized by target.
-	 * Useful if you want a list of all possible target values, as is needed
-	 * when translating an entire gene list into a particular identifier type.
-	 * <p>
-	 * This starts by calling {@link #getIdentifiersByInputID(int geneListID, String[] targets, Connection conn) getIdentifiersByInputID()} which returns a 
-	 * which returns a Set of input Identifiers pointing to 
-	 * a Set of Identifiers for a list of 
-	 * targets.  This method then creates the middle HashMap and organizes the Identifiers by target.
-	 * During this process, it also restricts by geneChipName
-	 * </p>
-	 *
-	 * @param geneListID	the identifier of the list
-	 * @param targets	names of databases to which the values should be translated
-	 * @param geneChipName	name of gene_chip that should be matched 
-	 * @param conn		database connection
-	 *
-	 * @return		a Set of Identifiers for a particular list of targets
-	 *<br><pre>
-	 *      ------------------------------------------------------------------------------------------------|
-	 *      | Gene Symbol Identifier CDX4 |SwissProt Identifier P18111 | SwissProt Identifier Q8VCF7 |...   |
-	 *      ------------------------------------------------------------------------------------------------|
-	 * </pre>
-	 * @throws	SQLException if there is a problem accessing the database
-	 *                      
-	 */
-	public Set<Identifier> getIdentifiers(int geneListID, String[] targets, String geneChipName, Connection conn) throws SQLException {
 
-		log.debug("in getIdentifiers passing in geneListID, targets, geneChipName, and conn");
-
-		Set<Identifier> startSet = getIdentifiersByInputID(geneListID, targets, geneChipName, conn);
-		//log.debug("startSet = "); myDebugger.print(startSet);
-		Set<Identifier> endSet = new LinkedHashSet<Identifier>();
-		for (Iterator inputIDitr = startSet.iterator(); inputIDitr.hasNext();) {
-			Identifier inputID = (Identifier) inputIDitr.next();
-			Set<Identifier> identifierSet = inputID.getRelatedIdentifiers();
-			for (Iterator itr = identifierSet.iterator(); itr.hasNext();) {
-                        	((Identifier) itr.next()).setOriginatingIdentifier(inputID);
-			}
-			endSet.addAll(identifierSet);
-		}
-		return endSet;
-	}
         
         /** 
 	 * Get a Set of Identifiers for all input IDs for a particular list of targets and gene chip, 
@@ -2656,8 +2435,37 @@ public class IDecoderClient {
 		}
 		return endSet;
 	}
-        
-        public Set<Identifier> getIdentifiersByInputIDAndTarget(int geneListID, String[] targets, String[] geneChipNames,DataSource pool)throws SQLException {
+
+	/**
+	 * Get a Set of Identifiers for all input IDs for a particular list of targets and set of geneChips,
+	 * organized by input ID and target.
+	 * <p>
+	 * This starts by calling {@link #getIdentifiersByInputID(int geneListID, String[] targets, Connection conn) getIdentifiersByInputID()} which returns a
+	 * which returns a Set of input Identifiers pointing to
+	 * a Set of Identifiers for a list of
+	 * targets.  This method then creates the middle HashMap and organizes the Identifiers by target.
+	 * During this process, it also restricts by geneChipName
+	 * </p>
+	 * @param geneListID	the identifier of the list
+	 * @param targets	names of databases to which the values should be translated
+	 * @param geneChipNames	names of gene_chips that should be matched
+	 * @param conn		database connection
+	 *
+	 * @return		a Set of Identifiers, each having a defined Hashtable of identifier types which
+	 *			point to a Set of Identifiers
+	 *<br><pre>
+	 *      ------------------       -----------------------|            ----------------------------------------------------|
+	 *      | Identifier CDX4 |--->  | Affymetrix ID        | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
+	 *      ------------------|       -----------------------|            ----------------------------------------------------|
+	 *      | Identifier CDX3 | ...| | SwissProt ID         | ----\      ----------------------------------------------------|
+	 *      ------------------       -----------------------|      \-->  | Identifier P18111 | Identifier Q8VCF7 | ...  |    |
+	 *                               |  ...                 |            ----------------------------------------------------|
+	 *                               -----------------------|
+	 * </pre>
+	 * @throws	SQLException if there is a problem accessing the database
+	 */
+
+	public Set<Identifier> getIdentifiersByInputIDAndTarget(int geneListID, String[] targets, String[] geneChipNames,DataSource pool)throws SQLException {
            log.debug("in getIdentifiersByInputIDAndTarget passing in array of geneChipNames");
 		List<String> geneChipsList = new ArrayList<String>();
 		if (geneChipNames != null) {
@@ -2720,23 +2528,22 @@ public class IDecoderClient {
 		return startSet;
         }
         
-	/**
-	 * Get a Set of Identifiers for all input IDs for a particular list of targets and set of geneChips, 
-	 * organized by input ID and target.
+
+
+	/** Get a Set of Identifiers for all input IDs for a particular list of targets, organized by input ID and target.
+
+	 /**
+	 * Get a Set of Identifiers for all input IDs for a particular list of targets, organized by input ID and target.
 	 * <p>
-	 * This starts by calling {@link #getIdentifiersByInputID(int geneListID, String[] targets, Connection conn) getIdentifiersByInputID()} which returns a 
-	 * which returns a Set of input Identifiers pointing to 
-	 * a Set of Identifiers for a list of 
+	 * This starts by calling {@link #getIdentifiersByInputID(int geneListID, String[] targets, Connection conn) getIdentifiersByInputID()} which returns a * a Set of Identifiers pointing to
 	 * targets.  This method then creates the middle HashMap and organizes the Identifiers by target.
-	 * During this process, it also restricts by geneChipName
 	 * </p>
 	 * @param geneListID	the identifier of the list
 	 * @param targets	names of databases to which the values should be translated
-	 * @param geneChipNames	names of gene_chips that should be matched 
 	 * @param conn		database connection
 	 *
-	 * @return		a Set of Identifiers, each having a defined Hashtable of identifier types which 
-	 *			point to a Set of Identifiers 
+	 * @return		a Set of Identifiers, each having a defined Hashtable of identifier types which
+	 *			point to a Set of Identifiers
 	 *<br><pre>
 	 *      ------------------       -----------------------|            ----------------------------------------------------|
 	 *      | Identifier CDX4 |--->  | Affymetrix ID        | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
@@ -2747,72 +2554,8 @@ public class IDecoderClient {
 	 *                               -----------------------|
 	 * </pre>
 	 * @throws	SQLException if there is a problem accessing the database
-	 */ 
-	public Set<Identifier> getIdentifiersByInputIDAndTarget(int geneListID, String[] targets, String[] geneChipNames, Connection conn) throws SQLException {
-
-		log.debug("in getIdentifiersByInputIDAndTarget passing in array of geneChipNames");
-		List<String> geneChipsList = new ArrayList<String>();
-		if (geneChipNames != null) {
-			geneChipsList = Arrays.asList(geneChipNames);
-		}
-		//log.debug("geneChipsList = "); myDebugger.print(geneChipsList);
-		//log.debug("targets = "); myDebugger.print(targets);
-
-		Set<Identifier> startSet = getIdentifiersByInputID(geneListID, targets, conn);
-		for (Iterator inputIDitr = startSet.iterator(); inputIDitr.hasNext();) {
-			Identifier thisIdentifier = (Identifier) inputIDitr.next();
-			Set<Identifier> relatedIdentifiers = thisIdentifier.getRelatedIdentifiers();
-			Set<Identifier> locationIdentifiers = thisIdentifier.getLocationIdentifiers();
-			thisIdentifier.setTargetHashMap(new HashMap<String, Set<Identifier>>());
-			for (Iterator identifierItr = relatedIdentifiers.iterator(); identifierItr.hasNext();) {
-				Identifier relatedIdentifier = (Identifier) identifierItr.next();
-				String identifierType = relatedIdentifier.getIdentifierTypeName();
-				if (targetsList.contains(identifierType)) {
-					if (thisIdentifier.getTargetHashMap().containsKey(identifierType)) {
-						((Set<Identifier>) thisIdentifier.getTargetHashMap().get(identifierType)).add(relatedIdentifier);
-					} else {
-						Set<Identifier> newIdentifierSet = new LinkedHashSet<Identifier>();
-						newIdentifierSet.add(relatedIdentifier);
-						thisIdentifier.getTargetHashMap().put(identifierType, newIdentifierSet);
-					}
-				}
-			}
-			for (Iterator identifierItr = locationIdentifiers.iterator(); identifierItr.hasNext();) {
-				Identifier locationIdentifier = (Identifier) identifierItr.next();
-				if (thisIdentifier.getTargetHashMap().containsKey("Location")) {
-					((Set<Identifier>) thisIdentifier.getTargetHashMap().get("Location")).add(locationIdentifier);
-				} else {
-					Set<Identifier> newIdentifierSet = new LinkedHashSet<Identifier>();
-					newIdentifierSet.add(locationIdentifier);
-					thisIdentifier.getTargetHashMap().put("Location", newIdentifierSet);
-				}
-			}
-			// Restrict the identifiers by geneChipNames
-			//log.debug("working on " +thisIdentifier.getIdentifier());
-			if (targetsList.contains("Affymetrix ID") && geneChipsList.size() > 0 
-					&& thisIdentifier.getTargetHashMap().containsKey("Affymetrix ID")) {
-				Set<Identifier> affymetrixIdentifiers = getIdentifiersByGeneChip(
-								(Set<Identifier>) thisIdentifier.getTargetHashMap().get("Affymetrix ID"),
-								geneChipNames);
-				//log.debug("now there are this many affy ids = "+ affymetrixIdentifiers.size());
-				thisIdentifier.getTargetHashMap().remove("Affymetrix ID");
-				thisIdentifier.getTargetHashMap().put("Affymetrix ID", affymetrixIdentifiers);
-				
-			}
- 			if (targetsList.contains("CodeLink ID") && geneChipsList.size() > 0
-					&& thisIdentifier.getTargetHashMap().containsKey("CodeLink ID")) {
-				Set<Identifier> codeLinkIdentifiers = getIdentifiersByGeneChip(
-								(Set<Identifier>) thisIdentifier.getTargetHashMap().get("CodeLink ID"),
-								geneChipNames);
-				thisIdentifier.getTargetHashMap().remove("CodeLink ID");
-				//log.debug("now there are this many codeLink ids = "+ codeLinkIdentifiers.size());
-				thisIdentifier.getTargetHashMap().put("CodeLink ID", codeLinkIdentifiers);
-			}
-		}
-		return startSet;
-	}
-
-        public Set<Identifier> getIdentifiersByInputIDAndTarget(int geneListID, String[] targets, DataSource pool) throws SQLException {
+	 */
+	public Set<Identifier> getIdentifiersByInputIDAndTarget(int geneListID, String[] targets, DataSource pool) throws SQLException {
                 log.debug("in getIdentifiersByInputIDAndTarget passing in geneListID");
 
 		Set<Identifier> startSet = getIdentifiersByInputID(geneListID, targets, pool);
@@ -2854,73 +2597,8 @@ public class IDecoderClient {
 		return startSet;
         }
         
-	/** Get a Set of Identifiers for all input IDs for a particular list of targets, organized by input ID and target.
 
-        /**
-	 * Get a Set of Identifiers for all input IDs for a particular list of targets, organized by input ID and target.
-	 * <p>
-	 * This starts by calling {@link #getIdentifiersByInputID(int geneListID, String[] targets, Connection conn) getIdentifiersByInputID()} which returns a * a Set of Identifiers pointing to
-	 * targets.  This method then creates the middle HashMap and organizes the Identifiers by target.
-	 * </p>
-	 * @param geneListID	the identifier of the list
-	 * @param targets	names of databases to which the values should be translated
-	 * @param conn		database connection
-	 *
-	 * @return		a Set of Identifiers, each having a defined Hashtable of identifier types which 
-	 *			point to a Set of Identifiers 
-	 *<br><pre>
-	 *      ------------------       -----------------------|            ----------------------------------------------------|
-	 *      | Identifier CDX4 |--->  | Affymetrix ID        | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
-	 *      ------------------|       -----------------------|            ----------------------------------------------------|
-	 *      | Identifier CDX3 | ...| | SwissProt ID         | ----\      ----------------------------------------------------|
-	 *      ------------------       -----------------------|      \-->  | Identifier P18111 | Identifier Q8VCF7 | ...  |    |
-	 *                               |  ...                 |            ----------------------------------------------------|
-	 *                               -----------------------|
-	 * </pre>
-	 * @throws	SQLException if there is a problem accessing the database
-	 */ 
-	public Set<Identifier> getIdentifiersByInputIDAndTarget(int geneListID, String[] targets, Connection conn) throws SQLException {
 
-		log.debug("in getIdentifiersByInputIDAndTarget passing in geneListID");
-
-		Set<Identifier> startSet = getIdentifiersByInputID(geneListID, targets, conn);
-		//log.debug("startSet here = "); myDebugger.print(startSet);
-		for (Iterator inputIDitr = startSet.iterator(); inputIDitr.hasNext();) {
-			Identifier thisIdentifier = (Identifier) inputIDitr.next();
-			Set<Identifier> relatedIdentifiers = thisIdentifier.getRelatedIdentifiers();
-			Set<Identifier> locationIdentifiers = thisIdentifier.getLocationIdentifiers();
-			thisIdentifier.setTargetHashMap(new HashMap<String, Set<Identifier>>());
-			for (Iterator identifierItr = relatedIdentifiers.iterator(); identifierItr.hasNext();) {
-				Identifier relatedIdentifier = (Identifier) identifierItr.next();
-				String identifierType = relatedIdentifier.getIdentifierTypeName();
-                                //log.debug("looking for targets = "+identifierType +"::"+targetsList.contains(identifierType)+":::"+thisIdentifier.getTargetHashMap().containsKey(identifierType));
-				if (targetsList.contains(identifierType)) {
-					if (thisIdentifier.getTargetHashMap().containsKey(identifierType)) {
-                                                //log.debug("Added Target to Existing:");myDebugger.print(relatedIdentifier);
-						((Set<Identifier>) thisIdentifier.getTargetHashMap().get(identifierType)).add(relatedIdentifier);
-					} else {
-                                            //log.debug("Added Target:");myDebugger.print(relatedIdentifier);
-						Set<Identifier> newIdentifierSet = new LinkedHashSet<Identifier>();
-						newIdentifierSet.add(relatedIdentifier);
-						thisIdentifier.getTargetHashMap().put(identifierType, newIdentifierSet);
-                                                //log.debug("print related");myDebugger.print(relatedIdentifier.getRelatedIdentifiers());
-					}
-				}
-			}
-			for (Iterator identifierItr = locationIdentifiers.iterator(); identifierItr.hasNext();) {
-				Identifier locationIdentifier = (Identifier) identifierItr.next();
-				if (thisIdentifier.getTargetHashMap().containsKey("Location")) {
-					((Set<Identifier>) thisIdentifier.getTargetHashMap().get("Location")).add(locationIdentifier);
-				} else {
-					Set<Identifier> newIdentifierSet = new LinkedHashSet<Identifier>();
-					newIdentifierSet.add(locationIdentifier);
-					thisIdentifier.getTargetHashMap().put("Location", newIdentifierSet);
-				}
-			}
-		}
-		//log.debug("startSet now = "); myDebugger.print(startSet);
-		return startSet;
-	}
         /** Get a Set of Identifiers for all input IDs for a particular list of targets, organized by input ID and target.
 
         /**
@@ -2988,7 +2666,9 @@ public class IDecoderClient {
 		//log.debug("startSet now = "); myDebugger.print(startSet);
 		return startSet;
 	}
-        /**
+
+
+	/**
 	 * Get a Set of Identifiers for all input IDs for a particular list of targets, organized by input ID and target.
 	 * <p>
 	 * This starts by calling {@link #getIdentifiersByInputID(int geneListID, String[] targets, Connection conn) getIdentifiersByInputID()} which returns a * a Set of Identifiers pointing to
@@ -2998,8 +2678,8 @@ public class IDecoderClient {
 	 * @param targets	names of databases to which the values should be translated
 	 * @param conn		database connection
 	 *
-	 * @return		a Set of Identifiers, each having a defined Hashtable of identifier types which 
-	 *			point to a Set of Identifiers 
+	 * @return		a Set of Identifiers, each having a defined Hashtable of identifier types which
+	 *			point to a Set of Identifiers
 	 *<br><pre>
 	 *      ------------------       -----------------------|            ----------------------------------------------------|
 	 *      | Identifier CDX4 |--->  | Affymetrix ID        | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
@@ -3010,50 +2690,8 @@ public class IDecoderClient {
 	 *                               -----------------------|
 	 * </pre>
 	 * @throws	SQLException if there is a problem accessing the database
-	 */ 
-	public Set<Identifier> getIdentifiersByInputIDAndTarget(String geneID,String organism, String[] targets, Connection conn) throws SQLException {
-
-		log.debug("in getIdentifiersByInputIDAndTarget passing in geneID");
-
-		Set<Identifier> startSet = getIdentifiersByInputID(geneID,organism, targets, conn);
-		log.debug("startSet here = "); myDebugger.print(startSet);
-		for (Iterator inputIDitr = startSet.iterator(); inputIDitr.hasNext();) {
-			Identifier thisIdentifier = (Identifier) inputIDitr.next();
-			Set<Identifier> relatedIdentifiers = thisIdentifier.getRelatedIdentifiers();
-			Set<Identifier> locationIdentifiers = thisIdentifier.getLocationIdentifiers();
-			thisIdentifier.setTargetHashMap(new HashMap<String, Set<Identifier>>());
-			for (Iterator identifierItr = relatedIdentifiers.iterator(); identifierItr.hasNext();) {
-				Identifier relatedIdentifier = (Identifier) identifierItr.next();
-				String identifierType = relatedIdentifier.getIdentifierTypeName();
-                                //log.debug("looking for targets = "+identifierType +"::"+targetsList.contains(identifierType)+":::"+thisIdentifier.getTargetHashMap().containsKey(identifierType));
-				if (targetsList.contains(identifierType)) {
-					if (thisIdentifier.getTargetHashMap().containsKey(identifierType)) {
-                                                //log.debug("Added Target to Existing:");myDebugger.print(relatedIdentifier);
-						((Set<Identifier>) thisIdentifier.getTargetHashMap().get(identifierType)).add(relatedIdentifier);
-					} else {
-                                            //log.debug("Added Target:");myDebugger.print(relatedIdentifier);
-						Set<Identifier> newIdentifierSet = new LinkedHashSet<Identifier>();
-						newIdentifierSet.add(relatedIdentifier);
-						thisIdentifier.getTargetHashMap().put(identifierType, newIdentifierSet);
-                                                //log.debug("print related");myDebugger.print(relatedIdentifier.getRelatedIdentifiers());
-					}
-				}
-			}
-			for (Iterator identifierItr = locationIdentifiers.iterator(); identifierItr.hasNext();) {
-				Identifier locationIdentifier = (Identifier) identifierItr.next();
-				if (thisIdentifier.getTargetHashMap().containsKey("Location")) {
-					((Set<Identifier>) thisIdentifier.getTargetHashMap().get("Location")).add(locationIdentifier);
-				} else {
-					Set<Identifier> newIdentifierSet = new LinkedHashSet<Identifier>();
-					newIdentifierSet.add(locationIdentifier);
-					thisIdentifier.getTargetHashMap().put("Location", newIdentifierSet);
-				}
-			}
-		}
-		//log.debug("startSet now = "); myDebugger.print(startSet);
-		return startSet;
-	}
-        public Set<Identifier> getIdentifiersByInputIDAndTarget(String geneID,String organism, String[] targets, DataSource pool) throws SQLException {
+	 */
+	public Set<Identifier> getIdentifiersByInputIDAndTarget(String geneID,String organism, String[] targets, DataSource pool) throws SQLException {
                log.debug("in getIdentifiersByInputIDAndTarget passing in geneID");
 
 		Set<Identifier> startSet = getIdentifiersByInputID(geneID,organism, targets, pool);

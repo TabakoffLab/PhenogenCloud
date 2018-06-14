@@ -1396,14 +1396,14 @@ public class Array {
     }*/
 
 
-    private void handleTothers(String field, String type, int sampleID, User userLoggedIn, Connection conn) throws SQLException {
+    private void handleTothers(String field, String type, int sampleID, User userLoggedIn, DataSource pool) throws SQLException {
         log.debug("in handleTothers. field = " + field + ", type = " + type + ", sample = " + sampleID);
 
         if (field != null && !field.equals("")) {
-            Tothers existingTothers = new Tothers().getTothersForSampleByType(sampleID, type, conn);
+            Tothers existingTothers = new Tothers().getTothersForSampleByType(sampleID, type, pool);
             if (existingTothers != null) {
                 log.debug("one already exists, so deleting it");
-                existingTothers.deleteAndCommit(conn);
+                existingTothers.deleteAndCommit(pool);
             }
             //**** Shouldn't need to create TOthers anymore-5/23/18
             /*Tothers tothers = new Tothers();
@@ -1457,7 +1457,7 @@ public class Array {
      * @throws SQLException if a database error occurs
      */
 
-    public ArrayCount[] getArrayCount(Connection conn) throws SQLException {
+    public ArrayCount[] getArrayCount(DataSource pool) throws SQLException {
         String query =
                 "select 'All', " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
@@ -1468,10 +1468,16 @@ public class Array {
 
         log.debug("in Array.getArrayCount");
         //log.debug("query = "+query);
-        Results myResults = new Results(query, conn);
+        ArrayCount[] myArrayCounts = new ArrayCount[0];
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, conn);
+            myArrayCounts = setupArrayCounts(myResults);
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        ArrayCount[] myArrayCounts = setupArrayCounts(myResults);
-        myResults.close();
 
         return myArrayCounts;
     }
@@ -1488,7 +1494,7 @@ public class Array {
      * @throws SQLException if a database error occurs
      */
 
-    public ArrayCount[] getArrayOrganisms(String hybridIDs, String channel, Connection conn) throws SQLException {
+    public ArrayCount[] getArrayOrganisms(String hybridIDs, String channel, DataSource pool) throws SQLException {
 
         //log.debug ("in Array.getArrayOrganisms");
         String query =
@@ -1514,12 +1520,15 @@ public class Array {
 
         //log.debug("query = "+query);
         ArrayCount[] myArrayCounts = null;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, conn);
+            myArrayCounts = setupArrayCounts(myResults);
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        Results myResults = new Results(query, conn);
-
-        myArrayCounts = setupArrayCounts(myResults);
-
-        myResults.close();
         return myArrayCounts;
     }
 
@@ -1535,7 +1544,7 @@ public class Array {
      * @throws SQLException if a database error occurs
      */
 
-    public ArrayCount[] getArrayTypes(String hybridIDs, String channel, Connection conn) throws SQLException {
+    public ArrayCount[] getArrayTypes(String hybridIDs, String channel, DataSource pool) throws SQLException {
 
         //log.debug ("in Array.getArrayTypes");
         String query =
@@ -1559,11 +1568,15 @@ public class Array {
 
         //log.debug("query = "+query);
         ArrayCount[] myArrayCounts = null;
-        Results myResults = new Results(query, conn);
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, conn);
+            myArrayCounts = setupArrayCounts(myResults);
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        myArrayCounts = setupArrayCounts(myResults);
-
-        myResults.close();
         return myArrayCounts;
     }
 
@@ -1651,7 +1664,7 @@ public class Array {
      * @return true if this user has been granted access to the array, false otherwise
      * @throws SQLException if a database error occurs
      */
-    public boolean userHasAccess(int userID, int hybrid_id, Connection conn) throws SQLException {
+    public boolean userHasAccess(int userID, int hybrid_id, DataSource pool) throws SQLException {
 
         log.debug("in userHasAccess. userID = " + userID + ", hybrid_id = " + hybrid_id);
 
@@ -1661,21 +1674,25 @@ public class Array {
                         "where user_id = ? " +
                         "and hybrid_id = ?";
         //log.debug("query = "+query);
-
-        Results myResults = new Results(query, userID, hybrid_id, conn);
-        String[] dataRow;
         boolean userHasAccess = false;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, userID, hybrid_id, conn);
+            String[] dataRow;
 
-        while ((dataRow = myResults.getNextRow()) != null) {
-            log.debug("dataRow[0] equals" + dataRow[0]);
-            if (dataRow[0].equals("1")) {
-                userHasAccess = true;
+
+            while ((dataRow = myResults.getNextRow()) != null) {
+                log.debug("dataRow[0] equals" + dataRow[0]);
+                if (dataRow[0].equals("1")) {
+                    userHasAccess = true;
+                }
             }
+            if (myResults != null) {
+                myResults.close();
+            }
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        if (myResults != null) {
-            myResults.close();
-        }
-
         return userHasAccess;
     }
 

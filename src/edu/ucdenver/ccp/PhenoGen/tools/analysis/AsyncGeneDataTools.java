@@ -407,7 +407,7 @@ public class AsyncGeneDataTools extends Thread {
             ArrayList<String> strainList=new ArrayList<String>();
             HashMap templine=new HashMap();
             HashMap tissueTH=new HashMap();
-            HashMap strainTH=new HashMap();
+            HashMap<String,Integer> strainTH=new HashMap<>();
             String curprobeset="";
             while(rs.next()){
                 String probeset=Integer.toString(rs.getInt("PROBESET_ID"));
@@ -416,10 +416,10 @@ public class AsyncGeneDataTools extends Thread {
                 String strain=rs.getString("STRAIN_NAME");
                 if(probeset.equals(curprobeset)){
                     if(templine.containsKey(tissue)){
-                        HashMap strainhm=(HashMap)templine.get(tissue);
+                        HashMap<String,Double> strainhm=(HashMap<String,Double>)templine.get(tissue);
                         strainhm.put(strain,mean);
                     }else{
-                        HashMap strainhm=new HashMap();
+                        HashMap<String,Double> strainhm=new HashMap<>();
                         strainhm.put(strain, mean);
                         templine.put(tissue, strainhm);
                     }
@@ -428,7 +428,7 @@ public class AsyncGeneDataTools extends Thread {
                         data.add(templine);
                     }
                     templine=new HashMap();
-                    HashMap strainhm=new HashMap();
+                    HashMap<String,Double> strainhm=new HashMap<>();
                     strainhm.put(strain, mean);
                     templine.put(tissue, strainhm);
                     templine.put("probeset",probeset);

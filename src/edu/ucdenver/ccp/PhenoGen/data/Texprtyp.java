@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -150,7 +150,7 @@ public class Texprtyp {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	an array of Texprtyp objects
 	 */
-	public Texprtyp[] getAllTexprtypForExp(int expID, Connection conn) throws SQLException {
+	public Texprtyp[] getAllTexprtypForExp(int expID, DataSource pool) throws SQLException {
 
 		log.debug("In getAllTexprtypForExp");
 
@@ -179,13 +179,15 @@ public class Texprtyp {
 			"order by texprtyp_exprid, texprtyp_id, texprtyp_del_status";
 
 		log.debug("query =  " + query);
-
-		Results myResults = new Results(query, new Object[] {expID, expID}, conn);
-
-		Texprtyp[] myTexprtyp = setupTexprtypValues(myResults);
-
-		myResults.close();
-
+		Texprtyp[] myTexprtyp = new Texprtyp[0];
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, new Object[] {expID, expID}, conn);
+			myTexprtyp = setupTexprtypValues(myResults);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return myTexprtyp;
 	}
 
@@ -196,7 +198,7 @@ public class Texprtyp {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Texprtyp object
 	 */
-	public Texprtyp getTexprtyp(int texprtyp_exprid, Connection conn) throws SQLException {
+	public Texprtyp getTexprtyp(int texprtyp_exprid, DataSource pool) throws SQLException {
 
 		log.debug("In getOne Texprtyp");
 
@@ -210,12 +212,16 @@ public class Texprtyp {
 			"and texprtyp_id = vt.term_id";
 
 		//log.debug("query =  " + query);
+		Texprtyp myTexprtyp = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, texprtyp_exprid, conn);
+			myTexprtyp = setupTexprtypValues(myResults)[0];
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		Results myResults = new Results(query, texprtyp_exprid, conn);
-
-		Texprtyp myTexprtyp = setupTexprtypValues(myResults)[0];
-
-		myResults.close();
 
 		return myTexprtyp;
 	}
@@ -225,7 +231,7 @@ public class Texprtyp {
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void  createTexprtyp(Connection conn) throws SQLException {
+	/*public void  createTexprtyp(Connection conn) throws SQLException {
 
 		log.debug("In create Texprtyp");
 
@@ -251,14 +257,14 @@ public class Texprtyp {
 		pstmt.executeUpdate();
 		pstmt.close();
 
-	}
+	}*/
 
 	/**
 	 * Updates a record in the Texprtyp table.
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void update(Connection conn) throws SQLException {
+	public void update(DataSource pool) throws SQLException {
 
 		String query = 
 
@@ -269,20 +275,24 @@ public class Texprtyp {
 		log.debug("query =  " + query);
 
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
+			pstmt.setInt(1, texprtyp_exprid);
+			pstmt.setInt(2, texprtyp_id);
+			pstmt.setString(3, texprtyp_del_status);
+			pstmt.setString(4, texprtyp_user);
+			pstmt.setTimestamp(5, now);
+			pstmt.setInt(6, texprtyp_exprid);
+			pstmt.executeUpdate();
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		pstmt.setInt(1, texprtyp_exprid);
-		pstmt.setInt(2, texprtyp_id);
-		pstmt.setString(3, texprtyp_del_status);
-		pstmt.setString(4, texprtyp_user);
-		pstmt.setTimestamp(5, now);
-		pstmt.setInt(6, texprtyp_exprid);
-
-		pstmt.executeUpdate();
-		pstmt.close();
 
 	}
 
@@ -291,19 +301,17 @@ public class Texprtyp {
          * @param conn  the database connection
          * @throws            SQLException if an error occurs while accessing the database
          */
-        public void deleteTexprtyp(Connection conn) throws SQLException {
+        public void deleteTexprtyp(DataSource pool) throws SQLException {
 
                 log.info("in deleteTexprtyp");
 
                 //conn.setAutoCommit(false);
-
+			String query =
+					"delete from Texprtyp " +
+							"where texprtyp_exprid = ? "+
+							"and texprtyp_id = ?";
                 PreparedStatement pstmt = null;
-                try {
-                        String query =
-                                "delete from Texprtyp " +
-                                "where texprtyp_exprid = ? "+
-                                "and texprtyp_id = ?";
-
+                try(Connection conn=pool.getConnection()) {
                         pstmt = conn.prepareStatement(query,
                                 ResultSet.TYPE_SCROLL_INSENSITIVE,
                                 ResultSet.CONCUR_UPDATABLE);
@@ -312,12 +320,8 @@ public class Texprtyp {
                         pstmt.setInt(2, texprtyp_id);
                         pstmt.executeQuery();
                         pstmt.close();
-
-                        //conn.commit();
                 } catch (SQLException e) {
                         log.debug("error in deleteTexprtyp");
-                        //conn.rollback();
-                        pstmt.close();
                         throw e;
                 }
                 //conn.setAutoCommit(true);
@@ -329,7 +333,7 @@ public class Texprtyp {
          * @param conn  the database connection
          * @throws            SQLException if an error occurs while accessing the database
          */
-        public void deleteAllTexprtypForExperiment(int exp_id, Connection conn) throws SQLException {
+        public void deleteAllTexprtypForExperiment(int exp_id, DataSource pool) throws SQLException {
 
                 log.info("in deleteAllTexprtypForExperiment");
 
@@ -339,16 +343,18 @@ public class Texprtyp {
                         "select texprtyp_exprid, texprtyp_id "+
                         "from Texprtyp "+
                         "where texprtyp_exprid = ?";
+				try(Connection conn=pool.getConnection()){
+					Results myResults = new Results(query, exp_id, conn);
+					String[] dataRow;
+					while ((dataRow = myResults.getNextRow()) != null) {
+						new Texprtyp(Integer.parseInt(dataRow[0]), Integer.parseInt(dataRow[1])).deleteTexprtyp(pool);
+					}
+					myResults.close();
+				}catch(SQLException e){
+				    log.debug("SQL Exception:",e);
+				    throw e;
+				}
 
-                Results myResults = new Results(query, exp_id, conn);
-
-                String[] dataRow;
-
-                while ((dataRow = myResults.getNextRow()) != null) {
-                        new Texprtyp(Integer.parseInt(dataRow[0]), Integer.parseInt(dataRow[1])).deleteTexprtyp(conn);
-                }
-
-                myResults.close();
 
         }
 
@@ -359,7 +365,7 @@ public class Texprtyp {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 * @return	the texprtyp_exprid of a Texprtyp that currently exists
 	 */
-	public int checkRecordExists(Texprtyp myTexprtyp, Connection conn) throws SQLException {
+	public int checkRecordExists(Texprtyp myTexprtyp, DataSource pool) throws SQLException {
 
 		log.debug("in checkRecordExists");
 
@@ -367,16 +373,22 @@ public class Texprtyp {
 			"select texprtyp_exprid "+
 			"from Texprtyp "+
 			"where  = ?";
+		int pk = -1;
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query,
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_UPDATABLE);
 
+			ResultSet rs = pstmt.executeQuery();
 
-		ResultSet rs = pstmt.executeQuery();
+			pk = (rs.next() ? rs.getInt(1) : -1);
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		int pk = (rs.next() ? rs.getInt(1) : -1);
-		pstmt.close();
 		return pk;
 	}
 

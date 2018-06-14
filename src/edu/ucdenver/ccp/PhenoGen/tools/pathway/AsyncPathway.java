@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import javax.mail.MessagingException;
 import javax.mail.SendFailedException;
@@ -85,12 +86,12 @@ public class AsyncPathway implements Runnable {
         String foldChangeFileName = pathwayDir + selectedGeneList.getGene_list_name_no_spaces() + "_GenesPlusFoldChange.txt";
 
         try {
-            Connection conn = new PropertiesConnection().getConnection(dbPropertiesFile);
+            //Connection conn = new PropertiesConnection().getConnection(dbPropertiesFile);
 
-            Dataset thisDataset = new Dataset().getDataset(selectedGeneList.getDataset_id(), conn, (String) session.getAttribute("userFilesRoot"));
-            String analysisLevel = new ParameterValue().getAnalysisLevelNormalizationParameter(selectedGeneList.getDataset_id(), selectedGeneList.getVersion(), conn);
+            Dataset thisDataset = new Dataset().getDataset(selectedGeneList.getDataset_id(), pool, (String) session.getAttribute("userFilesRoot"));
+            String analysisLevel = new ParameterValue().getAnalysisLevelNormalizationParameter(selectedGeneList.getDataset_id(), selectedGeneList.getVersion(), pool);
             log.debug("analysisLevel = " + analysisLevel);
-            String chipType = new edu.ucdenver.ccp.PhenoGen.data.Array().getManufactureArrayName(thisDataset.getArray_type(), conn);
+            String chipType = new edu.ucdenver.ccp.PhenoGen.data.Array().getManufactureArrayName(thisDataset.getArray_type(), pool);
             log.debug("chipType = " + chipType);
 
             myFileHandler.createDir(pathwayDir);
@@ -146,7 +147,7 @@ public class AsyncPathway implements Runnable {
             myEmail.setContent(successContent);
 
 
-            int parameter_group_id = new ParameterValue().createParameterGroup(conn);
+            int parameter_group_id = new ParameterValue().createParameterGroup(pool);
 
             myGeneListAnalysis.setGene_list_id(selectedGeneList.getGene_list_id());
             myGeneListAnalysis.setUser_id(userLoggedIn.getUser_id());
@@ -169,7 +170,7 @@ public class AsyncPathway implements Runnable {
             myGeneListAnalysis.createGeneListAnalysis(pool);
             myGeneListAnalysis.updateVisible(pool);
             myEmail.sendEmail();
-            conn.close();
+
         } catch (SendFailedException e) {
             log.error("in exception of AsyncPathway while sending email", e);
         } catch (RException e) {

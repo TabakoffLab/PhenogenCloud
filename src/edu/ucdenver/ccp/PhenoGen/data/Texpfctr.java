@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -135,7 +136,7 @@ public class Texpfctr {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	an array of Texpfctr objects
 	 */
-	public Texpfctr[] getAllTexpfctrForExp(int expID, Connection conn) throws SQLException {
+	public Texpfctr[] getAllTexpfctrForExp(int expID, DataSource pool) throws SQLException {
 
 		log.debug("In getAllTexpfctrForExp");
 
@@ -164,12 +165,16 @@ public class Texpfctr {
 			"order by texpfctr_exprid, texpfctr_id, texpfctr_del_status";
 
 		//log.debug("query =  " + query);
+		Texpfctr[] myTexpfctr = new Texpfctr[0];
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, new Object[] {expID, expID}, conn);
+			myTexpfctr = setupTexpfctrValues(myResults);
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		Results myResults = new Results(query, new Object[] {expID, expID}, conn);
-
-		Texpfctr[] myTexpfctr = setupTexpfctrValues(myResults);
-
-		myResults.close();
 
 		return myTexpfctr;
 	}
@@ -181,7 +186,7 @@ public class Texpfctr {
 	 * @throws SQLException	if an error occurs while accessing the database
 	 * @return	a Texpfctr object
 	 */
-	public Texpfctr getTexpfctr(int texpfctr_exprid, Connection conn) throws SQLException {
+	public Texpfctr getTexpfctr(int texpfctr_exprid, DataSource pool) throws SQLException {
 
 		log.debug("In getOne Texpfctr");
 
@@ -194,12 +199,16 @@ public class Texpfctr {
 			"and texpfctr_id = vt.term_id";
 
 		//log.debug("query =  " + query);
+		Texpfctr myTexpfctr = null;
+		try(Connection conn=pool.getConnection()){
+			Results myResults = new Results(query, texpfctr_exprid, conn);
+			myTexpfctr = setupTexpfctrValues(myResults)[0];
+			myResults.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 
-		Results myResults = new Results(query, texpfctr_exprid, conn);
-
-		Texpfctr myTexpfctr = setupTexpfctrValues(myResults)[0];
-
-		myResults.close();
 
 		return myTexpfctr;
 	}
@@ -209,7 +218,7 @@ public class Texpfctr {
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void createTexpfctr(Connection conn) throws SQLException {
+	public void createTexpfctr(DataSource pool) throws SQLException {
 
 		log.debug("In create Texpfctr");
 
@@ -222,18 +231,24 @@ public class Texpfctr {
 		//log.debug("query =  " + query);
 
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		pstmt.setInt(1, texpfctr_exprid);
-		pstmt.setInt(2, texpfctr_id);
-		pstmt.setString(3, "U");
-		pstmt.setString(4, texpfctr_user);
-		pstmt.setTimestamp(5, now);
+			pstmt.setInt(1, texpfctr_exprid);
+			pstmt.setInt(2, texpfctr_id);
+			pstmt.setString(3, "U");
+			pstmt.setString(4, texpfctr_user);
+			pstmt.setTimestamp(5, now);
 
-		pstmt.executeUpdate();
-		pstmt.close();
+			pstmt.executeUpdate();
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
+
 
 	}
 
@@ -242,7 +257,7 @@ public class Texpfctr {
 	 * @param conn 	the database connection
 	 * @throws SQLException	if an error occurs while accessing the database
 	 */
-	public void update(Connection conn) throws SQLException {
+	public void update(DataSource pool) throws SQLException {
 
 		String query = 
 			"update Texpfctr "+
@@ -252,20 +267,25 @@ public class Texpfctr {
 		log.debug("query =  " + query);
 
 		java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
 
-		PreparedStatement pstmt = conn.prepareStatement(query, 
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_UPDATABLE);
+			pstmt.setInt(1, texpfctr_exprid);
+			pstmt.setInt(2, texpfctr_id);
+			pstmt.setString(3, texpfctr_del_status);
+			pstmt.setString(4, texpfctr_user);
+			pstmt.setTimestamp(5, now);
+			pstmt.setInt(6, texpfctr_exprid);
 
-		pstmt.setInt(1, texpfctr_exprid);
-		pstmt.setInt(2, texpfctr_id);
-		pstmt.setString(3, texpfctr_del_status);
-		pstmt.setString(4, texpfctr_user);
-		pstmt.setTimestamp(5, now);
-		pstmt.setInt(6, texpfctr_exprid);
+			pstmt.executeUpdate();
+			pstmt.close();
+		}catch(SQLException e){
+			log.debug("SQL Exception:",e);
+			throw e;
+		}
 
-		pstmt.executeUpdate();
-		pstmt.close();
 
 	}
 
@@ -274,14 +294,14 @@ public class Texpfctr {
          * @param conn  the database connection
          * @throws            SQLException if an error occurs while accessing the database
          */
-        public void deleteTexpfctr(Connection conn) throws SQLException {
+        public void deleteTexpfctr(DataSource pool) throws SQLException {
 
                 log.info("in deleteTexpfctr");
 
                 //conn.setAutoCommit(false);
 
                 PreparedStatement pstmt = null;
-                try {
+                try(Connection conn=pool.getConnection()) {
                         String query =
                                 "delete from Texpfctr " +
                                 "where texpfctr_exprid = ? "+
@@ -295,12 +315,8 @@ public class Texpfctr {
                         pstmt.setInt(2, texpfctr_id);
                         pstmt.executeQuery();
                         pstmt.close();
-
-                        //conn.commit();
                 } catch (SQLException e) {
                         log.debug("error in deleteTexpfctr");
-                        //conn.rollback();
-                        pstmt.close();
                         throw e;
                 }
                 //conn.setAutoCommit(true);
@@ -312,7 +328,7 @@ public class Texpfctr {
          * @param conn  the database connection
          * @throws            SQLException if an error occurs while accessing the database
          */
-        public void deleteAllTexpfctrForExperiment(int exp_id, Connection conn) throws SQLException {
+        public void deleteAllTexpfctrForExperiment(int exp_id, DataSource pool) throws SQLException {
 
                 log.info("in deleteAllTexpfctrForExperiment");
 
@@ -322,16 +338,21 @@ public class Texpfctr {
                         "select texpfctr_exprid, texpfctr_id "+
                         "from Texpfctr "+
                         "where texpfctr_exprid = ?";
+				try(Connection conn=pool.getConnection()){
+					Results myResults = new Results(query, exp_id, conn);
 
-                Results myResults = new Results(query, exp_id, conn);
+					String[] dataRow;
 
-                String[] dataRow;
+					while ((dataRow = myResults.getNextRow()) != null) {
+						new Texpfctr(Integer.parseInt(dataRow[0]), Integer.parseInt(dataRow[1])).deleteTexpfctr(pool);
+					}
 
-                while ((dataRow = myResults.getNextRow()) != null) {
-                        new Texpfctr(Integer.parseInt(dataRow[0]), Integer.parseInt(dataRow[1])).deleteTexpfctr(conn);
-                }
+					myResults.close();
+				}catch(SQLException e){
+				    log.debug("SQL Exception:",e);
+				    throw e;
+				}
 
-                myResults.close();
         }
 
 	/**
@@ -341,7 +362,7 @@ public class Texpfctr {
 	 * @throws            SQLException if an error occurs while accessing the database
 	 * @return	the texpfctr_exprid of a Texpfctr that currently exists
 	 */
-	public int checkRecordExists(Texpfctr myTexpfctr, Connection conn) throws SQLException {
+	public int checkRecordExists(Texpfctr myTexpfctr, DataSource pool) throws SQLException {
 
 		log.debug("in checkRecordExists");
 
@@ -349,16 +370,18 @@ public class Texpfctr {
 			"select texpfctr_exprid "+
 			"from Texpfctr "+
 			"where  = ?";
-
-		PreparedStatement pstmt = conn.prepareStatement(query,
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_UPDATABLE);
-
-
-		ResultSet rs = pstmt.executeQuery();
-
-		int pk = (rs.next() ? rs.getInt(1) : -1);
-		pstmt.close();
+		int pk = -1;
+		try(Connection conn=pool.getConnection()){
+			PreparedStatement pstmt = conn.prepareStatement(query,
+					ResultSet.TYPE_SCROLL_INSENSITIVE,
+					ResultSet.CONCUR_UPDATABLE);
+			ResultSet rs = pstmt.executeQuery();
+			pk = (rs.next() ? rs.getInt(1) : -1);
+			pstmt.close();
+		}catch(SQLException e){
+		    log.debug("SQL Exception:",e);
+		    throw e;
+		}
 		return pk;
 	}
 
