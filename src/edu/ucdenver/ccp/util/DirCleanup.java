@@ -14,6 +14,9 @@ import java.util.zip.*;
 import java.util.regex.*;
 import javax.servlet.http.*;
 import javax.servlet.*;
+import javax.sql.DataSource;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import edu.ucdenver.ccp.PhenoGen.web.MultipartRequest;
 
@@ -47,6 +50,7 @@ public class DirCleanup {
     private FileHandler myFileHandler = new FileHandler();
     private ObjectHandler myObjectHandler = new ObjectHandler();
     private Debugger myDebugger = new Debugger();
+    private DataSource pool = null;
 
     private Logger log = null;
 
@@ -732,7 +736,7 @@ public class DirCleanup {
                         "order by u.user_name, d.name, dv.version, pv.parameter_group_id, pv.parameter";
 
         //log.debug("query = "+query);
-        try {
+        try(Connection conn=pool.getConnection()) {
             Results myResults = new Results(query, conn);
             Set<String> validDirsSet1 = new ObjectHandler().getResultsAsSet(myResults, 0);
             //log.debug("validDirsSet1 = "); myDebugger.print(validDirsSet1);
@@ -825,7 +829,7 @@ public class DirCleanup {
                         "order by gl.path";
 
         //log.debug("query = "+query);
-        try {
+        try(Connection conn=pool.getConnection()) {
             Results myResults = new Results(query, conn);
             Set<String> validDirsSet = new ObjectHandler().getResultsAsSet(myResults, 0);
             //log.debug("validDirsSet = "); myDebugger.print(validDirsSet);
@@ -1045,7 +1049,7 @@ public class DirCleanup {
 
         //log.debug("query = "+query);
 
-        try {
+        try(Connection conn=pool.getConnection()) {
             Results myResults = new Results(query, conn);
             Set userNameSet = new ObjectHandler().getResultsAsSet(myResults, 0);
 
@@ -1360,10 +1364,16 @@ public class DirCleanup {
                 "order by u.user_name";
 
         //log.debug("query = "+query);
+        LinkedHashMap<String, String> userNameHash = null;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, conn);
+            userNameHash = new ObjectHandler().getResultsAsLinkedHashMap(myResults);
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        Results myResults = new Results(query, conn);
-        LinkedHashMap<String, String> userNameHash = new ObjectHandler().getResultsAsLinkedHashMap(myResults);
-        myResults.close();
         return userNameHash;
     }
 
@@ -1376,10 +1386,16 @@ public class DirCleanup {
                 "order by u.user_name";
 
         //log.debug("query = "+query);
+        LinkedHashMap<String, String> userNameHash = null;
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, conn);
+            userNameHash = new ObjectHandler().getResultsAsLinkedHashMap(myResults);
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
 
-        Results myResults = new Results(query, conn);
-        LinkedHashMap<String, String> userNameHash = new ObjectHandler().getResultsAsLinkedHashMap(myResults);
-        myResults.close();
         return userNameHash;
     }
 
@@ -1395,7 +1411,7 @@ public class DirCleanup {
 
         //log.debug("query = "+query);
 
-        try {
+        try(Connection conn=pool.getConnection()) {
             LinkedHashMap<String, String> userNameHash = getUserNameHash();
 
             for (Iterator itr = userNameHash.keySet().iterator(); itr.hasNext(); ) {
@@ -1437,7 +1453,7 @@ public class DirCleanup {
 
             for (Iterator itr = userNameHash.keySet().iterator(); itr.hasNext(); ) {
                 String userID = (String) itr.next();
-                User thisUser = new User().getUser(Integer.parseInt(userID), conn);
+                User thisUser = new User().getUser(Integer.parseInt(userID), pool);
                 String userName = (String) userNameHash.get(userID);
                 String userMainDir = userFilesString + userName + "/";
                 // have to do this so that getPublicDatasetPath works correctly
@@ -1445,7 +1461,7 @@ public class DirCleanup {
                 log.debug("userID = " + userID + ", and userName = " + userName);
                 //log.debug("userMainDir = "+userMainDir);
 
-                Dataset[] userDatasets = new Dataset().getAllDatasetsForUser(thisUser, conn);
+                Dataset[] userDatasets = new Dataset().getAllDatasetsForUser(thisUser, pool);
                 log.debug("userDatasets len = " + userDatasets.length);
                 File[] masterDirs = getThisUserDatasetMasterDirs(userName);
 
@@ -1518,7 +1534,7 @@ public class DirCleanup {
         //log.debug("query = "+query);
         //log.debug("query2 = "+query2);
 
-        try {
+        try (Connection conn=pool.getConnection()){
             LinkedHashMap<String, String> userNameHash = getUserNameHash("Non-public");
 
             for (Iterator itr = userNameHash.keySet().iterator(); itr.hasNext(); ) {
@@ -1803,25 +1819,31 @@ log.debug("thisExpement expID = "+thisExperiment.getExp_id());
                 "and pv.category = 'Upstream Extraction'";
 
         log.debug("query = " + query);
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(query);
+        try(Connection conn=pool.getConnection()){
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
 
-        while (rs.next()) {
-            String createDate = rs.getString(2);
-            String glNameNoSpaces = new ObjectHandler().removeBadCharacters(rs.getString(3));
-            String length = rs.getString(4);
-            String userUpstreamDir = userFilesString + rs.getString(1) + "/GeneLists/" +
-                    glNameNoSpaces + "/UpstreamExtraction/";
-            log.debug("userUpstreamDir = " + userUpstreamDir);
-            File upstreamFile = new File(userUpstreamDir + glNameNoSpaces + "_" + length + "bp.fasta.txt");
-            if (upstreamFile.exists()) {
-                String newFileName = userUpstreamDir + glNameNoSpaces + "_" + createDate + "_" + length + "bp.fasta.txt";
-                log.debug("file exists.  going to rename it to " + newFileName);
-                upstreamFile.renameTo(new File(newFileName));
-            } else {
-                log.debug("file does not exist.  name is :" + upstreamFile.toString());
+            while (rs.next()) {
+                String createDate = rs.getString(2);
+                String glNameNoSpaces = new ObjectHandler().removeBadCharacters(rs.getString(3));
+                String length = rs.getString(4);
+                String userUpstreamDir = userFilesString + rs.getString(1) + "/GeneLists/" +
+                        glNameNoSpaces + "/UpstreamExtraction/";
+                log.debug("userUpstreamDir = " + userUpstreamDir);
+                File upstreamFile = new File(userUpstreamDir + glNameNoSpaces + "_" + length + "bp.fasta.txt");
+                if (upstreamFile.exists()) {
+                    String newFileName = userUpstreamDir + glNameNoSpaces + "_" + createDate + "_" + length + "bp.fasta.txt";
+                    log.debug("file exists.  going to rename it to " + newFileName);
+                    upstreamFile.renameTo(new File(newFileName));
+                } else {
+                    log.debug("file does not exist.  name is :" + upstreamFile.toString());
+                }
             }
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
+
     }
 
     public void fixCodeLinkFiles() throws SQLException, IOException, RException {
@@ -2802,7 +2824,7 @@ log.debug("thisExpement expID = "+thisExperiment.getExp_id());
         }
     }
 
-    public void checkExperimentNames(File userFilesDir, Connection conn) {
+    public void checkExperimentNames(File userFilesDir,DataSource pool) {
 
         log.debug("************CHECK EXPERIMENT NAMES HERE ********************");
         String query = "select ds.name, ds.path, u.user_name " +
@@ -2811,7 +2833,7 @@ log.debug("thisExpement expID = "+thisExperiment.getExp_id());
                 "order by u.user_name, ds.name";
 
         Statement stmt = null;
-        try {
+        try(Connection conn=pool.getConnection()) {
             stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -2876,9 +2898,22 @@ log.debug("thisExpement expID = "+thisExperiment.getExp_id());
 		myDirCleanup.setUserFilesString("/data/userFiles/");
 		myDirCleanup.setUserFilesDir(new File(myDirCleanup.getUserFilesString()));
 		myDirCleanup.getR_session().setRFunctionDir("/usr/share/tomcat/webapps/PhenoGen/R_src/");
-*/
-
-            myDirCleanup.setConn(new PropertiesConnection().getConnection(myDirCleanup.getPropertiesFile()));
+*/          DataSource pool=null;
+            try {
+                // Create a JNDI Initial context to be able to lookup the DataSource
+                InitialContext ctx = new InitialContext();
+                // Lookup the DataSource, which will be backed by a pool
+                //   that the application server provides.
+                pool = (DataSource) ctx.lookup("java:comp/env/jdbc/DevDB" );
+                if (pool == null) {
+                    System.out.println("JNDI lookup exception:");
+                }
+            } catch (NamingException ex) {
+                System.out.println("JNDI lookup exception:");
+                ex.printStackTrace(System.out);
+                ex.printStackTrace();
+            }
+            //myDirCleanup.setConn(new PropertiesConnection().getConnection(myDirCleanup.getPropertiesFile()));
 
             //myDirCleanup.R3_3ToR3_3_2Changes();
             //myDirCleanup.R3_3ToR3_4Changes();
