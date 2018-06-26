@@ -1001,7 +1001,7 @@ public class ParameterValue implements Comparable {
 
                 "select distinct pv.parameter_value_id, " +
                         "parameter_group_id, " +
-                        "decode(pv.category, 'AbsoluteCallFilter', 'Absolute Call Filter', " +
+                        "if(pv.category, 'AbsoluteCallFilter', 'Absolute Call Filter', " +
                         "'MAS5AbsoluteCallFilter', 'MAS5 Absolute Call Filter', " +
                         "'DABGPValueFilter', 'DABG P-Value Filter', " +
                         "'AffyControlGenesFilter', 'Affy Control Genes Filter', " +
@@ -1014,10 +1014,10 @@ public class ParameterValue implements Comparable {
                         "'VariationFilter', 'Variation Filter', " +
                         "'FoldChangeFilter', 'Fold Change Filter', " +
                         "pv.category), " +
-                        "decode(pv.parameter, 'Parameter 1 is Null', ' ', " +
+                        "if(pv.parameter, 'Parameter 1 is Null', ' ', " +
                         "'Parameter 2 is Null', ' ', " +
                         "pv.parameter), " +
-                        "decode(pv.value, 'Null', ' ', " +
+                        "if(pv.value, 'Null', ' ', " +
                         "	pv.value), " +
                         "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
                         "pv.value, " +
@@ -1073,7 +1073,7 @@ public class ParameterValue implements Comparable {
         String query =
                 "select distinct pv.parameter_value_id, " +
                         "pv.parameter_group_id, " +
-                        "decode(pv.category, 'Statistical Method', 'Statistical Test', " +
+                        "if(pv.category, 'Statistical Method', 'Statistical Test', " +
                         "'AbsoluteCallFilter', 'Absolute Call Filter', " +
                         "'MAS5AbsoluteCallFilter', 'MAS5 Absolute Call Filter', " +
                         "'DABGPValueFilter', 'DABG P-Value Filter', " +
@@ -1087,10 +1087,10 @@ public class ParameterValue implements Comparable {
                         "'VariationFilter', 'Variation Filter', " +
                         "'FoldChangeFilter', 'Fold Change Filter', " +
                         "pv.category), " +
-                        "decode(pv.parameter, 'Parameter 1 is Null', ' ', " +
+                        "if(pv.parameter, 'Parameter 1 is Null', ' ', " +
                         "'Parameter 2 is Null', ' ', " +
                         "pv.parameter), " +
-                        "decode(pv.value, 'Null', ' ', " +
+                        "if(pv.value, 'Null', ' ', " +
                         "	pv.value), " +
                         "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
                         "pg.dataset_id, " +
@@ -1295,8 +1295,8 @@ public class ParameterValue implements Comparable {
                 "select pv.parameter_value_id, " +
                         "pv.parameter_group_id, " +
                         "pv.category, " +
-                        "decode(pv.value, 'Null', ' ', pv.parameter), " +
-                        "decode(pv.value, 'Null', ' ', pv.value), " +
+                        "if(pv.value, 'Null', ' ', pv.parameter), " +
+                        "if(pv.value, 'Null', ' ', pv.value), " +
                         "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
                         "pg.dataset_id, " +
                         "pg.version " +
@@ -1352,8 +1352,8 @@ public class ParameterValue implements Comparable {
                 "select pv.parameter_value_id, " +
                         "pv.parameter_group_id, " +
                         "pv.category, " +
-                        "decode(pv.value, 'Null', ' ', pv.parameter), " +
-                        "decode(pv.value, 'Null', ' ', pv.value), " +
+                        "if(pv.value, 'Null', ' ', pv.parameter), " +
+                        "if(pv.value, 'Null', ' ', pv.value), " +
                         "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
                         "pg.dataset_id, " +
                         "pg.version " +
@@ -1404,8 +1404,8 @@ public class ParameterValue implements Comparable {
                 "select pv.parameter_value_id, " +
                         "pv.parameter_group_id, " +
                         "pv.category, " +
-                        "decode(value, 'Null', ' ', pv.parameter), " +
-                        "decode(value, 'Null', ' ', pv.value), " +
+                        "if(value, 'Null', ' ', pv.parameter), " +
+                        "if(value, 'Null', ' ', pv.value), " +
                         "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
                         "pg.dataset_id, " +
                         "pg.version " +

@@ -15,69 +15,69 @@
 <jsp:useBean id="myFileHandler" class="edu.ucdenver.ccp.util.FileHandler"/>
 <jsp:useBean id="myHTMLHandler" class="edu.ucdenver.ccp.PhenoGen.web.HTMLHandler"/>
 <jsp:useBean id="myToolbar" class="edu.ucdenver.ccp.PhenoGen.util.Toolbar"/>
-	<jsp:setProperty name="myToolbar" property="session" value="<%=session%>" />
+<jsp:setProperty name="myToolbar" property="session" value="<%=session%>"/>
 
 <%@ page language="java"
-        import="java.sql.*"
-        import="java.net.URL"
-        import="java.io.*"
-        import="java.text.*"
-        import="java.util.*"
-        import="java.util.zip.*"
-        import="javax.imageio.*"
-        import="java.util.regex.Pattern"
-        import="javax.mail.MessagingException"
-	import="javax.sql.DataSource"
-	import="javax.naming.*"
-        import="java.awt.image.*"
-        import="org.apache.log4j.Logger"
-        import="edu.ucdenver.ccp.util.*"
-        import="edu.ucdenver.ccp.util.sql.*"
-        import="edu.ucdenver.ccp.PhenoGen.util.*"
-        import="edu.ucdenver.ccp.PhenoGen.data.*"
-        import="edu.ucdenver.ccp.PhenoGen.data.RNASeq.*"
-	import="edu.ucdenver.ccp.PhenoGen.data.Bio.*"
-        import="edu.ucdenver.ccp.PhenoGen.data.internal.*"
-        import="edu.ucdenver.ccp.PhenoGen.driver.*"
-        import="edu.ucdenver.ccp.PhenoGen.tools.oe.*"
-        import="edu.ucdenver.ccp.PhenoGen.tools.promoter.*"
-        import="edu.ucdenver.ccp.PhenoGen.tools.literature.*"
-        import="edu.ucdenver.ccp.PhenoGen.tools.idecoder.*"
-        import="edu.ucdenver.ccp.PhenoGen.tools.mage.*"
-        import="edu.ucdenver.ccp.PhenoGen.tools.analysis.*"
-        import="edu.ucdenver.ccp.PhenoGen.tools.pathway.*"
-	import="edu.ucdenver.ccp.PhenoGen.tools.databases.*"
-        import="edu.ucdenver.ccp.PhenoGen.tools.*"
-        import="edu.ucdenver.ccp.PhenoGen.tools.mir.*"
-        import="edu.ucdenver.ccp.PhenoGen.web.*"
-        import="edu.ucdenver.ccp.PhenoGen.web.mail.*"
-        import="edu.ucdenver.ccp.iDecoder.*"
-        import="au.com.forward.threads.*"
-        import="org.ensembl.*"
-        import="org.ensembl.driver.*"
-        import="org.ensembl.datamodel.*"
-	import="com.itextpdf.text.pdf.*"
-	import="com.itextpdf.text.Document"
-	import="com.itextpdf.text.Image"
+         import="java.sql.*"
+         import="java.net.URL"
+         import="java.io.*"
+         import="java.text.*"
+         import="java.util.*"
+         import="java.util.zip.*"
+         import="javax.imageio.*"
+         import="java.util.regex.Pattern"
+         import="javax.mail.MessagingException"
+         import="javax.sql.DataSource"
+         import="javax.naming.*"
+         import="java.awt.image.*"
+         import="org.apache.log4j.Logger"
+         import="edu.ucdenver.ccp.util.*"
+         import="edu.ucdenver.ccp.util.sql.*"
+         import="edu.ucdenver.ccp.PhenoGen.util.*"
+         import="edu.ucdenver.ccp.PhenoGen.data.*"
+         import="edu.ucdenver.ccp.PhenoGen.data.RNASeq.*"
+         import="edu.ucdenver.ccp.PhenoGen.data.Bio.*"
+         import="edu.ucdenver.ccp.PhenoGen.data.internal.*"
+         import="edu.ucdenver.ccp.PhenoGen.driver.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.oe.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.promoter.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.literature.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.idecoder.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.mage.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.analysis.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.pathway.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.databases.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.*"
+         import="edu.ucdenver.ccp.PhenoGen.tools.mir.*"
+         import="edu.ucdenver.ccp.PhenoGen.web.*"
+         import="edu.ucdenver.ccp.PhenoGen.web.mail.*"
+         import="edu.ucdenver.ccp.iDecoder.*"
+         import="au.com.forward.threads.*"
+         import="org.ensembl.*"
+         import="org.ensembl.driver.*"
+         import="org.ensembl.datamodel.*"
+         import="com.itextpdf.text.pdf.*"
+         import="com.itextpdf.text.Document"
+         import="com.itextpdf.text.Image"
 %>
 <%@ page session="true" %>
 <%
-        //
-        // Initialize the logger to log debug messages
-        //
-        Logger log=null;
-        //log = Logger.getRootLogger();
-        log = Logger.getLogger("JSPLogger");
+    //
+    // Initialize the logger to log debug messages
+    //
+    Logger log = null;
+    //log = Logger.getRootLogger();
+    log = Logger.getLogger("JSPLogger");
 
-        int userID = -99;
+    int userID = -99;
 
-        String action = (String)request.getParameter("action");
+    String action = (String) request.getParameter("action");
 
-        String caller = request.getHeader("referer");
-        String host = request.getHeader("host");
-		String pageTitle="";
-		String pageDescription="";
-	session.setAttribute("host", host);
+    String caller = request.getHeader("referer");
+    String host = request.getHeader("host");
+    String pageTitle = "";
+    String pageDescription = "";
+    session.setAttribute("host", host);
 /*
 	for (Enumeration itr = request.getHeaderNames(); itr.hasMoreElements();) {
 		log.debug("header Names ="+itr.nextElement());

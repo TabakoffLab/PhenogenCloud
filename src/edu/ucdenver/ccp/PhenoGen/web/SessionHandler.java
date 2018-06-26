@@ -625,7 +625,7 @@ public class SessionHandler {
         try {
 
             String query =
-                    "insert into sessions " +
+                    "insert into SESSIONS " +
                             "(session_id, user_id, login_time) " +
                             "values " +
                             "(?, ?, ?)";
@@ -648,8 +648,13 @@ public class SessionHandler {
                 pstmt.close();
 
             } catch (SQLException e) {
-                log.error("In exception of createSession", e);
-                throw e;
+                log.debug("Exception:::"+e.getMessage());
+                if(e.getMessage().contains("Duplicate entry ")){
+                    //Session already created no need to do anything
+                }else {
+                    log.error("In exception of createSession", e);
+                    throw e;
+                }
             }
             conn.close();
         } catch (SQLException e) {
@@ -672,7 +677,7 @@ public class SessionHandler {
 
             if (conn != null) {
                 String query =
-                        "update sessions " +
+                        "update SESSIONS " +
                                 "set logout_time = ? " +
                                 "where session_id = ?";
 
@@ -711,7 +716,7 @@ public class SessionHandler {
 
 
             String query =
-                    "update sessions " +
+                    "update SESSIONS " +
                             "set  user_id = ? " +
                             "where session_id = ?";
 
@@ -1095,7 +1100,7 @@ public class SessionHandler {
         String[] query = new String[3];
 
         query[0] =
-                "delete from sessions s " +
+                "delete from SESSIONS s " +
                         "where not exists " +
                         "	(select 'x' " +
                         "	from session_activities sa " +
@@ -1105,11 +1110,11 @@ public class SessionHandler {
                 "delete from session_activities " +
                         "where session_id in " +
                         "	(select session_id " +
-                        "	from sessions " +
+                        "	from SESSIONS " +
                         "	where login_time < sysdate - 90)";
 
         query[2] =
-                "delete from sessions " +
+                "delete from SESSIONS " +
                         "where login_time < sysdate - 90";
         try {
             conn = pool.getConnection();
@@ -1143,14 +1148,14 @@ public class SessionHandler {
                 selectClause +
                         "from session_activities sa " +
                         "where exists " +
-                        "(select session_id from sessions s " +
+                        "(select session_id from SESSIONS s " +
                         "where user_id = ? " +
                         "and s.session_id = sa.session_id)" +
                         rownumClause;
 
         query[1] =
                 selectClause +
-                        "from sessions " +
+                        "from SESSIONS " +
                         "where user_id = ?" +
                         rownumClause;
 

@@ -489,7 +489,7 @@ public class LitSearch {
                 "select lsr.gene_id||'|||'||lsr.category column1, " +
                         "pmr.pubmed_id, " +
                         "mc.article_title||' ('|| " +
-                        "	nvl(journal_title, medline_ta)||' -- '||" +
+                        "	ifnull(journal_title, medline_ta)||' -- '||" +
                         "	pub_date_month||', '||pub_date_year||')' article_title, " +
                         "mc.abstract_text " +
                         "from mdln_citation mc, " +
@@ -575,14 +575,14 @@ public class LitSearch {
         //
         String query =
                 "select lsr.gene_id, " +
-                        "nvl(to_char(join(cursor(select ai.alternate_id " +
+                        "ifnull(to_char(join(cursor(select ai.alternate_id " +
                         "from alternate_identifiers ai " +
                         "where ai.source_id = lsr.result_id " +
                         "and ai.gene_list_id = lsr.gene_list_id " +
                         "and ai.gene_id = lsr.gene_id " +
                         "and ai.source = 'LitSearch' order by ai.alternate_id), ', ')), 'None') alternate_id, " +
                         "cat.category, " +
-                        "decode(lsr.category, cat.category, count(distinct pmr.pubmed_id), 0) pubmed_count " +
+                        "if(lsr.category, cat.category, count(distinct pmr.pubmed_id), 0) pubmed_count " +
                         "from categories cat, " +
                         "lit_search_results lsr " +
                         "left join pubmed_results pmr on lsr.result_id = pmr.result_id " +
@@ -596,7 +596,7 @@ public class LitSearch {
                         "lsr.result_id " +
                         "union " +
                         "(select lsr.gene_id, " +
-                        "nvl(to_char(join(cursor(select ai.alternate_id " +
+                        "ifnull(to_char(join(cursor(select ai.alternate_id " +
                         "from alternate_identifiers ai " +
                         "where ai.source_id = lsr.result_id " +
                         "and ai.gene_list_id = lsr.gene_list_id " +
@@ -610,7 +610,7 @@ public class LitSearch {
                         "and lsr.search_id = ? " +
                         "minus " +
                         "select lsr.gene_id, " +
-                        "nvl(to_char(join(cursor(select ai.alternate_id " +
+                        "ifnull(to_char(join(cursor(select ai.alternate_id " +
                         "from alternate_identifiers ai " +
                         "where ai.source_id = lsr.result_id " +
                         "and ai.gene_list_id = lsr.gene_list_id " +

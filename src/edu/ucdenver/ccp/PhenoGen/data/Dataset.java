@@ -139,18 +139,17 @@ public class Dataset {
                     "ds.platform, " +
                     "ds.qc_complete, " +
                     "org.organism_name, " +
-                    "' ('||count(distinct dc.user_chip_id)||' '|| " +
-                    "       decode(ds.platform, 'Affymetrix', 'Affy', ds.platform)|| " +
-                    "	' '|| " +
-                    "	ds.organism " +
-                    "	||' arrays)', " +
+                    "concat( ' (' , count(distinct dc.user_chip_id),' ', " +
+                    "       if(ds.platform='Affymetrix', 'Affy', ds.platform), " +
+                    "	' ', ds.organism ,' arrays)' " +
+                    " ) , " +
                     "ds.created_by_user_id, " +
-                    "u.title||' '||u.first_name||' '||u.last_name , " +
+                    "concat( u.title,' ',u.first_name,' ',u.last_name) , " +
                     "atype.Array_name, " +
                     "ds.visible, ds.visible_note ";
 
     private String datasetFromClause =
-            "from users u, " +
+            "from USERS u, " +
                     "organisms org, " +
                     "datasets ds left join " +
                     "dataset_chips dc on ds.dataset_id = dc.dataset_id " +
@@ -173,7 +172,7 @@ public class Dataset {
                     "org.organism_name, " +
                     "dc.dataset_id, " +
                     "ds.created_by_user_id, " +
-                    "u.title||' '||u.first_name||' '||u.last_name, " +
+                    "concat(u.title,' ',u.first_name,' ',u.last_name), " +
                     "ds.ARRAY_TYPE_ID, " +
                     "atype.Array_name, " +
                     "ds.visible, ds.visible_note ";
@@ -2194,7 +2193,7 @@ public class Dataset {
                 String fromString =
                         "from datasets ds left join " +
                                 "dataset_chips dc on ds.dataset_id = dc.dataset_id, " +
-                                "users u, " +
+                                "USERS u, " +
                                 "organisms org ";
                 query =
                         datasetSelectClause +
@@ -2631,7 +2630,7 @@ public class Dataset {
                 "and (ds.created_by_user_id = ? " +
                 "or ds.created_by_user_id = " +
                 "	(select user_id " +
-                "	from users " +
+                "	from USERS " +
                 "	where user_name = 'public')) ";
 
         query = query +
@@ -3902,7 +3901,7 @@ public class Dataset {
             log.debug("in getParentsWithGroups for a dataset version");
             String query =
                     "select " +
-                            "nvl(g.parent, g.group_name), decode(g.parent, null, 'Same', g.group_name) " +
+                            "ifnull(g.parent, g.group_name), decode(g.parent, null, 'Same', g.group_name) " +
                             "from groups g , dataset_versions dv " +
                             "where dv.grouping_id = g.grouping_id " +
                             "and dv.dataset_id = ? " +
@@ -3993,7 +3992,7 @@ public class Dataset {
                             "chip_groups cg, " +
                             "groups grps, " +
                             "dataset_versions dv, " +
-                            "users u " +
+                            "USERS u " +
                             "where uc.user_chip_id = dc.user_chip_id " +
                             "and dc.dataset_id = ? " +
                             "and dv.version = ? " +

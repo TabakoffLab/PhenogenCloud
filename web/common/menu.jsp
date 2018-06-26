@@ -20,10 +20,11 @@
 	if(!mainFunction.equals("")||!mainStep.equals("")){
 		topPos="5px";
 	}
+	log.debug("begining of menu");
 %>
 
 <style>
-    <%@ include file="/css/menu.min.css" %>
+    <%@ include file="/css/menu.css" %>
 </style>
 
 
@@ -51,12 +52,12 @@
     	
   </div> <!-- page_header -->
   
-<div style="width:100%; text-align:center;margin-top:11px;">
+<div style="width:100%; text-align:center;/*margin-top:5px;*/">
 <div id='cssmenu' >
    		<ul>
-        
+
 		<!-- HOME -->
-		<% if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%>
+		<%if(!loggedIn || userLoggedIn.getUser_name().equals("anon")){%>
         	<li class="has-sub hideLogin <%if(mainMenuSelected.equals("overview")){%>selected<%}%>"><a href='<%=commonDir%>selectMenu.jsp?menuURL=<%=contextRoot%>index.jsp' class="public"><span class="menu1line">Overview</span></a>
         		<ul>
                     <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=commonDir%>ovrvw_whats_new.jsp"><span>What's New</span></a></li>
@@ -70,10 +71,10 @@
         <%}else{%>
         	<li><a href='<%=commonDir%>startPage.jsp'><span class="menu1line">Home</span></a></li>
         <%}%>
-   		
 
+            <% log.debug("after first menu");%>
        		<li class="hideLogin <%if(mainMenuSelected.equals("transcript")){%>selected<%}%>" ><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=contextRoot%>gene.jsp" <%if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%> class="public" <%}%>><span class="menu3line">Genome / Transcriptome Data Browser</span></a></li>
-       		<li class="hideLogin <%if(mainMenuSelected.equals("download")){%>selected<%}%>"><a href='<%=commonDir%>selectMenu.jsp?menuURL=<%=sysBioDir%>resources.jsp' <%if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%> class="public" <%}%>><span class="menu3line">Available Data Downloads</span></a></li>
+       		<li class="hideLogin <%if(mainMenuSelected.equals("download")){%>selected<%}%>"><a href='<%=commonDir%>selectMenu.jsp?menuURL=<%=sysBioDir%>resources.jsp' <%if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%> class="public" <%}%>><span class="menu2line">Available Data Downloads</span></a></li>
        
                 
         <li class='has-sub hideLogin <%if(mainMenuSelected.equals("genelist")){%>selected<%}%>'><span class=<%if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%> "noLink public" <%}else{%>"noLink"<%}%>><span class="menu2line">Gene List Analysis Tools</span></span>
@@ -84,23 +85,22 @@
           </ul>
        </li>        
                 
-       <li class='has-sub hideLogin <%if(mainMenuSelected.equals("microarray")){%>selected<%}%>'><span class="noLink"><span class="menu2line">Microarray Analysis Tools</span></span>
+       <li class='has-sub hideLogin <%if(mainMenuSelected.equals("microarray")){%>selected<%}%>'><span class="noLink"><span class="menu3line">View Previous Microarray Analysis</span></span>
           <ul>
-          	 <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>listDatasets.jsp"><span>Analyze precompiled datasets</span></a>
-             <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=experimentsDir%>listExperiments.jsp"><span>Upload your own data</span></a></li>
-             <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>basicQuery.jsp"><span>Create a dataset from public and private arrays</span></a></li>
+          	 <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>listDatasets.jsp"><span>View previously compiled datasets</span></a>
+             <!--<li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=experimentsDir%>listExperiments.jsp"><span>Upload your own data</span></a></li>
+             <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>basicQuery.jsp"><span>Create a dataset from public and private arrays</span></a></li>-->
              <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>geneData.jsp"><span>View expression values for a list of genes in a dataset</span></a></li>
           </ul>
        </li>
-       
-       <li class='has-sub hideLogin <%if(mainMenuSelected.equals("qtl")){%>selected<%}%>'><span class="noLink"><span class="menu1line">QTL Tools</span></span>
+      <!-- <li class='has-sub hideLogin <%if(mainMenuSelected.equals("qtl")){%>selected<%}%>'><span class="noLink"><span class="menu1line">QTL Tools</span></span>
        			<ul>
                 	<li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=qtlsDir%>defineQTL.jsp?fromMain=Y&fromQTL=Y"><span>Enter phenotypic QTL information</span></a></li>
                     <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=qtlsDir%>calculateQTLs.jsp">Calculate QTLs for phenotype</a></li>
             		<li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=qtlsDir%>downloadMarker.jsp">Download marker set used in eQTL calculations</a></li>
             		<li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=geneListsDir%>listGeneLists.jsp?fromQTL=Y">View physical location and eQTL information about specific genes from a gene list</a></li>
                 </ul>
-       </li>
+       </li>-->
        <li class='has-sub hideLogin <%if(mainMenuSelected.equals("about")){%>selected<%}%>'><span class="noLink <%if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%>public<%}%>"><span class="menu1line">About</span></span>
             	<ul>
                 	<li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=contextRoot%>CurrentDataSets.jsp"><span>Current Datasets</span></a></li>
@@ -128,7 +128,7 @@
        </li>
        
    <% if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%>
-   		<li id="loginMenu"  class='has-sub <%if(mainMenuSelected.equals("login")){%>selected<%}%>'><a href='#' class="end login_btn" ><span class="menu2line">Login/ Register</span></a></li>
+   		<li id="loginMenu"  class='has-sub <%if(mainMenuSelected.equals("login")){%>selected<%}%>'><a href='#' class="end login_btn" ><span class="menu2line">Login /<BR>Register</span></a></li>
    <%} else {%>
    		<li id="loginMenu" class='has-sub <%if(mainMenuSelected.equals("account")){%>selected<%}%>'><a href='#' class="end" ><span class="menu1line">Account</span></a>
         	<UL id="account">
@@ -141,8 +141,7 @@
        
 </ul>
 </div>
-
-<%@ include file="/web/access/include/accountBox.jsp" %>
+    <%@ include file="/web/access/include/accountBox.jsp" %>
 
 </div>
 

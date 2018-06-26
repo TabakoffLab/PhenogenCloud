@@ -44,16 +44,16 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
                     "'', " +
                     "gl.path, " +
                     "gl.gene_list_name, " +
-                    "nvl(gl.description, 'No Description Entered') Description, " +
+                    "ifnull(gl.description, 'No Description Entered') Description, " +
                     "(Select count(*) from genes ge where ge.gene_list_id=gl.gene_list_id), " +
                     "gl.organism Organism, " +
                     "'', " +
                     "to_char(gl.create_date, 'mm/dd/yyyy hh12:mi AM') \"Date Created\", " +
                     "to_char(gl.create_date, 'mmddyyyy_hh24miss'), " +
-                    "nvl(gl.dataset_id, -99), " +
-                    "nvl(gl.parameter_group_id, -99), " +
+                    "ifnull(gl.dataset_id, -99), " +
+                    "ifnull(gl.parameter_group_id, -99), " +
                     "gl.created_by_user_id, " +
-                    "nvl(gl.version, -99), " +
+                    "ifnull(gl.version, -99), " +
                     "gl.create_date ";
     private String fromClause =
             "from gene_lists gl " +
@@ -94,16 +94,16 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
 			"'', "+
 			"gl.path, "+
         		"gl.gene_list_name, "+
-        		"nvl(gl.description, 'No Description Entered') Description, "+
+        		"ifnull(gl.description, 'No Description Entered') Description, "+
                 	"(Select count(*) from genes ge where ge.gene_list_id=gl.gene_list_id), "+
         		"gl.organism Organism, "+
 			"'', "+
 			"to_char(gl.create_date, 'mm/dd/yyyy hh12:mi AM') \"Date Created\", "+
 			"to_char(gl.create_date, 'mmddyyyy_hh24miss'), "+
-			"nvl(gl.dataset_id, -99), "+
-			"nvl(gl.parameter_group_id, -99), "+
+			"ifnull(gl.dataset_id, -99), "+
+			"ifnull(gl.parameter_group_id, -99), "+
 			"gl.created_by_user_id, "+
-			"nvl(gl.version, -99), "+
+			"ifnull(gl.version, -99), "+
 			"gl.create_date "+*/
                 "from gene_lists gl, Anon_user_genelist aug " +
                 "where gl.gene_list_id = aug.genelist_id " +

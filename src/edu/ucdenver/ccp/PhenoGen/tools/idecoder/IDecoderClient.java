@@ -541,7 +541,7 @@ public class IDecoderClient {
  			"ia.array_name, "+
 			"glg.id_number, "+
 			"glg.identifier, "+
- 			"decode(type.name, 'CodeLink ID', 'CodeLink', 'Affymetrix ID', 'Affymetrix', '') "+
+ 			"if(type.name, 'CodeLink ID', 'CodeLink', 'Affymetrix ID', 'Affymetrix', '') "+
 			"from identifiers id, "+
  			"identifier_arrays ia, "+
  			"identifier_types type, "+
@@ -776,7 +776,7 @@ public class IDecoderClient {
 				"	(select 'x' "+
 				"	from geneListGraph glg2 "+
 				"	where glg2.id_number = id.id_number "+
-				"	and nvl(glg2.array_name, 'None') = nvl(ia.array_name, 'None') "+
+				"	and ifnull(glg2.array_name, 'None') = ifnull(ia.array_name, 'None') "+
 				"	and glg2.start_id_number = glg.start_id_number)";
 
 			log.debug("These are 2 or more links from the original list");
@@ -1065,7 +1065,7 @@ public class IDecoderClient {
  			"ia.array_name, "+
 			"glg.id_number, "+
 			"glg.identifier, "+
- 			"decode(type.name, 'CodeLink ID', 'CodeLink', 'Affymetrix ID', 'Affymetrix', '') "+
+ 			"if(type.name, 'CodeLink ID', 'CodeLink', 'Affymetrix ID', 'Affymetrix', '') "+
 			"from identifiers id, "+
  			"identifier_arrays ia, "+
  			"identifier_types type, "+
@@ -1299,7 +1299,7 @@ public class IDecoderClient {
 				"	(select 'x' "+
 				"	from geneListGraph glg2 "+
 				"	where glg2.id_number = id.id_number "+
-				"	and nvl(glg2.array_name, 'None') = nvl(ia.array_name, 'None') "+
+				"	and ifnull(glg2.array_name, 'None') = ifnull(ia.array_name, 'None') "+
 				"	and glg2.start_id_number = glg.start_id_number)";
 
 			log.debug("These are 2 or more links from the original list");
@@ -1587,7 +1587,7 @@ public class IDecoderClient {
  			"ia.array_name, "+
 			"glg.id_number, "+
 			"glg.identifier, "+
- 			"decode(type.name, 'CodeLink ID', 'CodeLink', 'Affymetrix ID', 'Affymetrix', '') "+
+ 			"if(type.name, 'CodeLink ID', 'CodeLink', 'Affymetrix ID', 'Affymetrix', '') "+
 			"from identifiers id, "+
  			"identifier_arrays ia, "+
  			"identifier_types type, "+
@@ -1821,7 +1821,7 @@ public class IDecoderClient {
 				"	(select 'x' "+
 				"	from geneListGraph glg2 "+
 				"	where glg2.id_number = id.id_number "+
-				"	and nvl(glg2.array_name, 'None') = nvl(ia.array_name, 'None') "+
+				"	and ifnull(glg2.array_name, 'None') = ifnull(ia.array_name, 'None') "+
 				"	and glg2.start_id_number = glg.start_id_number)";
 
 			log.debug("These are 2 or more links from the original list");

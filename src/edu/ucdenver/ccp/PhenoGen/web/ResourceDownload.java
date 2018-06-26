@@ -4,6 +4,7 @@ import java.io.File;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class ResourceDownload {
 	private Resource thisResource = null;
 	private String type = null;
 	private ArrayList<String> checkedList = null;
-	private Connection conn;
+	private DataSource pool;
 	
 	private String scheme = null;
 	private String serverName = null;
@@ -57,7 +58,7 @@ public class ResourceDownload {
 		this.type = type;
 		
 		this.userLoggedIn = (User) request.getSession().getAttribute("userLoggedIn");
-		this.conn = (Connection) request.getSession().getAttribute("dbConn");
+		this.pool = (DataSource) request.getSession().getAttribute("dbPool");
 		this.downloadURL = (String) request.getSession().getAttribute("downloadURL");
 		this.checkedList = checkedList;
 		this.scheme = (String) request.getScheme();
@@ -99,9 +100,8 @@ public class ResourceDownload {
 				String downloadLink = this.scheme + "://" + this.serverName + this.contextPath + fileName + "\n\n";
 				Download thisDownload = new Download();
 				thisDownload.setURL(downloadLink);
-				int download_id = thisDownload.createDownload(conn);
+				int download_id = thisDownload.createDownload(pool);
 				String emailLink = downloadURL + "?id=" + download_id + "\n\n";
- 
 				emailBody.append("This is part "+ 
 						currentFileNumber+ " of " + 
 						totalNumberOfFiles + ".\n\n");

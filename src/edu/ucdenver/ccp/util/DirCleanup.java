@@ -648,7 +648,7 @@ public class DirCleanup {
                         "'_Master/Groupings/'||dv.grouping_id||'/'||u2.user_name||'/'||" +
                         "replace(replace(replace(replace(pv.value, '''', ''), '&', 'And'), ' ', ''), '/', '_'), " +
                         "u.user_name, d.dataset_id, dv.version, d.name, dv.grouping_id, u2.user_name, pv.value, pg.parameter_group_id,u2.user_id " +
-                        "from users u, datasets d, dataset_versions dv, parameter_groups pg, parameter_values pv, parameter_values pv2, users u2 " +
+                        "from USERS u, datasets d, dataset_versions dv, parameter_groups pg, parameter_values pv, parameter_values pv2, users u2 " +
                         "where u.user_id = d.created_by_user_id   " +
                         "and d.dataset_id = dv.dataset_id " +
                         "and dv.dataset_id = pg.dataset_id " +
@@ -1599,11 +1599,11 @@ public class DirCleanup {
 		ParameterValue myParameterValue = new ParameterValue();
 
                 String query = "select e.dataset_id, ev.version, pg.parameter_group_id, "+
-			"nvl(substr(ev.version_name, "+
+			"ifnull(substr(ev.version_name, "+
 			"	instr(ev.version_name, '''') + 1, "+
 			"	instr(ev.version_name, '''', 1, 2) - instr(ev.version_name, '''') -1), ev.version_name), "+
 			"'Groups based on '||"+
-			"nvl(substr(ev.version_name, "+
+			"ifnull(substr(ev.version_name, "+
 			"	instr(ev.version_name, ''''), "+
 			"	instr(ev.version_name, '''', 1, 2) - instr(ev.version_name, ''''))||'''', ev.version_name) "+
                         "from parameter_groups pg, experiments e, experiment_versions ev "+

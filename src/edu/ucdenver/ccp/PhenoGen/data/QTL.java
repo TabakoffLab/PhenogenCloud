@@ -1267,8 +1267,8 @@ public class QTL {
                             "eq.marker, " +
                             "eq.marker_chromosome, " +
                             "eq.marker_mb, " +
-                            "nvl(eq.upper_limit, eq.marker_mb), " +
-                            "nvl(eq.lower_limit, eq.marker_mb), " +
+                            "ifnull(eq.upper_limit, eq.marker_mb), " +
+                            "ifnull(eq.lower_limit, eq.marker_mb), " +
                             "0, " +
                             "eq.tissue " +
                             "from probesets p " +
@@ -1285,7 +1285,7 @@ public class QTL {
                             "and ql.organism = ? " +
                             "and ql.qtl_list_id = q.qtl_list_id " +
                             "and ql.qtl_list_id = ? " +
-                            "and to_number(decode(eq.p_value, '<0.000001', '1.E-100', eq.p_value)) < ? ";
+                            "and to_number(if(eq.p_value, '<0.000001', '1.E-100', eq.p_value)) < ? ";
             if (!tissue.equals("All")) {
                 query = query + " and eq.tissue = ? ";
             }
@@ -1371,8 +1371,8 @@ public class QTL {
                                     "eq.marker, " +
                                     "eq.marker_chromosome, " +
                                     "eq.marker_mb, " +
-                                    "nvl(eq.upper_limit, eq.marker_mb), " +
-                                    "nvl(eq.lower_limit, eq.marker_mb), " +
+                                    "ifnull(eq.upper_limit, eq.marker_mb), " +
+                                    "ifnull(eq.lower_limit, eq.marker_mb), " +
                                     "cnt.num_gene_symbols, " +
                                     "eq.tissue " +
                                     "from probesets p " +

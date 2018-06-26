@@ -413,7 +413,7 @@ public class User {
         String query =
                 "select user_id, " +
                         "user_name " +
-                        "from users " +
+                        "from USERS " +
                         "where pi_user_id = ? " +
                         "order by user_name";
 
@@ -454,7 +454,7 @@ public class User {
 
         String query =
                 "select pi_user_id " +
-                        "from users " +
+                        "from USERS " +
                         "where user_id = ?";
 
         //log.debug("query = "+query);
@@ -480,7 +480,7 @@ public class User {
         log.debug("in checkPI");
         String query =
                 "select count(*) " +
-                        "from users " +
+                        "from USERS " +
                         "where pi_user_id = ?";
 
         boolean principal_investigator = false;
@@ -509,7 +509,7 @@ public class User {
         log.debug("in checkIsUserPublic");
         String query =
                 "select user_id " +
-                        "from users " +
+                        "from USERS " +
                         "where username like 'public'";
 
         boolean ispublic = false;
@@ -538,7 +538,7 @@ public class User {
         log.debug("in checkRole. user_name = " + user_name + ", and role = " + role);
         String query =
                 "select 'x' " +
-                        "from users u " +
+                        "from USERS u " +
                         "where user_name = ? " +
                         "and password = ? " +
                         "and exists " +
@@ -581,7 +581,7 @@ public class User {
 
         String query =
                 "select u.user_id, u.user_name, u.first_name, u.last_name, u.institution " +
-                        "from users u " +
+                        "from USERS u " +
                         "order by u.last_name";
 
         //log.debug("in getAllUsers");
@@ -616,7 +616,7 @@ public class User {
         String query =
                 "select u.user_id, " +
                         "u.last_name " +
-                        "from users u " +
+                        "from USERS u " +
                         "where approved = 'N' " +
                         "order by u.last_name";
 
@@ -651,10 +651,10 @@ public class User {
         String query =
                 "select pi.user_id, " +
                         "pi.last_name||', '||pi.title||' '||pi.first_name " +
-                        "from users pi " +
+                        "from USERS pi " +
                         "where exists (" +
                         "	select 'x' " +
-                        "	from users u " +
+                        "	from USERS u " +
                         "	where u.pi_user_id = pi.user_id)  " +
                         "and pi.approved = 'Y' " +
                         "order by pi.last_name";
@@ -689,8 +689,8 @@ public class User {
 
         String query =
                 "select u.user_name, pi.user_id " +
-                        "from users u, " +
-                        "users pi " +
+                        "from USERS u, " +
+                        "USERS pi " +
                         "where u.pi_user_id = pi.user_id " +
                         "order by u.user_name";
 
@@ -747,7 +747,7 @@ public class User {
 			*/
                 "select pi.last_name||', '||pi.first_name||' '||pi.title, " +
                         "u.user_name " +
-                        "from users u, users pi " +
+                        "from USERS u, USERS pi " +
                         "where u.pi_user_id = pi.user_id " +
                         "order by 1, 2";
 
@@ -803,7 +803,7 @@ public class User {
         log.debug("in getUser_name. ");
         String query =
                 "select user_name " +
-                        "from users " +
+                        "from USERS " +
                         "where user_id = ?";
         //log.debug("query = " + query);
         try(Connection conn=pool.getConnection()){
@@ -845,11 +845,11 @@ public class User {
         //log.debug("in getUser passing in user_id");
 
         String query =
-                "select nvl(title,' '), first_name, middle_name, last_name, " +
+                "select ifnull(title,' '), first_name, middle_name, last_name, " +
                         "user_name, password, email, telephone, fax, " +
                         "institution, lab_name, box, street, city, " +
                         "state, zip, country, pi_user_id " +
-                        "from users " +
+                        "from USERS " +
                         "where user_id = ?";
 
 
@@ -927,7 +927,7 @@ public class User {
 
         String query =
                 "select user_id " +
-                        "from users " +
+                        "from USERS " +
                         "where user_name = ?";
 
         //log.debug("query = " + query);
@@ -958,7 +958,7 @@ public class User {
 
         String query =
                 "select u.password " +
-                        "from users u " +
+                        "from USERS u " +
                         "where upper(u.email) = ?";
         String password = "";
         try(Connection conn=pool.getConnection()){
@@ -990,7 +990,7 @@ public class User {
 
         String query =
                 "select u.password, u.email " +
-                        "from users u " +
+                        "from USERS u " +
                         "where upper(u.first_name) = ? " +
                         "and upper(u.last_name) = ?";
         String[] values = null;
@@ -1024,7 +1024,7 @@ public class User {
 
         String query =
                 "select user_id "
-                        + "from users "
+                        + "from USERS "
                         + "where (user_name = ? "
                         + "or (first_name = ? and last_name = ?))";
         int user_id = -99;
@@ -1063,7 +1063,7 @@ public class User {
         String query =
                 "select user_id, title, first_name, last_name, "
                         + "lab_name, email, user_name "
-                        + "from users "
+                        + "from USERS "
                         + "where user_name = ? "
                         + "and password = ? "
                         + "and approved = 'Y'";
@@ -1098,7 +1098,7 @@ public class User {
         } else {
             //user_id = myDbUtils.getUniqueID("users_seq", conn);
             String query =
-                    "insert into users "
+                    "insert into USERS "
                             + "( title, first_name, middle_name, last_name, "
                             + "user_name, password, email, telephone, fax, "
                             + "institution, lab_name, box, street, city, "
@@ -1452,7 +1452,7 @@ public class User {
         String query =
                 "select distinct uc.hybrid_id, " +
                         "uc.user_id " +
-                        "from user_chips uc, users u " +
+                        "from user_chips uc, USERS u " +
                         "where uc.approved = 0 " +
                         "and uc.user_id = u.user_id " +
                         "and uc.owner_user_id = ? " +
@@ -1471,7 +1471,7 @@ public class User {
     public void updateUser(User myUser, DataSource pool) throws SQLException {
 
         String query =
-                "update users " +
+                "update USERS " +
                         "set title = ?, first_name = ?, middle_name = ?, " +
                         "last_name = ?, user_name = ?, password = ?, " +
                         "email = ?, telephone = ?, fax = ?, " +
@@ -1646,7 +1646,7 @@ public class User {
                                 "where created_by_user_id = ?";
 
                 query[3] =
-                        "delete from users " +
+                        "delete from USERS " +
                                 "where user_id = ?";
 
                 for (int i = 0; i < query.length; i++) {
@@ -1856,7 +1856,7 @@ public class User {
 
         if (approval) {
             String query =
-                    "update users " +
+                    "update USERS " +
                             "set approved = 'Y' " +
                             "where user_id = ?";
             //log.debug("query = " + query);
@@ -2111,7 +2111,7 @@ public class User {
 
         String query =
                 "select USER_ID " +
-                        "from users " +
+                        "from USERS " +
                         "where " +
                         "UPPER(first_name) like '%" + piFirstName.toUpperCase() + "%' and UPPER(last_name) like '%" + piLastName.toUpperCase() + "%'";
 
@@ -2149,7 +2149,7 @@ public class User {
 
         String query =
                 "select count(*) " +
-                        "from users " +
+                        "from USERS " +
                         "where " +
                         "UPPER(first_name) like '%" + piFirstName.toUpperCase() + "%' and UPPER(last_name) like '%" + piLastName.toUpperCase() + "%'";
 

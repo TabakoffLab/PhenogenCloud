@@ -89,17 +89,17 @@ public class GeneList {
                     "o.title||' '||o.first_name||' '||o.last_name owner, " +
                     "gl.path, " +
                     "gl.gene_list_name, " +
-                    "nvl(gl.description, 'No Description Entered') Description, " +
+                    "ifnull(gl.description, 'No Description Entered') Description, " +
                     "case when max(gene_id) is not null then count(*) else 0 end, " +
                     "gl.organism Organism, " +
                     "case when gl.gene_list_source != 'Statistical Analysis' then gl.gene_list_source " +
                     "	else ds.name||'_v'||dv.version end as Source, " +
                     "to_char(gl.create_date, 'mm/dd/yyyy hh12:mi AM') \"Date Created\", " +
                     "to_char(gl.create_date, 'mmddyyyy_hh24miss'), " +
-                    "nvl(gl.dataset_id, -99), " +
-                    "nvl(gl.parameter_group_id, -99), " +
+                    "ifnull(gl.dataset_id, -99), " +
+                    "ifnull(gl.parameter_group_id, -99), " +
                     "gl.created_by_user_id, " +
-                    "nvl(gl.version, -99), " +
+                    "ifnull(gl.version, -99), " +
                     "gl.create_date ";
 
     private String geneListFromClause =
@@ -637,7 +637,7 @@ public class GeneList {
                         // since this is left-joined, we only want the rows that actually have gene_values
                         //
                         "and sc.description is not null " +
-                        "order by sc.sort_order, decode(gv.group_number, 'NA', 0, to_number(gv.group_number))";
+                        "order by sc.sort_order, if(gv.group_number, 'NA', 0, to_number(gv.group_number))";
 
         //log.debug("query = "+query);
         try(Connection conn=pool.getConnection()) {
@@ -1335,16 +1335,16 @@ public class GeneList {
                         "'', " +
                         "gl.path, " +
                         "gl.gene_list_name, " +
-                        "nvl(gl.description, 'No Description Entered') Description, " +
+                        "ifnull(gl.description, 'No Description Entered') Description, " +
                         "0, " +
                         "gl.organism Organism, " +
                         "'', " +
                         "to_char(gl.create_date, 'mm/dd/yyyy hh12:mi AM') \"Date Created\", " +
                         "to_char(gl.create_date, 'mmddyyyy_hh24miss'), " +
-                        "nvl(gl.dataset_id, -99), " +
-                        "nvl(gl.parameter_group_id, -99), " +
+                        "ifnull(gl.dataset_id, -99), " +
+                        "ifnull(gl.parameter_group_id, -99), " +
                         "gl.created_by_user_id, " +
-                        "nvl(gl.version, -99), " +
+                        "ifnull(gl.version, -99), " +
                         "gl.create_date " +
                         "from gene_lists gl, datasets ds " +
                         "where gl.dataset_id = ds.dataset_id " +
@@ -1456,7 +1456,7 @@ public class GeneList {
         String query =
                 "select u.user_id, " +
                         "u.title||' '||u.first_name||' '||u.last_name \"User \", " +
-                        "decode(ugl.user_id, null, 0, 1) " +
+                        "if(ugl.user_id, null, 0, 1) " +
                         "from users u left join user_gene_lists ugl " +
                         "on u.user_id = ugl.user_id " +
                         "and ugl.gene_list_id = ? " +
@@ -2329,7 +2329,7 @@ public class GeneList {
                             "order by g.gene_list_id, " +
                             "g.gene_id, " +
                             "sc.sort_order, " +
-                            "decode(gv.group_number, 'NA', 0, to_number(gv.group_number))";
+                            "if(gv.group_number, 'NA', 0, to_number(gv.group_number))";
 
             //log.debug("in getGenesAsGeneArray. gene_list_id = "+this.getGene_list_id());
             //log.debug("query = "+query);

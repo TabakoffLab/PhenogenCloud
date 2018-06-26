@@ -5,5 +5,5 @@
 <%
     String selectedMain = request.getAttribute( "selectedMain" ) == null ? 
 		"" : (String) request.getAttribute( "selectedMain" );
-
+    log.debug("closingHeadTags.jsp");
 %>

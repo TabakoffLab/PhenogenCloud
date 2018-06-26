@@ -1498,12 +1498,12 @@ public class Array {
 
         //log.debug ("in Array.getArrayOrganisms");
         String query =
-                "select distinct nvl(decode(expDetails.tntxsyn_name_txt, 'Mus musculus', expDetails.tntxsyn_name_txt, " +
+                "select distinct ifnull(if(expDetails.tntxsyn_name_txt, 'Mus musculus', expDetails.tntxsyn_name_txt, " +
                         "							'Rattus norvegicus', expDetails.tntxsyn_name_txt, " +
                         "							'Other'), 'No Value Entered'), " +
                         // AAGH!  Have to select this in order to order by it! Also, have to remove the pub and nonpub
                         // in order to return only one row for 'Other'
-                        "decode(expDetails.tntxsyn_name_txt, 'Mus musculus', 1, 'Rattus norvegicus', 2, 3), " +
+                        "if(expDetails.tntxsyn_name_txt, 'Mus musculus', 1, 'Rattus norvegicus', 2, 3), " +
                         "0, " +
                         "0 " +
                         //"count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, "+
@@ -1514,7 +1514,7 @@ public class Array {
                         "where 1 = 1 " +
                         getMyCoreWhereClause(hybridIDs, channel) +
                         "group by expDetails.tntxsyn_name_txt " +
-                        "order by decode(expDetails.tntxsyn_name_txt, 'Mus musculus', 1, " +
+                        "order by if(expDetails.tntxsyn_name_txt, 'Mus musculus', 1, " +
                         "		'Rattus norvegicus', 2, " +
                         "		3)";
 
@@ -1968,7 +1968,7 @@ public class Array {
                         "expDetails.textract_id, " +
                         "expDetails.tlabel_id, " +
                         "compounds.tfctrval_freetext, " +
-                        "nvl(doses.tfctrval_freetext||' '||doses.tfctrval_freetextunit, 'No Value Entered'), " +
+                        "ifnull(doses.tfctrval_freetext||' '||doses.tfctrval_freetextunit, 'No Value Entered'), " +
                         "expDetails.tsample_taxid, " +
                         "expDetails.tsample_sex, " +
                         "expDetails.tsample_organism_part, " +
@@ -1980,7 +1980,7 @@ public class Array {
                         "expDetails.hybrid_array_id, " +
                         "expDetails.textract_sysuid, " +
                         "expDetails.tlabel_sysuid, " +
-                        "nvl(TARRAY.tarray_designid, -99), " +
+                        "ifnull(TARRAY.tarray_designid, -99), " +
                         "gcprotocol.protocol_name, " +
                         "gcprotocol.protocol_description, " +
                         "stprotocol.protocol_name, " +
@@ -2976,7 +2976,7 @@ public class Array {
             } else if (nextKey.equals("Organism")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and decode(expDetails.tntxsyn_name_txt, " +
+                            "and if(expDetails.tntxsyn_name_txt, " +
                             "	'Mus musculus', expDetails.tntxsyn_name_txt, " +
                             "	'Rattus norvegicus', expDetails.tntxsyn_name_txt, " +
                             "	'Other') = ? ";
@@ -2985,123 +2985,123 @@ public class Array {
             } else if (nextKey.equals("Sex")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(gender.value, 'No Value Entered') = ? ";
+                            "and ifnull(gender.value, 'No Value Entered') = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("OrganismPart")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(case when organism_part.value = 'other' then " +
+                            "and ifnull(case when organism_part.value = 'other' then " +
                             "otherOrganismPart.tothers_value else organism_part.value end, " +
                             "'No Value Entered') = ? ";
-                    //"and nvl(organism_part.value,  'No Value Entered') = ? ";
+                    //"and ifnull(organism_part.value,  'No Value Entered') = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("ExperimentDesignType")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(edt.value, 'No Value Entered') = ? ";
+                            "and ifnull(edt.value, 'No Value Entered') = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("Strain")) {
                 if (!nextValue.equals("All")) {
                     if (nextValue.equals("All BXD Strains")) {
-                        query = query + "and nvl(expDetails.tsample_strain, 'No Value Entered') like ? ";
+                        query = query + "and ifnull(expDetails.tsample_strain, 'No Value Entered') like ? ";
                         parameterValues.add("%BXD%");
                     } else if (nextValue.equals("C57BL/6 -- All Strains")) {
-                        query = query + "and nvl(expDetails.tsample_strain, 'No Value Entered') like ? ";
+                        query = query + "and ifnull(expDetails.tsample_strain, 'No Value Entered') like ? ";
                         parameterValues.add("%C57%");
                     } else if (nextValue.equals("All BXH Strains")) {
-                        query = query + "and nvl(expDetails.tsample_strain, 'No Value Entered') like ? ";
+                        query = query + "and ifnull(expDetails.tsample_strain, 'No Value Entered') like ? ";
                         parameterValues.add("%BXH%");
                     } else if (nextValue.equals("All HXB Strains")) {
-                        query = query + "and nvl(expDetails.tsample_strain, 'No Value Entered') like ? ";
+                        query = query + "and ifnull(expDetails.tsample_strain, 'No Value Entered') like ? ";
                         parameterValues.add("%HXB%");
                     } else if (nextValue.equals("All ILSXISS Strains")) {
-                        query = query + "and nvl(expDetails.tsample_strain, 'No Value Entered') like ? ";
+                        query = query + "and ifnull(expDetails.tsample_strain, 'No Value Entered') like ? ";
                         parameterValues.add("%ILSXISS%");
                     } else if (nextValue.equals("All BXH/HXB Strains")) {
-                        query = query + "and (nvl(expDetails.tsample_strain, 'No Value Entered') like '%BXH%' " +
-                                "	or nvl(expDetails.tsample_strain, 'No Value Entered') like '%HXB%') ";
+                        query = query + "and (ifnull(expDetails.tsample_strain, 'No Value Entered') like '%BXH%' " +
+                                "	or ifnull(expDetails.tsample_strain, 'No Value Entered') like '%HXB%') ";
                     } else {
-                        query = query + "and nvl(expDetails.tsample_strain, 'No Value Entered') = ? ";
+                        query = query + "and ifnull(expDetails.tsample_strain, 'No Value Entered') = ? ";
                         parameterValues.add(nextValue);
                     }
                 }
             } else if (nextKey.equals("Genotype")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(expDetails.tsample_individual_gen, 'No Value Entered') = ? ";
+                            "and ifnull(expDetails.tsample_individual_gen, 'No Value Entered') = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("Treatment")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(treatment.tfctrval_freetext, 'No Treatment') = ? ";
+                            "and ifnull(treatment.tfctrval_freetext, 'No Treatment') = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("Duration")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(treatment.tfctrval_freetextunit, 'No Value Entered') = ? ";
+                            "and ifnull(treatment.tfctrval_freetextunit, 'No Value Entered') = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("Compound")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(compounds.tfctrval_freetext, 'No Value Entered') = ? ";
+                            "and ifnull(compounds.tfctrval_freetext, 'No Value Entered') = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("Dose")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(doses.tfctrval_freetext||' '||doses.tfctrval_freetextunit, " +
+                            "and ifnull(doses.tfctrval_freetext||' '||doses.tfctrval_freetextunit, " +
                             "'No Value Entered') = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("Submitter")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(expDetails.exp_created_by_login, 'No Value Entered') = ? ";
+                            "and ifnull(expDetails.exp_created_by_login, 'No Value Entered') = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("ArrayName")) {
                 if (!nextValue.equals("")) {
                     query = query +
-                            "and nvl(expDetails.hybrid_name, 'No Value Entered') like ? ";
+                            "and ifnull(expDetails.hybrid_name, 'No Value Entered') like ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("ExperimentName")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(expDetails.exp_name, 'No Value Entered') like ? ";
+                            "and ifnull(expDetails.exp_name, 'No Value Entered') like ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("ExperimentID")) {
                 if (!nextValue.equals("")) {
                     query = query +
-                            "and nvl(expDetails.exp_id, -99) = ? ";
+                            "and ifnull(expDetails.exp_id, -99) = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("CellLine")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(expDetails.tsample_cell_line, 'No Value Entered') like ? ";
+                            "and ifnull(expDetails.tsample_cell_line, 'No Value Entered') like ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("GeneticVariation")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and nvl(case when genetic_variation.value = 'other' then " +
+                            "and ifnull(case when genetic_variation.value = 'other' then " +
                             "otherGV.tothers_value else genetic_variation.value end, " +
                             "'No Value Entered') = ? ";
-                    //"and nvl(genetic_variation.value, 'No Value Entered') = ? ";
+                    //"and ifnull(genetic_variation.value, 'No Value Entered') = ? ";
 
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("GeneticType")) {
                 query = query +
-                        "and decode(genetic_variation.value, " +
+                        "and if(genetic_variation.value, " +
                         "'none', 'Other', " +
                         "'F1', 'Other', " +
                         "'congenic strain', 'Other', " +
@@ -3173,7 +3173,7 @@ public class Array {
     public ArrayCount[] getGeneticVariations(String hybridIDs, String channel, DataSource pool) throws SQLException {
 
         String query =
-                "select distinct nvl(case when genetic_variation.value = 'other' " +
+                "select distinct ifnull(case when genetic_variation.value = 'other' " +
                         "then otherGV.tothers_value else " +
                         "	genetic_variation.value end, 'No Value Entered'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
@@ -3226,9 +3226,9 @@ public class Array {
     public ArrayCount[] getDurations(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
                 "select distinct case when " +
-                        "nvl(treatment.tfctrval_freetextunit, 'No Value Entered') = '-' " +
+                        "ifnull(treatment.tfctrval_freetextunit, 'No Value Entered') = '-' " +
                         "then 'No Value Entered' " +
-                        "else nvl(treatment.tfctrval_freetextunit, 'No Value Entered') end, " +
+                        "else ifnull(treatment.tfctrval_freetextunit, 'No Value Entered') end, " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays  " +
@@ -3277,7 +3277,7 @@ public class Array {
     public ArrayCount[] getTreatments(String hybridIDs, String channel, DataSource pool) throws SQLException {
 
         String query =
-                "select distinct nvl(treatment.tfctrval_freetext, 'No Treatment'), " +
+                "select distinct ifnull(treatment.tfctrval_freetext, 'No Treatment'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays  " +
@@ -3324,7 +3324,7 @@ public class Array {
 
     public ArrayCount[] getExperimentNames(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select distinct nvl(expDetails.exp_name, 'No Value Entered'), " +
+                "select distinct ifnull(expDetails.exp_name, 'No Value Entered'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays  " +
@@ -3363,7 +3363,7 @@ public class Array {
 
     public ArrayCount[] getGenotypes(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select distinct nvl(expDetails.tsample_individual_gen, 'No Value Entered'), " +
+                "select distinct ifnull(expDetails.tsample_individual_gen, 'No Value Entered'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays  " +
@@ -3403,11 +3403,11 @@ public class Array {
 
     public ArrayCount[] getCellLines(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select distinct nvl(expDetails.tsample_cell_line, 'No Value Entered'), " +
+                "select distinct ifnull(expDetails.tsample_cell_line, 'No Value Entered'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays,  " +
-                        "upper(nvl(expDetails.tsample_cell_line, 'No Value Entered')) " +
+                        "upper(ifnull(expDetails.tsample_cell_line, 'No Value Entered')) " +
                         "from CuratedExperimentDetails expDetails " +
                         "left join PUBLIC_EXPERIMENTS pe on expDetails.exp_id = pe.exp_id " +
                         "where 1 = 1 " +
@@ -3444,7 +3444,7 @@ public class Array {
 
     public ArrayCount[] getStrains(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select distinct nvl(expDetails.tsample_strain, 'No Value Entered'), " +
+                "select distinct ifnull(expDetails.tsample_strain, 'No Value Entered'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays  " +
@@ -3486,9 +3486,9 @@ public class Array {
     public ArrayCount[] getDoses(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
                 "select distinct case when " +
-                        "nvl(dose.tfctrval_freetext||' '||dose.tfctrval_freetextunit, 'No Value Entered') = '- -' " +
+                        "ifnull(dose.tfctrval_freetext||' '||dose.tfctrval_freetextunit, 'No Value Entered') = '- -' " +
                         "then 'No Value Entered' " +
-                        "else nvl(dose.tfctrval_freetext||' '||dose.tfctrval_freetextunit, 'No Value Entered') end, " +
+                        "else ifnull(dose.tfctrval_freetext||' '||dose.tfctrval_freetextunit, 'No Value Entered') end, " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays  " +
@@ -3535,8 +3535,8 @@ public class Array {
 
     public List<String[]> getCompoundDoseCombos(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select distinct nvl(compound.tfctrval_freetext, 'No Value Entered'), " +
-                        "nvl(dose.tfctrval_freetext||' '||dose.tfctrval_freetextunit, 'No Value Entered') " +
+                "select distinct ifnull(compound.tfctrval_freetext, 'No Value Entered'), " +
+                        "ifnull(dose.tfctrval_freetext||' '||dose.tfctrval_freetextunit, 'No Value Entered') " +
                         "from CuratedExperimentDetails expDetails " +
                         ", " +
                         "valid_terms compound_val, " +
@@ -3590,7 +3590,7 @@ public class Array {
     public List<String[]> getQueryCombos(String channel, DataSource pool) throws SQLException {
         String orgString =
                 //Mouse is 10090, Rat is 10116, 7227 is Fly, 9606 is Human
-                " decode(details.tsample_taxid, 7227, 'Other', " +
+                " if(details.tsample_taxid, 7227, 'Other', " +
                         //'Drosophila melanogaster', "+
                         "9606, 'Other', " +
                         //'Homo sapiens', "+
@@ -3598,7 +3598,7 @@ public class Array {
                         "10116, 'Rattus norvegicus', details.tsample_taxid) org, ";
 
         String genModString =
-                "decode(gv.value, " +
+                "if(gv.value, " +
 //			"'none', 'None', "+
                         "'none', 'Other', " +
                         "'F1', 'Other', " +
@@ -3617,7 +3617,7 @@ public class Array {
                         "'selective breeding', 'Selectively Bred', gv.value) genmod, ";
 
         String slgString =
-                "decode(gv.value,  " +
+                "if(gv.value,  " +
                         //"'none', 'None', "+
                         //"'F1', 'None', "+
                         "'congenic strain', details.tsample_individual_gen, " +
@@ -3634,7 +3634,7 @@ public class Array {
                 "case when tissue.value = 'other' then otherOrganismPart.tothers_value else tissue.value end tissue, ";
 
         String orderString =
-                "decode(gv.value, " +
+                "if(gv.value, " +
                         "'none', 4, " +
                         "'F1', 4, " +
                         "'congenic strain', 4, " +
@@ -3693,13 +3693,13 @@ public class Array {
                         orgString +
                         genModString +
                         //Mouse is 10090, Rat is 10116, 7227 is Fly, 9606 is Human
-                        "decode(details.tsample_taxid, " +
+                        "if(details.tsample_taxid, " +
                         "	10090, " +
-                        "		decode(gv.value,  " +
+                        "		if(gv.value,  " +
                         "			'inbred strain', 'C57BL/6 -- All Strains',  " +
                         "			'recombinant inbred strain', 'All BXD Strains'), " +
                         "	10116, " +
-                        "		decode(gv.value,  " +
+                        "		if(gv.value,  " +
                         "			'recombinant inbred strain', 'All BXH Strains')), " +
                         tissueString +
                         "a.array_name,  " +
@@ -3709,30 +3709,30 @@ public class Array {
                         whereString +
                         notInExperimentString +
                         "and " + slgString + " is not null " +
-                        "and decode(details.tsample_taxid, " +
+                        "and if(details.tsample_taxid, " +
                         "	10090, " +
-                        "		decode(gv.value, 'inbred strain', details.tsample_strain, " +
+                        "		if(gv.value, 'inbred strain', details.tsample_strain, " +
                         "			'recombinant inbred strain', details.tsample_strain), " +
                         "	10116, " +
-                        "		decode(gv.value, 'recombinant inbred strain', details.tsample_strain)) like " +
-                        "decode(details.tsample_taxid, " +
+                        "	 if(gv.value, 'recombinant inbred strain', details.tsample_strain)) like " +
+                        " if(details.tsample_taxid, " +
                         "	10090, " +
-                        "		decode(gv.value, 'inbred strain', '%C57%', " +
+                        " if(gv.value, 'inbred strain', '%C57%', " +
                         "			'recombinant inbred strain', '%BXD%'), " +
                         "	10116, " +
-                        "		decode(gv.value, 'recombinant inbred strain', '%BXH%')) " +
+                        "		if(gv.value, 'recombinant inbred strain', '%BXH%')) " +
                         groupByString +
                         "union " +
                         "select " +
                         orgString +
                         genModString +
                         //Mouse is 10090, Rat is 10116, 7227 is Fly, 9606 is Human
-                        "decode(details.tsample_taxid, " +
+                        "if(details.tsample_taxid, " +
                         "	10090, " +
-                        "	decode(gv.value,  " +
+                        "	if(gv.value,  " +
                         "		'recombinant inbred strain', 'All ILSXISS Strains'), " +
                         "	10116, " +
-                        "	decode(gv.value,  " +
+                        "	if(gv.value,  " +
                         "		'recombinant inbred strain', 'All HXB Strains')), " +
                         tissueString +
                         "a.array_name,  " +
@@ -3742,25 +3742,25 @@ public class Array {
                         whereString +
                         notInExperimentString +
                         "and " + slgString + " is not null " +
-                        "and decode(details.tsample_taxid, " +
+                        "and if(details.tsample_taxid, " +
                         "	10090, " +
-                        "		decode(gv.value, 'recombinant inbred strain', details.tsample_strain), " +
+                        "		if(gv.value, 'recombinant inbred strain', details.tsample_strain), " +
                         "	10116, " +
-                        "		decode(gv.value, 'recombinant inbred strain', details.tsample_strain)) like " +
-                        "decode(details.tsample_taxid, " +
+                        "		if(gv.value, 'recombinant inbred strain', details.tsample_strain)) like " +
+                        " if(details.tsample_taxid, " +
                         "	10090, " +
-                        "		decode(gv.value, 'recombinant inbred strain', '%ILSXISS%'), " +
+                        "		if(gv.value, 'recombinant inbred strain', '%ILSXISS%'), " +
                         "	10116, " +
-                        "		decode(gv.value, 'recombinant inbred strain', '%HXB%')) " +
+                        "		if(gv.value, 'recombinant inbred strain', '%HXB%')) " +
                         groupByString +
                         "union " +
                         "select " +
                         orgString +
                         genModString +
                         //Mouse is 10090, Rat is 10116, 7227 is Fly, 9606 is Human
-                        "decode(details.tsample_taxid, " +
+                        " if(details.tsample_taxid, " +
                         "	10116, " +
-                        "		decode(gv.value,  " +
+                        "		if(gv.value,  " +
                         "			'recombinant inbred strain', 'All BXH/HXB Strains')), " +
                         tissueString +
                         "a.array_name,  " +
@@ -3770,18 +3770,18 @@ public class Array {
                         whereString +
                         notInExperimentString +
                         "and " + slgString + " is not null " +
-                        "and (decode(details.tsample_taxid, " +
+                        "and ( if(details.tsample_taxid, " +
                         "	10116, " +
-                        "		decode(gv.value, 'recombinant inbred strain', details.tsample_strain)) like " +
-                        "decode(details.tsample_taxid, " +
+                        "		if(gv.value, 'recombinant inbred strain', details.tsample_strain)) like " +
+                        " if(details.tsample_taxid, " +
                         "	10116, " +
-                        "		decode(gv.value, 'recombinant inbred strain', '%HXB%')) " +
-                        "or decode(details.tsample_taxid, " +
+                        "		if(gv.value, 'recombinant inbred strain', '%HXB%')) " +
+                        "or if(details.tsample_taxid, " +
                         "	10116, " +
-                        "		decode(gv.value, 'recombinant inbred strain', details.tsample_strain)) like " +
-                        "decode(details.tsample_taxid, " +
+                        "		if(gv.value, 'recombinant inbred strain', details.tsample_strain)) like " +
+                        " if(details.tsample_taxid, " +
                         "	10116, " +
-                        "		decode(gv.value, 'recombinant inbred strain', '%BXH%'))) " +
+                        "		if(gv.value, 'recombinant inbred strain', '%BXH%'))) " +
                         groupByString +
 /*
 			"union  "+
@@ -3860,8 +3860,8 @@ public class Array {
 
     public List<String[]> getTreatmentDurationCombos(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select distinct nvl(treatment.tfctrval_freetext, 'No Treatment'), " +
-                        "nvl(treatment.tfctrval_freetextunit, 'No Value Entered') " +
+                "select distinct ifnull(treatment.tfctrval_freetext, 'No Treatment'), " +
+                        "ifnull(treatment.tfctrval_freetextunit, 'No Value Entered') " +
                         "from CuratedExperimentDetails expDetails " +
                         ", " +
                         "TSAMPLE sample2 left join TFCTRVAL treatment " +
@@ -3909,7 +3909,7 @@ public class Array {
 
     public ArrayCount[] getCompounds(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select distinct nvl(compound.tfctrval_freetext, 'No Value Entered'), " +
+                "select distinct ifnull(compound.tfctrval_freetext, 'No Value Entered'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays  " +
@@ -3958,7 +3958,7 @@ public class Array {
 
     public ArrayCount[] getExperimentDesignTypes(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select distinct nvl(edt.value, 'No Value Entered'), " +
+                "select distinct ifnull(edt.value, 'No Value Entered'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays  " +
@@ -4005,7 +4005,7 @@ public class Array {
 
     public ArrayCount[] getSexes(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select distinct nvl(sex.value, 'No Value Entered'), " +
+                "select distinct ifnull(sex.value, 'No Value Entered'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +
                         "count(distinct expDetails.hybrid_id) as totArrays  " +
@@ -4047,7 +4047,7 @@ public class Array {
 
     public ArrayCount[] getOrganismParts(String hybridIDs, String channel, DataSource pool) throws SQLException {
         String query =
-                "select nvl(case when organism_part.value = 'other' then " +
+                "select ifnull(case when organism_part.value = 'other' then " +
                         "otherOrganismPart.tothers_value else organism_part.value end, 'No Value Entered'), " +
                         "count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, " +
                         "count(distinct case when pe.exp_id is null then expDetails.hybrid_id else null end) as nonpub, " +

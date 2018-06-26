@@ -16,6 +16,8 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import edu.ucdenver.ccp.util.Debugger;
 import edu.ucdenver.ccp.util.FileHandler;
@@ -50,6 +52,7 @@ import javax.servlet.http.*;
 public class RefSetCreator {
 
     private Logger log;
+    private static Connection dbConn;
     private static String[] myChips;
     private Debugger myDebugger = new Debugger();
     private FileHandler myFileHandler = new FileHandler();
@@ -62,7 +65,7 @@ public class RefSetCreator {
         System.out.println("just instantiated RefSetCreator");
     }
     
-	/*public void setConnection(Connection conn) {
+	public void setConnection(Connection conn) {
 		dbConn = conn;
 	}
 
@@ -76,7 +79,7 @@ public class RefSetCreator {
 		}
 		return dbConn;
 
-	} */
+	}
 
     private void getChips() throws SQLException {
 
@@ -146,7 +149,7 @@ class ChipHandler extends Thread {
         this.referenceFilesDir = referenceFilesDir;
         this.queue = queue;
         this.threadnum = num;
-        this.dbConn = getConnection(prop);
+        //this.dbConn = getConnection(prop);
     }
 
     public void setPool(DataSource pool) {
@@ -233,7 +236,7 @@ class ChipHandler extends Thread {
 
         String query =
                 "insert into gene_lists " +
-                        "(gene_list_id, gene_list_name, created_by_user_id, organism, create_date, gene_list_source) " +
+                        "( gene_list_name, created_by_user_id, organism, create_date, gene_list_source) " +
                         "values " +
                         "(?, 'Temporary '||?||' Gene List', " +
 //WARNING -- THIS CREATES AS CKH USER
@@ -258,25 +261,36 @@ class ChipHandler extends Thread {
         };
 
         myIDecoderClient.setNum_iterations(1);
+        int geneListID = -99;
+        try(Connection conn=pool.getConnection()){
+            //int geneListID = new DbUtils().getUniqueID("gene_lists_seq", dbConn);
 
-        int geneListID = new DbUtils().getUniqueID("gene_lists_seq", dbConn);
+            String organism = getOrganism(thisChip);
+            //log.debug("chip = "+thisChip + ", organism = "+organism);
 
-        String organism = getOrganism(thisChip);
-        //log.debug("chip = "+thisChip + ", organism = "+organism);
+            PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
+            // Create a gene list and corresponding genes for the set of probeset IDs
+            //pstmt.setInt(1, geneListID);
+            pstmt.setString(1, thisChip);
+            pstmt.setString(2, organism);
+            pstmt.executeQuery();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                geneListID = rs.getInt(1);
+            }
 
-        PreparedStatement pstmt = dbConn.prepareStatement(query);
-        // Create a gene list and corresponding genes for the set of probeset IDs
-        pstmt.setInt(1, geneListID);
-        pstmt.setString(2, thisChip);
-        pstmt.setString(3, organism);
-        pstmt.executeQuery();
+            pstmt = conn.prepareStatement(query2);
+            pstmt.setInt(1, geneListID);
+            pstmt.setString(2, thisChip);
+            pstmt.executeQuery();
 
-        pstmt = dbConn.prepareStatement(query2);
-        pstmt.setInt(1, geneListID);
-        pstmt.setString(2, thisChip);
-        pstmt.executeQuery();
+            pstmt.close();
+        }catch(SQLException e){
+            //log.debug("SQL Exception:",e);
+            e.printStackTrace();
+            throw e;
+        }
 
-        pstmt.close();
         System.out.println("Thread:" + threadnum + " Gene list created");
         Set<Identifier> iDecoderSet = myIDecoderClient.getIdentifiersByInputIDAndTarget(geneListID, targets, pool);
         //log.debug("there are this many Identifiers in the Set: "+iDecoderSet.size());
@@ -317,15 +331,15 @@ class ChipHandler extends Thread {
 
         BufferedWriter entrez = new BufferedWriter(new FileWriter(getEntrezFileName(thisChip)));
         BufferedWriter entrezOnly = new BufferedWriter(new FileWriter(getEntrezOnlyFileName(thisChip)));
-        try {
-            PreparedStatement pstmt = dbConn.prepareStatement(query2);
+        try(Connection conn=pool.getConnection()) {
+            PreparedStatement pstmt = conn.prepareStatement(query2);
             pstmt.setString(1, thisChip);
             ResultSet rs = pstmt.executeQuery();
             int count = 0;
             while (rs.next()) {
                 count++;
                 String geneID = rs.getString(1);
-                Set<Identifier> iDecoderSet = myIDecoderClient.getIdentifiersByInputIDAndTarget(geneID, organism, targets, dbConn);
+                Set<Identifier> iDecoderSet = myIDecoderClient.getIdentifiersByInputIDAndTarget(geneID, organism, targets, pool);
                 if (iDecoderSet != null && iDecoderSet.size() > 0) {
                     Iterator startItr = iDecoderSet.iterator();
                     while (startItr.hasNext()) {
@@ -388,8 +402,8 @@ class ChipHandler extends Thread {
         thisGeneList.setCreated_by_user_id(1);
         thisGeneList.setOrganism(getOrganism(thisChip));
         thisGeneList.setGene_list_source("Uploaded File");
-        glID = thisGeneList.loadFromFile(0, getEntrezOnlyFileName(thisChip), dbConn);
-        dbConn.commit();
+        glID = thisGeneList.loadFromFile(0, getEntrezOnlyFileName(thisChip), pool);
+        //dbConn.commit();
         return glID;
     }
 
@@ -410,7 +424,7 @@ class ChipHandler extends Thread {
                 referenceFilesDir + thisChip + "_EntrezGeneIDs_GeneSymbols.txt");
 
         // Have to commit in order to clear out genelistgraph temporary table
-        dbConn.commit();
+        //dbConn.commit();
     }
 
     public void createFinalFiles(String thisChip) throws IOException, SQLException {
@@ -463,7 +477,6 @@ class ChipHandler extends Thread {
     }
 
     public void deleteGeneLists(int geneListID) throws SQLException, IOException {
-        new GeneList(geneListID).deleteGeneList(dbConn);
-        dbConn.commit();
+        new GeneList(geneListID).deleteGeneList(pool);
     }
 }

@@ -3,9 +3,8 @@
 #cssmenu > ul 
 {list-style:inside none; padding:0; margin:0;}
 #cssmenu > ul > li 
-{list-style:inside none; padding:0; margin:0; float:left; display:block; position:relative; width:11.1%; }
-#cssmenu > ul > li:last-child
-{width:11.2%; }
+{list-style:inside none; padding:0; margin:0; float:left; display:block; position:relative; width:12.5%; }
+/*#cssmenu > ul > li:last-child {width:12.5%; }*/
 
 #cssmenu > ul > li > a,#cssmenu > ul > li > span.noLink
 { outline:none; display:block; position:relative; padding:12px 10px; font:bold 13px/100% Arial, Helvetica, sans-serif; text-align:center; vertical-align:middle; text-decoration:none; /*text-shadow:1px 1px 0 rgba(0,0,0, 0.4);*/ height:39px;}
@@ -69,7 +68,7 @@
 .menu3line { position:relative; top:0px;}
 .menu2line { position:relative; top:7px;}
 .menu4line { position:relative; top:-7px;}
-span.noLink > .menu2line { position:relative; top:0px;}
+/*span.noLink > .menu2line { position:relative; top:0px;}*/
 
 #login_box{
 	

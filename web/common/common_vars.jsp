@@ -20,8 +20,8 @@
 
 	User userLoggedIn = (User) session.getAttribute("userLoggedIn");
 
-	boolean loggedIn = ((String) session.getAttribute("userID") != null ? true: false);
-
+	boolean loggedIn = (userLoggedIn!= null ? true: false);
+	log.debug("in common_vars is loggedIn:"+loggedIn+":"+session.getAttribute("userID"));
         log.debug("in common_vars " + 
 			//" host = " + (String) session.getAttribute("host") + 
 			//", caller = " + caller +

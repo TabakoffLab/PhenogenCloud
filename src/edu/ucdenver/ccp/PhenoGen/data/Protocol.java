@@ -218,7 +218,7 @@ public class Protocol {
         log.debug("in getPrivateProtocols");
         String query =
                 "select " +
-                        "protocol_id, protocol_type, protocol_name, nvl(protocol_description, ''), nvl(globid, ''), " +
+                        "protocol_id, protocol_type, protocol_name, ifnull(protocol_description, ''), ifnull(globid, ''), " +
                         "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss'), b.value " +
                         "from protocols a, valid_terms b " +
                         "where a.protocol_type = b.term_id " +
@@ -430,7 +430,7 @@ public class Protocol {
         String query =
                 "select " +
                         "protocol_id, protocol_type, protocol_name, " +
-                        "nvl(protocol_description, 'No Description Provided'), " +
+                        "ifnull(protocol_description, 'No Description Provided'), " +
                         "globid, " +
                         "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss') " +
                         "from protocols  " +
@@ -514,7 +514,7 @@ public class Protocol {
         log.debug("in getPublicProtocols");
         String query =
                 "select " +
-                        "protocol_id, protocol_type, protocol_name, nvl(protocol_description, ''), nvl(globid, ''), " +
+                        "protocol_id, protocol_type, protocol_name, ifnull(protocol_description, ''), ifnull(globid, ''), " +
                         "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss'), b.value " +
                         "from protocols a, valid_terms b " +
                         "where a.protocol_type = b.term_id " +

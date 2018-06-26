@@ -277,10 +277,10 @@ public class Experiment {
                     "exp.exp_id, subid, accno, exp_description, " +
                     "exp.created_by_login, to_char(exp.exp_create_date, 'mm/dd/yyyy hh12:mi AM'), " +
                     "exp.exp_name, " +
-                    "nvl(samples.num_samples, 0) num_samples, " +
-                    "nvl(files.num_files, 0) num_files, " +
+                    "ifnull(samples.num_samples, 0) num_samples, " +
+                    "ifnull(files.num_files, 0) num_files, " +
                     "exp.proc_status, " +
-                    "nvl(arrays.num_arrays, 0) num_arrays ";
+                    "ifnull(arrays.num_arrays, 0) num_arrays ";
 
     private String fromClause =
             "from experiments exp " +
