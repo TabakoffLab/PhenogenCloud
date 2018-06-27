@@ -142,7 +142,7 @@ public class Texpfctr {
 
 		String query = 
 			"select "+
-			"texpfctr_exprid, texpfctr_id, texpfctr_del_status, texpfctr_user, to_char(texpfctr_last_change, 'dd-MON-yyyy hh24:mi:ss'), "+
+			"texpfctr_exprid, texpfctr_id, texpfctr_del_status, texpfctr_user, date_format(texpfctr_last_change, '%d-%m-%Y %H:%i:%S'), "+
 			"vt.value "+
 			"from Texpfctr, valid_terms vt "+ 
 			"where texpfctr_exprid = ? "+
@@ -151,7 +151,7 @@ public class Texpfctr {
 			"and vt.value != 'other' "+
 			"union "+
 			"select  "+
-			"texpfctr_exprid, texpfctr_id, texpfctr_del_status, texpfctr_user, to_char(texpfctr_last_change, 'dd-MON-yyyy hh24:mi:ss'), "+
+			"texpfctr_exprid, texpfctr_id, texpfctr_del_status, texpfctr_user, date_format(texpfctr_last_change, '%d-%m-%Y %H:%i:%S'), "+
 			"tothers_value "+
 			"from Texpfctr, valid_terms vt, Tothers "+
 			"where texpfctr_exprid = ?  "+
@@ -192,7 +192,7 @@ public class Texpfctr {
 
 		String query = 
 			"select "+
-			"texpfctr_exprid, texpfctr_id, texpfctr_del_status, texpfctr_user, to_char(texpfctr_last_change, 'dd-MON-yyyy hh24:mi:ss'), "+
+			"texpfctr_exprid, texpfctr_id, texpfctr_del_status, texpfctr_user, date_format(texpfctr_last_change, '%d-%m-%Y %H:%i:%S'), "+
 			"vt.value "+
 			"from Texpfctr, valid_terms vt "+ 
 			"where texpfctr_exprid = ? "+

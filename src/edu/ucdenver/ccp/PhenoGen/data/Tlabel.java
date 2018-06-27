@@ -194,7 +194,7 @@ public class Tlabel {
         String query =
                 "select " +
                         "tlabel_sysuid, tlabel_id, tlabel_desc, tlabel_protocolid, tlabel_extractid, " +
-                        "tlabel_del_status, tlabel_user, to_char(tlabel_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "tlabel_del_status, tlabel_user, date_format(tlabel_last_change, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentdetails " +
                         "order by tlabel_sysuid";
 
@@ -227,7 +227,7 @@ public class Tlabel {
         String query =
                 "select " +
                         "tlabel_sysuid, tlabel_id, tlabel_desc, tlabel_protocolid, tlabel_extractid, " +
-                        "tlabel_del_status, tlabel_user, to_char(tlabel_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "tlabel_del_status, tlabel_user, date_format(tlabel_last_change, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentDetails " +
                         "where tlabel_protocolid = ? " +
                         "and tlabel_del_status = 'U' " +
@@ -260,7 +260,7 @@ public class Tlabel {
         String query =
                 "select " +
                         "tlabel_sysuid, tlabel_id, tlabel_desc, tlabel_protocolid, tlabel_extractid, " +
-                        "tlabel_del_status, tlabel_user, to_char(tlabel_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "tlabel_del_status, tlabel_user, date_format(tlabel_last_change, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentdetails " +
                         "where tlabel_sysuid = ?";
 

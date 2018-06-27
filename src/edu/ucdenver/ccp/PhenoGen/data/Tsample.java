@@ -544,7 +544,7 @@ public class Tsample {
                         "tsample_time_point, tsample_organism_part, tsample_sex, tsample_genetic_variation, tsample_individual, " +
                         "tsample_individual_gen, tsample_disease_state, tsample_target_cell_type, tsample_cell_line, tsample_strain, " +
                         "tsample_additional, tsample_separation_tech, tsample_protocolid, tsample_growth_protocolid, tsample_exprid, " +
-                        "tsample_del_status, tsample_user, to_char(tsample_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "tsample_del_status, tsample_user, date_format(tsample_last_change, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentdetails " +
                         "where tsample_exprid = ? " +
                         "order by tsample_id";
@@ -582,7 +582,7 @@ public class Tsample {
                         "tsample_time_point, tsample_organism_part, tsample_sex, tsample_genetic_variation, tsample_individual, " +
                         "tsample_individual_gen, tsample_disease_state, tsample_target_cell_type, tsample_cell_line, tsample_strain, " +
                         "tsample_additional, tsample_separation_tech, tsample_protocolid, tsample_growth_protocolid, tsample_exprid, " +
-                        "tsample_del_status, tsample_user, to_char(tsample_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "tsample_del_status, tsample_user, date_format(tsample_last_change, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentDetails " +
                         "where (tsample_protocolid = ? " +
                         "or tsample_growth_protocolid = ?) " +
@@ -619,7 +619,7 @@ public class Tsample {
                         "tsample_time_point, tsample_organism_part, tsample_sex, tsample_genetic_variation, tsample_individual, " +
                         "tsample_individual_gen, tsample_disease_state, tsample_target_cell_type, tsample_cell_line, tsample_strain, " +
                         "tsample_additional, tsample_separation_tech, tsample_protocolid, tsample_growth_protocolid, tsample_exprid, " +
-                        "tsample_del_status, tsample_user, to_char(tsample_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "tsample_del_status, tsample_user, date_format(tsample_last_change, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentdetails " +
                         "where tsample_sysuid = ?";
 

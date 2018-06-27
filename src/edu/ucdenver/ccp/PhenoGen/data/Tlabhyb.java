@@ -142,7 +142,7 @@ public class Tlabhyb {
 		String query = 
 			"select "+
 			"tlabhyb_sysuid, tlabhyb_labelid, tlabhyb_hybridid, tlabhyb_subid, tlabhyb_del_status, "+
-			"tlabhyb_user, to_char(tlabhyb_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
+			"tlabhyb_user, date_format(tlabhyb_last_change, '%d-%m-%Y %H:%i:%S') "+
 			"from Tlabhyb "+ 
 			"order by tlabhyb_sysuid";
 
@@ -173,7 +173,7 @@ public class Tlabhyb {
 		String query = 
 			"select "+
 			"tlabhyb_sysuid, tlabhyb_labelid, tlabhyb_hybridid, tlabhyb_subid, tlabhyb_del_status, "+
-			"tlabhyb_user, to_char(tlabhyb_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
+			"tlabhyb_user, date_format(tlabhyb_last_change, '%d-%m-%Y %H:%i:%S') "+
 			"from Tlabhyb "+ 
 			"where tlabhyb_sysuid = ?";
 

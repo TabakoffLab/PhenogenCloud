@@ -138,7 +138,7 @@ public class Protocol_value {
 		String query = 
 			"select "+
 			"value_id, protocol_id, value_type, value, description, "+
-			"created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') "+
+			"created_by_login, date_format(create_date, '%d-%m-%Y %H:%i:%S') "+
 			"from protocol_values "+ 
 			"order by value_id";
 		Protocol_value[] myProtocol_values = new Protocol_value[0];
@@ -165,7 +165,7 @@ public class Protocol_value {
 		String query = 
 			"select "+
 			"value_id, protocol_id, value_type, value, description, "+
-			"created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') "+
+			"created_by_login, date_format(create_date, '%d-%m-%Y %H:%i:%S') "+
 			"from protocol_values "+ 
 			"where value_id = ?";
 		Protocol_value myProtocol_value = null;

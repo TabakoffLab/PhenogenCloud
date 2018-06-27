@@ -141,7 +141,7 @@ public class Tntxsyn {
 		String query = 
 			"select "+
 			"tntxsyn_tax_id, tntxsyn_name_txt, tntxsyn_name_class, tntxsyn_unique_name, tntxsyn_upper_name_txt, "+
-			"tntxsyn_user, to_char(tntxsyn_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
+			"tntxsyn_user, date_format(tntxsyn_last_change, '%d-%m-%Y %H:%i:%S') "+
 			"from Tntxsyn "+ 
 			"where tntxsyn_name_txt = 'Mus musculus' "+ 
 			"or tntxsyn_name_txt like 'Rattus norvegicus' "+ 
@@ -194,7 +194,7 @@ public class Tntxsyn {
 		String query = 
 			"select "+
 			"tntxsyn_tax_id, tntxsyn_name_txt, tntxsyn_name_class, tntxsyn_unique_name, tntxsyn_upper_name_txt, "+
-			"tntxsyn_user, to_char(tntxsyn_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
+			"tntxsyn_user, date_format(tntxsyn_last_change, '%d-%m-%Y %H:%i:%S') "+
 			"from Tntxsyn "+ 
 			"where tntxsyn_name_txt = ?";
 
@@ -227,7 +227,7 @@ public class Tntxsyn {
 		String query = 
 			"select "+
 			"tntxsyn_tax_id, tntxsyn_name_txt, tntxsyn_name_class, tntxsyn_unique_name, tntxsyn_upper_name_txt, "+
-			"tntxsyn_user, to_char(tntxsyn_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
+			"tntxsyn_user, date_format(tntxsyn_last_change, '%d-%m-%Y %H:%i:%S') "+
 			"from Tntxsyn "+ 
 			"where tntxsyn_tax_id = ?";
 

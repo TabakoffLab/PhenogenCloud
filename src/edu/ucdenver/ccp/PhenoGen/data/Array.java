@@ -2320,7 +2320,7 @@ public class Array {
                 "select exp.exp_id, " +
                         "exp.exp_name, " +
                         "exp.created_by_login, " +
-                        "to_char(exp.exp_create_date, 'mm/dd/yyyy hh12:mi AM') " +
+                        "date_format(exp.exp_create_date, '%m/%d/%Y %h:%i %p') " +
                         "from experiments exp left join PUBLIC_EXPERIMENTS p on p.exp_id = exp.exp_id " +
                         "where p.exp_id is null " +
                         "and created_by_login in " +
@@ -2372,7 +2372,7 @@ public class Array {
                 "select to_char(expDetails.exp_name), " +
                         "to_char(expDetails.exp_description), " +
                         "expDetails.exp_created_by_login, " +
-                        "to_char(expDetails.exp_create_date, 'mm-dd-yyyy hh:mi am'), " +
+                        "date_format(expDetails.exp_create_date, '%m-%d-%Y %h:%i %p'), " +
                         "count(*), " +
                         "expDetails.tntxsyn_name_txt, " +
                         "case when upper(expDetails.path) like '%CEL' then 'Affymetrix' " +
@@ -2390,7 +2390,7 @@ public class Array {
                         "to_char(expDetails.exp_name), " +
                         "to_char(expDetails.exp_description), " +
                         "expDetails.exp_created_by_login, " +
-                        "to_char(expDetails.exp_create_date, 'mm-dd-yyyy hh:mi am'), " +
+                        "date_format(expDetails.exp_create_date, '%m-%d-%Y %h:%i %p'), " +
                         "expDetails.tntxsyn_name_txt, " +
                         "case when upper(expDetails.path) like '%CEL' then 'Affymetrix' " +
                         "	when upper(expDetails.path) like '%GPR' then 'cDNA' " +

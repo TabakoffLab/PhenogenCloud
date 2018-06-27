@@ -94,8 +94,8 @@ public class GeneList {
                     "gl.organism Organism, " +
                     "case when gl.gene_list_source != 'Statistical Analysis' then gl.gene_list_source " +
                     "	else ds.name||'_v'||dv.version end as Source, " +
-                    "to_char(gl.create_date, 'mm/dd/yyyy hh12:mi AM') \"Date Created\", " +
-                    "to_char(gl.create_date, 'mmddyyyy_hh24miss'), " +
+                    "date_format(gl.create_date, '%m/%d/%Y %h:%i %p') \"Date Created\", " +
+                    "date_format(gl.create_date, '%m%d%Y_%H%i%S'), " +
                     "ifnull(gl.dataset_id, -99), " +
                     "ifnull(gl.parameter_group_id, -99), " +
                     "gl.created_by_user_id, " +
@@ -1339,8 +1339,8 @@ public class GeneList {
                         "0, " +
                         "gl.organism Organism, " +
                         "'', " +
-                        "to_char(gl.create_date, 'mm/dd/yyyy hh12:mi AM') \"Date Created\", " +
-                        "to_char(gl.create_date, 'mmddyyyy_hh24miss'), " +
+                        "date_format(gl.create_date, '%m/%d/%Y %h:%i %p') \"Date Created\", " +
+                        "date_format(gl.create_date, '%m%d%Y_%H%i%S'), " +
                         "ifnull(gl.dataset_id, -99), " +
                         "ifnull(gl.parameter_group_id, -99), " +
                         "gl.created_by_user_id, " +

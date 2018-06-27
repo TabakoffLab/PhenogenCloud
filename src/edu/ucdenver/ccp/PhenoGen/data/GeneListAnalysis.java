@@ -260,9 +260,9 @@ public class GeneListAnalysis {
                 "select ga.analysis_id, " +
                         "ga.description, " +
                         "gl.gene_list_id, " +
-                        "to_char(ga.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(ga.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "ga.user_id, " +
-                        "to_char(ga.create_date, 'MMddyyyy_hh24miss'), " +
+                        "date_format(ga.create_date, '%m%d%Y_%H%i%S'), " +
                         "ga.analysis_type, " +
                         "ga.visible, " +
                         "ga.name, " +
@@ -322,9 +322,9 @@ public class GeneListAnalysis {
                     "select ga.analysis_id, " +
                             "ga.description, " +
                             "gl.gene_list_id, " +
-                            "to_char(ga.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                            "date_format(ga.create_date, '%m/%d/%Y %h:%i %p'), " +
                             "ga.user_id, " +
-                            "to_char(ga.create_date, 'MMddyyyy_hh24miss'), " +
+                            "date_format(ga.create_date, '%m%d%Y_%H%i%S'), " +
                             "ga.analysis_type, " +
                             "ga.visible, " +
                             "ga.name, " +
@@ -389,9 +389,9 @@ public class GeneListAnalysis {
                 "select ga.analysis_id, " +
                         "ga.description, " +
                         "gl.gene_list_id, " +
-                        "to_char(ga.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(ga.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "ga.user_id, " +
-                        "to_char(ga.create_date, 'MMddyyyy_hh24miss'), " +
+                        "date_format(ga.create_date, '%m%d%Y_%H%i%S'), " +
                         "ga.analysis_type, " +
                         "ga.visible, " +
                         "ga.name, " +
@@ -493,9 +493,9 @@ public class GeneListAnalysis {
                     "select ga.analysis_id, " +
                             "ga.description, " +
                             "ga.gene_list_id, " +
-                            "to_char(ga.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                            "date_format(ga.create_date, '%m/%d/%Y %h:%i %p'), " +
                             "ga.user_id, " +
-                            "to_char(ga.create_date, 'MMddyyyy_hh24miss'), " +
+                            "date_format(ga.create_date, '%m%d%Y_%H%i%S'), " +
                             "ga.analysis_type, " +
                             "ga.visible, " +
                             "ga.name, " +
@@ -548,9 +548,9 @@ public class GeneListAnalysis {
                     "select ga.analysis_id, " +
                             "ga.description, " +
                             "ga.gene_list_id, " +
-                            "to_char(ga.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                            "date_format(ga.create_date, '%m/%d/%Y %h:%i %p'), " +
                             "ga.user_id, " +
-                            "to_char(ga.create_date, 'MMddyyyy_hh24miss'), " +
+                            "date_format(ga.create_date, '%m%d%Y_%H%i%S'), " +
                             "ga.analysis_type, " +
                             "ga.visible, " +
                             "ga.name, " +

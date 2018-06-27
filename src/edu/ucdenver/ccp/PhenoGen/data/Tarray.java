@@ -150,8 +150,8 @@ public class Tarray {
 
         String query =
                 "select " +
-                        "tarray_sysuid, tarray_id, tarray_batchno, tarray_designid, to_char(tarray_prod_date, 'dd-MON-yyyy hh24:mi:ss'), " +
-                        "tarray_del_status, tarray_user, to_char(tarray_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "tarray_sysuid, tarray_id, tarray_batchno, tarray_designid, date_format(tarray_prod_date, '%d-%m-%Y %H:%i:%S'), " +
+                        "tarray_del_status, tarray_user, date_format(tarray_last_change, '%d-%m-%Y %H:%i:%S') " +
                         "from Tarray " +
                         "order by tarray_sysuid";
 
@@ -182,8 +182,8 @@ public class Tarray {
 
         String query =
                 "select " +
-                        "tarray_sysuid, tarray_id, tarray_batchno, tarray_designid, to_char(tarray_prod_date, 'dd-MON-yyyy hh24:mi:ss'), " +
-                        "tarray_del_status, tarray_user, to_char(tarray_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "tarray_sysuid, tarray_id, tarray_batchno, tarray_designid, date_format(tarray_prod_date, '%d-%m-%Y %H:%i:%S'), " +
+                        "tarray_del_status, tarray_user, date_format(tarray_last_change, '%d-%m-%Y %H:%i:%S') " +
                         "from Tarray " +
                         "where tarray_designid = ?";
 
@@ -216,8 +216,8 @@ public class Tarray {
 
         String query =
                 "select " +
-                        "tarray_sysuid, tarray_id, tarray_batchno, tarray_designid, to_char(tarray_prod_date, 'dd-MON-yyyy hh24:mi:ss'), " +
-                        "tarray_del_status, tarray_user, to_char(tarray_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "tarray_sysuid, tarray_id, tarray_batchno, tarray_designid, date_format(tarray_prod_date, '%d-%m-%Y %H:%i:%S'), " +
+                        "tarray_del_status, tarray_user, date_format(tarray_last_change, '%d-%m-%Y %H:%i:%S') " +
                         "from Tarray " +
                         "where tarray_sysuid = ?";
 

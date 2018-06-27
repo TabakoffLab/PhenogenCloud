@@ -188,7 +188,7 @@ public class Tpublic {
                 "select " +
                         "tpublic_sysuid, tpublic_subid, tpublic_title, tpublic_status, tpublic_publication, " +
                         "tpublic_year, tpublic_volume, tpublic_first_page, tpublic_last_page, tpublic_del_status, " +
-                        "tpublic_user, to_char(tpublic_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "tpublic_user, date_format(tpublic_last_change, '%d-%m-%Y %H:%i:%S') " +
                         "from Tpublic " +
                         "order by tpublic_sysuid";
 
@@ -221,7 +221,7 @@ public class Tpublic {
                 "select " +
                         "tpublic_sysuid, tpublic_subid, tpublic_title, tpublic_status, tpublic_publication, " +
                         "tpublic_year, tpublic_volume, tpublic_first_page, tpublic_last_page, tpublic_del_status, " +
-                        "tpublic_user, to_char(tpublic_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "tpublic_user, date_format(tpublic_last_change, '%d-%m-%Y %H:%i:%S') " +
                         "from Tpublic " +
                         "where tpublic_sysuid = ?";
 

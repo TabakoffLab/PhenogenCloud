@@ -142,7 +142,7 @@ public class Tpooled {
         String query =
                 "select " +
                         "tpooled_sysuid, tpooled_sampleid, tpooled_extractid, tpooled_subid, tpooled_del_status, " +
-                        "tpooled_user, to_char(tpooled_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "tpooled_user, date_format(tpooled_last_change, '%d-%m-%Y %H:%i:%S') " +
                         "from Tpooled " +
                         "order by tpooled_sysuid";
 
@@ -174,7 +174,7 @@ public class Tpooled {
         String query =
                 "select " +
                         "tpooled_sysuid, tpooled_sampleid, tpooled_extractid, tpooled_subid, tpooled_del_status, " +
-                        "tpooled_user, to_char(tpooled_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "tpooled_user, date_format(tpooled_last_change, '%d-%m-%Y %H:%i:%S') " +
                         "from Tpooled " +
                         "where tpooled_sysuid = ?";
 

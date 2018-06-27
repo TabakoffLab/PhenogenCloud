@@ -156,7 +156,7 @@ public class Texprtyp {
 
 		String query = 
 			"select "+
-			"texprtyp_exprid, texprtyp_id, texprtyp_del_status, texprtyp_user, to_char(texprtyp_last_change, 'dd-MON-yyyy hh24:mi:ss'), "+
+			"texprtyp_exprid, texprtyp_id, texprtyp_del_status, texprtyp_user, date_format(texprtyp_last_change, '%d-%m-%Y %H:%i:%S'), "+
 			"vt.value "+
 			"from Texprtyp, valid_terms vt "+ 
 			"where texprtyp_exprid = ? "+
@@ -165,7 +165,7 @@ public class Texprtyp {
 			"and vt.value != 'other' "+
 			"union "+
 			"select  "+
-			"texprtyp_exprid, texprtyp_id, texprtyp_del_status, texprtyp_user, to_char(texprtyp_last_change, 'dd-MON-yyyy hh24:mi:ss'),  "+
+			"texprtyp_exprid, texprtyp_id, texprtyp_del_status, texprtyp_user, date_format(texprtyp_last_change, '%d-%m-%Y %H:%i:%S'),  "+
 			"tothers_value "+
 			"from Texprtyp, valid_terms vt, Tothers "+
 			"where texprtyp_exprid = ?  "+
@@ -204,7 +204,7 @@ public class Texprtyp {
 
 		String query = 
 			"select "+
-			"texprtyp_exprid, texprtyp_id, texprtyp_del_status, texprtyp_user, to_char(texprtyp_last_change, 'dd-MON-yyyy hh24:mi:ss'), "+
+			"texprtyp_exprid, texprtyp_id, texprtyp_del_status, texprtyp_user, date_format(texprtyp_last_change, '%d-%m-%Y %H:%i:%S'), "+
 			"vt.value "+
 			"from Texprtyp, valid_terms vt "+ 
 			"where texprtyp_exprid = ? "+

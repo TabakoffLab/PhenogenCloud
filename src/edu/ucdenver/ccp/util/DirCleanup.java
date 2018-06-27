@@ -1810,7 +1810,7 @@ log.debug("thisExpement expID = "+thisExperiment.getExp_id());
     public void renameUpstreamFiles() throws SQLException, IOException, RException {
         System.out.println("in renameUpstreamFiles");
 
-        String query = "select u.user_name, to_char(gla.create_date, 'MMddyyyy_hh24miss'), gl.gene_list_name, pv.value " +
+        String query = "select u.user_name, date_format(gla.create_date, '%m%d%Y_%H%i%S'), gl.gene_list_name, pv.value " +
                 "from gene_list_analyses gla, users u, gene_lists gl, parameter_values pv " +
                 "where gla.gene_list_id = gl.gene_list_id " +
                 "and gla.user_id = u.user_id " +

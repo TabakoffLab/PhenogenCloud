@@ -184,7 +184,7 @@ public class Textract {
         String query =
                 "select " +
                         "textract_sysuid, textract_id, textract_protocolid, textract_pool_protocolid, textract_del_status, " +
-                        "textract_user, to_char(textract_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "textract_user, date_format(textract_last_change, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentdetails " +
                         "order by textract_sysuid";
 
@@ -216,7 +216,7 @@ public class Textract {
         String query =
                 "select " +
                         "textract_sysuid, textract_id, textract_protocolid, textract_pool_protocolid, textract_del_status, " +
-                        "textract_user, to_char(textract_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "textract_user, date_format(textract_last_change, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentdetails " +
                         "where textract_sysuid = ?";
 
@@ -361,7 +361,7 @@ public class Textract {
                 "select " +
                         "textract_sysuid, textract_id, textract_protocolid, textract_pool_protocolid, textract_del_status, " +
                         "textract_user, " +
-                        "to_char(textract_last_change, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "date_format(textract_last_change, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentdetails " +
                         "where (textract_protocolid = ? or " +
                         "textract_pool_protocolid = ?) " +

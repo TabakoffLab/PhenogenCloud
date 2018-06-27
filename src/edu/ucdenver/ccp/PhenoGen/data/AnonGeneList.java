@@ -48,8 +48,8 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
                     "(Select count(*) from genes ge where ge.gene_list_id=gl.gene_list_id), " +
                     "gl.organism Organism, " +
                     "'', " +
-                    "to_char(gl.create_date, 'mm/dd/yyyy hh12:mi AM') \"Date Created\", " +
-                    "to_char(gl.create_date, 'mmddyyyy_hh24miss'), " +
+                    "date_format(gl.create_date, '%m/%d/%Y %h:%i %p') \"Date Created\", " +
+                    "date_format(gl.create_date, '%m%d%Y_%H%i%S'), " +
                     "ifnull(gl.dataset_id, -99), " +
                     "ifnull(gl.parameter_group_id, -99), " +
                     "gl.created_by_user_id, " +

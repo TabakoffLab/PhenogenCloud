@@ -780,7 +780,7 @@ public class CodeGenerator {
         for (Iterator itr = columns.iterator(); itr.hasNext(); ) {
             Column column = (Column) itr.next();
             String whatToPrint = (printToCharCode.equals("Y") && column.getData_type().equals("java.sql.Timestamp") ?
-                    "to_char(" + column.getColumn_name() + ", 'dd-MON-yyyy hh24:mi:ss')" : column.getColumn_name());
+                    "date_format(" + column.getColumn_name() + ", '%d-%m-%Y %H:%i:%S')" : column.getColumn_name());
             //log.debug("column = "+column);
             writeSetsOfFive(i,
                     columns.size(),

@@ -133,7 +133,7 @@ public class Dataset {
                     "ds.name, " +
                     "ds.description, " +
                     "u.user_name creator, " +
-                    "to_char(ds.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                    "date_format(ds.create_date, '%m/%d/%Y %h:%i %p'), " +
                     "count(distinct dc.user_chip_id), " +
                     "ds.organism, " +
                     "ds.platform, " +
@@ -182,7 +182,7 @@ public class Dataset {
                     ", " +
                     "dv.version, " +
                     "dv.version_name, " +
-                    "to_char(dv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                    "date_format(dv.create_date, '%m/%d/%Y %h:%i %p'), " +
                     "dv.visible, " +
                     "pg.parameter_group_id, " +
                     "dv.version_type, " +
@@ -193,7 +193,7 @@ public class Dataset {
                     ", " +
                     "dv.version, " +
                     "dv.version_name, " +
-                    "to_char(dv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                    "date_format(dv.create_date, '%m/%d/%Y %h:%i %p'), " +
                     "dv.visible, " +
                     "dv.parameter_group_id, " +
                     "dv.version_type, " +

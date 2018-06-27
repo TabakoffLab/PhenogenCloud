@@ -207,7 +207,7 @@ public class Hybridization {
         String query =
                 "select " +
                         "hybrid_id, hybrid_name, hybrid_description, hybrid_protocol_id, hybrid_scan_protocol_id, " +
-                        "hybrid_norm_protocol_id, hybrid_array_id, hybrid_created_by_login, to_char(hybrid_create_date, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "hybrid_norm_protocol_id, hybrid_array_id, hybrid_created_by_login, date_format(hybrid_create_date, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentdetails " +
                         "order by hybrid_id";
 
@@ -238,7 +238,7 @@ public class Hybridization {
         String query =
                 "select " +
                         "hybrid_id, hybrid_name, hybrid_description, hybrid_protocol_id, hybrid_scan_protocol_id, " +
-                        "hybrid_norm_protocol_id, hybrid_array_id, hybrid_created_by_login, to_char(hybrid_create_date, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "hybrid_norm_protocol_id, hybrid_array_id, hybrid_created_by_login, date_format(hybrid_create_date, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentDetails " +
                         "where (hybrid_norm_protocol_id = ? " +
                         "or hybrid_scan_protocol_id = ? " +
@@ -273,7 +273,7 @@ public class Hybridization {
         String query =
                 "select " +
                         "hybrid_id, hybrid_name, hybrid_description, hybrid_protocol_id, hybrid_scan_protocol_id, " +
-                        "hybrid_norm_protocol_id, hybrid_array_id, hybrid_created_by_login, to_char(hybrid_create_date, 'dd-MON-yyyy hh24:mi:ss'), exp_name " +
+                        "hybrid_norm_protocol_id, hybrid_array_id, hybrid_created_by_login, date_format(hybrid_create_date, '%d-%m-%Y %H:%i:%S'), exp_name " +
                         "from experimentdetails " +
                         "where hybrid_id = ?";
 

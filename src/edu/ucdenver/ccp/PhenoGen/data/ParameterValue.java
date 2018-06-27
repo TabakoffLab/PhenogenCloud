@@ -698,7 +698,7 @@ public class ParameterValue implements Comparable {
                         "pv.category, " +
                         "pv.parameter, " +
                         "pv.value, " +
-                        "to_char(pg.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(pg.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version " +
                         "from parameter_groups pg, " +
@@ -947,7 +947,7 @@ public class ParameterValue implements Comparable {
                         "pv.category, " +
                         "pv.parameter, " +
                         "pv.value, " +
-                        "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version " +
                         "from parameter_values pv, " +
@@ -1019,7 +1019,7 @@ public class ParameterValue implements Comparable {
                         "pv.parameter), " +
                         "if(pv.value, 'Null', ' ', " +
                         "	pv.value), " +
-                        "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pv.value, " +
                         "pg.dataset_id, " +
                         "pg.version " +
@@ -1092,7 +1092,7 @@ public class ParameterValue implements Comparable {
                         "pv.parameter), " +
                         "if(pv.value, 'Null', ' ', " +
                         "	pv.value), " +
-                        "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version, " +
                         "pv.value " +
@@ -1109,7 +1109,7 @@ public class ParameterValue implements Comparable {
                         "pv.category, " +
                         "pv.parameter, " +
                         "pv.value, " +
-                        "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version, " +
                         "pv.value " +
@@ -1128,7 +1128,7 @@ public class ParameterValue implements Comparable {
                         "pv.category, " +
                         "grps.group_name parameter, " +
                         "pv.value, " +
-                        "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(pv.create_date, %m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version, " +
                         "pv.value " +
@@ -1297,7 +1297,7 @@ public class ParameterValue implements Comparable {
                         "pv.category, " +
                         "if(pv.value, 'Null', ' ', pv.parameter), " +
                         "if(pv.value, 'Null', ' ', pv.value), " +
-                        "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version " +
                         "from parameter_values pv, parameter_groups pg, datasets ds " +
@@ -1354,7 +1354,7 @@ public class ParameterValue implements Comparable {
                         "pv.category, " +
                         "if(pv.value, 'Null', ' ', pv.parameter), " +
                         "if(pv.value, 'Null', ' ', pv.value), " +
-                        "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version " +
                         "from parameter_values pv, parameter_groups pg " +
@@ -1406,7 +1406,7 @@ public class ParameterValue implements Comparable {
                         "pv.category, " +
                         "if(value, 'Null', ' ', pv.parameter), " +
                         "if(value, 'Null', ' ', pv.value), " +
-                        "to_char(pv.create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version " +
                         "from parameter_values pv, " +

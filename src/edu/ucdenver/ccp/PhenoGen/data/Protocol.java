@@ -219,7 +219,7 @@ public class Protocol {
         String query =
                 "select " +
                         "protocol_id, protocol_type, protocol_name, ifnull(protocol_description, ''), ifnull(globid, ''), " +
-                        "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss'), b.value " +
+                        "created_by_login, date_format(protocol_create_date, '%d-%m-%Y %H:%i:%S'), b.value " +
                         "from protocols a, valid_terms b " +
                         "where a.protocol_type = b.term_id " +
                         "and a.protocol_name is not null " +
@@ -252,7 +252,7 @@ public class Protocol {
         String query =
                 "select " +
                         "protocol_id, protocol_type, protocol_name, protocol_description, globid, " +
-                        "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "created_by_login, date_format(protocol_create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from protocols " +
                         "where protocol_id = ?";
         //log.debug("query = "+query);
@@ -304,7 +304,7 @@ public class Protocol {
                         "protocol_id, protocol_type, protocol_name, " +
                         "protocol_description, " +
                         "globid, " +
-                        "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "created_by_login,date_format(protocol_create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from protocols p, valid_terms v " +
                         "where p.protocol_type = v.term_id " +
                         "and p.created_by_login like ? ||'%' " +
@@ -360,7 +360,7 @@ public class Protocol {
         String query =
                 "select " +
                         "protocol_id, protocol_type, protocol_name, protocol_description, globid, " +
-                        "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "created_by_login, date_format(protocol_create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from protocols p, valid_terms v " +
                         "where p.protocol_type = v.term_id " +
                         "and p.created_by_login = ? " +
@@ -398,7 +398,7 @@ public class Protocol {
         String query =
                 "select " +
                         "protocol_id, protocol_type, protocol_name, protocol_description, globid, " +
-                        "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "created_by_login, date_format(protocol_create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from protocols p, valid_terms v " +
                         "where p.protocol_type = v.term_id " +
                         "and p.protocol_name = ? " +
@@ -432,7 +432,7 @@ public class Protocol {
                         "protocol_id, protocol_type, protocol_name, " +
                         "ifnull(protocol_description, 'No Description Provided'), " +
                         "globid, " +
-                        "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "created_by_login, date_format(protocol_create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from protocols  " +
                         "where protocol_id = ?";
 
@@ -515,7 +515,7 @@ public class Protocol {
         String query =
                 "select " +
                         "protocol_id, protocol_type, protocol_name, ifnull(protocol_description, ''), ifnull(globid, ''), " +
-                        "created_by_login, to_char(protocol_create_date, 'dd-MON-yyyy hh24:mi:ss'), b.value " +
+                        "created_by_login, to_char(protocol_create_date, '%d-%m-%Y %H:%i:%S'), b.value " +
                         "from protocols a, valid_terms b " +
                         "where a.protocol_type = b.term_id " +
                         "and a.protocol_name is not null " +

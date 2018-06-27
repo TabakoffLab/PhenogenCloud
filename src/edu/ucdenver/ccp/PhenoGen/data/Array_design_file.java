@@ -123,7 +123,7 @@ public class Array_design_file {
 		String query = 
 			"select "+
 			"file_id, path, ardesin_id, "+
-			"created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') "+
+			"created_by_login, date_format(create_date, '%d-%m-%Y %H:%i:%S') "+
 			"from array_design_files "+ 
 			"order by file_id";
 
@@ -152,7 +152,7 @@ public class Array_design_file {
 		String query = 
 			"select "+
 			"file_id, path, ardesin_id, "+
-			"created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') "+
+			"created_by_login, date_format(create_date, '%d-%m-%Y %H:%i:%S') "+
 			"from array_design_files "+ 
 			"where file_id = ?";
 

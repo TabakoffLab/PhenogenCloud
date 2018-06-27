@@ -275,7 +275,7 @@ public class Experiment {
     private String selectClause =
             "select " +
                     "exp.exp_id, subid, accno, exp_description, " +
-                    "exp.created_by_login, to_char(exp.exp_create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                    "exp.created_by_login, date_format(exp.exp_create_date, '%m/%d/%Y %h:%i %p'), " +
                     "exp.exp_name, " +
                     "ifnull(samples.num_samples, 0) num_samples, " +
                     "ifnull(files.num_files, 0) num_files, " +
@@ -1017,7 +1017,7 @@ log.debug("here in readSpreadsheet just discovered that isCompoundDesign is "+is
         String query =
                 "select " +
                         "exp_id, subid, accno, exp_description, " +
-                        "created_by_login, to_char(exp_create_date, 'mm/dd/yyyy hh12:mi AM'), " +
+                        "created_by_login, date_format(exp_create_date, '%m/%d/%Y %h:%i %p'), " +
                         "exp_name " +
                         "from experiments " +
                         "where created_by_login like ? " +

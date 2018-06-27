@@ -160,7 +160,7 @@ public class Tfctrval {
         String query =
                 "select " +
                         "tfctrval_sysuid, tfctrval_expfctrid, tfctrval_sampleid, tfctrval_freetext, tfctrval_freetextunit, " +
-                        "tfctrval_subid, tfctrval_del_status, tfctrval_user, to_char(tfctrval_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "tfctrval_subid, tfctrval_del_status, tfctrval_user, date_format(tfctrval_last_change, '%d-%m-%Y %H:%i:%S') " +
                         "from Tfctrval " +
                         "order by tfctrval_sysuid";
 
@@ -192,7 +192,7 @@ public class Tfctrval {
         String query =
                 "select " +
                         "tfctrval_sysuid, tfctrval_expfctrid, tfctrval_sampleid, tfctrval_freetext, tfctrval_freetextunit, " +
-                        "tfctrval_subid, tfctrval_del_status, tfctrval_user, to_char(tfctrval_last_change, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "tfctrval_subid, tfctrval_del_status, tfctrval_user, date_format(tfctrval_last_change, '%d-%m-%Y %H:%i:%S') " +
                         "from Tfctrval " +
                         "where tfctrval_sysuid = ?";
 

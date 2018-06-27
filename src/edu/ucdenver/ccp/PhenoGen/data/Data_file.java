@@ -140,7 +140,7 @@ public class Data_file {
                 "select " +
                         "file_id, path, " +
                         "hybrid_id, trans_hybrid_id, " +
-                        "created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "created_by_login, date_format(create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from data_files " +
                         "order by file_id";
 
@@ -173,7 +173,7 @@ public class Data_file {
                 "select " +
                         "file_id, path, " +
                         "hybrid_id, trans_hybrid_id, " +
-                        "created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "created_by_login, date_format(create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from data_files " +
                         "where hybrid_id = ?";
 
@@ -204,7 +204,7 @@ public class Data_file {
                 "select " +
                         "file_id, path, " +
                         "hybrid_id, trans_hybrid_id, " +
-                        "created_by_login, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "created_by_login, date_format(create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from data_files " +
                         "where file_id = ?";
         //log.debug("query =  " + query);

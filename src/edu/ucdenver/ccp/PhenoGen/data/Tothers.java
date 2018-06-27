@@ -217,7 +217,7 @@ public class Tothers {
 			"select "+
 			"tothers_sysuid, tothers_id, tothers_value, tothers_descr, tothers_exprid, "+
 			"tothers_sampleid, tothers_publicid, tothers_qcid, tothers_tardesinid, tothers_tareltypid, "+
-			"tothers_header_prtclid, tothers_detail_prtclid, tothers_del_status, tothers_user, to_char(tothers_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
+			"tothers_header_prtclid, tothers_detail_prtclid, tothers_del_status, tothers_user, date_format(tothers_last_change, '%d-%m-%Y %H:%i:%S') "+
 			"from Tothers "+ 
 			"where tothers_del_status = 'U' "+
 			"and tothers_sampleid = ? "+
@@ -253,7 +253,7 @@ public class Tothers {
 			"select "+
 			"tothers_sysuid, tothers_id, tothers_value, tothers_descr, tothers_exprid, "+
 			"tothers_sampleid, tothers_publicid, tothers_qcid, tothers_tardesinid, tothers_tareltypid, "+
-			"tothers_header_prtclid, tothers_detail_prtclid, tothers_del_status, tothers_user, to_char(tothers_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
+			"tothers_header_prtclid, tothers_detail_prtclid, tothers_del_status, tothers_user, date_format(tothers_last_change, '%d-%m-%Y %H:%i:%S') "+
 			"from Tothers "+ 
 			"where tothers_del_status = 'U' "+
 			"and tothers_exprid = ? "+
@@ -287,7 +287,7 @@ public class Tothers {
 			"select "+
 			"tothers_sysuid, tothers_id, tothers_value, tothers_descr, tothers_exprid, "+
 			"tothers_sampleid, tothers_publicid, tothers_qcid, tothers_tardesinid, tothers_tareltypid, "+
-			"tothers_header_prtclid, tothers_detail_prtclid, tothers_del_status, tothers_user, to_char(tothers_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
+			"tothers_header_prtclid, tothers_detail_prtclid, tothers_del_status, tothers_user, date_format(tothers_last_change, '%d-%m-%Y %H:%i:%S') "+
 			"from Tothers "+ 
 			"order by tothers_id, tothers_value";
 
@@ -319,7 +319,7 @@ public class Tothers {
 			"select "+
 			"tothers_sysuid, tothers_id, tothers_value, tothers_descr, tothers_exprid, "+
 			"tothers_sampleid, tothers_publicid, tothers_qcid, tothers_tardesinid, tothers_tareltypid, "+
-			"tothers_header_prtclid, tothers_detail_prtclid, tothers_del_status, tothers_user, to_char(tothers_last_change, 'dd-MON-yyyy hh24:mi:ss') "+
+			"tothers_header_prtclid, tothers_detail_prtclid, tothers_del_status, tothers_user, date_format(tothers_last_change, '%d-%m-%Y %H:%i:%S') "+
 			"from Tothers "+ 
 			"where tothers_sysuid = ?";
 

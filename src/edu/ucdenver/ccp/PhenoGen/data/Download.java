@@ -104,7 +104,7 @@ public class Download {
 
         String query =
                 "select " +
-                        "download_id, url, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "download_id, url, date_format(create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from Downloads " +
                         "order by download_id";
 
@@ -137,7 +137,7 @@ public class Download {
 
         String query =
                 "select " +
-                        "download_id, url, to_char(create_date, 'dd-MON-yyyy hh24:mi:ss') " +
+                        "download_id, url, date_format(create_date, '%d-%m-%Y %H:%i:%S') " +
                         "from Downloads " +
                         "where download_id = ?";
         Download myDownload = null;

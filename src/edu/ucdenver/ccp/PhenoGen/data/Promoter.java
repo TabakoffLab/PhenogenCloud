@@ -293,7 +293,7 @@ public class Promoter {
                 "select pr.analysis_id, " +
                         "pr.description, " +
                         "gl.gene_list_id, " +
-                        "to_char(pr.create_date, 'MMddyyyy_hh24miss'), " +
+                        "date_format(pr.create_date, '%m%d%Y_%H%i%S'), " +
                         "pr.user_id " +
                         //
                         // This join gets all the gene_ids that were actually sent to oPOSSUM.
