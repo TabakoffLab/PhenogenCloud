@@ -14,7 +14,7 @@
 	
     RNADataset myRNADataset=new RNADataset();
     
-        log.info("in resources.jsp. user =  "+ user);
+    log.info("in resources.jsp. user =  "+ userLoggedIn.getUser_name());
 	
 	log.debug("action = "+action);
         extrasList.add("tooltipster.min.css");

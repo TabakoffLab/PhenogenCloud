@@ -213,15 +213,16 @@ public class Results{
 	 */
 	public Results(String query, int inInt, Connection conn) throws SQLException {
 		log = Logger.getRootLogger();
-		//log.debug("pstmt is open here 4. Not a problem");
-	
-                pstmt = conn.prepareStatement(query,
+		log.debug("pstmt is open here 4. Not a problem");
+		pstmt = conn.prepareStatement(query,
 				ResultSet.TYPE_SCROLL_INSENSITIVE,
 				ResultSet.CONCUR_UPDATABLE);
 		pstmt.setInt(1, inInt);
-
+		log.debug("pstmt is before execute"+inInt+":"+query);
 		rs = pstmt.executeQuery();
+		log.debug("pstmt after execute"+inInt+":"+query);
 		rsmd = rs.getMetaData();
+		log.debug("pstmt after metadata"+inInt+":"+query);
   	}
 
 	/**

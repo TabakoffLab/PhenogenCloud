@@ -1498,12 +1498,16 @@ public class Array {
 
         //log.debug ("in Array.getArrayOrganisms");
         String query =
-                "select distinct ifnull(if(expDetails.tntxsyn_name_txt, 'Mus musculus', expDetails.tntxsyn_name_txt, " +
-                        "							'Rattus norvegicus', expDetails.tntxsyn_name_txt, " +
-                        "							'Other'), 'No Value Entered'), " +
+                "select distinct CASE when expDetails.tntxsyn_name_txt='Mus musculus' then expDetails.tntxsyn_name_txt " +
+                        " when expDetails.tntxsyn_name_txt='Rattus norvegicus' then  expDetails.tntxsyn_name_txt " +
+                        " else 'Other'" +
+                        "END, " +
                         // AAGH!  Have to select this in order to order by it! Also, have to remove the pub and nonpub
                         // in order to return only one row for 'Other'
-                        "if(expDetails.tntxsyn_name_txt, 'Mus musculus', 1, 'Rattus norvegicus', 2, 3), " +
+                        "CASE when expDetails.tntxsyn_name_txt='Mus musculus' then 1" +
+                        " when expDetails.tntxsyn_name_txt='Rattus norvegicus' then 2" +
+                        " else 3" +
+                        "END, " +
                         "0, " +
                         "0 " +
                         //"count(distinct case when pe.exp_id is not null then expDetails.hybrid_id else null end) as pub, "+
@@ -1514,9 +1518,10 @@ public class Array {
                         "where 1 = 1 " +
                         getMyCoreWhereClause(hybridIDs, channel) +
                         "group by expDetails.tntxsyn_name_txt " +
-                        "order by if(expDetails.tntxsyn_name_txt, 'Mus musculus', 1, " +
-                        "		'Rattus norvegicus', 2, " +
-                        "		3)";
+                        "order by (CASE when expDetails.tntxsyn_name_txt ='Mus musculus' then  1 " +
+                        " when expDetails.tntxsyn_name_txt ='Rattus norvegicus' then 2 " +
+                        " else 3" +
+                        "END)";
 
         //log.debug("query = "+query);
         ArrayCount[] myArrayCounts = null;
@@ -2976,10 +2981,9 @@ public class Array {
             } else if (nextKey.equals("Organism")) {
                 if (!nextValue.equals("All")) {
                     query = query +
-                            "and if(expDetails.tntxsyn_name_txt, " +
-                            "	'Mus musculus', expDetails.tntxsyn_name_txt, " +
-                            "	'Rattus norvegicus', expDetails.tntxsyn_name_txt, " +
-                            "	'Other') = ? ";
+                            "and (CASE when expDetails.tntxsyn_name_txt='Mus musculus' then expDetails.tntxsyn_name_txt " +
+                            "	when expDetails.tntxsyn_name_txt='Rattus norvegicus' then expDetails.tntxsyn_name_txt " +
+                            "	else 'Other' END) = ? ";
                     parameterValues.add(nextValue);
                 }
             } else if (nextKey.equals("Sex")) {
@@ -3101,16 +3105,17 @@ public class Array {
                 }
             } else if (nextKey.equals("GeneticType")) {
                 query = query +
-                        "and if(genetic_variation.value, " +
-                        "'none', 'Other', " +
-                        "'F1', 'Other', " +
-                        "'congenic strain', 'Other', " +
-                        "'gene knock out', 'Other', " +
-                        "'knock down', 'Other', " +
-                        "'transgenic', 'Other', " +
-                        "'inbred strain', 'Inbred', " +
-                        "'recombinant inbred strain', 'Recombinant Inbred', " +
-                        "'selective breeding', 'Selectively Bred', genetic_variation.value) = ? ";
+                        "and CASE when genetic_variation.value='none' then 'Other' " +
+                        "when genetic_variation.value='F1' then 'Other' " +
+                        "when genetic_variation.value='congenic strain' then 'Other' " +
+                        "when genetic_variation.value='gene knock out' then 'Other' " +
+                        "when genetic_variation.value='knock down' then 'Other' " +
+                        "when genetic_variation.value='transgenic' then 'Other' " +
+                        "when genetic_variation.value='inbred strain' then 'Inbred' " +
+                        "when genetic_variation.value='recombinant inbred strain' then 'Recombinant Inbred' " +
+                        "when genetic_variation.value='selective breeding' then 'Selectively Bred' " +
+                        "else genetic_variation.value " +
+                        "END) = ? ";
                 parameterValues.add(nextValue);
             } else if (nextKey.equals("Title")) {
                 query = query +
@@ -3590,45 +3595,36 @@ public class Array {
     public List<String[]> getQueryCombos(String channel, DataSource pool) throws SQLException {
         String orgString =
                 //Mouse is 10090, Rat is 10116, 7227 is Fly, 9606 is Human
-                " if(details.tsample_taxid, 7227, 'Other', " +
+                " (CASE when details.tsample_taxid=7227 then 'Other' " +
                         //'Drosophila melanogaster', "+
-                        "9606, 'Other', " +
+                        "when details.tsample_taxid=9606 then 'Other', " +
                         //'Homo sapiens', "+
-                        "10090, 'Mus musculus', " +
-                        "10116, 'Rattus norvegicus', details.tsample_taxid) org, ";
+                        "when details.tsample_taxid=10090 then 'Mus musculus', " +
+                        "when details.tsample_taxid=10116 then 'Rattus norvegicus'" +
+                        "else details.tsample_taxid END) org, ";
 
         String genModString =
-                "if(gv.value, " +
-//			"'none', 'None', "+
-                        "'none', 'Other', " +
-                        "'F1', 'Other', " +
-/*
-			"'congenic strain', 'Genetically Modified', "+
-			"'gene knock out', 'Genetically Modified', "+
-			"'knock down', 'Genetically Modified', "+
-			"'transgenic', 'Genetically Modified', "+
-*/
-                        "'congenic strain', 'Other', " +
-                        "'gene knock out', 'Other', " +
-                        "'knock down', 'Other', " +
-                        "'transgenic', 'Other', " +
-                        "'inbred strain', 'Inbred', " +
-                        "'recombinant inbred strain', 'Recombinant Inbred', " +
-                        "'selective breeding', 'Selectively Bred', gv.value) genmod, ";
+                " (CASE when gv.value= 'none' then 'Other' " +
+                        "when gv.value='F1' then 'Other' " +
+                        "when gv.value='congenic strain' then 'Other' " +
+                        "when gv.value='gene knock out' then 'Other' " +
+                        "when gv.value='knock down' then 'Other' " +
+                        "when gv.value='transgenic' then 'Other' " +
+                        "when gv.value='inbred strain' then 'Inbred' " +
+                        "when gv.value='recombinant inbred strain' then 'Recombinant Inbred' " +
+                        "when gv.value='selective breeding' then 'Selectively Bred' " +
+                        "else gv.value" +
+                        "END) genmod, ";
 
         String slgString =
-                "if(gv.value,  " +
-                        //"'none', 'None', "+
-                        //"'F1', 'None', "+
-                        "'congenic strain', details.tsample_individual_gen, " +
-                        "'gene knock out', details.tsample_individual_gen, " +
-                        "'knock down', details.tsample_individual_gen, " +
-                        "'transgenic', details.tsample_individual_gen, " +
-                        "'inbred strain', details.tsample_strain,  " +
-                        "'recombinant inbred strain', details.tsample_strain,  " +
-                        "'selective breeding', details.tsample_cell_line) ";
-        //"gv.value) slg,  ";
-        //"'') slg,  ";
+                "(CASE when gv.value= 'congenic strain' then details.tsample_individual_gen " +
+                        "when gv.value='gene knock out' then details.tsample_individual_gen " +
+                        "when gv.value='knock down' then details.tsample_individual_gen " +
+                        "when gv.value='transgenic' then details.tsample_individual_gen " +
+                        "when gv.value='inbred strain' then details.tsample_strain  " +
+                        "when gv.value='recombinant inbred strain' then details.tsample_strain  " +
+                        "when gv.value='selective breeding' then details.tsample_cell_line) ";
+
 
         String tissueString =
                 "case when tissue.value = 'other' then otherOrganismPart.tothers_value else tissue.value end tissue, ";

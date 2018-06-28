@@ -217,7 +217,7 @@
         }
         //userLoggedIn= (User) session.getAttribute("userLoggedIn");
     }
-
+    log.info("after check login");
     GeneList[] geneListsForUser = ((GeneList[]) session.getAttribute("geneListsForUser") == null ?
             null :
             (GeneList[]) session.getAttribute("geneListsForUser"));
@@ -230,26 +230,31 @@
     Dataset[] privateDatasetsForUser = ((Dataset[]) session.getAttribute("privateDatasetsForUser") == null ?
             null :
             (Dataset[]) session.getAttribute("privateDatasetsForUser"));
+    log.info("after setup genelists/datasets/experiments");
+    try {
+        Isbra.Group selectedGroup = (Isbra.Group) session.getAttribute("selectedGroup");
+        String userName = (String) session.getAttribute("userName");
+        String full_name = (String) session.getAttribute("full_name");
+        String lab_name = (String) session.getAttribute("lab_name");
+        String user = userID + "-" + userName;
 
-    Isbra.Group selectedGroup = (Isbra.Group) session.getAttribute("selectedGroup");
-    String userName = (String) session.getAttribute("userName");
-    String full_name = (String) session.getAttribute("full_name");
-    String lab_name = (String) session.getAttribute("lab_name");
-    String user = userID + "-" + userName;
-
-    if (publicDatasets == null || privateDatasetsForUser == null) {
-        Dataset myDataset = new Dataset();
-        Dataset[] allDatasets = myDataset.getAllDatasetsForUser(userLoggedIn, pool);
-        if (publicDatasets == null) {
-            log.debug("publicDatasets not set, so setting it now");
-            publicDatasets = myDataset.getDatasetsForUser(allDatasets, "public");
-            session.setAttribute("publicDatasets", publicDatasets);
+        if (publicDatasets == null || privateDatasetsForUser == null) {
+            Dataset myDataset = new Dataset();
+            Dataset[] allDatasets = myDataset.getAllDatasetsForUser(userLoggedIn, pool);
+            if (publicDatasets == null) {
+                log.debug("publicDatasets not set, so setting it now");
+                publicDatasets = myDataset.getDatasetsForUser(allDatasets, "public");
+                session.setAttribute("publicDatasets", publicDatasets);
+            }
+            if (privateDatasetsForUser == null) {
+                log.debug("privateDatasetsForUser not set, so setting it now");
+                privateDatasetsForUser = myDataset.getDatasetsForUser(allDatasets, "private");
+                session.setAttribute("privateDatasetsForUser", privateDatasetsForUser);
+            }
         }
-        if (privateDatasetsForUser == null) {
-            log.debug("privateDatasetsForUser not set, so setting it now");
-            privateDatasetsForUser = myDataset.getDatasetsForUser(allDatasets, "private");
-            session.setAttribute("privateDatasetsForUser", privateDatasetsForUser);
-        }
+    }catch(Exception e){
+        log.error("ERROR:",e);
+        e.printStackTrace();
     }
     log.debug("end ANON_SESSION_VARS");
 %>

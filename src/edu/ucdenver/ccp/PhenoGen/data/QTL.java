@@ -1285,7 +1285,7 @@ public class QTL {
                             "and ql.organism = ? " +
                             "and ql.qtl_list_id = q.qtl_list_id " +
                             "and ql.qtl_list_id = ? " +
-                            "and to_number(if(eq.p_value, '<0.000001', '1.E-100', eq.p_value)) < ? ";
+                            "and to_number(if(eq.p_value='<0.000001', '1.E-100', eq.p_value)) < ? ";
             if (!tissue.equals("All")) {
                 query = query + " and eq.tissue = ? ";
             }

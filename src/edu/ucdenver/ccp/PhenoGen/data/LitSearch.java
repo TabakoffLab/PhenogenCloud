@@ -582,7 +582,7 @@ public class LitSearch {
                         "and ai.gene_id = lsr.gene_id " +
                         "and ai.source = 'LitSearch' order by ai.alternate_id), ', ')), 'None') alternate_id, " +
                         "cat.category, " +
-                        "if(lsr.category, cat.category, count(distinct pmr.pubmed_id), 0) pubmed_count " +
+                        "if(lsr.category=cat.category, count(distinct pmr.pubmed_id), 0) pubmed_count " +
                         "from categories cat, " +
                         "lit_search_results lsr " +
                         "left join pubmed_results pmr on lsr.result_id = pmr.result_id " +

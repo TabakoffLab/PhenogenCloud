@@ -1,6 +1,7 @@
 <%@ include file="/web/common/anon_session_vars.jsp" %>
 
 <%
+        log.debug("before extras");
         extrasList.add("d3.v4.8.0.min.js");
         extrasList.add("detailedTranscriptInfo.js");
         extrasList.add("jquery.dataTables.1.10.9.min.js");
@@ -20,6 +21,7 @@
         extrasList.add("jquery.fancybox-thumbs.css");
         extrasList.add("spectrum.css");
         //extrasList.add("jquery.dataTables.min.css");
+        log.debug("after extras");
 %>
 
 

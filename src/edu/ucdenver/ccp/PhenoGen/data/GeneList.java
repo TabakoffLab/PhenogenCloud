@@ -637,7 +637,7 @@ public class GeneList {
                         // since this is left-joined, we only want the rows that actually have gene_values
                         //
                         "and sc.description is not null " +
-                        "order by sc.sort_order, if(gv.group_number, 'NA', 0, to_number(gv.group_number))";
+                        "order by sc.sort_order, if(gv.group_number='NA', 0, to_number(gv.group_number))";
 
         //log.debug("query = "+query);
         try(Connection conn=pool.getConnection()) {
@@ -1456,7 +1456,7 @@ public class GeneList {
         String query =
                 "select u.user_id, " +
                         "u.title||' '||u.first_name||' '||u.last_name \"User \", " +
-                        "if(ugl.user_id, null, 0, 1) " +
+                        "if(ugl.user_id='Null', 0, 1) " +
                         "from users u left join user_gene_lists ugl " +
                         "on u.user_id = ugl.user_id " +
                         "and ugl.gene_list_id = ? " +
@@ -2329,7 +2329,7 @@ public class GeneList {
                             "order by g.gene_list_id, " +
                             "g.gene_id, " +
                             "sc.sort_order, " +
-                            "if(gv.group_number, 'NA', 0, to_number(gv.group_number))";
+                            "if(gv.group_number='NA', 0, to_number(gv.group_number))";
 
             //log.debug("in getGenesAsGeneArray. gene_list_id = "+this.getGene_list_id());
             //log.debug("query = "+query);

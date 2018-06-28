@@ -158,7 +158,7 @@ public class Dataset {
     private String datasetWhereClause =
             "where ds.created_by_user_id = u.user_id " +
                     "and ds.organism = org.organism " +
-                    "and ds.name != 'Dummy'||ds.dataset_id ";
+                    "and ds.name != concat('Dummy',ds.dataset_id) ";
 
     private String datasetGroupByClause =
             "group by ds.dataset_id, " +
@@ -2174,7 +2174,7 @@ public class Dataset {
                         "datasets ds " +
                         "where uc.user_chip_id = dc.user_chip_id " +
                         "and dc.dataset_id = ds.dataset_id " +
-                        "and ds.name != 'Dummy'||ds.dataset_id " +
+                        "and ds.name != concat('Dummy',ds.dataset_id) " +
                         "and uc.hybrid_id in " +
                         hybridIDs +
                         " order by dc.dataset_id";
@@ -2201,7 +2201,7 @@ public class Dataset {
                                 "where ds.dataset_id = ? " +
                                 "and ds.created_by_user_id = u.user_id " +
                                 "and ds.organism = org.organism " +
-                                "and ds.name != 'Dummy'||ds.dataset_id " +
+                                "and ds.name != concat('Dummy',ds.dataset_id) " +
                                 datasetGroupByClause;
 
                 log.debug("query = " + query);
@@ -2368,7 +2368,7 @@ public class Dataset {
                         "from datasets ds " +
                         "where ds.name = ? " +
                         "and ds.created_by_user_id = ? " +
-                        "and ds.name != 'Dummy'||ds.dataset_id";
+                        "and ds.name != concat('Dummy',ds.dataset_id) ";
 
         boolean alreadyExists = false;
         try (Connection conn = pool.getConnection()) {
@@ -2495,7 +2495,7 @@ public class Dataset {
                         "and ds.dataset_id = dv.dataset_id " +
                         "and dv.grouping_id = ? " +
                         "and pg.master = 1 " +
-                        "and ds.name != 'Dummy'||ds.dataset_id " +
+                        "and ds.name != concat('Dummy',ds.dataset_id) " +
                         "and dv.visible != -1 " +
                         platformClause +
                         exonClause +
@@ -2637,7 +2637,7 @@ public class Dataset {
                 datasetVersionDetailsGroupByClause +
                 "order by ds.create_date desc, ds.name";
 
-        //log.debug("query  = " + query );
+        log.debug("query  = " + query );
 
         Dataset[] datasetArray = null;
         try (Connection conn = pool.getConnection()) {
@@ -3901,7 +3901,7 @@ public class Dataset {
             log.debug("in getParentsWithGroups for a dataset version");
             String query =
                     "select " +
-                            "ifnull(g.parent, g.group_name), decode(g.parent, null, 'Same', g.group_name) " +
+                            "ifnull(g.parent, g.group_name), if(g.parent=null, 'Same', g.group_name) " +
                             "from groups g , dataset_versions dv " +
                             "where dv.grouping_id = g.grouping_id " +
                             "and dv.dataset_id = ? " +

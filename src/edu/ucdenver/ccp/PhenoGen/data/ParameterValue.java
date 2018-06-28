@@ -1001,24 +1001,25 @@ public class ParameterValue implements Comparable {
 
                 "select distinct pv.parameter_value_id, " +
                         "parameter_group_id, " +
-                        "if(pv.category, 'AbsoluteCallFilter', 'Absolute Call Filter', " +
-                        "'MAS5AbsoluteCallFilter', 'MAS5 Absolute Call Filter', " +
-                        "'DABGPValueFilter', 'DABG P-Value Filter', " +
-                        "'AffyControlGenesFilter', 'Affy Control Genes Filter', " +
-                        "'CodeLinkCallFilter', 'Codelink Call Filter', " +
-                        "'CodeLinkControlGenesFilter', 'Codelink Control Genes Filter', " +
-                        "'CoefficientVariationFilter', 'Coefficient Variation Filter', " +
-                        "'GeneSpringCallFilter', 'Gene Spring Call Filter', " +
-                        "'MedianFilter', 'Median Filter', " +
-                        "'GeneListFilter', 'Gene List Filter', " +
-                        "'VariationFilter', 'Variation Filter', " +
-                        "'FoldChangeFilter', 'Fold Change Filter', " +
-                        "pv.category), " +
-                        "if(pv.parameter, 'Parameter 1 is Null', ' ', " +
-                        "'Parameter 2 is Null', ' ', " +
-                        "pv.parameter), " +
-                        "if(pv.value, 'Null', ' ', " +
-                        "	pv.value), " +
+                        "CASE when pv.category='AbsoluteCallFilter' then 'Absolute Call Filter' " +
+                        " when pv.category= 'MAS5AbsoluteCallFilter' then 'MAS5 Absolute Call Filter' " +
+                        " when pv.category= 'DABGPValueFilter' then 'DABG P-Value Filter' " +
+                        " when pv.category='AffyControlGenesFilter' then 'Affy Control Genes Filter', " +
+                        " when pv.category='CodeLinkCallFilter' then 'Codelink Call Filter', " +
+                        " when pv.category='CodeLinkControlGenesFilter' then 'Codelink Control Genes Filter', " +
+                        " when pv.category= 'CoefficientVariationFilter' then 'Coefficient Variation Filter', " +
+                        " when pv.category='GeneSpringCallFilter' then 'Gene Spring Call Filter', " +
+                        " when pv.category='MedianFilter' then 'Median Filter', " +
+                        " when pv.category='GeneListFilter' then 'Gene List Filter', " +
+                        " when pv.category='VariationFilter' then 'Variation Filter', " +
+                        " when pv.category='FoldChangeFilter' then 'Fold Change Filter', " +
+                        " else pv.category" +
+                        " END, " +
+                        "CASE when pv.parameter = 'Parameter 1 is Null' then ' ' " +
+                        " when pv.parameter ='Parameter 2 is Null' then ' ' " +
+                        "else pv.parameter " +
+                        "END, " +
+                        "if(pv.value='Null', ' ', pv.value), " +
                         "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pv.value, " +
                         "pg.dataset_id, " +
@@ -1073,25 +1074,25 @@ public class ParameterValue implements Comparable {
         String query =
                 "select distinct pv.parameter_value_id, " +
                         "pv.parameter_group_id, " +
-                        "if(pv.category, 'Statistical Method', 'Statistical Test', " +
-                        "'AbsoluteCallFilter', 'Absolute Call Filter', " +
-                        "'MAS5AbsoluteCallFilter', 'MAS5 Absolute Call Filter', " +
-                        "'DABGPValueFilter', 'DABG P-Value Filter', " +
-                        "'AffyControlGenesFilter', 'Affy Control Genes Filter', " +
-                        "'CodeLinkCallFilter', 'Codelink Call Filter', " +
-                        "'CodeLinkControlGenesFilter', 'Codelink Control Genes Filter', " +
-                        "'CoefficientVariationFilter', 'Coefficient Variation Filter', " +
-                        "'GeneSpringCallFilter', 'Gene Spring Call Filter', " +
-                        "'MedianFilter', 'Median Filter', " +
-                        "'GeneListFilter', 'Gene List Filter', " +
-                        "'VariationFilter', 'Variation Filter', " +
-                        "'FoldChangeFilter', 'Fold Change Filter', " +
-                        "pv.category), " +
-                        "if(pv.parameter, 'Parameter 1 is Null', ' ', " +
-                        "'Parameter 2 is Null', ' ', " +
-                        "pv.parameter), " +
-                        "if(pv.value, 'Null', ' ', " +
-                        "	pv.value), " +
+                        "CASE when pv.category='AbsoluteCallFilter' then 'Absolute Call Filter' " +
+                        " when pv.category= 'MAS5AbsoluteCallFilter' then 'MAS5 Absolute Call Filter' " +
+                        " when pv.category= 'DABGPValueFilter' then 'DABG P-Value Filter' " +
+                        " when pv.category='AffyControlGenesFilter' then 'Affy Control Genes Filter', " +
+                        " when pv.category='CodeLinkCallFilter' then 'Codelink Call Filter', " +
+                        " when pv.category='CodeLinkControlGenesFilter' then 'Codelink Control Genes Filter', " +
+                        " when pv.category= 'CoefficientVariationFilter' then 'Coefficient Variation Filter', " +
+                        " when pv.category='GeneSpringCallFilter' then 'Gene Spring Call Filter', " +
+                        " when pv.category='MedianFilter' then 'Median Filter', " +
+                        " when pv.category='GeneListFilter' then 'Gene List Filter', " +
+                        " when pv.category='VariationFilter' then 'Variation Filter', " +
+                        " when pv.category='FoldChangeFilter' then 'Fold Change Filter', " +
+                        " else pv.category" +
+                        " END " +
+                        ",CASE when pv.parameter = 'Parameter 1 is Null' then ' ' " +
+                        " when pv.parameter ='Parameter 2 is Null' then ' ' " +
+                        "else pv.parameter " +
+                        "END ," +
+                        "if(pv.value='Null', ' ',pv.value), " +
                         "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version, " +
@@ -1295,8 +1296,8 @@ public class ParameterValue implements Comparable {
                 "select pv.parameter_value_id, " +
                         "pv.parameter_group_id, " +
                         "pv.category, " +
-                        "if(pv.value, 'Null', ' ', pv.parameter), " +
-                        "if(pv.value, 'Null', ' ', pv.value), " +
+                        "if(pv.value='Null', ' ', pv.parameter), " +
+                        "ifnull(pv.value, ' '), " +
                         "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version " +
@@ -1352,8 +1353,8 @@ public class ParameterValue implements Comparable {
                 "select pv.parameter_value_id, " +
                         "pv.parameter_group_id, " +
                         "pv.category, " +
-                        "if(pv.value, 'Null', ' ', pv.parameter), " +
-                        "if(pv.value, 'Null', ' ', pv.value), " +
+                        "if(pv.value='Null',' ', pv.parameter), " +
+                        "ifnull(pv.value,' '), " +
                         "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version " +
@@ -1404,8 +1405,8 @@ public class ParameterValue implements Comparable {
                 "select pv.parameter_value_id, " +
                         "pv.parameter_group_id, " +
                         "pv.category, " +
-                        "if(value, 'Null', ' ', pv.parameter), " +
-                        "if(value, 'Null', ' ', pv.value), " +
+                        "if(value='Null', ' ', pv.parameter), " +
+                        "if(value='Null', ' ', pv.value), " +
                         "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version " +

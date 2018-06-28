@@ -122,16 +122,16 @@ public class CodeGenerator {
                         // Put the number 7 in there in case the column name has an x before or after the
                         // underscore
                         "replace(initcap(replace(cols.column_name, '_', 'X7X')), 'x7x', '_'), " +
-                        "if(utc.data_type, " +
-                        "	'NUMBER', if(utc.data_scale, 0, 'int', 'double'), " +
-                        "	'VARCHAR2', 'String', " +
-                        "	'DATE', 'java.sql.Timestamp', " +
-                        "	'String') data_type, " +
-                        "initcap(if(utc.data_type, " +
-                        "	'NUMBER', if(utc.data_scale, 0, 'int', 'double'), " +
-                        "	'VARCHAR2', 'String', " +
-                        "	'DATE', 'Timestamp', " +
-                        "	'String')) data_type_initcap " +
+                        "(CASE when utc.data_type='NUMBER' then if(utc.data_scale=0, 'int', 'double') " +
+                        "	when utc.data_type='VARCHAR2' then 'String' " +
+                        "	when utc.data_type='DATE' then 'java.sql.Timestamp' " +
+                        "	else 'String'" +
+                        " END) data_type, " +
+                        "initcap( (CASE when utc.data_type='NUMBER' then if(utc.data_scale=0, 'int', 'double') " +
+                        "	when utc.data_type='VARCHAR2' then 'String' " +
+                        "	when utc.data_type='DATE' then 'java.sql.Timestamp' " +
+                        "	else 'String'" +
+                        " END) ) data_type_initcap " +
                         "from user_cons_columns cols, " +
                         "user_constraints cons, " +
                         "user_tab_columns utc " +
@@ -177,16 +177,16 @@ public class CodeGenerator {
                         // Put the number 7 in there in case the column name has an x before or after the
                         // underscore
                         "replace(initcap(replace(column_name, '_', 'X7X')), 'x7x', '_'), " +
-                        "if(data_type, " +
-                        "	'NUMBER',if(data_scale, 0, 'int', 'double'), " +
-                        "	'VARCHAR2', 'String', " +
-                        "	'DATE', 'java.sql.Timestamp', " +
-                        "	'String') data_type, " +
-                        "initcap(if(data_type, " +
-                        "	'NUMBER', if(data_scale, 0, 'int', 'double'), " +
-                        "	'VARCHAR2', 'String', " +
-                        "	'DATE', 'Timestamp', " +
-                        "	'String')) data_type_initcap " +
+                        "(CASE when data_type='NUMBER' then if(data_scale=0, 'int', 'double') " +
+                        "	when data_type='VARCHAR2' then 'String' " +
+                        "	when data_type='DATE' then 'java.sql.Timestamp' " +
+                        "	else 'String'" +
+                        " END) data_type, " +
+                        "initcap( (CASE when data_type='NUMBER' then if(data_scale=0, 'int', 'double') " +
+                        "	when data_type='VARCHAR2' then 'String' " +
+                        "	when data_type='DATE' then 'java.sql.Timestamp' " +
+                        "	else 'String'" +
+                        " END) ) data_type_initcap " +
                         "from user_tab_cols " +
                         "where table_name = upper(?) " +
                         "order by column_id";
