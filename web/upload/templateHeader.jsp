@@ -22,8 +22,5 @@ import="edu.ucdenver.ccp.PhenoGen.data.Protocol" %>
         log = Logger.getLogger("JSPLogger");
 
         String host = request.getHeader("host");
-	//String propertiesDir = (String) session.getAttribute("propertiesDir");
-	// This has to be hard-coded here because the user is not logged in
-	String propertiesDir = "/usr/share/tomcat/webapps/PhenoGen/web/common/dbProperties/";
-	String dbPropertiesFile = propertiesDir + "stan_halDev.properties";
-	%><%@ include file="/web/common/dbutil.jsp"%>
+
+	%>

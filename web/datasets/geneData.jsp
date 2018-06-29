@@ -26,7 +26,7 @@
 
 	%><%@ include file="/web/common/expressionValuesLogic.jsp"%><%
 
-        mySessionHandler.createDatasetActivity("Looked at expression values for dataset", dbConn);
+        mySessionHandler.createDatasetActivity("Looked at expression values for dataset", pool);
 %>
 
 <%pageTitle="Gene expression data";%>
@@ -139,7 +139,7 @@
                         <% for (int j=0; j<selectedDataset.getDatasetVersions().length; j++) {
                                 Dataset.DatasetVersion thisVersion = selectedDataset.getDatasetVersions()[j];
                                 if (thisVersion.getVisible() == 1) {
-                                        Dataset.Group thisGrouping = selectedDataset.new Group().getGrouping(thisVersion.getGrouping_id(), dbConn);
+                                        Dataset.Group thisGrouping = selectedDataset.new Group().getGrouping(thisVersion.getGrouping_id(), pool);
                                         %>
                                         <tr id="<%=selectedDataset.getDataset_id()%>|||<%=thisVersion.getVersion()%>">
                                                 <td><%=thisVersion.getVersion()%></td>

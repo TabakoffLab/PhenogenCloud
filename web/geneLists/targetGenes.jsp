@@ -19,7 +19,7 @@
 	String[] tfbsResults = myFileHandler.getFileContents(new File(filePrefix + "tfbsHits.txt"), "withSpaces");
 
 	String ensemblOrganism = new ObjectHandler().replaceBlanksWithUnderscores(
-							new Organism().getOrganism_name(selectedGeneList.getOrganism(), dbConn));
+							new Organism().getOrganism_name(selectedGeneList.getOrganism(), pool));
 
 	//String linkText = "<a target='TargetGeneWindow' href='http://www.ensembl.org/" + ensemblOrganism + "/textview?&amp;idx=Gene&amp;q=";
         String linkText = "<a target='TargetGeneWindow' href='http://www.ensembl.org/" + ensemblOrganism +

@@ -19,6 +19,7 @@ import java.util.Date;
 import javax.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +42,7 @@ public class ExonDataTools {
     //private Dataset[] publicDatasets = null;
     //private Dataset selectedDataset = null;
     //private Dataset.DatasetVersion selectedDatasetVersion = null;
-    private Connection dbConn = null;
+    private DataSource pool = null;
     private Logger log = null;
     private String perlDir = "", fullPath = "";
     private String rFunctDir = "";
@@ -101,8 +102,9 @@ public class ExonDataTools {
                     + "and public_Path_Dataset like '" + publicPath + "'"
                     + "and organism like '" + organism +"' "
                     + "and genome_id='"+genomeVer+"' order by Created_ON DESC";
-            try {
-                PreparedStatement ps = dbConn.prepareStatement(tmpq);
+
+            try(Connection conn=pool.getConnection()) {
+                PreparedStatement ps = conn.prepareStatement(tmpq);
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {//point applet to previous files
                     //log.debug("Previous results exist");
@@ -167,8 +169,8 @@ public class ExonDataTools {
                     + "where name like '" + datasetName +"' order by dataset_id";
         int dsID=0;
         int arrayTypeID=0;
-        try{
-            PreparedStatement ps = dbConn.prepareStatement(tmpq);
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement ps = conn.prepareStatement(tmpq);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 dsID=rs.getInt("DATASET_ID");
@@ -341,14 +343,14 @@ public class ExonDataTools {
                 String xmlWebAccess = urlPrefix + "tmpData/" + userLoggedIn.getUser_name()+ "/"+genomeVer + "/" + folderName + "/Gene.xml";
                 String rWebAccess = urlPrefix + "tmpData/" + userLoggedIn.getUser_name()+ "/"+genomeVer + "/" + folderName + "/HeatMap.csv";
                 //Save Analysis to DB for later review
-                try {
+                try(Connection conn=pool.getConnection()) {
                     String insertQuery =
                             "insert into GEN_EXON_HEATMAPS "
                             + "(User_ID,Ensembl_ID,Folder_Name,"
                             + "Created_On,Public_Path_Dataset,Organism,Genome_id"
                             + ") VALUES "
                             + "(?, ?, ?, ?, ?, ?,?)";
-                    PreparedStatement pstmt = dbConn.prepareStatement(insertQuery,
+                    PreparedStatement pstmt = conn.prepareStatement(insertQuery,
                             ResultSet.TYPE_SCROLL_INSENSITIVE,
                             ResultSet.CONCUR_UPDATABLE);
                     pstmt.setInt(1, userLoggedIn.getUser_id());
@@ -361,7 +363,6 @@ public class ExonDataTools {
                     pstmt.setString(7, genomeVer);
                     pstmt.executeUpdate();
                     pstmt.close();
-                    dbConn.commit();
                 } catch (SQLException e) {
                     log.error("In Exception of saving exon heat map results to DB", e);
                     Email myAdminEmail = new Email();
@@ -379,7 +380,6 @@ public class ExonDataTools {
                         throw new RuntimeException();
                     }
                 }
-
                 //set Session attributes to point to output for the applet
                 session.setAttribute("exonCorGeneFile", xmlWebAccess);
                 session.setAttribute("exonCorHeatFile", rWebAccess);
@@ -398,7 +398,7 @@ public class ExonDataTools {
         //this.selectedDatasetVersion = (Dataset.DatasetVersion) session.getAttribute("selectedDatasetVersion");
         //this.publicDatasets = (Dataset[]) session.getAttribute("publicDatasets");
         this.userLoggedIn = (User) session.getAttribute("userLoggedIn");
-        this.dbConn = (Connection) session.getAttribute("dbConn");
+        //this.dbConn = (Connection) session.getAttribute("dbConn");
         this.perlDir = (String) session.getAttribute("perlDir") + "scripts/";
         String contextRoot = (String) session.getAttribute("contextRoot");
         String appRoot = (String) session.getAttribute("applicationRoot");
@@ -413,6 +413,7 @@ public class ExonDataTools {
         this.bedDir=(String) session.getAttribute("bedDir");
         this.dbPropertiesFile = (String)session.getAttribute("dbPropertiesFile");
         this.ensemblDBPropertiesFile = (String)session.getAttribute("ensDbPropertiesFile");
+        this.pool = (DataSource) session.getAttribute("dbPool");
     }
 
     public HttpSession getSession() {

@@ -53,7 +53,7 @@
 			Statistic myStatistic=new Statistic();
 			myStatistic.setSession(session);
 			int tmpnumprobe=800000;//myStatistic.moveFilterToHDF5(selectedDataset,selectedDatasetVersion,abnormalPath);
-			Hashtable durationHash = myDataset.getExpectedDuration(selectedDataset.getNumber_of_arrays(),tmpnumprobe , dbConn);
+			Hashtable durationHash = myDataset.getExpectedDuration(selectedDataset.getNumber_of_arrays(),tmpnumprobe , pool);
 			session.setAttribute("durationHash", durationHash);
 			response.sendRedirect("statistics.jsp?datasetID="+selectedDataset.getDataset_id()+
 				"&datasetVersion="+selectedDatasetVersion.getVersion()+
@@ -64,13 +64,13 @@
 			myStatistic.setSession(session);
 			phenotypeParameterGroupID=dsfs.getPhenotypeParamGroupID();
 			log.debug("PhenotypeParamGroupID:"+phenotypeParameterGroupID);
-			String phenotypeName = myParameterValue.getPhenotypeName(phenotypeParameterGroupID, dbConn);
+			String phenotypeName = myParameterValue.getPhenotypeName(phenotypeParameterGroupID, pool);
             String groupingUserPhenotypeDir = selectedDatasetVersion.getGroupingUserPhenotypeDir(userName, phenotypeName);
 			abnormalPath=groupingUserPhenotypeDir;
 			log.debug("Selecting correlation filter results"+phenotypeName+"\n"+groupingUserPhenotypeDir);
 			log.debug("parameterGroupID:"+parameterGroupID);
 			int tmpnumprobe=800000;//myStatistic.moveFilterToHDF5(selectedDataset,selectedDatasetVersion,abnormalPath);
-			Hashtable durationHash = myDataset.getExpectedDuration(selectedDataset.getNumber_of_arrays(),tmpnumprobe , dbConn);
+			Hashtable durationHash = myDataset.getExpectedDuration(selectedDataset.getNumber_of_arrays(),tmpnumprobe , pool);
 			session.setAttribute("durationHash", durationHash);
 			response.sendRedirect("statistics.jsp?datasetID="+selectedDataset.getDataset_id()+
 										"&datasetVersion="+selectedDatasetVersion.getVersion()+

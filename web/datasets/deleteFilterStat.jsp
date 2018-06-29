@@ -45,12 +45,12 @@
 						outputDir=userLoggedIn.getUserDatasetDir() + selectedDataset.getNameNoSpaces() + "/";
 					}
 					Async_HDF5_FileHandler ahf=new Async_HDF5_FileHandler(selectedDataset,"v"+selectedDatasetVersion.getVersion(),outputDir,"Affy.NormVer.h5","deleteFilterStats",null,session);
-                   	ahf.setDeleteFilterStats(curDate,curTime,dbConn);
+                   	ahf.setDeleteFilterStats(curDate,curTime,pool);
                     Thread thread = new Thread(ahf);
 					thread.start();
 					myFileHandler.deleteAllFilesPlusDirectory(new File(analysisPath));
 					dsfs.deleteFromDB(pool);
-					mySessionHandler.createDatasetActivity("Deleted Filter/Stats results for Dataset_Filter_Stat_ID = " + itemID, dbConn);
+					mySessionHandler.createDatasetActivity("Deleted Filter/Stats results for Dataset_Filter_Stat_ID = " + itemID, pool);
 					//Success - "Cluster analysis deleted"
 					session.setAttribute("successMsg", "EXP-055");
 					response.sendRedirect(commonDir + "successMsg.jsp");

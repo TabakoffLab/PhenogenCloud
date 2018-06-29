@@ -92,8 +92,7 @@
 			(GeneList) session.getAttribute("selectedGeneList"));
 
         Toolbar.Option[] optionChoices = new Toolbar.Option[]{};
-	
-	Connection dbConn=null;
+
 	DataSource pool=null;
 	boolean dbUnavail=false;
 	log.debug("end common_vars ");

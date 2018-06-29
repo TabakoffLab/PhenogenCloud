@@ -21,10 +21,8 @@ pageDescription="Overview of available Microarray Analysis Tools";
 
 <%
 			int totalPublicArrays = 2130;
-			if(dbConn!=null){
-				edu.ucdenver.ccp.PhenoGen.data.Array.ArrayCount[] myArrayCounts = myArray.getArrayCount(dbConn);
+				edu.ucdenver.ccp.PhenoGen.data.Array.ArrayCount[] myArrayCounts = myArray.getArrayCount(pool);
 				totalPublicArrays=myArrayCounts[0].getPublicCount();
-			}
 %>
 
         <div id="welcome" style="height:575px; width:980px; overflow:auto;">

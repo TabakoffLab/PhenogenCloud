@@ -231,7 +231,7 @@
             null :
             (Dataset[]) session.getAttribute("privateDatasetsForUser"));
     log.info("after setup genelists/datasets/experiments");
-    try {
+    //try {
         Isbra.Group selectedGroup = (Isbra.Group) session.getAttribute("selectedGroup");
         String userName = (String) session.getAttribute("userName");
         String full_name = (String) session.getAttribute("full_name");
@@ -252,10 +252,10 @@
                 session.setAttribute("privateDatasetsForUser", privateDatasetsForUser);
             }
         }
-    }catch(Exception e){
+    /*}catch(Exception e){
         log.error("ERROR:",e);
         e.printStackTrace();
-    }
+    }*/
     log.debug("end ANON_SESSION_VARS");
 %>
 

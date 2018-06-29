@@ -4034,25 +4034,10 @@ public class GeneDataTools {
     }
     
     public String getBQTLRegionFromSymbol(String qtlSymbol,String organism,String genomeVer){
-        String ret="";
-        Connection conn=null;
-        try{
-            conn=pool.getConnection();
-            ret=this.getBQTLRegionFromSymbol(qtlSymbol,organism,genomeVer, conn);
-            conn.close();
-        }catch(SQLException e){
-            log.error("SQL Exception error: getBQTLRegionFromSymbol().",e);
-        }finally{
-            try {
-                if(conn!=null)
-                    conn.close();
-            } catch (SQLException ex) {
-            }
-        }
-        return ret;
+        return this.getBQTLRegionFromSymbol(qtlSymbol,organism,genomeVer, pool);
     }
     
-    public String getBQTLRegionFromSymbol(String qtlSymbol,String organism,String genomeVer,Connection dbConn){
+    public String getBQTLRegionFromSymbol(String qtlSymbol,String organism,String genomeVer,DataSource pool){
         if(qtlSymbol.startsWith("bQTL:")){
             qtlSymbol=qtlSymbol.substring(5);
         }
@@ -4063,9 +4048,9 @@ public class GeneDataTools {
                         "and pq.QTL_SYMBOL='"+qtlSymbol+"'";
         
         try{ 
-        try{
+        try(Connection conn=pool.getConnection()){
             //log.debug("SQL eQTL FROM QUERY\n"+query);
-            PreparedStatement ps = dbConn.prepareStatement(query);
+            PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
                 long start=rs.getLong(19);

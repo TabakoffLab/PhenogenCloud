@@ -22,9 +22,9 @@
         	try {
 	 		log.debug("deleteing array = "+itemID);
 
-        		mySessionHandler.createExperimentActivity("Deleted arrray # " + itemID, dbConn);
+        		mySessionHandler.createExperimentActivity("Deleted arrray # " + itemID, pool);
 
-			new Hybridization(itemID).deleteHybridization(dbConn);
+			new Hybridization(itemID).deleteHybridization(pool);
 
 			//Success - "Hybridization deleted"
 			session.setAttribute("successMsg", "EXP-051");

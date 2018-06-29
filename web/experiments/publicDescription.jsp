@@ -18,9 +18,9 @@
 				(String) request.getParameter("protocolID") : "-99");
 
 	int globid = Integer.parseInt(protocolID);
-	Protocol publicProtocol = new Protocol().getPublicProtocolByGlobid(globid, dbConn);
+	Protocol publicProtocol = new Protocol().getPublicProtocolByGlobid(globid, pool);
 	String description = publicProtocol.getProtocol_description();
-	mySessionHandler.createExperimentActivity("Viewed description of public protocol: " + protocolID, dbConn); 
+	mySessionHandler.createExperimentActivity("Viewed description of public protocol: " + protocolID, pool);
 
 	log.debug("in publicDescripton.jsp. protocolID = " + protocolID); 
 %>

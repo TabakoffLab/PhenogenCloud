@@ -16,9 +16,9 @@
 
 	log.info("in deleteArrayFromDummyDataset.jsp. user = " + user + ", itemID = "+itemID);
         try {
-		dummyDataset.deleteDataset_chip(userID, itemID, dbConn);
+		dummyDataset.deleteDataset_chip(userID, itemID, pool);
                 //Success - "Array deleted"
-		mySessionHandler.createDatasetActivity(session.getId(), dummyDataset.getDataset_id(), -99, "Deleted array from dummy dataset", dbConn);
+		mySessionHandler.createDatasetActivity(session.getId(), dummyDataset.getDataset_id(), -99, "Deleted array from dummy dataset", pool);
         } catch( Exception e ) {
             	throw e;
         }

@@ -16,9 +16,9 @@
 
 	log.debug("action = "+action);
 	
-	DSFilterStat dsfs=selectedDatasetVersion.getFilterStat(Integer.parseInt(itemIDString),userLoggedIn.getUser_id(),dbConn);
-	dsfs.extend(dbConn);
-	mySessionHandler.createDatasetActivity("Extended Expiration Filter/Stats results for Dataset_Filter_Stat_ID = " + itemID, dbConn);
+	DSFilterStat dsfs=selectedDatasetVersion.getFilterStat(Integer.parseInt(itemIDString),userLoggedIn.getUser_id(),pool);
+	dsfs.extend(pool);
+	mySessionHandler.createDatasetActivity("Extended Expiration Filter/Stats results for Dataset_Filter_Stat_ID = " + itemID, pool);
 	session.setAttribute("successMsg", "EXP-056");
 	response.sendRedirect(commonDir + "successMsg.jsp");
 %>

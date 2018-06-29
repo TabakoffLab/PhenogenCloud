@@ -9,7 +9,7 @@
 	if (!selectedDataset.getCreator().equals("public")) { 
 		optionsList.add("createNewNormalization");
 	}
-	mySessionHandler.createDatasetActivity(session.getId(), selectedDataset.getDataset_id(), -99, "Looked at dataset versions", dbConn);
+	mySessionHandler.createDatasetActivity(session.getId(), selectedDataset.getDataset_id(), -99, "Looked at dataset versions", pool);
 
 	if ((selectedDataset.getDatasetVersions() == null || selectedDataset.getDatasetVersions().length == 0)) {
 		log.debug("no versions yet for this dataset");
@@ -29,7 +29,7 @@
 		} else if (selectedDataset.getQc_complete().equals("R")) { 
 			log.debug("reviewing qc");
 			response.sendRedirect("qualityControlResults.jsp" + datasetQueryString);
-		} else if (selectedDataset.getGroupings(dbConn).length == 0) { 
+		} else if (selectedDataset.getGroupings(pool).length == 0) {
 			log.debug("no versions, no groups, going to groupArrays");
 			response.sendRedirect("groupArrays.jsp" + datasetQueryString);
 		} else { 
@@ -121,11 +121,11 @@
                         String geneLists =
                                 (thisVersion.hasGeneLists() == true ?
                                         geneListLink : "");
-						String filterStatResults=(thisVersion.hasFilterStatsResults(userLoggedIn.getUser_id(),dbConn) == true ?
+						String filterStatResults=(thisVersion.hasFilterStatsResults(userLoggedIn.getUser_id(),pool) == true ?
                                         filterStatLink : "");
 			// Only display visible versions 
 			if (thisVersion.getVisible() == 1) {
-				Dataset.Group thisGrouping = selectedDataset.new Group().getGrouping(thisVersion.getGrouping_id(), dbConn);
+				Dataset.Group thisGrouping = selectedDataset.new Group().getGrouping(thisVersion.getGrouping_id(), pool);
 				%>
         			<tr id="<%=selectedDataset.getDataset_id()%>|||<%=thisVersion.getVersion()%>">
 					<td><%=thisVersion.getVersion()%></td>

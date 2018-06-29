@@ -25,8 +25,8 @@
 	GeneList[] myGeneLists = myGeneList.getGeneListsForPhenotype(itemID, pool);
 
 	if (action != null && (action.equals("Delete Phenotype"))) {
-		myParameterValue.deletePhenotypeValues(itemID, dbConn);
-		mySessionHandler.createDatasetActivity("Deleted phenotype records for parameterGroup '" + itemID, dbConn);
+		myParameterValue.deletePhenotypeValues(itemID, pool);
+		mySessionHandler.createDatasetActivity("Deleted phenotype records for parameterGroup '" + itemID, pool);
 		//Success - "Phenotype values deleted"
 		session.setAttribute("successMsg", "PHN-003");
 		response.sendRedirect(commonDir + "successMsg.jsp");

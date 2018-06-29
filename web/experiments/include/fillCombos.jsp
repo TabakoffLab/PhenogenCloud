@@ -6,7 +6,7 @@
 		// 2. Design type name
 		// 3. Factor id
 		// 4. Factor name
-		List<String []> myCombos = myExperiment.getCombinations(dbConn);
+		List<String []> myCombos = myExperiment.getCombinations(pool);
                 if (myCombos != null && myCombos.size() > 0) {
 			for (Iterator itr=myCombos.iterator(); itr.hasNext();) {
 				String[] values = (String[]) itr.next();

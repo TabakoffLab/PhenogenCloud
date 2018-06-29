@@ -26,11 +26,11 @@
 	Experiment[] myExperiments = null;
 
 	if (experimentTypes.equals("uploadedBySubordinates")) {
-		myExperiments = myArray.getExperimentsUploadedBySubordinates(subordinates, "All", dbConn);
+		myExperiments = myArray.getExperimentsUploadedBySubordinates(subordinates, "All", pool);
 	} else if (experimentTypes.equals("uploadedBySubordinatesNotPublic")) {
-		myExperiments = myArray.getExperimentsUploadedBySubordinatesNotPublic(subordinates, "All", dbConn);
+		myExperiments = myArray.getExperimentsUploadedBySubordinatesNotPublic(subordinates, "All", pool);
 	} else if (experimentTypes.equals("mageCompleted")) {
-		myExperiments = myArray.getExperimentsUploadedBySubordinates(subordinates, "Y", dbConn);
+		myExperiments = myArray.getExperimentsUploadedBySubordinates(subordinates, "Y", pool);
 	}
 %>
 

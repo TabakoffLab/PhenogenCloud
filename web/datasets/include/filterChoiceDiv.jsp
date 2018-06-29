@@ -10,7 +10,7 @@
 
                                         optionHash = new LinkedHashMap();
                                         optionHash.put("0", "--- Select Filter Method ---");
-                                        String analysisLevel=myParameterValue.getAnalysisLevelNormalizationParameter(selectedDataset.getDataset_id(),selectedDatasetVersion.getVersion(),dbConn);
+                                        String analysisLevel=myParameterValue.getAnalysisLevelNormalizationParameter(selectedDataset.getDataset_id(),selectedDatasetVersion.getVersion(),pool);
                 			if (new edu.ucdenver.ccp.PhenoGen.data.Array().EXON_ARRAY_TYPES.contains(selectedDataset.getArray_type())&&analysisLevel.equals("probeset")) {
                                         	//control probes aren't present in normalized probeset level
 							} else {	

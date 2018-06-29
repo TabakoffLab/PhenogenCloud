@@ -10,6 +10,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.sql.DataSource;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,9 +52,8 @@ public class CodeGenerator {
     private DbUtils myDbUtils = new DbUtils();
     private Debugger myDebugger = new Debugger();
     private ObjectHandler myObjectHandler = new ObjectHandler();
-    private static Connection dbConn;
     private static String baseDir = "/usr/share/tomcat/webapps/PhenoGen/";
-    private static String propertiesFileName = baseDir + "web/common/dbProperties/stan_halDev.properties";
+    private DataSource pool=null;
 
     public CodeGenerator() {
         log = Logger.getRootLogger();
@@ -111,7 +113,7 @@ public class CodeGenerator {
      * @throws SQLException if an error occurs while accessing the database
      * @return a list of Column objects for the primary or unique keys of this table
      */
-    public List<Column> getKeys(String type, Connection conn) throws SQLException {
+    public List<Column> getKeys(String type, DataSource pool) throws SQLException {
 
         log.debug("in getKeys. table_name = " + this.table_name);
 
@@ -145,17 +147,20 @@ public class CodeGenerator {
         //log.debug("query = "+query);
 
         List<Column> columns = new ArrayList<Column>();
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, new Object[]{this.table_name_plural, type}, conn);
+            String[] dataRow;
 
-        Results myResults = new Results(query, new Object[]{this.table_name_plural, type}, conn);
-        String[] dataRow;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                Column thisColumn = setupColumnValues(dataRow);
+                columns.add(thisColumn);
+            }
 
-        while ((dataRow = myResults.getNextRow()) != null) {
-            Column thisColumn = setupColumnValues(dataRow);
-            columns.add(thisColumn);
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-
-        myResults.close();
-
         return columns;
     }
 
@@ -166,7 +171,7 @@ public class CodeGenerator {
      * @throws SQLException if an error occurs while accessing the database
      * @return a list of Column objects for this table
      */
-    public List<Column> getColumns(Connection conn) throws SQLException {
+    public List<Column> getColumns(DataSource pool) throws SQLException {
 
         log.debug("in getColumns. table_name = " + this.table_name + " and plural = " + this.table_name_plural);
 
@@ -194,17 +199,22 @@ public class CodeGenerator {
         //log.debug("query = "+query);
 
         List<Column> columns = new ArrayList<Column>();
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, this.table_name_plural, conn);
+            String[] dataRow;
 
-        Results myResults = new Results(query, this.table_name_plural, conn);
-        String[] dataRow;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                Column thisColumn = setupColumnValues(dataRow);
+                columns.add(thisColumn);
+            }
+            log.debug("There are " + columns.size() + " columns");
 
-        while ((dataRow = myResults.getNextRow()) != null) {
-            Column thisColumn = setupColumnValues(dataRow);
-            columns.add(thisColumn);
+            myResults.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
-        log.debug("There are " + columns.size() + " columns");
 
-        myResults.close();
 
         return columns;
     }
@@ -296,7 +306,7 @@ public class CodeGenerator {
      * @param conn       the database connection
      * @throws SQLException if an error occurs while accessing the database
      */
-    public void writeDeleteMethod(Column primaryKey, Connection conn) throws SQLException {
+    public void writeDeleteMethod(Column primaryKey, DataSource pool) throws SQLException {
         log.debug("in writeDeleteMethod");
         writer.println();
         writer.println(oneTab + "/**");
@@ -322,13 +332,18 @@ public class CodeGenerator {
         //log.debug("query = "+query + ", table = " + table_name_plural);
 
         List<String> tables = new ArrayList<String>();
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, this.table_name_plural, conn);
+            String[] dataRow;
 
-        Results myResults = new Results(query, this.table_name_plural, conn);
-        String[] dataRow;
-
-        while ((dataRow = myResults.getNextRow()) != null) {
-            tables.add(dataRow[0]);
+            while ((dataRow = myResults.getNextRow()) != null) {
+                tables.add(dataRow[0]);
+            }
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
+
 
         writer.println(twoTabs + "PreparedStatement pstmt = null;");
         writer.println(twoTabs + "try {");
@@ -425,7 +440,7 @@ public class CodeGenerator {
      * @param conn       the database connection
      * @throws SQLException if an error occurs while accessing the database
      */
-    public void writeDeleteAllMethods(Column primaryKey, Connection conn) throws SQLException {
+    public void writeDeleteAllMethods(Column primaryKey, DataSource pool) throws SQLException {
         log.debug("in writeDeleteAllMethods");
         String query =
                 "select replace(initcap(replace(a.table_name, '_', 'X7X')), 'x7x', '_'), " +
@@ -438,55 +453,56 @@ public class CodeGenerator {
                         "and r.constraint_name = rc.constraint_name " +
                         "and r.constraint_type = 'R' " +
                         "and r.table_name = upper(?) ";
+        try(Connection conn=pool.getConnection()){
+            Results myResults = new Results(query, this.table_name_plural, conn);
+            //log.debug("query = "+query + ", table = " + table_name_plural);
+            List<String> tables = new ArrayList<String>();
+            String[] dataRow;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                String relatedTable = dataRow[0];
+                String table = dataRow[1];
+                String relatedColumn = dataRow[2];
+                String column = dataRow[3];
 
-        Results myResults = new Results(query, this.table_name_plural, conn);
+                writer.println();
+                writer.println(oneTab + "/**");
+                writer.println(oneTab + " * Deletes the records in the " + table_name + " table that are children of " + relatedTable + ".");
+                writer.println(oneTab + " * @param " + relatedColumn + "	identifier of the " + relatedTable + " table");
+                writer.println(oneTab + " * @param conn	the database connection");
+                writer.println(oneTab + " * @throws            SQLException if an error occurs while accessing the database");
+                writer.println(oneTab + " */");
 
-        //log.debug("query = "+query + ", table = " + table_name_plural);
+                writer.println(oneTab + "public void deleteAll" + this.table_name_plural + "For" + relatedTable + "(int " +
+                        relatedColumn + ", Connection conn) throws SQLException {");
 
-        List<String> tables = new ArrayList<String>();
+                writer.println();
+                writer.println(twoTabs + "log.info(\"in deleteAll" + this.table_name_plural + "For" + relatedTable + "\");");
+                writer.println();
+                writer.println(twoTabs + "//Make sure committing is handled in calling method!");
+                writer.println();
+                writer.println(twoTabs + "String query = ");
+                writer.println(threeTabs + "\"select " + primaryKey.getColumn_name() + " \"+");
+                writer.println(threeTabs + "\"from " + table_name_plural + " \"+");
+                writer.println(threeTabs + "\"where " + column + " = ?\";");
+                writer.println();
+                writer.println(twoTabs + "Results myResults = new Results(query, " + relatedColumn + ", conn);");
 
-        String[] dataRow;
-
-        while ((dataRow = myResults.getNextRow()) != null) {
-            String relatedTable = dataRow[0];
-            String table = dataRow[1];
-            String relatedColumn = dataRow[2];
-            String column = dataRow[3];
-
-            writer.println();
-            writer.println(oneTab + "/**");
-            writer.println(oneTab + " * Deletes the records in the " + table_name + " table that are children of " + relatedTable + ".");
-            writer.println(oneTab + " * @param " + relatedColumn + "	identifier of the " + relatedTable + " table");
-            writer.println(oneTab + " * @param conn	the database connection");
-            writer.println(oneTab + " * @throws            SQLException if an error occurs while accessing the database");
-            writer.println(oneTab + " */");
-
-            writer.println(oneTab + "public void deleteAll" + this.table_name_plural + "For" + relatedTable + "(int " +
-                    relatedColumn + ", Connection conn) throws SQLException {");
-
-            writer.println();
-            writer.println(twoTabs + "log.info(\"in deleteAll" + this.table_name_plural + "For" + relatedTable + "\");");
-            writer.println();
-            writer.println(twoTabs + "//Make sure committing is handled in calling method!");
-            writer.println();
-            writer.println(twoTabs + "String query = ");
-            writer.println(threeTabs + "\"select " + primaryKey.getColumn_name() + " \"+");
-            writer.println(threeTabs + "\"from " + table_name_plural + " \"+");
-            writer.println(threeTabs + "\"where " + column + " = ?\";");
-            writer.println();
-            writer.println(twoTabs + "Results myResults = new Results(query, " + relatedColumn + ", conn);");
-
-            writer.println();
-            writer.println(twoTabs + "String[] dataRow;");
-            writer.println();
-            writer.println(twoTabs + "while ((dataRow = myResults.getNextRow()) != null) {");
-            writer.println(threeTabs + "new " + table_name + "(Integer.parseInt(dataRow[0])).delete" + table_name + "(conn);");
-            writer.println(twoTabs + "}");
-            writer.println();
-            writer.println(twoTabs + "myResults.close();");
-            writer.println();
-            writer.println(oneTab + "}");
+                writer.println();
+                writer.println(twoTabs + "String[] dataRow;");
+                writer.println();
+                writer.println(twoTabs + "while ((dataRow = myResults.getNextRow()) != null) {");
+                writer.println(threeTabs + "new " + table_name + "(Integer.parseInt(dataRow[0])).delete" + table_name + "(conn);");
+                writer.println(twoTabs + "}");
+                writer.println();
+                writer.println(twoTabs + "myResults.close();");
+                writer.println();
+                writer.println(oneTab + "}");
+            }
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
         }
+
 
     }
 
@@ -1303,21 +1319,6 @@ public class CodeGenerator {
         writer.println();
     }
 
-    public Connection getConnection(File propertiesFile) {
-        Connection conn = null;
-        try {
-            conn = new PropertiesConnection().getConnection(propertiesFile);
-            System.out.println("Got database Connection");
-        } catch (IOException e) {
-            System.out.println("Can't find properties file");
-        } catch (ClassNotFoundException e) {
-            System.out.println("Can't get Connection");
-        } catch (SQLException e) {
-            System.out.println("Can't get Connection");
-        }
-        return conn;
-
-    }
 
     private void createFiles() {
 
@@ -1325,11 +1326,24 @@ public class CodeGenerator {
         String jspListFileName = baseDir + "src/choose" + getTable_name() + ".jsp";
         String jspCreateFileName = baseDir + "src/create" + getTable_name() + ".jsp";
         FileHandler myFileHandler = new FileHandler();
-
         try {
-            List<Column> columns = getColumns(dbConn);
-            List<Column> primaryKeys = getKeys("P", dbConn);
-            List<Column> uniqueKeys = getKeys("P", dbConn);
+            // Create a JNDI Initial context to be able to lookup the DataSource
+            InitialContext ctx = new InitialContext();
+            // Lookup the DataSource, which will be backed by a pool
+            //   that the application server provides.
+            pool = (DataSource) ctx.lookup("java:comp/env/jdbc/DevDB");
+            if (pool == null) {
+                log.error("Unknown DataSource 'jdbc/DevDB'", new Exception("Unknown DataSource 'jdbc/DevDB'"));
+            }
+        } catch (NamingException ex) {
+            System.out.println("JNDI lookup exception:");
+            ex.printStackTrace(System.out);
+            ex.printStackTrace();
+        }
+        try {
+            List<Column> columns = getColumns(pool);
+            List<Column> primaryKeys = getKeys("P", pool);
+            List<Column> uniqueKeys = getKeys("P", pool);
             //List<Column> uniqueKeys = getKeys("U", dbConn);
 
 /*
@@ -1358,8 +1372,8 @@ public class CodeGenerator {
             writeGetOneMethod(columns, (Column) primaryKeys.get(0));
             writeCreateMethod(columns, (Column) primaryKeys.get(0));
             writeUpdateMethod(columns, (Column) primaryKeys.get(0));
-            writeDeleteMethod((Column) primaryKeys.get(0), dbConn);
-            writeDeleteAllMethods((Column) primaryKeys.get(0), dbConn);
+            writeDeleteMethod((Column) primaryKeys.get(0), pool);
+            writeDeleteAllMethods((Column) primaryKeys.get(0), pool);
             //}
             writeCheckRecordExistsMethod((Column) primaryKeys.get(0), uniqueKeys);
             writeSetupMethod(columns);
@@ -1450,7 +1464,7 @@ public class CodeGenerator {
     public static void main(String[] args) {
         System.out.println("In CodeGenerator");
 
-        dbConn = new CodeGenerator().getConnection(new File(propertiesFileName));
+        //dbConn = new CodeGenerator().getConnection(new File(propertiesFileName));
 
         //CodeGenerator myCodeGenerator = new CodeGenerator();
 

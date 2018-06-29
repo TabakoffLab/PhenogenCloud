@@ -52,7 +52,7 @@
 			String filterStatsResults="N/A";
 			
 			if (new edu.ucdenver.ccp.PhenoGen.data.Array().EXON_ARRAY_TYPES.contains(dataset.getArray_type())) {				
-				filterStatsResults = (dataset.hasFilterStatsResults(userLoggedIn.getUser_id(),dbConn) == true ? filterStatLink : "");
+				filterStatsResults = (dataset.hasFilterStatsResults(userLoggedIn.getUser_id(),pool) == true ? filterStatLink : "");
 			}
 						
 			if(dataset.getVisible()){

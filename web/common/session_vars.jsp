@@ -142,13 +142,10 @@
 
 	// this file has to be after the logger initialization and no line breaks 
 	//to avoid extra lines in the html 
-%>
-	<%@ include file="/web/common/dbutil.jsp"%>
 
-<%
         if (publicDatasets == null || privateDatasetsForUser == null) {
 		Dataset myDataset = new Dataset();
-		Dataset[] allDatasets = myDataset.getAllDatasetsForUser(userLoggedIn, dbConn);
+		Dataset[] allDatasets = myDataset.getAllDatasetsForUser(userLoggedIn, pool);
         	if (publicDatasets == null) {
                 	log.debug("publicDatasets not set, so setting it now");
                 	publicDatasets = myDataset.getDatasetsForUser(allDatasets, "public");

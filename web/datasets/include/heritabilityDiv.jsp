@@ -13,8 +13,8 @@
 
 						if (selectedDataset.getArray_type().equals(myArray.MOUSE_EXON_ARRAY_TYPE) || 
 							selectedDataset.getArray_type().equals(myArray.RAT_EXON_ARRAY_TYPE)) {
-							String analysisLevel = myParameterValue.getAnalysisLevelNormalizationParameter(selectedDataset.getDataset_id(), selectedDatasetVersion.getVersion(), dbConn);
-							String annotationLevel = myParameterValue.getAnnotationLevelNormalizationParameter(selectedDataset.getDataset_id(), selectedDatasetVersion.getVersion(), dbConn);
+							String analysisLevel = myParameterValue.getAnalysisLevelNormalizationParameter(selectedDataset.getDataset_id(), selectedDatasetVersion.getVersion(), pool);
+							String annotationLevel = myParameterValue.getAnnotationLevelNormalizationParameter(selectedDataset.getDataset_id(), selectedDatasetVersion.getVersion(), pool);
 							if (selectedDataset.getArray_type().equals(myArray.MOUSE_EXON_ARRAY_TYPE)) {
 								optionHash.put("LXS Brain", "LXS" + tenSpaces);
 								/*if (analysisLevel.equals("transcript")) {

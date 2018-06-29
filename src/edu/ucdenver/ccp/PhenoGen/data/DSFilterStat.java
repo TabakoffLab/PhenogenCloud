@@ -76,17 +76,15 @@ public class DSFilterStat {
     
     public int createFilterStats(String filterdate,String filtertime,Dataset ds,Dataset.DatasetVersion dsVer,String analysisType,int userID,DataSource pool){
         int ret=-1;
-        Connection dbConn=null;
         java.util.Date tmpD=new java.util.Date();
         java.util.Date tmpexpirD=new java.util.Date();
         tmpexpirD.setTime(tmpexpirD.getTime()+7*24*60*60*1000);
         
         Date expDate=new Date(tmpexpirD.getTime());
         Timestamp curDate=new Timestamp(tmpD.getTime());
-        try {
+        try(Connection conn=pool.getConnection()) {
             String query=insertq;
-            dbConn=pool.getConnection();
-            PreparedStatement ps = dbConn.prepareStatement(query);
+            PreparedStatement ps = conn.prepareStatement(query);
             ps.setTimestamp(1,curDate);
             ps.setDate(2,expDate);
             ps.setString(3, filterdate);
@@ -97,10 +95,7 @@ public class DSFilterStat {
             ps.setInt(8, userID);
             ps.executeUpdate();
             ps.close();
-            dbConn.close();
-            dbConn=null;
-            dbConn=pool.getConnection();
-            ps = dbConn.prepareStatement(selectCurID);
+            ps = conn.prepareStatement(selectCurID);
             ResultSet rs=ps.executeQuery();
             if(rs.next()){
                 //System.out.println("RS has next");
@@ -111,16 +106,9 @@ public class DSFilterStat {
                 //System.out.println("RS has no results");
             }
             ps.close();
-            dbConn.close();
-            dbConn=null;
         }catch(SQLException e){
             log.error("DSFilterStats SQL ERROR:"+e);
-        }finally{
-                            if (dbConn != null) {
-                                 try { dbConn.close(); } catch (SQLException e) { ; }
-                                 dbConn = null;
-                            }
-                     }
+        }
         return ret;
     }
     
@@ -160,12 +148,10 @@ public class DSFilterStat {
     public DSFilterStat[] getFilterStatsFromDB(Dataset ds,Dataset.DatasetVersion dsVer,int userID, DataSource pool){
         parentDS=ds;
         parentDSVer=dsVer;
-        Connection dbConn=null;
         ArrayList<DSFilterStat> ret=new ArrayList<DSFilterStat>();
-        try {
+        try(Connection conn=pool.getConnection()) {
             String query=selectq+fromq+whereDSDSVID+orderbyq;
-            dbConn=pool.getConnection();
-            PreparedStatement ps = dbConn.prepareStatement(query);
+            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, ds.getDataset_id());
             ps.setInt(2, dsVer.getVersion());
             ps.setInt(3, userID);
@@ -192,27 +178,19 @@ public class DSFilterStat {
                 ret.add(tmps);
             }
             ps.close();
-            dbConn.close();
-            dbConn=null;
         } catch (SQLException ex) {
            log.error("DSFilterStats SQL ERROR:"+ex);
-        }finally{
-           if (dbConn != null) {
-              try { dbConn.close(); } catch (SQLException e) { ; }
-                                 dbConn = null;
-              }
-           }
+        }
         return ret.toArray(new DSFilterStat[0]);
     }
     
     public DSFilterStat getFilterStatFromDB(int ds_ID,int ver,int userID,String filterDate,String filterTime, DataSource pool){
         System.out.println("get:"+ds_ID+":"+ver+":"+filterDate+":"+filterTime);
-        Connection dbConn=null;
+
         DSFilterStat ret=new DSFilterStat();
-        try {
+        try(Connection conn=pool.getConnection()) {
             String query=selectq+fromq+whereDSDSVID+andTD;
-            dbConn=pool.getConnection();
-            PreparedStatement ps = dbConn.prepareStatement(query);
+            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, ds_ID);
             ps.setInt(2, ver);
             ps.setInt(3, userID);
@@ -241,62 +219,39 @@ public class DSFilterStat {
                 System.out.println("no results");
             }
             ps.close();
-            dbConn.close();
-            dbConn=null;
         } catch (SQLException ex) {
            log.error("DSFilterStats SQL ERROR:"+ex);
-        }finally{
-           if (dbConn != null) {
-              try { dbConn.close(); } catch (SQLException e) { ; }
-                                 dbConn = null;
-              }
-           }
+        }
         return ret;
     }
 
     public void updateFilterGroupID(DataSource pool){
-        Connection dbConn=null;
-        try {
+
+        try(Connection conn=pool.getConnection()) {
             String query=updateFilterGroupIDq+whereDSFSID;
-            dbConn=pool.getConnection();
-            PreparedStatement ps = dbConn.prepareStatement(query);
+            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, filterGroup.getFilterGroupID());
             ps.setInt(2, this.getDSFilterStatID());
             ps.executeUpdate();
             ps.close();
-            dbConn.close();
-            dbConn=null;
         }catch(SQLException ex){
             log.error("DSFilterStats SQL ERROR:"+ex);
-        }finally{
-           if (dbConn != null) {
-              try { dbConn.close(); } catch (SQLException e) { ; }
-                                 dbConn = null;
-              }
-           }
+        }
     }
     
     public void updateStatsGroupID(DataSource pool){
-        Connection dbConn=null;
-        try {
+
+        try(Connection conn=pool.getConnection()) {
             String query=updateStatsGroupIDq+whereDSFSID;
-            dbConn=pool.getConnection();
-            PreparedStatement ps = dbConn.prepareStatement(query);
+            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, statsGroup.getStatsGroupID());
             ps.setInt(2, this.getDSFilterStatID());
             ps.executeUpdate();
             ps.close();
-            dbConn.close();
-            dbConn=null;
             System.out.println("UPDATE"+statsGroup.getStatsGroupID()+":"+this.getDSFilterStatID());
         }catch(SQLException ex){
             log.error("DSFilterStats SQL ERROR:"+ex);
-        }finally{
-           if (dbConn != null) {
-              try { dbConn.close(); } catch (SQLException e) { ; }
-                                 dbConn = null;
-              }
-           }
+        }
     }
     
     public String getAnalysisType() {
@@ -396,30 +351,22 @@ public class DSFilterStat {
     }
     
     public void deleteFromDB(DataSource pool){
-        Connection dbConn=null;
-        try {
+
+        try(Connection conn=pool.getConnection()) {
             this.filterGroup.deleteFromDB(pool);
             this.statsGroup.deleteFromDB(pool);
             String query=deleteq+whereDSFSID;
-            dbConn=pool.getConnection();
-            PreparedStatement ps = dbConn.prepareStatement(query);
+            PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, this.getDSFilterStatID());
             ps.executeUpdate();
             ps.close();
-            dbConn.close();
-            dbConn=null;
         } catch (SQLException ex) {
             log.error("DSFilterStats SQL ERROR:"+ex,ex);
-        }finally{
-           if (dbConn != null) {
-              try { dbConn.close(); } catch (SQLException e) { ; }
-                                 dbConn = null;
-              }
-           }
+        }
     }
     
-    public void extend(Connection conn){
-        try {
+    public void extend(DataSource pool){
+        try(Connection conn=pool.getConnection()) {
             String query=updateExpDateq+whereDSFSID;
             PreparedStatement ps = conn.prepareStatement(query);
             expirationDate.setTime(expirationDate.getTime()+7*24*60*60*1000);

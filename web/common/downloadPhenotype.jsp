@@ -15,9 +15,9 @@
 	log.info("dataset = "+selectedDataset.getName() + ", version = "+selectedDatasetVersion.getVersion()); 
 	log.info("parameterGroupID = "+itemID);
 
-	String phenotypeName = myParameterValue.getPhenotypeName(itemID, dbConn);
+	String phenotypeName = myParameterValue.getPhenotypeName(itemID, pool);
 	// need to find the dataset version from the itemID, which is the parameterGroupID
-	ParameterValue[] parameterValues = myParameterValue.getParameterValues(itemID, dbConn);
+	ParameterValue[] parameterValues = myParameterValue.getParameterValues(itemID, pool);
 	selectedDatasetVersion = selectedDataset.getDatasetVersion(parameterValues[0].getVersion()); 
 	log.info("here dataset = "+selectedDataset.getName() + ", version = "+selectedDatasetVersion.getVersion()); 
 	log.debug("phenotypeName = "+phenotypeName);
@@ -38,7 +38,7 @@
 		out.clear();
 		out = pageContext.pushBody(); 
 		
-		mySessionHandler.createDatasetActivity("Downloaded Phenotype called "+phenotypeName, dbConn);
+		mySessionHandler.createDatasetActivity("Downloaded Phenotype called "+phenotypeName, pool);
         }
 
 %>

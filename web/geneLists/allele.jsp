@@ -73,7 +73,7 @@
 		<%
 		myResults.close();
 	} else if (knockoutSource.equals("2")) {
-		myResults = myKnockOut.getIniaKnockOuts(geneSymbolArray, dbConn);
+		myResults = myKnockOut.getIniaKnockOuts(geneSymbolArray, pool);
         	String crabbeText = "<a href=\"http://view.ncbi.nlm.nih.gov/pubmed/16961758\" target=\"Pubmed Window\">";
         	String pubmedText = "<a href=\"http://view.ncbi.nlm.nih.gov/pubmed/";
 		if (myResults.getNumRows() > 0 ) {
@@ -101,7 +101,7 @@
 		}
 		myResults.close();
 	} else if (knockoutSource.equals("3")) {
-		myResults = myKnockOut.getIniaAlcoholPreferences(geneSymbolArray, dbConn);
+		myResults = myKnockOut.getIniaAlcoholPreferences(geneSymbolArray, pool);
 		if (myResults.getNumRows() > 0 ) {
 		%>
 			<div class="title">Alcohol Preference for Genetically Modified Animals (Univ of Texas data)</div>

@@ -30,7 +30,7 @@
 			//", Country = "+request.getLocale().getDisplayCountry() + 
 			//", Language = "+request.getLocale().getDisplayLanguage()); 
 
-        edu.ucdenver.ccp.PhenoGen.data.Array thisArray = myArray.getSampleDetailsForHybridID(arrayID, dbConn);
+        edu.ucdenver.ccp.PhenoGen.data.Array thisArray = myArray.getSampleDetailsForHybridID(arrayID,pool);
 
 	if (loggedIn) {
 		mySessionHandler.createSessionActivity(session.getId(), 
@@ -185,7 +185,7 @@
 		<%
 			if ((thisArray.getPublicExpID() != null && 
 				!thisArray.getPublicExpID().equals("")) || 
-				(loggedIn && myArray.userHasAccess(userID, arrayID, dbConn))) {
+				(loggedIn && myArray.userHasAccess(userID, arrayID, pool))) {
 					%>
 					<td width="33%" class="right">
 					<a href="<%=datasetsDir%>arrayDetails.jsp?
@@ -210,15 +210,6 @@
   </div>
   
 </div>
-
-	
-<%
-	log.info("closing dbConn in arrayDetails.jsp");
-	dbConn.close();
-
-%>
-
-
 <div class="modalWindowClose">
     <div class="closeWindow">Close</div>
 </div>

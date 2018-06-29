@@ -32,16 +32,16 @@
 
         String [] dataRow;
 
-        Results myCategoriesAndKeywordsResults = myLitSearch.getCategoriesAndKeywords(itemID, dbConn);
+        Results myCategoriesAndKeywordsResults = myLitSearch.getCategoriesAndKeywords(itemID, pool);
 
-	LinkedHashMap<String, String> myCategories = myLitSearch.getCategories(itemID, dbConn);
+	LinkedHashMap<String, String> myCategories = myLitSearch.getCategories(itemID, pool);
 	int numCategories = myCategories.size();
 
-        Results myPubMedCountsByCategory = myLitSearch.getPubMedCountsByCategory(itemID, dbConn);
+        Results myPubMedCountsByCategory = myLitSearch.getPubMedCountsByCategory(itemID, pool);
 
 	String previousKey = null;
 
-        Results myCoReferenceResults = myLitSearch.getCoReferences(itemID, dbConn);
+        Results myCoReferenceResults = myLitSearch.getCoReferences(itemID, pool);
 
 	mySessionHandler.createGeneListActivity("Viewed Literature Search Results for Search ID: " + itemID, pool);
 

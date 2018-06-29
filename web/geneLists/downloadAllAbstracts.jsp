@@ -33,9 +33,6 @@ import="java.util.ArrayList"
 <jsp:useBean id="myPdfUtil" class="edu.ucdenver.ccp.PhenoGen.util.PdfUtil"> </jsp:useBean>
 
 	<%
-		
-	java.sql.Connection dbConn = (java.sql.Connection)session.getAttribute("dbConn");
-
 	Object previousClobKey = null;
 	Object[] dataRowWithClob = null;;
 	

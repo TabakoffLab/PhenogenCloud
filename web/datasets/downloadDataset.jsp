@@ -46,7 +46,7 @@
 		}
 
         	if (checkedList != null && checkedList.size() > 0){
-			mySessionHandler.createDatasetActivity("Downloaded Dataset", dbConn);
+			mySessionHandler.createDatasetActivity("Downloaded Dataset", pool);
 			Thread thread = new Thread(new AsyncDatasetDownload(request, checkedList));
 			thread.start();
 			session.setAttribute("successMsg", "DST-001");
@@ -136,14 +136,14 @@
                 <tbody>
                 <%
 
-		Dataset.Group[] groupings = selectedDataset.getGroupings(dbConn);
+		Dataset.Group[] groupings = selectedDataset.getGroupings(pool);
                 for (Dataset.Group thisGroup : groupings) {
                 	for (Dataset.DatasetVersion thisVersion : selectedDataset.getDatasetVersions()) {
 				// if this is not a specific version, then have to set the Dataset so that the correct grouping path is set
 				thisVersion.setDataset(selectedDataset);
 				String[] phenotypeNames = null;
 				if (thisVersion.getGrouping_id() == thisGroup.getGrouping_id()) { 
-					phenotypeNames = new ParameterValue().getPhenotypeNames(userID, selectedDataset, thisVersion.getGrouping_id(), dbConn); 
+					phenotypeNames = new ParameterValue().getPhenotypeNames(userID, selectedDataset, thisVersion.getGrouping_id(), pool);
 					for (String thisPhenotypeName : phenotypeNames) {
 						File phenotypeFile = new File(thisVersion.getPhenotypeDownloadFileName(userName, thisPhenotypeName)); 
 						if (phenotypeFile.exists()) { %> 

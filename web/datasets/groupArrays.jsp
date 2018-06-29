@@ -78,7 +78,7 @@
 			//
 			// add the previously defined groupings to the list of criterion values
 			//
-			myGroupings = selectedDataset.getGroupings(dbConn);
+			myGroupings = selectedDataset.getGroupings(pool);
 			for (int i=0; i<myGroupings.length; i++) {
 				criteriaList.put("Groups defined in \"" + myGroupings[i].getGrouping_name() + "\"",
 						Integer.toString(myGroupings[i].getGrouping_id()));
@@ -111,13 +111,13 @@
 					int previousGroupingID = Integer.parseInt(criterion);
 					User.UserChip[] previousChipAssignments = 
 								selectedDataset.new Group().getChipAssignments(
-								previousGroupingID, dbConn);
+								previousGroupingID, pool);
 					for (int i=0; i<previousChipAssignments.length; i++) {
 						previousResults.put(Integer.toString(previousChipAssignments[i].getHybrid_id()),  
 								Integer.toString(previousChipAssignments[i].getGroup().getGroup_number()));
 					}
 	
-					Dataset.Group[] previousGroups = selectedDataset.getGroupsInGrouping(previousGroupingID, dbConn);
+					Dataset.Group[] previousGroups = selectedDataset.getGroupsInGrouping(previousGroupingID, pool);
 	
 					myDataset.new Group().sortGroups(previousGroups, "groupNumber", "A");
 	
@@ -220,24 +220,24 @@
 						//groupValues.put(new Integer((String) request.getParameter("user_chip_id"+i)), new Integer((String) request.getParameter(Integer.toString(i))));
 						groupValues.put((String) request.getParameter("user_chip_id"+i), (String) request.getParameter(Integer.toString(i)));
 					}
-					int grouping_id	= selectedDataset.checkGroupingExists(groupValues, dbConn);
+					int grouping_id	= selectedDataset.checkGroupingExists(groupValues, pool);
 					if (grouping_id == -99) {
 						grouping_id = selectedDataset.createNewGrouping(criterion, 
 												(String) fieldValues.get("grouping_name"),
 												groupValues,
 												groupNames, 
-												dbConn);
+												pool);
 						response.sendRedirect(datasetsDir + "normalize.jsp" + datasetQueryString+"&newGroupingID="+grouping_id);
 					} else {
 						//Error -- Grouping already exists
 						session.setAttribute("errorMsg", "EXP-026");
 						session.setAttribute("additionalInfo", 
 									"See the grouping called '"+ 
-								selectedDataset.new Group().getGrouping(grouping_id, dbConn).getGrouping_name() + "'");
+								selectedDataset.new Group().getGrouping(grouping_id, pool).getGrouping_name() + "'");
 						response.sendRedirect(commonDir + "errorMsg.jsp");
 					}
 				}
-				mySessionHandler.createDatasetActivity("Grouped arrays", dbConn);
+				mySessionHandler.createDatasetActivity("Grouped arrays", pool);
 			} 
 		}
 		formName = "groupArrays.jsp";

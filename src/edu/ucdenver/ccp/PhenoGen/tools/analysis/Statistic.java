@@ -66,7 +66,7 @@ public class Statistic {
     private String userFilesRoot;
     //private String dbPropertiesFile;
     //private String mainURL;
-    private Connection dbConn;
+    //private Connection dbConn;
     private DataSource pool;
 
     private Logger log = null;

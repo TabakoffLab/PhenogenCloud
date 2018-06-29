@@ -19,7 +19,7 @@
 	//if (experimentsForUser == null) {
 	//	log.debug("experimentsForUser not set");
 	// Always reset experimentsForUser when on this page
-		experimentsForUser = myExperiment.getAllExperimentsForUser(userLoggedIn.getUser_name(), dbConn);
+		experimentsForUser = myExperiment.getAllExperimentsForUser(userLoggedIn.getUser_name(), pool);
 		session.setAttribute("experimentsForUser", experimentsForUser);
 	//}
         mySessionHandler.createSessionActivity(session.getId(), "Viewed all experiments", pool);

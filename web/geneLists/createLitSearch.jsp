@@ -70,7 +70,7 @@
 		myLitSearch.setDescription(description);
 		myLitSearch.setCategories(categories);
 
-		myLitSearch.createLitSearch(myLitSearch, dbConn);
+		myLitSearch.createLitSearch(myLitSearch, pool);
 		myLitSearch.setLitSearchGeneList(selectedGeneList);
 
 		mySessionHandler.createGeneListActivity("Created Literature Search: " + description, pool);

@@ -21,19 +21,19 @@
                 session.setAttribute("errorMsg", "GST-005");
                 response.sendRedirect(commonDir + "errorMsg.jsp");
         }
-        Textract[] myTextracts = new Textract().getAllTextractForProtocol(protocolID, dbConn);
-        Hybridization[] myHybridizations = new Hybridization().getAllHybridizationForProtocol(protocolID, dbConn);
-        Tlabel[] myTlabels = new Tlabel().getAllTlabelForProtocol(protocolID, dbConn);
-        Tsample[] myTsamples = new Tsample().getAllTsampleForProtocol(protocolID, dbConn);
-	Protocol protocolToBeDeleted = new Protocol().getProtocol(protocolID, dbConn);
+        Textract[] myTextracts = new Textract().getAllTextractForProtocol(protocolID,pool);
+        Hybridization[] myHybridizations = new Hybridization().getAllHybridizationForProtocol(protocolID, pool);
+        Tlabel[] myTlabels = new Tlabel().getAllTlabelForProtocol(protocolID, pool);
+        Tsample[] myTsamples = new Tsample().getAllTsampleForProtocol(protocolID, pool);
+	Protocol protocolToBeDeleted = new Protocol().getProtocol(protocolID, pool);
 
 	if (action != null && action.equals("Delete")) {
         	try {
 	 		log.debug("deleteing protocol = "+protocolID);
 
-        		mySessionHandler.createExperimentActivity("Deleted protocol # " + protocolID, dbConn);
+        		mySessionHandler.createExperimentActivity("Deleted protocol # " + protocolID, pool);
 
-			new Protocol(protocolID).deleteProtocol(dbConn);
+			new Protocol(protocolID).deleteProtocol(pool);
 
 			//Success - "Protocol deleted"
 			session.setAttribute("successMsg", "EXP-043");

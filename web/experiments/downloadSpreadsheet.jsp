@@ -38,7 +38,7 @@
                 out.clear();
                 out = pageContext.pushBody();
                 
-		mySessionHandler.createExperimentActivity("Downloaded Empty Spreadsheet", dbConn);
+		mySessionHandler.createExperimentActivity("Downloaded Empty Spreadsheet", pool);
 		
 		// Doesn't work!
 		//response.sendRedirect(experimentsDir + "microarrayMain.jsp");

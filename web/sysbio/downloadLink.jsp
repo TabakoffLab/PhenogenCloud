@@ -13,7 +13,7 @@
 	
 	String url = (request.getParameter("url") == null ? "" : (String) request.getParameter("url"));
 	try{
-		mySessionHandler.createActivity("Downloaded file: " + url,dbConn);
+		mySessionHandler.createActivity("Downloaded file: " + url,pool);
 	}catch(Exception e){
 		log.error("Error creating session activity(Downloads).", e);
 	}

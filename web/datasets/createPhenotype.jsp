@@ -49,8 +49,8 @@
         log.debug("phenotypeParameterGroupID = " + phenotypeParameterGroupID + 
 			", askToRenormalize = "+askToRenormalize +", parameterGroupID in createPhenotype is "+parameterGroupID);
 
-	Dataset.Group[] myGroups = selectedDatasetVersion.getGroups(dbConn);
-	Hashtable<String, List<String>> parentsWithGroups = selectedDatasetVersion.getParentsWithGroups(dbConn);
+	Dataset.Group[] myGroups = selectedDatasetVersion.getGroups(pool);
+	Hashtable<String, List<String>> parentsWithGroups = selectedDatasetVersion.getParentsWithGroups(pool);
 	if (callingForm.equals("correlation")) {
 		sortColumn = "has_expression_data";
 	} else {
@@ -60,7 +60,7 @@
 	session.setAttribute("phenotypeGroups", myGroups);
 
 	ParameterValue.Phenotype[] myPhenotypeValues = myParameterValue.getPhenotypeValuesForGrouping(userID, 
-						selectedDatasetVersion, dbConn); 
+						selectedDatasetVersion, pool);
 
         // Number of probes to use for durationHash
         int num_probes = ((String) request.getParameter("num_probes") != null ?
@@ -68,7 +68,7 @@
                 45000);
 
 	Hashtable durationHash = (selectedDataset.getDataset_id() != -99 ?
-			myDataset.getExpectedDuration(selectedDataset.getNumber_of_arrays(), num_probes, dbConn) :
+			myDataset.getExpectedDuration(selectedDataset.getNumber_of_arrays(), num_probes, pool) :
 			new Hashtable());
 
         session.setAttribute("durationHash", durationHash);
@@ -83,7 +83,7 @@
 		session.setAttribute("errorMsg", "EXP-012");
 		response.sendRedirect(commonDir + "errorMsg.jsp");
 	} 
-	mySessionHandler.createDatasetActivity("Created phenotype", dbConn);
+	mySessionHandler.createDatasetActivity("Created phenotype", pool);
 %>
 
 <%@ include file="/web/common/includeExtras.jsp" %>

@@ -22,13 +22,13 @@
                 	log.debug("deleting Cluster Results");
                 	log.debug("deleting clusterID "+itemID);
 			Dataset.DatasetVersion thisDatasetVersion = 
-				selectedDataset.getDatasetVersionForParameterGroup(itemID, dbConn);
+				selectedDataset.getDatasetVersionForParameterGroup(itemID, pool);
 			analysisPath = thisDatasetVersion.getClusterDir() +  
 					userName + "/" + itemID + "/";
                 	log.debug("analysisPath = "+analysisPath);
 			selectedDataset.deleteClusterAnalysis(
-				itemID, analysisPath, dbConn);
-			mySessionHandler.createDatasetActivity("Deleted Cluster Analysis for clusterGroupID = " + itemID, dbConn);
+				itemID, analysisPath, pool);
+			mySessionHandler.createDatasetActivity("Deleted Cluster Analysis for clusterGroupID = " + itemID, pool);
 			//Success - "Cluster analysis deleted"
 			session.setAttribute("successMsg", "EXP-029");
 			response.sendRedirect(commonDir + "successMsg.jsp");

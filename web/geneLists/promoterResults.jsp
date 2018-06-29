@@ -28,9 +28,9 @@
 	
 	log.debug("in promoterResults. itemID = " + itemID);
 
-	Promoter thisPromoter = myPromoter.getPromoterResult(itemID, dbConn);
+	Promoter thisPromoter = myPromoter.getPromoterResult(itemID, pool);
 
-	userName = myUser.getUser(thisPromoter.getUser_id(), dbConn).getUser_name();
+	userName = myUser.getUser(thisPromoter.getUser_id(), pool).getUser_name();
 	String timeCreated = thisPromoter.getCreate_date_as_string();
 	String geneIDsAnalyzed = thisPromoter.getAnalyzed_ids();
 	String geneIDsExcluded = thisPromoter.getExcluded_ids();

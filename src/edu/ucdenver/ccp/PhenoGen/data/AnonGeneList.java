@@ -59,17 +59,19 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
             "from gene_lists gl " +
                     "left join genes g on g.gene_list_id = gl.gene_list_id ";
     private String groupByClause =
-            "group by gl.created_by_user_id, " +
+            "group by " +
+                    "gl.gene_list_id ";
+                    /*"gl.created_by_user_id, " +
                     "gl.path, " +
                     "gl.gene_list_name, " +
                     "gl.description, " +
                     "gl.organism, " +
                     "gl.gene_list_source, " +
-                    "gl.gene_list_id, " +
+
                     "gl.create_date, " +
                     "gl.dataset_id, " +
                     "gl.version, " +
-                    "gl.parameter_group_id ";
+                    "gl.parameter_group_id ";*/
 
 
     public AnonGeneList() {

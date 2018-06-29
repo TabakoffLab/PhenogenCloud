@@ -53,7 +53,7 @@ public class AsyncGeneDataThread extends Thread {
         private String bedDir="";
         private String ver="";
         private String genomeVer="";
-        private Connection dbConn = null;
+        //private Connection dbConn = null;
         String outputDir="";
         String pListFile="";
         boolean doneThread=false,pathReady=false;
@@ -91,7 +91,7 @@ public class AsyncGeneDataThread extends Thread {
                 //this.selectedDataset = (Dataset) session.getAttribute("selectedDataset");
                 //this.selectedDatasetVersion = (Dataset.DatasetVersion) session.getAttribute("selectedDatasetVersion");
                 //this.publicDatasets = (Dataset[]) session.getAttribute("publicDatasets");
-                this.dbConn = (Connection) session.getAttribute("dbConn");
+                //this.dbConn = (Connection) session.getAttribute("dbConn");
                 //log.debug("db");
                 this.perlDir = (String) session.getAttribute("perlDir") + "scripts/";
                 //log.debug("perl" + perlDir);

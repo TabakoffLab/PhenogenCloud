@@ -8,14 +8,14 @@
 	request.setAttribute( "selectedStep", "5" ); 
 
         log.debug("subid = "+selectedExperiment.getSubid());
-	edu.ucdenver.ccp.PhenoGen.data.Array[] myArrays = myArray.getArraysForSubmission(selectedExperiment.getSubid(), dbConn); 
+	edu.ucdenver.ccp.PhenoGen.data.Array[] myArrays = myArray.getArraysForSubmission(selectedExperiment.getSubid(), pool);
 	log.debug("there are " + myArrays.length + " arrays");
 	String tableHeight = Math.min(340, myArrays.length*100) + "px";
 
 	log.debug("action = "+action);
-        mySessionHandler.createExperimentActivity("Reviewed experiment", dbConn);
+        mySessionHandler.createExperimentActivity("Reviewed experiment", pool);
 	if (action != null && action.equals("Finalize")) {
-		myArray.updateSubmissionStatus(selectedExperiment.getSubid(), "C", dbConn);
+		myArray.updateSubmissionStatus(selectedExperiment.getSubid(), "C", pool);
                 session.setAttribute("successMsg", "EXP-050");
                 response.sendRedirect(experimentsDir + "listExperiments.jsp");
 	}

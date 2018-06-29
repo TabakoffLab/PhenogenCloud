@@ -14,7 +14,7 @@
                                 QTL[] myQTLLists =
                                         myQTL.getQTLLists(userID,
                                         selectedDataset.getOrganism(),
-                                        dbConn);
+                                        pool);
 				log.debug("after getQTLLists. there are " + myQTLLists.length + " QTL lists");
 				for (QTL thisQTL : myQTLLists) {
                                         optionHash.put(Integer.toString(thisQTL.getQtl_list_id()), 

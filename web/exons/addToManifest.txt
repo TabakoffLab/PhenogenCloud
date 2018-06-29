@@ -1,3 +1,0 @@
-Permissions: sandbox
-Codebase: http://stan.ucdenver.pvt/
-Application-Name: Affy Detail Browser

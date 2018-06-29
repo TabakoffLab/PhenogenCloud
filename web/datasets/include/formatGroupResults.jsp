@@ -35,7 +35,7 @@
 <% 	
 	String arrayDetailsLink = "<a href='"+ datasetsDir + "arrayDetails.jsp?arrayID=";
 
-	User.UserChip[] myDatasetChips = selectedDataset.getDatasetChips(dbConn);
+	User.UserChip[] myDatasetChips = selectedDataset.getDatasetChips(pool);
 
 	User.UserChip myUserChip = new User().new UserChip();
 	for (int i=0; i<myArrays.length; i++) {

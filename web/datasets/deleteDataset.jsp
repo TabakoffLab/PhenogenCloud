@@ -37,16 +37,16 @@
 				mySessionHandler.createDatasetActivity("Deleted Dataset Version  " + 
 						" # " + 
 						selectedDatasetVersion.getVersion() + 
-						" called '" + selectedDataset.getName() + "'" , dbConn);
+						" called '" + selectedDataset.getName() + "'" , pool);
 						String ver="v"+selectedDatasetVersion.getVersion();
 				Async_HDF5_FileHandler ahf=new Async_HDF5_FileHandler(selectedDataset,ver,selectedDataset.getPath()+ver+"/","Affy.NormVer.h5","deleteVersion",null,session);
                 Thread thread = new Thread(ahf);
 				thread.start();
-				selectedDatasetVersion.deleteDatasetVersion(userLoggedIn.getUser_id(),dbConn);
+				selectedDatasetVersion.deleteDatasetVersion(userLoggedIn.getUser_id(),pool);
 				session.setAttribute("successMsg", "EXP-022");
 				//re-query so the screen is refreshed
 				log.debug("re-querying selected Dataset");
-				selectedDataset = myDataset.getDataset(selectedDataset.getDataset_id(), userLoggedIn, dbConn,userFilesRoot);
+				selectedDataset = myDataset.getDataset(selectedDataset.getDataset_id(), userLoggedIn, pool,userFilesRoot);
 				log.debug("now array type is " + selectedDataset.getArray_type());
 				session.setAttribute("selectedDataset", selectedDataset);
 				session.setAttribute("selectedDatasetVersion", null);
@@ -54,8 +54,8 @@
 			} else {
 				mySessionHandler.createDatasetActivity("Deleted Dataset # " + selectedDataset.getDataset_id() + 
 						" called '" + selectedDataset.getName() + "'",
-                			dbConn);
-				selectedDataset.deleteDataset(userLoggedIn.getUser_id(),dbConn);
+                			pool);
+				selectedDataset.deleteDataset(userLoggedIn.getUser_id(),pool);
 				session.setAttribute("selectedDataset", null);
 				session.setAttribute("successMsg", "EXP-021");
 			}
@@ -103,7 +103,7 @@
                                                 	<td><%=selectedDataset.getDatasetVersions()[k].getVersion_name()%></td>
                                                 	<td><%=selectedDataset.getDatasetVersions()[k].getCreate_date_as_string()%></td>
                                                 	<td class="center"><%=selectedDataset.getDatasetVersions()[k].getGeneLists().length%></td>
-                                                    <td class="center"><%=selectedDataset.getDatasetVersions()[k].getFilterStats(userLoggedIn.getUser_id(),dbConn).length%></td>
+                                                    <td class="center"><%=selectedDataset.getDatasetVersions()[k].getFilterStats(userLoggedIn.getUser_id(),pool).length%></td>
 						</tr><%
 					}
 					%> 
@@ -146,8 +146,8 @@
 				</table> 
 			<%
 			}%>
-			<div class="title"> <%=selectedDatasetVersion.getFilterStats(userLoggedIn.getUser_id(),dbConn).length%>&nbsp;filter/stats results are available for this normalized version of dataset: </div>
-            <% if (selectedDatasetVersion.getFilterStats(userLoggedIn.getUser_id(),dbConn).length > 0) { %>
+			<div class="title"> <%=selectedDatasetVersion.getFilterStats(userLoggedIn.getUser_id(),pool).length%>&nbsp;filter/stats results are available for this normalized version of dataset: </div>
+            <% if (selectedDatasetVersion.getFilterStats(userLoggedIn.getUser_id(),pool).length > 0) { %>
       				<table class="list_base" id="filterstatLists" cellpadding="0" cellspacing="3">
 					<thead>
                 <tr>
@@ -169,7 +169,7 @@
                 </thead>
                 <tbody>
                 <%
-                    DSFilterStat[] dsfs = selectedDatasetVersion.getFilterStats(userLoggedIn.getUser_id(),dbConn);
+                    DSFilterStat[] dsfs = selectedDatasetVersion.getFilterStats(userLoggedIn.getUser_id(),pool);
                         for (int j=0; j<dsfs.length; j++) {
                             FilterStep[] tmpFSteps=new FilterStep[0];
 							FilterGroup tmpFG=dsfs[j].getFilterGroup();

@@ -27,7 +27,7 @@
 			selectedDataset.getDataset_id(), 
                 	selectedDatasetVersion.getVersion(),
                 	(selectedDatasetVersion.getVersion() == -99 ? "Chose dataset" : "Chose version"),
-			dbConn);
+			pool);
 
 	if (goTo.equals("QC")) {
 		response.sendRedirect("qualityControl.jsp?datasetID="+selectedDataset.getDataset_id());

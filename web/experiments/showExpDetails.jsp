@@ -23,15 +23,12 @@
 	
 
 	edu.ucdenver.ccp.PhenoGen.data.Array[] myArrays = null;
-	Experiment thisExperiment = new Experiment().getExperiment(selectedExperiment.getExp_id(), dbConn);
-	Texprtyp[] myTypes = new Texprtyp().getAllTexprtypForExp(selectedExperiment.getExp_id(), dbConn);
-	Texpfctr[] myFactors = new Texpfctr().getAllTexpfctrForExp(selectedExperiment.getExp_id(), dbConn);
-log.debug("before protocols");
-	Protocol[] myProtocols = thisExperiment.getUsedProtocols(dbConn);
-log.debug("after protocols");
-
- 	myArrays = myArray.getArraysForSubmission(selectedExperiment.getSubid(), dbConn);
-	mySessionHandler.createExperimentActivity("Looked at experiment details", dbConn); 
+	Experiment thisExperiment = new Experiment().getExperiment(selectedExperiment.getExp_id(), pool);
+	Texprtyp[] myTypes = new Texprtyp().getAllTexprtypForExp(selectedExperiment.getExp_id(), pool);
+	Texpfctr[] myFactors = new Texpfctr().getAllTexpfctrForExp(selectedExperiment.getExp_id(), pool);
+	Protocol[] myProtocols = thisExperiment.getUsedProtocols(pool);
+ 	myArrays = myArray.getArraysForSubmission(selectedExperiment.getSubid(), pool);
+	mySessionHandler.createExperimentActivity("Looked at experiment details", pool);
 
 %>	
 

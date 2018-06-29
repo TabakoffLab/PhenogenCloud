@@ -15,7 +15,7 @@
                     publicU.setUserMainDir(userFilesRoot);
                     selectedDataset = new Dataset().getDataset(datasetID,publicU, pool,userFilesRoot);
                 }else{
-                    selectedDataset = new Dataset().getDataset(datasetID, userLoggedIn, dbConn,userFilesRoot);
+                    selectedDataset = new Dataset().getDataset(datasetID, userLoggedIn, pool,userFilesRoot);
                 }
                 log.debug("in setupDataset after calling getDataset");
 %>

@@ -22,9 +22,9 @@
                 response.sendRedirect(commonDir + "errorMsg.jsp");
         }
 	log.debug("subid = "+selectedExperiment.getSubid());
-	String hybridIDs = myArray.getHybridIDsForSubmission(selectedExperiment.getSubid(), dbConn);
+	String hybridIDs = myArray.getHybridIDsForSubmission(selectedExperiment.getSubid(), pool);
 	log.debug("hybridIDs = "+hybridIDs);
-        Dataset[] myDatasets = myDataset.getDatasetsUsingArrayIDs(hybridIDs, dbConn);
+	Dataset[] myDatasets = myDataset.getDatasetsUsingArrayIDs(hybridIDs, pool);
 	log.debug("after setting myDtasets");
 	if (myDatasets != null && myDatasets.length > 0) {
         	myDatasets = myDataset.sortDatasets(myDatasets, "datasetName", "A");
@@ -39,7 +39,7 @@
 						" called '" + selectedExperiment.getExpName() + "'",
                 			pool);
 
-			selectedExperiment.deleteExperiment(dbConn);
+			selectedExperiment.deleteExperiment(pool);
 			session.setAttribute("experimentsForUser", null);
 			session.setAttribute("selectedExperiment", null);
 

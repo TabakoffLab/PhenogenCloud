@@ -19,10 +19,10 @@
 	log.debug("dummyDataset.dataset_id = "+dummyDataset.getDataset_id());
 	int dataset_id = dummyDataset.getDataset_id();
 
-	String hybridIDs = (dataset_id == -99 ? "" : new Dataset(dataset_id).getDatasetHybridIDs(dbConn));
+	String hybridIDs = (dataset_id == -99 ? "" : new Dataset(dataset_id).getDatasetHybridIDs(pool));
 	log.debug("dataset_id = " + dataset_id + ", and hybridIDs = "+hybridIDs);
 	edu.ucdenver.ccp.PhenoGen.data.Array[] myDatasetArrays = ((!hybridIDs.equals("") && !hybridIDs.equals("()")) ? 
-						myArray.getArraysByHybridIDs(hybridIDs, dbConn) : 
+						myArray.getArraysByHybridIDs(hybridIDs, pool) :
 						null);
 
 	if (action != null && action.equals("Finalize Dataset")) {
@@ -40,7 +40,7 @@
 			String dataset_name = (String) request.getParameter("dataset_name");
 			String description = (String) request.getParameter("description").trim();
 
-                	if (myDataset.datasetNameExists(dataset_name, userID, dbConn)) {
+                	if (myDataset.datasetNameExists(dataset_name, userID, pool)) {
                         	log.debug("dataset name already exists");
 				//Error - "Dataset exists"
                         	session.setAttribute("errorMsg", "EXP-003");
@@ -52,15 +52,15 @@
 				try {
 					myDataset.setName(dataset_name);
                         		myDataset.setDescription(description);
-					myDataset.updateDummyDataset(dataset_id, dbConn); 
+					myDataset.updateDummyDataset(dataset_id, pool);
 
 					// Do not want to put 'Pending' part into the file system directory name, so get 
 					// the path now
 
-					accessRequired = userLoggedIn.sendAccessRequest(hybridIDs, mainURL, dbConn);
+					accessRequired = userLoggedIn.sendAccessRequest(hybridIDs, mainURL, pool);
 					log.debug("accessRequired = "+accessRequired);
                                 	Dataset thisDataset = 
-						myDataset.getDataset(dataset_id, userLoggedIn, dbConn,userFilesRoot);
+						myDataset.getDataset(dataset_id, userLoggedIn, pool,userFilesRoot);
 					String dirToCreate = thisDataset.getPath();
 					String imagesDirToCreate = thisDataset.getImagesDir();
 					log.debug("dirToCreate = "+dirToCreate);
@@ -69,14 +69,14 @@
 					if (accessRequired) {
 						dataset_name = dataset_name + " (Pending)";
 						myDataset.setName(dataset_name);
-						myDataset.updateDummyDataset(dataset_id, dbConn); 
-                                		thisDataset = myDataset.getDataset(dataset_id, userLoggedIn, dbConn,userFilesRoot);
+						myDataset.updateDummyDataset(dataset_id, pool);
+                                		thisDataset = myDataset.getDataset(dataset_id, userLoggedIn, pool,userFilesRoot);
 					}
 
                                 	mySessionHandler.createDatasetActivity(session.getId(), 
 						thisDataset.getDataset_id(),	
 						0, "Created a new dataset called '" +
-						thisDataset.getName(), dbConn);
+						thisDataset.getName(), pool);
 
 					if (!myFileHandler.createDir(dirToCreate) || 
 						!myFileHandler.createDir(imagesDirToCreate)) {
@@ -87,14 +87,14 @@
 							thisDataset.getDataset_id(), 0,
 							"got error creating dataset directory in selectArrays for " +
 							thisDataset.getName(),
-							dbConn);
+							pool);
 						session.setAttribute("errorMsg", "SYS-001");
                         			response.sendRedirect(commonDir + "errorMsg.jsp");
 					} else {
 						log.debug("no problems creating dataset directory in selectArrays"); 
 						session.setAttribute("dummyDataset", null);
 						session.setAttribute("privateDatasetsForUser", null);
-						thisDataset.updateArrayType(thisDataset.getDataset_id(),dbConn);
+						thisDataset.updateArrayType(thisDataset.getDataset_id(),pool);
 						//Success - "Dataset created"
 						if (accessRequired) {
 							//Success - "Request array access"
@@ -117,7 +117,7 @@
                         		response.sendRedirect(commonDir + "errorMsg.jsp");
 				} catch (SQLException e) {
 					log.debug("problems creating dataset in selectArrays", e); 
-					dummyDataset.deleteDataset(userLoggedIn.getUser_id(),dbConn);
+					dummyDataset.deleteDataset(userLoggedIn.getUser_id(),pool);
 					//Success - "Dataset created"
 					session.setAttribute("errorMsg", "SYS-001");
 					response.sendRedirect(commonDir + "errorMsg.jsp");
@@ -126,17 +126,17 @@
 		}
 	} else if (action != null && action.equals("Delete Array")) {
 		int arrayID = Integer.parseInt((String) request.getParameter("arrayID"));
-		dummyDataset.deleteDataset_chip(userID, arrayID, dbConn);
-		hybridIDs = dummyDataset.getDatasetHybridIDs(dbConn);
+		dummyDataset.deleteDataset_chip(userID, arrayID, pool);
+		hybridIDs = dummyDataset.getDatasetHybridIDs(pool);
 		log.debug("Deleting array. hybridIDs = XX"+hybridIDs + "XX");
 		myDatasetArrays = (!hybridIDs.equals("") && !hybridIDs.equals("()") ? 
-						myArray.getArraysByHybridIDs(hybridIDs, dbConn) : 
+						myArray.getArraysByHybridIDs(hybridIDs, pool) :
 						null);
 	} else {
 		mySessionHandler.createDatasetActivity(session.getId(), 
 			dataset_id, 0, 
 			"Viewed dataset details for dataset_id " +  dataset_id,  
-			dbConn);
+			pool);
 	}
 
 %>

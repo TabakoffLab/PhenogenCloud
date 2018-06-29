@@ -22,7 +22,6 @@ public class SyncAndClose {
 
     Date start;
     Date end;
-    Connection dbConn;
     ArrayList<AsyncGeneDataExpr> list;
     BufferedWriter outGroup;
     BufferedWriter outIndiv;
@@ -33,10 +32,9 @@ public class SyncAndClose {
     private Logger log = null;
     DataSource pool=null;
 
-    public SyncAndClose(Date start,ArrayList<AsyncGeneDataExpr> list,Connection dbConn,DataSource pool,BufferedWriter outGroup,BufferedWriter outIndiv,int usageID,String outputDir) {
+    public SyncAndClose(Date start,ArrayList<AsyncGeneDataExpr> list,DataSource pool,BufferedWriter outGroup,BufferedWriter outIndiv,int usageID,String outputDir) {
         this.start=start;
         this.list=list;
-        this.dbConn=dbConn;
         this.pool=pool;
         this.outGroup=outGroup;
         this.outIndiv=outIndiv;
@@ -97,20 +95,13 @@ public class SyncAndClose {
             indivf.renameTo(indivfinal);
             log.debug("Indiv File Renamed\n"+indivf+"->"+indivfinal+"\n");
             end=new Date();
-            Connection conn=null;
-            try{
+            try(Connection conn=pool.getConnection()){
                 PreparedStatement ps=null;
-                
-                if(pool!=null){
-                    conn=pool.getConnection();
-                    ps=conn.prepareStatement(updateSQL, 
+
+                ps=conn.prepareStatement(updateSQL,
                                                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                                                     ResultSet.CONCUR_UPDATABLE);
-                }else{
-                    ps=dbConn.prepareStatement(updateSQL, 
-                                                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                                                    ResultSet.CONCUR_UPDATABLE);
-                }
+
                 
                 long returnTimeMS=end.getTime()-start.getTime();
                 ps.setLong(1, returnTimeMS);
@@ -118,16 +109,8 @@ public class SyncAndClose {
                 ps.setInt(3, usageID);
                 ps.executeUpdate();
                 ps.close();
-                if(conn!=null)
-                    conn.close();
             }catch(SQLException ex){
                 log.error("Error saving AsyncGeneDataExpr Timing",ex);
-            }finally{
-                try {
-                    if(conn!=null)
-                        conn.close();
-                } catch (SQLException ex) {
-                }
             }
         }
     }

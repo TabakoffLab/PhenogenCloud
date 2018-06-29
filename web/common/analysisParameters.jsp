@@ -35,7 +35,7 @@
                         <div class="brClear"></div>
 			<% if (phenotypeParameterGroupID != -99) { 
 				ParameterValue[] phenotypeParameters = 
-							myParameterValue.getParameterValues(phenotypeParameterGroupID, dbConn); %>
+							myParameterValue.getParameterValues(phenotypeParameterGroupID, pool); %>
 				<span class="trigger" name="phenotypeStuff">
 					Phenotype Values
 				</span>

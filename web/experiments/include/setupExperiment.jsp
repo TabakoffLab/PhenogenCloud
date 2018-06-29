@@ -10,7 +10,7 @@
 
 <%
 		log.debug("in setupExperiment right before calling getExperiment");
-		selectedExperiment = new Experiment().getExperiment(experimentID, dbConn);
+		selectedExperiment = new Experiment().getExperiment(experimentID, pool);
 
        		session.setAttribute("selectedExperiment", selectedExperiment);
 %>

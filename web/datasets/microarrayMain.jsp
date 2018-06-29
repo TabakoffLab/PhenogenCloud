@@ -7,7 +7,7 @@
 	session.setAttribute("selectedDataset", null);
 	session.setAttribute("selectedExperiment", null);
 	session.setAttribute("selectedGeneList", null);
-	mySessionHandler.createActivity("On Microarray Main Page", dbConn);
+	mySessionHandler.createActivity("On Microarray Main Page", pool);
 
 %>
 

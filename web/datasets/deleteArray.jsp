@@ -22,7 +22,7 @@
 	// can also pass action of "Delete" in on URL
         if (action != null && (action.equals("Delete Array") || action.equals("Delete"))) {
         	try {
-			selectedDataset.deleteDataset_chip(userID, itemID, dbConn);
+			selectedDataset.deleteDataset_chip(userID, itemID, pool);
 
 			// Have to re-set selectedDataset without the chip
 			int datasetID = selectedDataset.getDataset_id();
@@ -33,7 +33,7 @@
 			mySessionHandler.createDatasetActivity("Deleted array " + itemID+
                                         	" while viewing Quality Control Results for dataset '" +
                                         	selectedDataset.getName() + "'",
-                                	dbConn);
+                                	pool);
 
                 	//Success - "Array deleted"
                 	session.setAttribute("successMsg", "EXP-020");

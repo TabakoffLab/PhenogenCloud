@@ -15,8 +15,8 @@
 				Integer.parseInt((String) request.getParameter("grouping_id")) : -99);
 
 	log.info("in showGroupingDetails.jsp. grouping_id = " + grouping_id);
-	Dataset.Group[] groups = (grouping_id != -99 ? myDataset.getGroupsInGrouping(grouping_id, dbConn) : null); 
-	mySessionHandler.createDatasetActivity("Looked at grouping details", dbConn);
+	Dataset.Group[] groups = (grouping_id != -99 ? myDataset.getGroupsInGrouping(grouping_id, pool) : null);
+	mySessionHandler.createDatasetActivity("Looked at grouping details", pool);
 %>
 	
 	<% if (groups != null) { %>
@@ -35,7 +35,7 @@
 			<tbody>
 			<% 
 			for (int j=0; j<groups.length; j++) {
-				User.UserChip[] myChips = groups[j].getChipAssignments(dbConn);
+				User.UserChip[] myChips = groups[j].getChipAssignments(pool);
 			%>
 			<tr>
 				<td class="center"><%=groups[j].getGroup_number()%></td>

@@ -71,7 +71,7 @@
                         	//out.clear();
                         	//out = pageContext.pushBody(); 
 		
-				mySessionHandler.createActivity("Downloaded files starting with this one: " + checkedList.get(0), dbConn);
+				mySessionHandler.createActivity("Downloaded files starting with this one: " + checkedList.get(0), pool);
 			}
         	}
 	}

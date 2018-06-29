@@ -39,7 +39,7 @@
 								}
 								String versionString = myObjectHandler.getAsSeparatedString(versions, ",");
 							 	%> <td><%=versionString%><BR></td> <%
-								String groupingName = selectedDataset.new Group().getGrouping(thisPhenotype.getGrouping_id(), dbConn).getGrouping_name();
+								String groupingName = selectedDataset.new Group().getGrouping(thisPhenotype.getGrouping_id(), pool).getGrouping_name();
 							%><td><%=groupingName%><%
 							} 
 							%>

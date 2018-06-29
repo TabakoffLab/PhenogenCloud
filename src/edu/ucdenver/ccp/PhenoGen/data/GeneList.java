@@ -113,20 +113,19 @@ public class GeneList {
                     "join users o on gl.created_by_user_id = o.user_id ";
 
     private String geneListGroupByClause =
-            "group by gl.created_by_user_id, " +
+            "group by gl.gene_list_id ";
+                    /*"gl.created_by_user_id, " +
                     "gl.path, " +
                     "gl.gene_list_name, " +
                     "gl.description, " +
                     "gl.organism, " +
                     "gl.gene_list_source, " +
-                    "ds.name, " +
-                    "dv.version, " +
-                    "gl.gene_list_id, " +
+                    "dv.version " +
                     "o.title, o.first_name, o.last_name, " +
                     "gl.create_date, " +
                     "gl.dataset_id, " +
                     "gl.version, " +
-                    "gl.parameter_group_id ";
+                    "gl.parameter_group_id ";*/
 
     //
     // genesHash contains the original id pointing to the currently selected id

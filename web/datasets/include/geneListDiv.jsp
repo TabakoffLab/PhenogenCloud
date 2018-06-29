@@ -53,8 +53,7 @@
                                 GeneList[] myGeneLists =
                                         myGeneList.getGeneLists(userID,
                                         selectedDataset.getOrganism(),
-                                        "All",
-                                        dbConn);
+                                        "All", pool);
 				log.debug("after getGeneLists. there are " + myGeneLists.length + " gene lists");
                                 for (int i=0; i<myGeneLists.length; i++) {
                                         optionHash.put(Integer.toString(myGeneLists[i].getGene_list_id()),
