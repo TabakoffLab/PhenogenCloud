@@ -1,46 +1,46 @@
 <%@ include file="/web/common/anon_session_vars.jsp" %>
 
 <%
-        log.debug("before extras");
-        extrasList.add("d3.v4.8.0.min.js");
-        extrasList.add("detailedTranscriptInfo.js");
-        extrasList.add("jquery.dataTables.1.10.9.min.js");
-        extrasList.add("jquery.cookie.js");
-        extrasList.add("fancyBox/jquery.fancybox.js");
-        extrasList.add("fancyBox/helpers/jquery.fancybox-thumbs.js");
-        extrasList.add("spectrum.js");
-        extrasList.add("svg-pan-zoom.3.5.1.min.js");
-        extrasList.add("jquery.twosidedmultiselect.js");
-        
-        //extrasList.add("d3.v3.5.16.min.js");
-        extrasList.add("tableExport/tableExport.js");
-        extrasList.add("tableExport/jquery.base64.js");
-        extrasList.add("tabs.css");
-        extrasList.add("tsmsselect.css");
-        extrasList.add("jquery.fancybox.css");
-        extrasList.add("jquery.fancybox-thumbs.css");
-        extrasList.add("spectrum.css");
-        //extrasList.add("jquery.dataTables.min.css");
-        log.debug("after extras");
+    log.debug("before extras");
+    extrasList.add("d3.v4.8.0.min.js");
+    extrasList.add("detailedTranscriptInfo.js");
+    extrasList.add("jquery.dataTables.1.10.9.min.js");
+    extrasList.add("jquery.cookie.js");
+    extrasList.add("fancyBox/jquery.fancybox.js");
+    extrasList.add("fancyBox/helpers/jquery.fancybox-thumbs.js");
+    extrasList.add("spectrum.js");
+    extrasList.add("svg-pan-zoom.3.5.1.min.js");
+    extrasList.add("jquery.twosidedmultiselect.js");
+
+    //extrasList.add("d3.v3.5.16.min.js");
+    extrasList.add("tableExport/tableExport.js");
+    extrasList.add("tableExport/jquery.base64.js");
+    extrasList.add("tabs.css");
+    extrasList.add("tsmsselect.css");
+    extrasList.add("jquery.fancybox.css");
+    extrasList.add("jquery.fancybox-thumbs.css");
+    extrasList.add("spectrum.css");
+    //extrasList.add("jquery.dataTables.min.css");
+    log.debug("after extras");
 %>
 
 
 <%
-log.debug("top of page");
-String myGene="";
-String section="";
-String myDisplayGene="";
-String defView="3";
-String overideGV="N";
-boolean scriptError=false;
-boolean organismError=false;
-boolean popup=false;
-if(request.getParameter("geneTxt")!=null){
-                log.debug(request.getParameter("geneTxt").trim()+": MyGene before filtering.");
-                myGene=FilterInput.getFilteredInput(request.getParameter("geneTxt").trim());
-                log.debug(myGene+": MyGene after filtering.");
-                myGene=myGene.replaceAll(",","");
-                String lcmyGene=myGene.toLowerCase();
+    log.debug("top of page");
+    String myGene = "";
+    String section = "";
+    String myDisplayGene = "";
+    String defView = "3";
+    String overideGV = "N";
+    boolean scriptError = false;
+    boolean organismError = false;
+    boolean popup = false;
+    if (request.getParameter("geneTxt") != null) {
+        log.debug(request.getParameter("geneTxt").trim() + ": MyGene before filtering.");
+        myGene = FilterInput.getFilteredInput(request.getParameter("geneTxt").trim());
+        log.debug(myGene + ": MyGene after filtering.");
+        myGene = myGene.replaceAll(",", "");
+        String lcmyGene = myGene.toLowerCase();
                 /*if(myGene.length()>150 || lcmyGene.contains("((") || lcmyGene.contains("||") || lcmyGene.contains("))")|| lcmyGene.contains("select")|| lcmyGene.contains("delete")|| lcmyGene.contains("union") || lcmyGene.contains("join") || lcmyGene.contains("from")|| lcmyGene.contains("char") ){
                     log.info("Script Submitted via Form: "+request.getRemoteAddr());
                     log.info("Contents:"+myGene);
@@ -48,527 +48,636 @@ if(request.getParameter("geneTxt")!=null){
                     action=null;
                     scriptError=true;
                 }*/
-}
-if(request.getParameter("overideGV")!=null && request.getParameter("overideGV").equals("Y")){
-    overideGV="Y";
-}
-if(request.getParameter("newWindow")!=null&&request.getParameter("newWindow").equals("Y")){
-        popup=true;
-}
+    }
+    if (request.getParameter("overideGV") != null && request.getParameter("overideGV").equals("Y")) {
+        overideGV = "Y";
+    }
+    if (request.getParameter("newWindow") != null && request.getParameter("newWindow").equals("Y")) {
+        popup = true;
+    }
 
-if(request.getParameter("defaultView")!=null){
-        defView=FilterInput.getFilteredInput(request.getParameter("defaultView"));
-}
-if(request.getParameter("section")!=null){
-        section=FilterInput.getFilteredInput(request.getParameter("section"));
-}
-pageTitle="Genome/Transcriptome Browser "+myGene;
-pageDescription="Genome/Transcriptome Browser provides a vizualization of Microarray and RNA-Seq data along the genome as well as summarize eQTL/WGCNA data for genes and/or regions.";
+    if (request.getParameter("defaultView") != null) {
+        defView = FilterInput.getFilteredInput(request.getParameter("defaultView"));
+    }
+    if (request.getParameter("section") != null) {
+        section = FilterInput.getFilteredInput(request.getParameter("section"));
+    }
+    pageTitle = "Genome/Transcriptome Browser " + myGene;
+    pageDescription = "Genome/Transcriptome Browser provides a vizualization of Microarray and RNA-Seq data along the genome as well as summarize eQTL/WGCNA data for genes and/or regions.";
     log.debug("end of top");
 %>
 
 
-<%if(popup){%>
-<div id="wait1"  style="background:#FFFFFF;position:absolute; top:175px;height:50px;"><img src="<%=imagesDir%>wait.gif" alt="Working..." /><BR />Working...Genes should load within 10-20 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).</div>
-    <%@ include file="/web/common/header_adaptive_noMenu.jsp" %>
-    <%}else{%>
-<div id="wait1"  style="background:#FFFFFF;position:absolute; top:175px;height:50px;"><img src="<%=imagesDir%>wait.gif" alt="Working..." /><BR />Working...Genes should load within 10-20 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).</div>
-    <%@ include file="/web/common/header_adaptive_menu.jsp" %>
-    <%}%>
-    <%@ include file="/web/GeneCentric/browserCSS.jsp" %>
+<%if (popup) {%>
+<div id="wait1" style="background:#FFFFFF;position:absolute; top:175px;height:50px;"><img src="<%=imagesDir%>wait.gif"
+                                                                                          alt="Working..."/><BR/>Working...Genes
+    should load within 10-20 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).
+</div>
+<%@ include file="/web/common/header_adaptive_noMenu.jsp" %>
+<%} else {%>
+<div id="wait1" style="background:#FFFFFF;position:absolute; top:175px;height:50px;"><img src="<%=imagesDir%>wait.gif"
+                                                                                          alt="Working..."/><BR/>Working...Genes
+    should load within 10-20 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).
+</div>
+<%@ include file="/web/common/header_adaptive_menu.jsp" %>
+<%}%>
+<%@ include file="/web/GeneCentric/browserCSS.jsp" %>
 
-<jsp:useBean id="myIDecoderClient" class="edu.ucdenver.ccp.PhenoGen.tools.idecoder.IDecoderClient"> </jsp:useBean>
-<jsp:useBean id="bt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.BrowserTools" scope="session"> </jsp:useBean>
-<jsp:useBean id="gdt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.GeneDataTools" scope="session"> </jsp:useBean>
+<jsp:useBean id="myIDecoderClient" class="edu.ucdenver.ccp.PhenoGen.tools.idecoder.IDecoderClient"></jsp:useBean>
+<jsp:useBean id="bt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.BrowserTools" scope="session"></jsp:useBean>
+<jsp:useBean id="gdt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.GeneDataTools" scope="session"></jsp:useBean>
 
-<% 
-        log.debug("begining of most code");
-        //GeneDataTools gdt=new GeneDataTools();
-        gdt.setSession(session);
-        bt.setSession(session);
-	
+<%
+    log.debug("begining of most code");
+    //GeneDataTools gdt=new GeneDataTools();
+    gdt.setSession(session);
+    bt.setSession(session);
 
-		
 
-        String myOrganism="Rn";
-        ObjectHandler oh=new ObjectHandler();
-        //Files generated by calling java method ().
-        ArrayList<String> ucscURL=new ArrayList<String>();
-        //ArrayList<String> ucscURLFiltered=new ArrayList<String>();
-        ArrayList<String> genURL=new ArrayList<String>();
-        ArrayList<String> geneSymbol=new ArrayList<String>();
-        ArrayList<String> firstEnsemblID=new ArrayList<String>();
-        ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> fullGeneList=new ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene>();
-	
-        String fullImg="";
-        String fullOrg="";
-        String filteredImg="";
-        String panel="";
-        String chromosome="";
-        LinkGenerator lg=new LinkGenerator(session);
-	
-        boolean displayNoEnsembl=false;
-        boolean auto=false;
-        boolean region=false;
-	
-        double pValueCutoff=0.0001;
-        double forwardPValueCutoff=0.01;
-	
-        int rnaDatasetID=0;
-        int arrayTypeID=0;
-        int selectedGene=0;
-        int min=0;
-        int max=0;
-        String selectedEnsemblID="";
-        String regionError="";
-        String genomeVer="rn6";
-        String defaultGenomeVer="rn6";
-	
-        Set iDecoderAnswer;
-	
-        if(( myGene.toLowerCase().startsWith("chr") || myGene.toLowerCase().startsWith("ch") )&&myGene.indexOf(":")>0){
-                log.debug("myGene:"+myGene);
-                region=true;
-                if(myGene.indexOf("-")<0 && myGene.indexOf("+")<0){
-                        //log.debug(myGene.indexOf("-")+"::"+myGene.indexOf("+"));
-                        region=false;
-                        regionError="You have entered an invalid region.  Please see the examples in the instructions.";
-                }
+    String myOrganism = "Rn";
+    ObjectHandler oh = new ObjectHandler();
+    //Files generated by calling java method ().
+    ArrayList<String> ucscURL = new ArrayList<String>();
+    //ArrayList<String> ucscURLFiltered=new ArrayList<String>();
+    ArrayList<String> genURL = new ArrayList<String>();
+    ArrayList<String> geneSymbol = new ArrayList<String>();
+    ArrayList<String> firstEnsemblID = new ArrayList<String>();
+    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> fullGeneList = new ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene>();
+
+    String fullImg = "";
+    String fullOrg = "";
+    String filteredImg = "";
+    String panel = "";
+    String chromosome = "";
+    LinkGenerator lg = new LinkGenerator(session);
+
+    boolean displayNoEnsembl = false;
+    boolean auto = false;
+    boolean region = false;
+
+    double pValueCutoff = 0.0001;
+    double forwardPValueCutoff = 0.01;
+
+    int rnaDatasetID = 0;
+    int arrayTypeID = 0;
+    int selectedGene = 0;
+    int min = 0;
+    int max = 0;
+    String selectedEnsemblID = "";
+    String regionError = "";
+    String genomeVer = "rn6";
+    String defaultGenomeVer = "rn6";
+
+    Set iDecoderAnswer;
+
+    if ((myGene.toLowerCase().startsWith("chr") || myGene.toLowerCase().startsWith("ch")) && myGene.indexOf(":") > 0) {
+        log.debug("myGene:" + myGene);
+        region = true;
+        if (myGene.indexOf("-") < 0 && myGene.indexOf("+") < 0) {
+            //log.debug(myGene.indexOf("-")+"::"+myGene.indexOf("+"));
+            region = false;
+            regionError = "You have entered an invalid region.  Please see the examples in the instructions.";
         }
-        if(request.getParameter("speciesCB")!=null){
-                myOrganism=FilterInput.getFilteredInput(request.getParameter("speciesCB").trim());
-                if(myOrganism.length()>2){
-                    myOrganism=myOrganism.substring(0,2);
-                }
-                if(myOrganism.equals("Rn")){
-                        panel="BNLX/SHRH";
-                        fullOrg="Rattus_norvegicus";
-                        genomeVer="rn6";
-                        defaultGenomeVer="rn6";
-                }else if(myOrganism.equals("Mm")){
-                        panel="ILS/ISS";
-                        fullOrg="Mus_musculus";
-                        genomeVer="mm10";
-                        defaultGenomeVer="mm10";
-                }else{
-                    organismError=true;
-                }
+    }
+    if (request.getParameter("speciesCB") != null) {
+        myOrganism = FilterInput.getFilteredInput(request.getParameter("speciesCB").trim());
+        if (myOrganism.length() > 2) {
+            myOrganism = myOrganism.substring(0, 2);
         }
-        log.debug("*****\nafter species Genome:"+genomeVer);
-        if(request.getParameter("genomeVer")!=null){
-            genomeVer=request.getParameter("genomeVer").trim();
-            overideGV="Y";
-            log.debug("******\nreading Genome Ver:"+genomeVer);
+        if (myOrganism.equals("Rn")) {
+            panel = "BNLX/SHRH";
+            fullOrg = "Rattus_norvegicus";
+            genomeVer = "rn6";
+            defaultGenomeVer = "rn6";
+        } else if (myOrganism.equals("Mm")) {
+            panel = "ILS/ISS";
+            fullOrg = "Mus_musculus";
+            genomeVer = "mm10";
+            defaultGenomeVer = "mm10";
+        } else {
+            organismError = true;
         }
-        int val=-1;
-        try{
-            val=Integer.parseInt(defView);
-        }catch(Exception e){}
-        if(genomeVer.equals("rn6") && val>-1 && val<11){
-            defView=Integer.toString(val+10);
+    }
+    log.debug("*****\nafter species Genome:" + genomeVer);
+    if (request.getParameter("genomeVer") != null) {
+        genomeVer = request.getParameter("genomeVer").trim();
+        overideGV = "Y";
+        log.debug("******\nreading Genome Ver:" + genomeVer);
+    }
+    int val = -1;
+    try {
+        val = Integer.parseInt(defView);
+    } catch (Exception e) {
+    }
+    if (genomeVer.equals("rn6") && val > -1 && val < 11) {
+        defView = Integer.toString(val + 10);
+    }
+    log.debug("*****\ncurGenome:" + genomeVer);
+    ArrayList<BrowserView> views = bt.getBrowserViews(genomeVer);
+    log.debug("*****\nView length:" + views.size());
+    String[] tissuesList1 = new String[1];
+    String[] tissuesList2 = new String[1];
+    if (myOrganism.equals("Rn")) {
+        tissuesList1 = new String[4];
+        tissuesList2 = new String[4];
+        tissuesList1[0] = "Brain";
+        tissuesList2[0] = "Whole Brain";
+        tissuesList1[1] = "Heart";
+        tissuesList2[1] = "Heart";
+        tissuesList1[2] = "Liver";
+        tissuesList2[2] = "Liver";
+        tissuesList1[3] = "Brown Adipose";
+        tissuesList2[3] = "Brown Adipose";
+    } else {
+        tissuesList1[0] = "Brain";
+        tissuesList2[0] = "Whole Brain";
+    }
+
+    if (request.getParameter("auto") != null) {
+        String tmp = FilterInput.getFilteredInput(request.getParameter("auto"));
+        if (tmp.equals("Y")) {
+            auto = true;
         }
-        log.debug("*****\ncurGenome:"+genomeVer);
-        ArrayList<BrowserView> views=bt.getBrowserViews(genomeVer);
-        log.debug("*****\nView length:"+views.size());
-        String[] tissuesList1=new String[1];
-        String[] tissuesList2=new String[1];
-        if(myOrganism.equals("Rn")){
-                tissuesList1=new String[4];
-                tissuesList2=new String[4];
-                tissuesList1[0]="Brain";
-                tissuesList2[0]="Whole Brain";
-                tissuesList1[1]="Heart";
-                tissuesList2[1]="Heart";
-                tissuesList1[2]="Liver";
-                tissuesList2[2]="Liver";
-                tissuesList1[3]="Brown Adipose";
-                tissuesList2[3]="Brown Adipose";
-        }else{
-                tissuesList1[0]="Brain";
-                tissuesList2[0]="Whole Brain";
-        }
-	
-        if(request.getParameter("auto")!=null){
-                String tmp=FilterInput.getFilteredInput(request.getParameter("auto"));
-                if(tmp.equals("Y")){
-                        auto=true;
-                }
-        }
-        log.debug("Selected Gene="+request.getParameter("geneSelect"));
-        if(request.getParameter("geneSelect")!=null && !(request.getParameter("geneSelect").equals("")) ){
-                selectedEnsemblID=FilterInput.getFilteredInput(request.getParameter("geneSelect").trim());
-                //selectedGene=Integer.parseInt(request.getParameter("geneSelect").trim());
-                //log.debug("Selected Gene:"+selectedGene);
-        }
-	
-        if(request.getParameter("pvalueCutoffInput")!=null){
-                pValueCutoff=Double.parseDouble(FilterInput.getFilteredInput(request.getParameter("pvalueCutoffInput")));
-        }
-        if(request.getParameter("forwardPvalueCutoffInput")!=null){
-                forwardPValueCutoff=Double.parseDouble(FilterInput.getFilteredInput(request.getParameter("forwardPvalueCutoffInput")));
-        }
-	
-        log.debug("ACTION="+action+"  region="+region+"   gene="+myGene+"   rev. pvalue="+pValueCutoff+"  for Pval="+forwardPValueCutoff);
+    }
+    log.debug("Selected Gene=" + request.getParameter("geneSelect"));
+    if (request.getParameter("geneSelect") != null && !(request.getParameter("geneSelect").equals(""))) {
+        selectedEnsemblID = FilterInput.getFilteredInput(request.getParameter("geneSelect").trim());
+        //selectedGene=Integer.parseInt(request.getParameter("geneSelect").trim());
+        //log.debug("Selected Gene:"+selectedGene);
+    }
+
+    if (request.getParameter("pvalueCutoffInput") != null) {
+        pValueCutoff = Double.parseDouble(FilterInput.getFilteredInput(request.getParameter("pvalueCutoffInput")));
+    }
+    if (request.getParameter("forwardPvalueCutoffInput") != null) {
+        forwardPValueCutoff = Double.parseDouble(FilterInput.getFilteredInput(request.getParameter("forwardPvalueCutoffInput")));
+    }
+
+    log.debug("ACTION=" + action + "  region=" + region + "   gene=" + myGene + "   rev. pvalue=" + pValueCutoff + "  for Pval=" + forwardPValueCutoff);
 	
         /*if((action != null) && action.equals("Go")){
                 response.redirect(lg.getGeneLink(curGene.getGeneID(),myOrganism,true,true,false));
         }else */
-        if (    (((action != null) && action.equals("Get Transcription Details")) && (!region))  || (auto && (!region))
+    if ((((action != null) && action.equals("Get Transcription Details")) && (!region)) || (auto && (!region))
             ) {
-                myDisplayGene=myGene;
-                mySessionHandler.createSessionActivity(session.getId(), "GTD Browser Gene: "+myGene, pool);
-                List homologList=null;
-	
-                if(myGene.startsWith("ENSRNOG") ||myGene.startsWith("ENSMUSG")){
-                        myIDecoderClient.setNum_iterations(0);
-                }else{
-                        myIDecoderClient.setNum_iterations(1);
-                }
-                iDecoderAnswer = myIDecoderClient.getIdentifiersByInputIDAndTarget(myGene,myOrganism, new String[] {"Ensembl ID"},pool);
-                myIDecoderClient.setNum_iterations(1);
+        myDisplayGene = myGene;
+        mySessionHandler.createSessionActivity(session.getId(), "GTD Browser Gene: " + myGene, pool);
+        List homologList = null;
 
-                List myIdentifierList=null;
-                Identifier targetIdentifier=null;
-                
-                if(iDecoderAnswer!=null){
-                    log.debug("answer is not null.");
+        if (myGene.startsWith("ENSRNOG") || myGene.startsWith("ENSMUSG")) {
+            myIDecoderClient.setNum_iterations(0);
+        } else {
+            myIDecoderClient.setNum_iterations(1);
+        }
+        iDecoderAnswer = myIDecoderClient.getIdentifiersByInputIDAndTarget(myGene, myOrganism, new String[]{"Ensembl ID"}, pool);
+        myIDecoderClient.setNum_iterations(1);
+
+        List myIdentifierList = null;
+        Identifier targetIdentifier = null;
+
+        if (iDecoderAnswer != null) {
+            log.debug("answer is not null.");
+            myIdentifierList = Arrays.asList(iDecoderAnswer.toArray((Identifier[]) new Identifier[iDecoderAnswer.size()]));
+
+            Set homologSet = null;
+            for (int i = 0; i < myIdentifierList.size() && targetIdentifier == null; i++) {
+                log.debug("ID LIST[" + i + "]:" + ((Identifier) myIdentifierList.get(i)).getIdentifier());
+                Identifier thisIdentifier = (Identifier) myIdentifierList.get(0);
+                HashMap linksHash = thisIdentifier.getTargetHashMap();
+                log.debug("linksHash size:" + linksHash.size());
+                homologSet = myIDecoderClient.getIdentifiersForTargetForOneID(linksHash, new String[]{"Ensembl ID"});
+                if (homologSet != null && homologSet.size() > 0) {
+                    targetIdentifier = thisIdentifier;
+                }
+            }
+
+            if (homologSet != null && homologSet.size() > 0) {
+                log.debug("Ens homolog set is not null");
+                homologList = myObjectHandler.getAsList(homologSet);
+            } else {
+                log.debug("ENS homolog set is null checking Phenogen");
+                //check if PhenoGenID and revert to a region for that gene.
+                iDecoderAnswer = myIDecoderClient.getIdentifiersByInputIDAndTarget(myGene, myOrganism, new String[]{"PhenoGen ID"}, pool);
+                if (iDecoderAnswer != null) {
+                    log.debug("checking Phenogen ID:" + myGene);
                     myIdentifierList = Arrays.asList(iDecoderAnswer.toArray((Identifier[]) new Identifier[iDecoderAnswer.size()]));
-                    
-                    Set homologSet = null;
-                    for(int i=0; i<myIdentifierList.size() && targetIdentifier==null; i++){
-                        log.debug("ID LIST["+i+"]:"+((Identifier)myIdentifierList.get(i)).getIdentifier());
-                        Identifier thisIdentifier = (Identifier)myIdentifierList.get(0);
-                        HashMap linksHash = thisIdentifier.getTargetHashMap();
-                        log.debug("linksHash size:"+linksHash.size());
-                        homologSet = myIDecoderClient.getIdentifiersForTargetForOneID(linksHash, new String[] {"Ensembl ID"});
-                        if(homologSet!=null && homologSet.size()>0){
-                            targetIdentifier=thisIdentifier;
-                        }
-                    }
-                    
-                    if(homologSet!=null && homologSet.size()>0){
-                        log.debug("Ens homolog set is not null");
-                        homologList = myObjectHandler.getAsList(homologSet);
-                    }else{
-                        log.debug("ENS homolog set is null checking Phenogen");
-                        //check if PhenoGenID and revert to a region for that gene.
-                        iDecoderAnswer = myIDecoderClient.getIdentifiersByInputIDAndTarget(myGene,myOrganism, new String[] {"PhenoGen ID"},pool);
-                        if(iDecoderAnswer!=null){
-                            log.debug("checking Phenogen ID:"+myGene);
-                            myIdentifierList = Arrays.asList(iDecoderAnswer.toArray((Identifier[]) new Identifier[iDecoderAnswer.size()]));
-                            //Identifier targetIdentifier=null;
-                            homologSet = null;
-                            for(int i=0; i<myIdentifierList.size() && targetIdentifier==null; i++){
-                                    log.debug("ID LIST["+i+"]:"+((Identifier)myIdentifierList.get(i)).getIdentifier());
-                                    Identifier thisIdentifier = (Identifier)myIdentifierList.get(i);
-                                    Set<Identifier> related = thisIdentifier.getRelatedIdentifiers();
-                                    log.debug("relatedSet size:"+related.size());
-                                    for (Identifier r: related) {
-                                        if(r.getIdentifier().equals(myGene)){
-                                            targetIdentifier=r;
-                                        }
-                                    }
+                    //Identifier targetIdentifier=null;
+                    homologSet = null;
+                    for (int i = 0; i < myIdentifierList.size() && targetIdentifier == null; i++) {
+                        log.debug("ID LIST[" + i + "]:" + ((Identifier) myIdentifierList.get(i)).getIdentifier());
+                        Identifier thisIdentifier = (Identifier) myIdentifierList.get(i);
+                        Set<Identifier> related = thisIdentifier.getRelatedIdentifiers();
+                        log.debug("relatedSet size:" + related.size());
+                        for (Identifier r : related) {
+                            if (r.getIdentifier().equals(myGene)) {
+                                targetIdentifier = r;
                             }
                         }
-                        if(targetIdentifier==null){
-                            displayNoEnsembl=true;
-                        }
                     }
-                }else{
-                        displayNoEnsembl=true;
                 }
-	
-                if(homologList!=null&&homologList.size()>0){
-                    int[] tmp=gdt.getOrganismSpecificIdentifiers(myOrganism,genomeVer);
-                    if(tmp!=null&&tmp.length==2){
-                            rnaDatasetID=tmp[1];
-                            arrayTypeID=tmp[0];
+                if (targetIdentifier == null) {
+                    displayNoEnsembl = true;
+                }
+            }
+        } else {
+            displayNoEnsembl = true;
+        }
+
+        if (homologList != null && homologList.size() > 0) {
+            int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer);
+            if (tmp != null && tmp.length == 2) {
+                rnaDatasetID = tmp[1];
+                arrayTypeID = tmp[0];
+            }
+
+            for (int i = 0; i < homologList.size(); i++) {
+                Identifier homologIdentifier = (Identifier) homologList.get(i);
+                if (homologIdentifier.getIdentifier().indexOf("ENSMUSG") > -1 || homologIdentifier.getIdentifier().indexOf("ENSRNOG") > -1) {
+                    //myEnsemblIDs.add(homologIdentifier.getIdentifier());
+                    log.debug("RUNNING GDT for " + homologIdentifier.getIdentifier());
+                    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(myGene, homologIdentifier.getIdentifier(), panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, false);
+                    String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
+                    String tmpGeneSymbol = gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
+                    log.debug(tmpURL + "\n" + tmpGeneSymbol);
+                    String tmpUcscURL = gdt.getUCSCURL();
+                    if (i == 0) {
+                        min = gdt.getMinCoord();
+                        max = gdt.getMaxCoord();
+                        chromosome = gdt.getChromosome();
+                        fullGeneList = tmpGeneList;
                     }
+                    //(String)session.getAttribute("ucscURL");
+                    //String tmpUcscURLFiltered =gdt.getUCSCURLFiltered();//(String)session.getAttribute("ucscURLFiltered");
 
-                    for (int i=0; i< homologList.size(); i++) {
-                            Identifier homologIdentifier = (Identifier) homologList.get(i);
-                            if(homologIdentifier.getIdentifier().indexOf("ENSMUSG")>-1||homologIdentifier.getIdentifier().indexOf("ENSRNOG")>-1){
-                                    //myEnsemblIDs.add(homologIdentifier.getIdentifier());	
-                                    log.debug("RUNNING GDT for "+homologIdentifier.getIdentifier());
-                                    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList=gdt.getGeneCentricData(myGene,homologIdentifier.getIdentifier(),panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,false);
-                                    String tmpURL =gdt.getGenURL();//(String)session.getAttribute("genURL");
-                                    String tmpGeneSymbol=gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
-                                    log.debug(tmpURL+"\n"+tmpGeneSymbol);
-                                    String tmpUcscURL =gdt.getUCSCURL();
-                                    if(i==0){
-                                            min=gdt.getMinCoord();
-                                            max=gdt.getMaxCoord();
-                                            chromosome=gdt.getChromosome();
-                                            fullGeneList=tmpGeneList;
-                                    }
-                                    //(String)session.getAttribute("ucscURL");
-                                    //String tmpUcscURLFiltered =gdt.getUCSCURLFiltered();//(String)session.getAttribute("ucscURLFiltered");
+                    if (tmpURL != null) {
+                        genURL.add(tmpURL);
+                        if (tmpGeneSymbol == null && !tmpURL.startsWith("ERROR:")) {
+                            geneSymbol.add("");
+                        } else if (tmpURL.startsWith("ERROR:")) {
+                            geneSymbol.add("ERROR GENERATING");
+                        } else {
+                            geneSymbol.add(tmpGeneSymbol);
+                        }
 
-                                    if(tmpURL!=null){
-                                            genURL.add(tmpURL);
-                                            if(tmpGeneSymbol==null && !tmpURL.startsWith("ERROR:")){
-                                                    geneSymbol.add("");
-                                            }else if(tmpURL.startsWith("ERROR:")){
-                                                    geneSymbol.add("ERROR GENERATING");
-                                            }else{
-                                                    geneSymbol.add(tmpGeneSymbol);
-                                            }
-
-                                            if(tmpUcscURL==null){
-                                                    ucscURL.add("");
-                                            }else{
-                                                    ucscURL.add(tmpUcscURL);
-                                            }
+                        if (tmpUcscURL == null) {
+                            ucscURL.add("");
+                        } else {
+                            ucscURL.add(tmpUcscURL);
+                        }
                                             /*if(tmpUcscURLFiltered==null){
                                                     ucscURLFiltered.add("");
                                             }else{
                                                     ucscURLFiltered.add(tmpUcscURLFiltered);
                                             }*/
-                                            firstEnsemblID.add(homologIdentifier.getIdentifier());
-                                            if(tmpGeneSymbol!=null && tmpGeneSymbol.equals(myGene)){
-                                                    selectedGene=i;
-                                                    selectedEnsemblID=homologIdentifier.getIdentifier();
-                                                    min=gdt.getMinCoord();
-                                                    max=gdt.getMaxCoord();
-                                                    chromosome=gdt.getChromosome();
-                                                    fullGeneList=tmpGeneList;
-                                            }
-                                    }
-                            }
+                        firstEnsemblID.add(homologIdentifier.getIdentifier());
+                        if (tmpGeneSymbol != null && tmpGeneSymbol.equals(myGene)) {
+                            selectedGene = i;
+                            selectedEnsemblID = homologIdentifier.getIdentifier();
+                            min = gdt.getMinCoord();
+                            max = gdt.getMaxCoord();
+                            chromosome = gdt.getChromosome();
+                            fullGeneList = tmpGeneList;
+                        }
                     }
+                }
+            }
                     /*session.setAttribute("genURLArray",genURL);
                     session.setAttribute("ucscURLArray",geneSymbol);
                     session.setAttribute("geneSymbolArray",ucscURL);
                     session.setAttribute("ucscURLFilteredArray",ucscURLFiltered);
                     session.setAttribute("firstEnsemblIDArray",firstEnsemblID);*/
-                }else{
-                    if(myGene.startsWith("PRN")){
-                        DecimalFormat df0 = new DecimalFormat("#,###");
-                        log.debug("Phenogen ID:"+targetIdentifier);
-                        String loc=targetIdentifier.getChromosomeLocation();
-                        log.debug("Phenogen ID:"+loc);
-                        String[] part1=loc.split(":");
-                        String[] part2=part1[1].split("-");
-                        String chr=part1[0];
-                        min=Integer.parseInt(part2[0]);
-                        max=Integer.parseInt(part2[1]);
-                        myDisplayGene=myGene;
-                        fullGeneList =gdt.getRegionData(chr,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,false);					
-                        String tmpURL =gdt.getGenURL();//(String)session.getAttribute("genURL");
-                        String tmpGeneSymbol=gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
-                        String tmpUcscURL =gdt.getUCSCURL();//(String)session.getAttribute("ucscURL");
-                        //String tmpUcscURLFiltered =gdt.getUCSCURLFiltered();//(String)session.getAttribute("ucscURLFiltered");
-                        if(tmpURL!=null){
-                                genURL.add(tmpURL);
-                                if(tmpGeneSymbol==null){
-                                        geneSymbol.add("");
-                                }else{
-                                        geneSymbol.add(tmpGeneSymbol);
-                                }
-                                if(tmpUcscURL==null){
-                                        ucscURL.add("");
-                                }else{
-                                        ucscURL.add(tmpUcscURL);
-                                }
+        } else {
+            if (myGene.startsWith("PRN")) {
+                DecimalFormat df0 = new DecimalFormat("#,###");
+                log.debug("Phenogen ID:" + targetIdentifier);
+                String loc = targetIdentifier.getChromosomeLocation();
+                log.debug("Phenogen ID:" + loc);
+                String[] part1 = loc.split(":");
+                String[] part2 = part1[1].split("-");
+                String chr = part1[0];
+                min = Integer.parseInt(part2[0]);
+                max = Integer.parseInt(part2[1]);
+                myDisplayGene = myGene;
+                fullGeneList = gdt.getRegionData(chr, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false);
+                String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
+                String tmpGeneSymbol = gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
+                String tmpUcscURL = gdt.getUCSCURL();//(String)session.getAttribute("ucscURL");
+                //String tmpUcscURLFiltered =gdt.getUCSCURLFiltered();//(String)session.getAttribute("ucscURLFiltered");
+                if (tmpURL != null) {
+                    genURL.add(tmpURL);
+                    if (tmpGeneSymbol == null) {
+                        geneSymbol.add("");
+                    } else {
+                        geneSymbol.add(tmpGeneSymbol);
+                    }
+                    if (tmpUcscURL == null) {
+                        ucscURL.add("");
+                    } else {
+                        ucscURL.add(tmpUcscURL);
+                    }
                                 /*if(tmpUcscURLFiltered==null){
                                         ucscURLFiltered.add("");
                                 }else{
                                         ucscURLFiltered.add(tmpUcscURLFiltered);
                                 }*/
-                        }
-                    }else{
-                        gdt.getGeneCentricData(myGene,"",panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,false);
-                        displayNoEnsembl=true;
-                    }
-                }			
-        }else if((((action != null) && action.equals("Get Transcription Details"))&& region )
-                        || ( auto && region )){
-                        mySessionHandler.createSessionActivity(session.getId(), "GTD Browser Region: "+myGene, pool);
-                //log.debug("RUNNING REGION");
-                int[] tmp=gdt.getOrganismSpecificIdentifiers(myOrganism,genomeVer);
-                if(tmp!=null&&tmp.length==2){
-                        rnaDatasetID=tmp[1];
-                        arrayTypeID=tmp[0];
                 }
-		
-                String minCoord="";
-                String maxCoord="";
-                if(myGene.indexOf(":")>0){
-                        chromosome=myGene.substring(0,myGene.indexOf(":"));
-                        if(myGene.indexOf("+-")>0){
-                                minCoord=myGene.substring(myGene.indexOf(":")+1,myGene.indexOf("+-")).trim();
-                                maxCoord=myGene.substring(myGene.indexOf("+-")+2).trim();
-                                int tmpInt=Integer.parseInt(maxCoord.trim());
-                                min=Integer.parseInt(minCoord)-tmpInt;
-                                max=Integer.parseInt(minCoord)+tmpInt;
-                        }else if(myGene.indexOf("-+")>0){
-                                minCoord=myGene.substring(myGene.indexOf(":")+1,myGene.indexOf("-+")).trim();
-                                maxCoord=myGene.substring(myGene.indexOf("-+")+2).trim();
-                                int tmpInt=Integer.parseInt(maxCoord);
-                                min=Integer.parseInt(minCoord)-tmpInt;
-                                max=Integer.parseInt(minCoord)+tmpInt;
-                        }else if (myGene.indexOf("+")>0){
-                                minCoord=myGene.substring(myGene.indexOf(":")+1,myGene.indexOf("+")).trim();
-                                maxCoord=myGene.substring(myGene.indexOf("+")+1).trim();
-                                min=Integer.parseInt(minCoord);
-                                max=min+Integer.parseInt(maxCoord);
-                        }else if(myGene.indexOf("-")>0){
-                                minCoord=myGene.substring(myGene.indexOf(":")+1,myGene.indexOf("-")).trim();
-                                maxCoord=myGene.substring(myGene.indexOf("-")+1).trim();
-                                min=Integer.parseInt(minCoord);
-                                max=Integer.parseInt(maxCoord);
-                        }else{
-                                regionError="You have entered an invalid region.  Please see the examples in the instructions.";
+            } else {
+                gdt.getGeneCentricData(myGene, "", panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, false);
+                displayNoEnsembl = true;
+            }
+        }
+    } else if ((((action != null) && action.equals("Get Transcription Details")) && region)
+            || (auto && region)) {
+        mySessionHandler.createSessionActivity(session.getId(), "GTD Browser Region: " + myGene, pool);
+        //log.debug("RUNNING REGION");
+        int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer);
+        if (tmp != null && tmp.length == 2) {
+            rnaDatasetID = tmp[1];
+            arrayTypeID = tmp[0];
+        }
+
+        String minCoord = "";
+        String maxCoord = "";
+        int multI = 1000000;
+        int multA = 1000000;
+        if (myGene.indexOf(":") > 0) {
+            chromosome = myGene.substring(0, myGene.indexOf(":"));
+            if (myGene.indexOf("+-") > 0) {
+                minCoord = myGene.substring(myGene.indexOf(":") + 1, myGene.indexOf("+-")).trim();
+                maxCoord = myGene.substring(myGene.indexOf("+-") + 2).trim();
+                if (minCoord.toLowerCase().contains("k")) {
+                    multI = 1000;
+                    minCoord = minCoord.substring(0, minCoord.toLowerCase().indexOf("k") - 1);
+                } else if (minCoord.toLowerCase().contains("m")) {
+                    minCoord = minCoord.substring(0, minCoord.toLowerCase().indexOf("m") - 1);
+                }
+                if (maxCoord.toLowerCase().contains("k")) {
+                    multA = 1000;
+                    maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("k") - 1);
+                } else if (maxCoord.toLowerCase().contains("m")) {
+                    maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("m") - 1);
+                }
+                if (minCoord.indexOf(".") == -1) {
+                    min = Integer.parseInt(minCoord);
+                } else {
+                    double mb = Double.parseDouble(minCoord);
+                    min = (int) Math.floor(mb * multI);
+                }
+                if (maxCoord.indexOf(".") == -1) {
+                    max = Integer.parseInt(maxCoord);
+                } else {
+                    double mb = Double.parseDouble(maxCoord);
+                    max = (int) Math.floor(mb * multA);
+                }
+                int tmpInt = max;
+                min = min - tmpInt;
+                max = min + tmpInt;
+            } else if (myGene.indexOf("-+") > 0) {
+                minCoord = myGene.substring(myGene.indexOf(":") + 1, myGene.indexOf("-+")).trim();
+                maxCoord = myGene.substring(myGene.indexOf("-+") + 2).trim();
+                if (minCoord.toLowerCase().contains("k")) {
+                    multI = 1000;
+                    minCoord = minCoord.substring(0, minCoord.toLowerCase().indexOf("k") - 1);
+                } else if (minCoord.toLowerCase().contains("m")) {
+                    minCoord = minCoord.substring(0, minCoord.toLowerCase().indexOf("m") - 1);
+                }
+                if (maxCoord.toLowerCase().contains("k")) {
+                    multA = 1000;
+                    maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("k") - 1);
+                } else if (maxCoord.toLowerCase().contains("m")) {
+                    maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("m") - 1);
+                }
+                if (minCoord.indexOf(".") == -1) {
+                    min = Integer.parseInt(minCoord);
+                } else {
+                    double mb = Double.parseDouble(minCoord);
+                    min = (int) Math.floor(mb * multI);
+                }
+                if (maxCoord.indexOf(".") == -1) {
+                    max = Integer.parseInt(maxCoord);
+                } else {
+                    double mb = Double.parseDouble(maxCoord);
+                    max = (int) Math.floor(mb * multA);
+                }
+                int tmpInt = max;
+                min = min - tmpInt;
+                max = min + tmpInt;
+            } else if (myGene.indexOf("+") > 0) {
+                minCoord = myGene.substring(myGene.indexOf(":") + 1, myGene.indexOf("+")).trim();
+                maxCoord = myGene.substring(myGene.indexOf("+") + 1).trim();
+                if (minCoord.toLowerCase().contains("k")) {
+                    multI = 1000;
+                    minCoord = minCoord.substring(0, minCoord.toLowerCase().indexOf("k") - 1);
+                } else if (minCoord.toLowerCase().contains("m")) {
+                    minCoord = minCoord.substring(0, minCoord.toLowerCase().indexOf("m") - 1);
+                }
+                if (maxCoord.toLowerCase().contains("k")) {
+                    multA = 1000;
+                    maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("k") - 1);
+                } else if (maxCoord.toLowerCase().contains("m")) {
+                    maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("m") - 1);
+                }
+                if (minCoord.indexOf(".") == -1) {
+                    min = Integer.parseInt(minCoord);
+                } else {
+                    double mb = Double.parseDouble(minCoord);
+                    min = (int) Math.floor(mb * multI);
+                }
+                if (maxCoord.indexOf(".") == -1) {
+                    max = Integer.parseInt(maxCoord);
+                } else {
+                    double mb = Double.parseDouble(maxCoord);
+                    max = (int) Math.floor(mb * multA);
+                }
+                max = min + max;
+            } else if (myGene.indexOf("-") > 0) {
+                minCoord = myGene.substring(myGene.indexOf(":") + 1, myGene.indexOf("-")).trim();
+                maxCoord = myGene.substring(myGene.indexOf("-") + 1).trim();
+                if (minCoord.toLowerCase().contains("k")) {
+                    multI = 1000;
+                    minCoord = minCoord.substring(0, minCoord.toLowerCase().indexOf("k") - 1);
+                } else if (minCoord.toLowerCase().contains("m")) {
+                    minCoord = minCoord.substring(0, minCoord.toLowerCase().indexOf("m") - 1);
+                }
+                if (maxCoord.toLowerCase().contains("k")) {
+                    multA = 1000;
+                    maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("k") - 1);
+                } else if (maxCoord.toLowerCase().contains("m")) {
+                    maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("m") - 1);
+                }
+                if (minCoord.indexOf(".") == -1) {
+                    min = Integer.parseInt(minCoord);
+                } else {
+                    double mb = Double.parseDouble(minCoord);
+                    min = (int) Math.floor(mb * multI);
+                }
+                if (maxCoord.indexOf(".") == -1) {
+                    max = Integer.parseInt(maxCoord);
+                } else {
+                    double mb = Double.parseDouble(maxCoord);
+                    max = (int) Math.floor(mb * multA);
+                }
+
+            } else {
+                regionError = "You have entered an invalid region.  Please see the examples in the instructions.";
+            }
+            String chrName = "";
+            if (chromosome.toLowerCase().startsWith("chr")) {
+                if (chromosome.length() > 3) {
+                    chrName = chromosome.substring(3);
+                }
+            } else if (chromosome.toLowerCase().startsWith("ch")) {
+                if (chromosome.length() > 2) {
+                    chrName = chromosome.substring(2);
+                }
+            }
+            chrName = chrName.trim();
+            chromosome = "chr" + chrName;
+
+            if (chrName.equals("")) {
+                regionError = "You are missing the name of the chromosome you wish to view.  Example: chr1:50000-1000000";
+            } else {
+                int part = 0;
+                try {
+                    part = Integer.parseInt(chrName);
+                } catch (NumberFormatException e) {
+                }
+                if (chrName.toLowerCase().equals("x") || chrName.toLowerCase().equals("y") || chrName.toLowerCase().equals("m") || (part > 0 && part < 22)) {
+
+                } else {
+                    regionError = "You have entered an invalid chromosome name.  For the supported species the chromosome should be 1-20 or 21 or X or M.  Example: chr1:50000-1000000";
+                }
+            }
+
+            //log.debug("min:"+min+"\nmax:"+max);
+            if (regionError.equals("")) {
+                if (min < max) {
+                    if (min < 1) {
+                        min = 1;
+                    }
+                    DecimalFormat df0 = new DecimalFormat("#,###");
+                    myDisplayGene = chromosome + ":" + df0.format(min) + "-" + df0.format(max);
+                    fullGeneList = gdt.getRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false);
+                    String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
+                    String tmpGeneSymbol = gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
+                    String tmpUcscURL = gdt.getUCSCURL();//(String)session.getAttribute("ucscURL");
+                    //String tmpUcscURLFiltered =gdt.getUCSCURLFiltered();//(String)session.getAttribute("ucscURLFiltered");
+                    if (tmpURL != null) {
+                        genURL.add(tmpURL);
+                        if (tmpGeneSymbol == null) {
+                            geneSymbol.add("");
+                        } else {
+                            geneSymbol.add(tmpGeneSymbol);
                         }
-                        String chrName="";
-                        if(chromosome.toLowerCase().startsWith("chr")){
-                                if(chromosome.length()>3){
-                                        chrName=chromosome.substring(3);
-                                }
-                        }else if(chromosome.toLowerCase().startsWith("ch")){
-                                if(chromosome.length()>2){
-                                        chrName=chromosome.substring(2);
-                                }
+                        if (tmpUcscURL == null) {
+                            ucscURL.add("");
+                        } else {
+                            ucscURL.add(tmpUcscURL);
                         }
-                        chrName=chrName.trim();
-                        chromosome="chr"+chrName;
-			
-                        if(chrName.equals("")){
-                                regionError="You are missing the name of the chromosome you wish to view.  Example: chr1:50000-1000000";
-                        }else{
-                                int part=0;
-                                try{
-                                        part=Integer.parseInt(chrName);
-                                }catch(NumberFormatException e){
-                                }
-                                if(chrName.toLowerCase().equals("x")||chrName.toLowerCase().equals("y")||chrName.toLowerCase().equals("m")||(part>0 && part<22)){
-					
-                                }else{
-                                        regionError="You have entered an invalid chromosome name.  For the supported species the chromosome should be 1-20 or 21 or X or M.  Example: chr1:50000-1000000";
-                                }
-                        }
-			
-                        //log.debug("min:"+min+"\nmax:"+max);
-                        if(regionError.equals("")){
-                                if(min<max){
-                                        if(min<1){
-                                                min=1;
-                                        }
-                                        DecimalFormat df0 = new DecimalFormat("#,###");
-                                        myDisplayGene=chromosome+":"+df0.format(min)+"-"+df0.format(max);
-                                        fullGeneList =gdt.getRegionData(chromosome,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,false);					
-                                        String tmpURL =gdt.getGenURL();//(String)session.getAttribute("genURL");
-                                        String tmpGeneSymbol=gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
-                                        String tmpUcscURL =gdt.getUCSCURL();//(String)session.getAttribute("ucscURL");
-                                        //String tmpUcscURLFiltered =gdt.getUCSCURLFiltered();//(String)session.getAttribute("ucscURLFiltered");
-                                        if(tmpURL!=null){
-                                                genURL.add(tmpURL);
-                                                if(tmpGeneSymbol==null){
-                                                        geneSymbol.add("");
-                                                }else{
-                                                        geneSymbol.add(tmpGeneSymbol);
-                                                }
-                                                if(tmpUcscURL==null){
-                                                        ucscURL.add("");
-                                                }else{
-                                                        ucscURL.add(tmpUcscURL);
-                                                }
                                                 /*if(tmpUcscURLFiltered==null){
                                                         ucscURLFiltered.add("");
                                                 }else{
                                                         ucscURLFiltered.add(tmpUcscURLFiltered);
                                                 }*/
-                                        }
-                                }else{
-                                        regionError="You have entered a SNP.  Please enter a range around the snp such as chr1:50000+5000  or chr1:50000+-2500";
-                                }
-                        }
+                    }
+                } else {
+                    regionError = "You have entered a SNP.  Please enter a range around the snp such as chr1:50000+5000  or chr1:50000+-2500";
                 }
-		
-		
-		
+            }
         }
-	
-	
-        if((action != null) && !action.equals("Go") && genURL!=null && genURL.size()>0 && genURL.get(selectedGene)!=null && genURL.get(selectedGene).startsWith("ERROR:")){
-                int newSelGene=-1;
-                for(int i=0;i<genURL.size() && newSelGene==-1;i++){
-                        if(genURL.get(i)!=null && !genURL.get(i).startsWith("ERROR:")){
-                                newSelGene=i;
-                        }
-                }
-                if(newSelGene>-1){
-                        selectedGene=newSelGene;
-                }
+
+
+    }
+
+
+    if ((action != null) && !action.equals("Go") && genURL != null && genURL.size() > 0 && genURL.get(selectedGene) != null && genURL.get(selectedGene).startsWith("ERROR:")) {
+        int newSelGene = -1;
+        for (int i = 0; i < genURL.size() && newSelGene == -1; i++) {
+            if (genURL.get(i) != null && !genURL.get(i).startsWith("ERROR:")) {
+                newSelGene = i;
+            }
         }
-	
-        if(firstEnsemblID!=null && firstEnsemblID.size()>selectedGene){
-                selectedEnsemblID=firstEnsemblID.get(selectedGene);
+        if (newSelGene > -1) {
+            selectedGene = newSelGene;
         }
-	
-        //convert ArrayLists into comma sep string for submitting with form
-        //Needed to remove all session variable usage
-	
-	
-        String genURLString=oh.getAsSeparatedString(genURL,",");
-        String geneSymString=oh.getAsSeparatedString(geneSymbol,",");
-        String ucscURLString=oh.getAsSeparatedString(ucscURL,",");
-        //String ucscFilterURLString=oh.getAsSeparatedString(ucscURLFiltered,",");
-        String firstENSString=oh.getAsSeparatedString(firstEnsemblID,",");
-	
-        log.debug("end of most code");
+    }
+
+    if (firstEnsemblID != null && firstEnsemblID.size() > selectedGene) {
+        selectedEnsemblID = firstEnsemblID.get(selectedGene);
+    }
+
+    //convert ArrayLists into comma sep string for submitting with form
+    //Needed to remove all session variable usage
+
+
+    String genURLString = oh.getAsSeparatedString(genURL, ",");
+    String geneSymString = oh.getAsSeparatedString(geneSymbol, ",");
+    String ucscURLString = oh.getAsSeparatedString(ucscURL, ",");
+    //String ucscFilterURLString=oh.getAsSeparatedString(ucscURLFiltered,",");
+    String firstENSString = oh.getAsSeparatedString(firstEnsemblID, ",");
+
+    log.debug("end of most code");
 %>
 
 
 <div id="oldIE" style="display:none;color:#FF0000;">
-    This page requires IE 10+. Your browser appears to be an older version of Internet Explorer.  To use this feature please use a different browser(see <a href="<%=commonDir%>siteRequirements.jsp">Site Requirements</a>).  We are sorry for any inconvenience this may cause.  We're working hard to provide additional features which makes it difficult to maintain compatibility with all browsers.
+    This page requires IE 10+. Your browser appears to be an older version of Internet Explorer. To use this feature
+    please use a different browser(see <a href="<%=commonDir%>siteRequirements.jsp">Site Requirements</a>). We are sorry
+    for any inconvenience this may cause. We're working hard to provide additional features which makes it difficult to
+    maintain compatibility with all browsers.
 </div>
 
 
-<%if(popup){%>
+<%if (popup) {%>
 <div style="text-align:center;">
     <span class="button" onclick="window.close()" style="width:150px;">Close this Window</span>
 </div>
 <%}%>
 
 <div id="IEproblem" style="display:none;color:#FF0000;text-align:center;">
-    Internet Explorer is not currently recommended, while most features will work, you may encounter issues and poor performance.  Please use FireFox or Chrome.<BR>
-    We are working on fixing issues with using the Genome/Transcriptome Browser in Internet Explorer and we are sorry for any inconvenience.
+    Internet Explorer is not currently recommended, while most features will work, you may encounter issues and poor
+    performance. Please use FireFox or Chrome.<BR>
+    We are working on fixing issues with using the Genome/Transcriptome Browser in Internet Explorer and we are sorry
+    for any inconvenience.
 </div>
 
 <div id="inst" style="text-align:left;color:#000000;margin-left:30px;">
 
-    1. Enter a gene identifier(e.g. gene symbol, probe set ID, Ensembl ID, etc.) in the gene field.<BR />
-    or<BR />
+    1. Enter a gene identifier(e.g. gene symbol, probe set ID, Ensembl ID, etc.) in the gene field.<BR/>
+    or<BR/>
     Enter a region such as
     <div style="padding-left:20px;">
-        "chr1:1-50000" which would be Chromosome 1 @ bp 1-50,000.<BR />
-        "chr1:5000+-2000" which would be Chromosome 1 @ bp 3,000-7,000.<BR />
-        "chr1:5000+2000" which would be Chromosome 1 @ bp 5,000-7,000.<BR />
+        chr1:1-50000 is Chromosome 1 @ bp 1-50,000.<BR/>
+        chr1:5000+-2000 is Chromosome 1 @ bp 3,000-7,000.<BR/>
+        chr1:5000+2000 is Chromosome 1 @ bp 5,000-7,000.<BR/>
+        chr1:50.126-51.345 is Chromosome 1 @ 50,126,000-51,345,000<BR>
+        chr1:50.15+-100.0k is chromosome 1 @ 50,150,000-50,250,000<BR>
     </div>
-    or<BR />
-    Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat genome that correspond to a region of interest in the Human/Mouse/Rat genome.<BR />
-    2. Choose a species.<BR />
-    3. Click Get Transcription Details.<BR /><BR />
-    <BR /><BR /><BR />
+    or<BR/>
+    Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat genome that correspond to a region of
+    interest in the Human/Mouse/Rat genome.<BR/>
+    2. Choose a species.<BR/>
+    3. Click Get Transcription Details.<BR/><BR/>
+    <BR/><BR/><BR/>
 </div>
-
 
 
 <div style="text-align:center">
 
 
-    <%if(genURL.size()>1){%>
+    <%if (genURL.size() > 1) {%>
     <label><span style="font-weight:bold;">Multiple genes were returned please select the gene of Interest:</span>
-        <select name="geneSelectCBX" id="geneSelectCBX" >
-            <%for(int i=0;i<firstEnsemblID.size();i++){
+        <select name="geneSelectCBX" id="geneSelectCBX">
+            <%
+                for (int i = 0; i < firstEnsemblID.size(); i++) {
             %>
-            <option value="<%=firstEnsemblID.get(i)%>" <%if((geneSymbol.get(i)!=null&&geneSymbol.get(i).toLowerCase().equals(myGene.toLowerCase()))){%>selected<%}%>>
-                <%if(geneSymbol.get(i)!=null&&!geneSymbol.get(i).startsWith("ERROR")){%>
-                <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>) 
-                <%}else if(geneSymbol.get(i).startsWith("ERROR")){%>
-                <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>) 
-                <%}else{%>
+            <option value="<%=firstEnsemblID.get(i)%>"
+                    <%if((geneSymbol.get(i)!=null&&geneSymbol.get(i).toLowerCase().equals(myGene.toLowerCase()))){%>selected<%}%>>
+                <%if (geneSymbol.get(i) != null && !geneSymbol.get(i).startsWith("ERROR")) {%>
+                <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
+                <%} else if (geneSymbol.get(i).startsWith("ERROR")) {%>
+                <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
+                <%} else {%>
                 <%=firstEnsemblID.get(i)%>
                 <%}%>
 
@@ -577,69 +686,81 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
         </select>
     </label>
 
-    <input type="submit" name="action" id="selGeneBTN" value="Go" onClick="enterSelectedGene()"><BR />
+    <input type="submit" name="action" id="selGeneBTN" value="Go" onClick="enterSelectedGene()"><BR/>
     Hint: Try other synonyms if the first ID that you enter is not found.
-    <BR /><BR />
+    <BR/><BR/>
     <%}%>
 
 
-    <form method="post" 
+    <form method="post"
           action="gene.jsp"
           enctype="application/x-www-form-urlencoded"
           name="geneCentricForm" id="geneCentricForm">
-        <%if(!regionError.equals("")){%>
-        <div style=" color:#FF0000;"><%=regionError%></div>
+        <%if (!regionError.equals("")) {%>
+        <div style=" color:#FF0000;"><%=regionError%>
+        </div>
         <%}%>
         <label>Gene Identifier or Region:
-            <input type="text" name="geneTxt" id="geneTxt" size="35" value="<%= (myDisplayGene!=null)?myDisplayGene:"" %>">
+            <input type="text" name="geneTxt" id="geneTxt" size="35"
+                   value="<%= (myDisplayGene!=null)?myDisplayGene:"" %>">
         </label>
 
 
         <label>Species:
             <select name="speciesCB" id="speciesCB">
-                <option value="Rn" <%if(myOrganism!=null && myOrganism.equals("Rn")){%>selected<%}%>>Rattus norvegicus</option>
-                <option value="Mm" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>selected<%}%>>Mus musculus</option>
+                <option value="Rn" <%if(myOrganism!=null && myOrganism.equals("Rn")){%>selected<%}%>>Rattus norvegicus
+                </option>
+                <option value="Mm" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>selected<%}%>>Mus musculus
+                </option>
             </select>
         </label>
-        <span class="tooltipster" title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img src="<%=imagesDir%>/icons/info.gif"></span>
+        <span class="tooltipster"
+              title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
+                src="<%=imagesDir%>/icons/info.gif"></span>
 
         <label>Initial View:
             <select name="defaultView" id="defaultView">
-                <%for(int i=0;i<views.size();i++){
-                    if(views.get(i).getGenomeVersion().equals(defaultGenomeVer) &&
-                            (views.get(i).getOrganism().toUpperCase().equals("AA") || 
-                                myOrganism.toUpperCase().equals(views.get(i).getOrganism().toUpperCase()))
-                        ){
-                                String display=views.get(i).getName();
-                                if(views.get(i).getUserID()==0){
-                                        display=display+"   (Predefined)";
-                                }else{
-                                        display=display+"   (Custom)";
-                                }
+                <%
+                    for (int i = 0; i < views.size(); i++) {
+                        if (views.get(i).getGenomeVersion().equals(defaultGenomeVer) &&
+                                (views.get(i).getOrganism().toUpperCase().equals("AA") ||
+                                        myOrganism.toUpperCase().equals(views.get(i).getOrganism().toUpperCase()))
+                                ) {
+                            String display = views.get(i).getName();
+                            if (views.get(i).getUserID() == 0) {
+                                display = display + "   (Predefined)";
+                            } else {
+                                display = display + "   (Custom)";
+                            }
                 %>
-                <option value="<%=views.get(i).getID()%>" <%if(defView.equals(Integer.toString(views.get(i).getID()))){%>selected<%}%>><%=display%></option>
+                <option value="<%=views.get(i).getID()%>"
+                        <%if(defView.equals(Integer.toString(views.get(i).getID()))){%>selected<%}%>><%=display%>
+                </option>
                 <%}%>
                 <%}%>
             </select>
 
         </label>
-        <span style="padding-left:10px;"> <input type="submit" name="goBTN" id="goBTN" value="Go" onClick="return displayWorking()"></span>
-        <input type="hidden" name="pvalueCutoffInput" id="pvalueCutoffInput" value="<%=pValueCutoff%>" />
-        <input type="hidden" name="forwardPvalueCutoffInput" id="forwardPvalueCutoffInput" value="<%=forwardPValueCutoff%>" />
-        <input type="hidden" name="tissues" id="tissues" value="" />
-        <input type="hidden" name="chromosomes" id="chromosomes" value="" />
-        <input type="hidden" name="levels" id="levels" value="" />
-        <input type="hidden" name="action" id="action" value="Get Transcription Details" />
-        <input type="hidden" name="genURLArray" id="genURLArray" value="<%=genURLString%>" />
-        <input type="hidden" name="geneSymArray" id="geneSymArray" value="<%=geneSymString%>" />
-        <input type="hidden" name="ucscURLArray" id="ucscURLArray" value="<%=ucscURLString%>" />
-        <input type="hidden" name="firstENSArray" id="firstENSArray" value="<%=firstENSString%>" />
-        <input type="hidden" name="geneSelect" id="geneSelect" value="<%=selectedGene%>" />
-        <input type="hidden" name="genomeVer" id="genomeVer" value="<%=genomeVer%>" />
+        <span style="padding-left:10px;"> <input type="submit" name="goBTN" id="goBTN" value="Go"
+                                                 onClick="return displayWorking()"></span>
+        <input type="hidden" name="pvalueCutoffInput" id="pvalueCutoffInput" value="<%=pValueCutoff%>"/>
+        <input type="hidden" name="forwardPvalueCutoffInput" id="forwardPvalueCutoffInput"
+               value="<%=forwardPValueCutoff%>"/>
+        <input type="hidden" name="tissues" id="tissues" value=""/>
+        <input type="hidden" name="chromosomes" id="chromosomes" value=""/>
+        <input type="hidden" name="levels" id="levels" value=""/>
+        <input type="hidden" name="action" id="action" value="Get Transcription Details"/>
+        <input type="hidden" name="genURLArray" id="genURLArray" value="<%=genURLString%>"/>
+        <input type="hidden" name="geneSymArray" id="geneSymArray" value="<%=geneSymString%>"/>
+        <input type="hidden" name="ucscURLArray" id="ucscURLArray" value="<%=ucscURLString%>"/>
+        <input type="hidden" name="firstENSArray" id="firstENSArray" value="<%=firstENSString%>"/>
+        <input type="hidden" name="geneSelect" id="geneSelect" value="<%=selectedGene%>"/>
+        <input type="hidden" name="genomeVer" id="genomeVer" value="<%=genomeVer%>"/>
     </form>
-    <BR />
+    <BR/>
     Or
-    <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat" onClick="openTranslateRegion()"> 
+    <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
+           onClick="openTranslateRegion()">
 </div>
 
 <div class="translate">
@@ -671,6 +792,7 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
     if (!initChrome && !initFireFox && !initSafari && inittestIE) {
         $("#IEproblem").show();
     }
+
     function isLocalStorage() {
         var test = 'test';
         try {
@@ -717,7 +839,7 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
 
     function getMainViewData(shouldUpdate) {
         var tmpContext = "/" + pathPrefix;
-        console.log("main view url:"+tmpContext);
+        console.log("main view url:" + tmpContext);
         if (pathPrefix == "") {
             tmpContext = "";
         }
@@ -828,7 +950,7 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
     }
 
     function setupDefaultView() {
-        
+
         var tmp = $("#speciesCB").val();
         if (!overideGV) {
             var specStoredGenomeVer = checkStoredGenomeVersion(tmp);
@@ -847,33 +969,33 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
         filterViewList = [];
         for (var i = 0; i < defviewList.length; i++) {
             if (defviewList[i].genomeVersion.indexOf(genomeVer) > -1 &&
-                    (defviewList[i].Organism.toLowerCase() === "aa" || defviewList[i].Organism.toLowerCase() === $('#speciesCB').val().toLowerCase())
-                    ) {
+                (defviewList[i].Organism.toLowerCase() === "aa" || defviewList[i].Organism.toLowerCase() === $('#speciesCB').val().toLowerCase())
+            ) {
                 filterViewList.push(defviewList[i]);
             }
         }
         var opt = d3.select("#defaultView").selectAll('option').data(filterViewList);
         opt.enter().append("option")
-                .attr("value", function (d) {
-                    return d.ViewID;
-                })
-                .text(function (d) {
-                    var ret = d.Name;
-                    if (d.UserID == 0) {
-                        ret = ret + "    (Predefined)";
-                    } else {
-                        ret = ret + "   (Custom)";
+            .attr("value", function (d) {
+                return d.ViewID;
+            })
+            .text(function (d) {
+                var ret = d.Name;
+                if (d.UserID == 0) {
+                    ret = ret + "    (Predefined)";
+                } else {
+                    ret = ret + "   (Custom)";
+                }
+                if (d.Organism != "AA") {
+                    if (d.Organism == "RN") {
+                        ret = ret + "      (Rat Only)";
+                    } else if (d.Organism == "MM") {
+                        ret = ret + "     (Mouse Only)";
                     }
-                    if (d.Organism != "AA") {
-                        if (d.Organism == "RN") {
-                            ret = ret + "      (Rat Only)";
-                        } else if (d.Organism == "MM") {
-                            ret = ret + "     (Mouse Only)";
-                        }
-                    }
+                }
 
-                    return ret;
-                });
+                return ret;
+            });
         opt.exit().remove();
         var test = $("#defaultView").val(defaultView)[0];
         if (test.selectedIndex === -1 && filterViewList.length > 0) {
@@ -893,7 +1015,7 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
         for (var i = 0; i < defviewList.length; i++) {
             console.log(defviewList[i].ViewID + "  " + defviewList[i].genomeVersion + ":" + genomeVer);
             if (defviewList[i].Organism.toLowerCase() === "aa" || defviewList[i].Organism.toLowerCase() === $('#speciesCB').val().toLowerCase()
-                    ) {
+            ) {
                 filterViewList.push(defviewList[i]);
                 if (typeof curView !== 'undefined' && typeof curView.Name !== 'undefined' && curView.Name === defviewList[i].Name) {
                     newViewID = defviewList[i].ViewID;
@@ -921,8 +1043,8 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
         for (var i = 0; i < defviewList.length; i++) {
             console.log(defviewList[i].ViewID + "  " + defviewList[i].genomeVersion + ":" + genomeVer);
             if (defviewList[i].genomeVersion.indexOf(genomeVer) > -1 &&
-                    (defviewList[i].Organism.toLowerCase() === "aa" || defviewList[i].Organism.toLowerCase() === $('#speciesCB').val().toLowerCase())
-                    ) {
+                (defviewList[i].Organism.toLowerCase() === "aa" || defviewList[i].Organism.toLowerCase() === $('#speciesCB').val().toLowerCase())
+            ) {
                 filterViewList.push(defviewList[i]);
                 if (typeof curView !== 'undefined' && typeof curView.Name !== 'undefined' && curView.Name === defviewList[i].Name) {
                     newViewID = defviewList[i].ViewID;
@@ -931,26 +1053,26 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
         }
         var opt = d3.select("#defaultView").selectAll('option').data(filterViewList);
         opt.enter().append("option")
-                .attr("value", function (d) {
-                    return d.ViewID;
-                })
-                .text(function (d) {
-                    var ret = d.Name;
-                    if (d.UserID == 0) {
-                        ret = ret + "    (Predefined)";
-                    } else {
-                        ret = ret + "   (Custom)";
+            .attr("value", function (d) {
+                return d.ViewID;
+            })
+            .text(function (d) {
+                var ret = d.Name;
+                if (d.UserID == 0) {
+                    ret = ret + "    (Predefined)";
+                } else {
+                    ret = ret + "   (Custom)";
+                }
+                if (d.Organism != "AA") {
+                    if (d.Organism == "RN") {
+                        ret = ret + "      (Rat Only)";
+                    } else if (d.Organism == "MM") {
+                        ret = ret + "     (Mouse Only)";
                     }
-                    if (d.Organism != "AA") {
-                        if (d.Organism == "RN") {
-                            ret = ret + "      (Rat Only)";
-                        } else if (d.Organism == "MM") {
-                            ret = ret + "     (Mouse Only)";
-                        }
-                    }
+                }
 
-                    return ret;
-                });
+                return ret;
+            });
         opt.exit().remove();
         if (newViewID > 0) {
             $("#defaultView").val(newViewID);
@@ -972,53 +1094,69 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
 
 </script>
 
-<%if(scriptError){%>
+<%if (scriptError) {%>
 <div class="error">
-    Your entry does not match a valid Gene or Region.  Please try again using the examples above.  
-    The administrator has been notified, if message with a valid gene or region, they will look into and correct the issue.
+    Your entry does not match a valid Gene or Region. Please try again using the examples above.
+    The administrator has been notified, if message with a valid gene or region, they will look into and correct the
+    issue.
 </div>
-<%}else if(organismError){%>
+<%} else if (organismError) {%>
 <div class="error">
-    The submitted organism does not match a valid entry.  The only valid options are 'Rn' or 'Mm' for Rat or Mouse respectively.  
-    If you followed a link and received this message there is a problem with the url, but please enter your gene symbol or other 
-    identifier and submit the form again.  Using the form will ensure the species submitted is correct.
+    The submitted organism does not match a valid entry. The only valid options are 'Rn' or 'Mm' for Rat or Mouse
+    respectively.
+    If you followed a link and received this message there is a problem with the url, but please enter your gene symbol
+    or other
+    identifier and submit the form again. Using the form will ensure the species submitted is correct.
 </div>
-<%}else if(genURL.size()==1){%>
+<%} else if (genURL.size() == 1) {%>
 
 
 <%@ include file="regionResults.jsp" %>
 <%@ include file="web/GeneCentric/resultsHelp.jsp" %>
 
 
-<%}else{%>
+<%} else {%>
 
-<%if(displayNoEnsembl && ! myGene.startsWith("ENS")){ %>
+<%if (displayNoEnsembl && !myGene.startsWith("ENS")) { %>
 Hint: Try other synonyms if the first ID that you enter is not found.
-<BR /><BR />
-<BR /><div class="error">ERROR:No Ensembl ID found for the ID entered.<BR /><BR />
-    The Gene ID entered could not be translated to an Ensembl ID to retrieve gene information.  Please try an alternate identifier for this gene.  This gene ID has been reported to improve the translation of many Gene IDs to Ensembl Gene IDs.  <BR /><BR /><b>Note:</b> At this time if there is no annotation in Ensembl for a gene we will not be able to display information about it, however if you have found your gene of interest on Ensembl entering the Ensembl Gene ID, which begins with ENSRNOG or ENSMUSG, should work.</div><BR /><BR />
-<BR />
+<BR/><BR/>
+<BR/>
+<div class="error">ERROR:No Ensembl ID found for the ID entered.<BR/><BR/>
+    The Gene ID entered could not be translated to an Ensembl ID to retrieve gene information. Please try an alternate
+    identifier for this gene. This gene ID has been reported to improve the translation of many Gene IDs to Ensembl Gene
+    IDs. <BR/><BR/><b>Note:</b> At this time if there is no annotation in Ensembl for a gene we will not be able to
+    display information about it, however if you have found your gene of interest on Ensembl entering the Ensembl Gene
+    ID, which begins with ENSRNOG or ENSMUSG, should work.
+</div>
+<BR/><BR/>
+<BR/>
 
-<%}else if(displayNoEnsembl && myGene.startsWith("ENS")){%>
-<div class="error">ERROR: The Ensembl ID entered is not present in the current version of the Ensembl database being used
+<%} else if (displayNoEnsembl && myGene.startsWith("ENS")) {%>
+<div class="error">ERROR: The Ensembl ID entered is not present in the current version of the Ensembl database being
+    used
     for your selected genome version (<%=genomeVer%>).
     <BR><BR>
-    <%if(genomeVer.startsWith("rn")){
-        int port=request.getServerPort();
-        String prefix="http";
-        if(port==443){
-            prefix=prefix+"s";
-        }
-        String newGenomeVer="rn5";
+    <%
+        if (genomeVer.startsWith("rn")) {
+            int port = request.getServerPort();
+            String prefix = "http";
+            if (port == 443) {
+                prefix = prefix + "s";
+            }
+            String newGenomeVer = "rn5";
     %>
-    We recommend trying again after switching genome versions to <% if(genomeVer.equals("rn5")){newGenomeVer="rn6";%>Rn6<%}else{%>Rn5<%}%> by <a href="<%=prefix+"://"+host+contextRoot+"gene.jsp?geneTxt="+myGene+"&genomeVer="+newGenomeVer+"&auto=Y&overideGV=Y"%>">following this link</a>.
+    We recommend trying again after switching genome versions to <% if (genomeVer.equals("rn5")) {
+        newGenomeVer = "rn6";%>Rn6<%} else {%>Rn5<%}%> by <a
+            href="<%=prefix+"://"+host+contextRoot+"gene.jsp?geneTxt="+myGene+"&genomeVer="+newGenomeVer+"&auto=Y&overideGV=Y"%>">following
+        this link</a>.
     <BR><BR>
-    It is possible that the ID is from an older ensembl/genome version or an intermediate version of the ensembl database that is not supported on PhenoGen.  We only support the latest
-    version of the Ensembl database for each genome version.  Currently v79 for rn5 and v84 for rn6.
+    It is possible that the ID is from an older ensembl/genome version or an intermediate version of the ensembl
+    database that is not supported on PhenoGen. We only support the latest
+    version of the Ensembl database for each genome version. Currently v79 for rn5 and v84 for rn6.
 
     <%}%>
-</div>  
-<BR><BR><BR />
+</div>
+<BR><BR><BR/>
 <%}%>
 
 
@@ -1030,33 +1168,39 @@ Hint: Try other synonyms if the first ID that you enter is not found.
         <TR>
             <TD style="text-align:center;">
                 <h2>Quick Navigation Demonstration</h2>
-                <BR />
-                <video width="350" height="250" controls="controls" poster="<%=contextRoot%>web/demo/BrowserNavDemo_350.png" preload="none">
+                <BR/>
+                <video width="350" height="250" controls="controls"
+                       poster="<%=contextRoot%>web/demo/BrowserNavDemo_350.png" preload="none">
                     <source src="<%=contextRoot%>web/demo/BrowserNavDemo.mp4" type="video/mp4">
                     <source src="<%=contextRoot%>web/demo/BrowserNavDemo.webm" type="video/webm">
                     <object data="<%=contextRoot%>web/demo/BrowserNavDemo.mp4" width="350" height="250">
                     </object>
-                    Your browser is not likely to work with the Genome Browser if you are seeing this message.  Please see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
+                    Your browser is not likely to work with the Genome Browser if you are seeing this message. Please
+                    see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
                 </video>
             </TD>
             <TD style="text-align:center;">
-                <h2>Custom View/Custom Track Demonstration</h2><BR />
-                <video width="350" height="250" controls="controls" poster="<%=contextRoot%>web/demo/customTrackDemo_350.png" preload="none">
+                <h2>Custom View/Custom Track Demonstration</h2><BR/>
+                <video width="350" height="250" controls="controls"
+                       poster="<%=contextRoot%>web/demo/customTrackDemo_350.png" preload="none">
                     <source src="<%=contextRoot%>web/demo/customTrackDemo.mp4" type="video/mp4">
                     <source src="<%=contextRoot%>web/demo/customTrackDemo.webm" type="video/webm">
                     <object data="<%=contextRoot%>web/demo/customTrackDemo.mp4" width="350" height="250">
                     </object>
-                    Your browser is not likely to work with the Genome Browser if you are seeing this message.  Please see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
+                    Your browser is not likely to work with the Genome Browser if you are seeing this message. Please
+                    see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
                 </video>
             </TD>
             <TD style="text-align:center;">
-                <h2>PhenoGen Overview</h2><BR />
-                <video width="350" height="250" controls="controls" poster="<%=contextRoot%>web/demo/slides2_350.png" preload="none">
+                <h2>PhenoGen Overview</h2><BR/>
+                <video width="350" height="250" controls="controls" poster="<%=contextRoot%>web/demo/slides2_350.png"
+                       preload="none">
                     <source src="<%=contextRoot%>web/demo/workshop.mp4" type="video/mp4">
                     <source src="<%=contextRoot%>web/demo/workshop.webm" type="video/webm">
                     <object data="<%=contextRoot%>web/demo/workshop.mp4" width="350" height="250">
                     </object>
-                    Your browser is not likely to work with the Genome Browser if you are seeing this message.  Please see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
+                    Your browser is not likely to work with the Genome Browser if you are seeing this message. Please
+                    see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
                 </video>
             </TD>
         </TR>
@@ -1070,20 +1214,25 @@ Hint: Try other synonyms if the first ID that you enter is not found.
                 <table style="width:98%">
                     <TR>
                         <TD style="text-align:center;">
-                            <a class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help1.1.jpg" title="Basic Controls on the main image."><img src="web/GeneCentric/help1.1_300.jpg"  /></a>
+                            <a class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help1.1.jpg"
+                               title="Basic Controls on the main image."><img
+                                    src="web/GeneCentric/help1.1_300.jpg"/></a>
                         </TD>
                         <TD style="text-align:center;">
-                            <a class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help2.jpg" title="Controls to select and edit views."><img src="web/GeneCentric/help2_300.jpg" /></a>
+                            <a class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help2.jpg"
+                               title="Controls to select and edit views."><img src="web/GeneCentric/help2_300.jpg"/></a>
                         </TD>
                         <TD style="text-align:center;">
-                            <a class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help3.jpg" title="Controls to select and edit tracks."><img src="web/GeneCentric/help3_300.jpg" /></a>
+                            <a class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help3.jpg"
+                               title="Controls to select and edit tracks."><img
+                                    src="web/GeneCentric/help3_300.jpg"/></a>
                         </TD>
                     </TR>
                 </table>
             </TD>
         </TR>
     </table>
-    <BR /><BR /><BR /><BR />
+    <BR/><BR/><BR/><BR/>
 </div>
 
 <%}%>
@@ -1118,7 +1267,7 @@ Hint: Try other synonyms if the first ID that you enter is not found.
     });
 </script>
 
-<%if(popup){%>
+<%if (popup) {%>
 <div style="text-align:center;">
     <span class="button" onclick="window.close()" style="width:150px;">Close this Window</span>
 </div>
