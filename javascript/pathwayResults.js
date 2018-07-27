@@ -10,7 +10,7 @@
       $("#PathwayPlotLink").click(function(){
             
             var pathwayPlotUrl = $("#pathwayPlotUrl").val();
-            $.get(contextPath + "/web/geneLists/pathwayPlot.jsp", 
+            $.get("/web/geneLists/pathwayPlot.jsp",
                   {pathwayPlotUrl: pathwayPlotUrl},
                       function(data){
                              itemDetails.dialog("open").html(data);

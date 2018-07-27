@@ -32,7 +32,7 @@ function setupPage( ) {
 		$(this).find("td.details").click( function() {
 			var datasetID = $(this).parent("tr").attr("id").split( "|||" )[0];
 			var version = $(this).parent("tr").attr("id").split( "|||" )[1];
-			$.get(contextPath + "/web/common/formatParameters.jsp", 
+			$.get("/web/common/formatParameters.jsp",
 				{datasetID: datasetID, 
 				datasetVersion: version, 
 				parameterType:"datasetVersion"},
@@ -47,7 +47,7 @@ function setupPage( ) {
 		$(this).find("td").slice(2,12).css({"text-align" : "center"});
 	});
 
-	setupDeleteButton(contextPath + "/web/datasets/deleteDataset.jsp"); 
-	setupDownloadButton(contextPath + "/web/datasets/downloadDataset.jsp");
+	setupDeleteButton("/web/datasets/deleteDataset.jsp");
+	setupDownloadButton("/web/datasets/downloadDataset.jsp");
 }
 

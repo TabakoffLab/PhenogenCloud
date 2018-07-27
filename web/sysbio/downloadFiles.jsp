@@ -61,8 +61,8 @@
                                                                 if(port==443){
                                                                     http="https://";
                                                                 }
-								String url=http+request.getServerName()+contextPath+checkedList.get(0);
-								String redirurl=http+request.getServerName()+contextPath+"/directDownloads.jsp?url="+url;
+								String url=http+request.getServerName()+checkedList.get(0);
+								String redirurl=http+request.getServerName()+"/directDownloads.jsp?url="+url;
 								response.sendRedirect(redirurl);
 							}
                         	

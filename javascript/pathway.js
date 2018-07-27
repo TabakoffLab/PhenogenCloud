@@ -30,7 +30,7 @@ function setupPage() {
 		});
 	});
 	setupCreateNewPathwayButton();
-	setupDeleteButton(contextPath + "/web/geneLists/deleteGeneListAnalysis.jsp"); 
+	setupDeleteButton("/web/geneLists/deleteGeneListAnalysis.jsp");
 }
 
 

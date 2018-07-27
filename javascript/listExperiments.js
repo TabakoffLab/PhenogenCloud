@@ -35,7 +35,7 @@ function setupPage() {
 
         	$(this).find("td.details").click( function() {
             		var experimentID = $(this).parent("tr").attr("id");
-            		$.get(contextPath + "/web/experiments/showExpDetails.jsp", 
+            		$.get("/web/experiments/showExpDetails.jsp",
 				{experimentID: experimentID},
                 		function(data){
                     			itemDetails.dialog("open").html(data);
@@ -47,6 +47,6 @@ function setupPage() {
         	$(this).find("td").slice(2,7).css({"text-align" : "center"});
 	});
 
-	setupDeleteButton(contextPath + "/web/experiments/deleteExperiment.jsp"); 
+	setupDeleteButton("/web/experiments/deleteExperiment.jsp");
 }
 

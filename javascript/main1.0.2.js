@@ -36,15 +36,15 @@ function prepareCrumbTrail( jsonTrail ) {
 	 * screens that will be accessed 
 	/*/
 	var masterJsonTrail = {
-		"Home" : contextPath + "/web/common/" + "startPage.jsp",
-        	"Research Genes" : contextPath + "/web/geneLists/" + "geneListMain.jsp",
-        	"Location EQTL" : contextPath + "/web/geneLists/" + "locationEQTL.jsp",
-        	"Annotation" : contextPath + "/web/geneLists/" + "annotation.jsp",
-        	"Analyze Microarray Data" : contextPath + "/web/datasets/" + "microarrayMain.jsp",
-        	"Differential Expression Analysis" : contextPath + "/web/datasets/" + "filters.jsp?analysisType=diffExp",
-        	"Cluster Analysis" : contextPath + "/web/datasets/" + "filters.jsp?analysisType=cluster",
-        	"Correlation Analysis" : contextPath + "/web/datasets/" + "correlation.jsp",
-        	"Investigate QTL Regions" : contextPath + "/web/geneLists/" + "locationEQTL.jsp"
+		"Home" : "/web/common/" + "startPage.jsp",
+        	"Research Genes" : "/web/geneLists/" + "geneListMain.jsp",
+        	"Location EQTL" :  "/web/geneLists/" + "locationEQTL.jsp",
+        	"Annotation" :  "/web/geneLists/" + "annotation.jsp",
+        	"Analyze Microarray Data" : "/web/datasets/" + "microarrayMain.jsp",
+        	"Differential Expression Analysis" :  "/web/datasets/" + "filters.jsp?analysisType=diffExp",
+        	"Cluster Analysis" :  "/web/datasets/" + "filters.jsp?analysisType=cluster",
+        	"Correlation Analysis" :  "/web/datasets/" + "correlation.jsp",
+        	"Investigate QTL Regions" : "/web/geneLists/" + "locationEQTL.jsp"
 	};
 
     if ( jsonTrail != undefined ) {

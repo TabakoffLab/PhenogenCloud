@@ -198,7 +198,7 @@ function TrackMenu(level){
 	};
 
 	that.getTrackData=function(){
-		var tmpContext=contextPath +"/"+ pathPrefix;
+		var tmpContext="/"+ pathPrefix;
 		if(pathPrefix===""){
 			tmpContext="";
 		}
@@ -378,7 +378,7 @@ function TrackMenu(level){
 						newTrackString=newTrackString+trackStrings[j]+"<;>";
 					}
 				}
-				var tmpContext=contextPath +"/"+ pathPrefix;
+				var tmpContext="/"+ pathPrefix;
 				if(!pathPrefix){
 					tmpContext="";
 				}
@@ -402,7 +402,7 @@ function TrackMenu(level){
 			}
 		}else if(d.Source==="db"){
 			//remove from the database
-			var tmpContext=contextPath +"/"+ pathPrefix;
+			var tmpContext="/"+ pathPrefix;
 			if(!pathPrefix){
 				tmpContext="";
 			}
@@ -578,7 +578,7 @@ function TrackMenu(level){
 		}
 		trackClass="custom"+trackClass;
 		if(uid>0){
-			var tmpContext=contextPath +"/"+ pathPrefix;
+			var tmpContext="/"+ pathPrefix;
 			if(!pathPrefix){
 				tmpContext="";
 			}

@@ -56,8 +56,8 @@ function setupPage() {
         	$(this).find("td").slice(1,9).css({"text-align" : "center"});
 	});*/
 
-	setupLocalDeleteButton(contextPath + "/web/datasets/deleteFilterStat.jsp"); 
-	setupExtendButton(contextPath + "/web/datasets/extendFilterStat.jsp");
+	setupLocalDeleteButton( "/web/datasets/deleteFilterStat.jsp");
+	setupExtendButton("/web/datasets/extendFilterStat.jsp");
 	//setupDownloadButton(contextPath + "/web/datasets/downloadDataset.jsp");
 }
 

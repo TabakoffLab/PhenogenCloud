@@ -70,7 +70,7 @@ function GeneLists(){
                         $("tr#gl"+id).find("td.details").click( function() {
                                        var geneListID = $(this).parent("tr").attr("id").substr(2);
                                        var parameterGroupID = $(this).parent("tr").attr("parameterGroupID");
-                                       $.get(contextPath + "/web/geneLists/formatParametersGL.jsp", 
+                                       $.get("/web/geneLists/formatParametersGL.jsp",
                                                {geneListID: geneListID, 
                                                parameterGroupID: parameterGroupID,
                                                parameterType:"geneList"},
@@ -109,7 +109,7 @@ function GeneLists(){
                    }
                    
                    $.ajax({
-                        url: contextPath+"/web/access/linkEmail.jsp",
+                        url: "/web/access/linkEmail.jsp",
                         type: 'GET',
                         cache: false,
                         data: { uuid:PhenogenAnonSession.UUID },

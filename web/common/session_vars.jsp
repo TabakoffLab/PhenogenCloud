@@ -31,7 +31,7 @@
 		if( ((User)request.getSession(false).getAttribute("userLoggedIn")).getUser_name().equals("anon") ){
 			String url=request.getRequestURL().toString();
 			url=url.substring(url.indexOf("/web"));
-			response.sendRedirect("/web/access/loginPage.jsp?url="+contextPath+url);
+			response.sendRedirect("/web/access/loginPage.jsp?url="+url);
 		}else{
 			userID = Integer.parseInt((String) session.getAttribute("userID"));
 			//

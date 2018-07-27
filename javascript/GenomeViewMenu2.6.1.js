@@ -208,7 +208,7 @@ function ViewMenu(level){
 		that.setupImage(settingStr,d);
 		$("div.viewsLevel"+that.level).hide();
 		$("div.trackLevel"+that.level).hide();
-		var tmpContext=contextPath +"/"+ pathPrefix;
+		var tmpContext="/"+ pathPrefix;
 		if(d.Source==="db"){
 			if(!pathPrefix){
 				tmpContext="";
@@ -303,7 +303,7 @@ function ViewMenu(level){
 	};
 
 	that.getViewData=function(){
-		var tmpContext=contextPath +"/"+ pathPrefix;
+		var tmpContext="/"+ pathPrefix;
 		if(!pathPrefix){
 			tmpContext="";
 		}
@@ -758,7 +758,7 @@ function ViewMenu(level){
 				if(type==="copy"){
 					copyID=that.findSelectedView().ViewID;
 				}
-				var tmpContext=contextPath +"/"+ pathPrefix;
+				var tmpContext="/"+ pathPrefix;
 				if(!pathPrefix){
 					tmpContext="";
 				}
@@ -784,7 +784,7 @@ function ViewMenu(level){
 				var desc=$("#viewDescTxt"+that.level).val();
 				var type="blank";
 				var copyID=-1;
-				var tmpContext=contextPath +"/"+ pathPrefix;
+				var tmpContext="/"+ pathPrefix;
 				if(!pathPrefix){
 					tmpContext="";
 				}
@@ -875,7 +875,7 @@ function ViewMenu(level){
 		if(uid>0){
 			//save tracks/settings
 			var trackList=svgImage.generateSettingsString();
-			var tmpContext=contextPath +"/"+ pathPrefix;
+			var tmpContext="/"+ pathPrefix;
 			if(!pathPrefix){
 				tmpContext="";
 			}
@@ -969,7 +969,7 @@ function ViewMenu(level){
 		var ind=that.findSelectedViewIndex();
 		var d=that.viewList[ind];
 		if(d.Source==="db"){
-			var tmpContext=contextPath +"/"+ pathPrefix;
+			var tmpContext="/"+ pathPrefix;
 			if(!pathPrefix){
 				tmpContext="";
 			}

@@ -122,7 +122,7 @@ function runPromoter(){
 	}
 	console.log(params);
 	jQuery.ajax({
-            url: contextPath + "/web/geneLists/include/runPromoter.jsp",
+            url:  "/web/geneLists/include/runPromoter.jsp",
             type: 'GET',
             data: params,
             dataType: 'html',

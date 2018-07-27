@@ -23,7 +23,7 @@ function setupPage() {
 	showOnlyThisDiv("1");
 	setupShowPages();
 	setupEditButton();
-	setupDeleteButton(contextPath + "/web/experiments/deleteArray.jsp");
+	setupDeleteButton("/web/experiments/deleteArray.jsp");
 }
 
 function showOnlyThisDiv(thisDivName) {

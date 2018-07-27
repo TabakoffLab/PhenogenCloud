@@ -135,7 +135,7 @@
 												if(hm.containsKey(symbol.getIdentifier().toLowerCase())){
 
 												}else{%>
-													<a href="<%=request.getContextPath()%>/gene.jsp?geneTxt=<%=symbol.getIdentifier()%>&speciesCB=<%=selectedGeneList.getOrganism()%>&auto=Y&newWindow=Y" target="_blank"> <%=symbol.getIdentifier()%> </a> <BR>
+													<a href="/gene.jsp?geneTxt=<%=symbol.getIdentifier()%>&speciesCB=<%=selectedGeneList.getOrganism()%>&auto=Y&newWindow=Y" target="_blank"> <%=symbol.getIdentifier()%> </a> <BR>
 													<%
 													hm.put(symbol.getIdentifier().toLowerCase(),1);
 												}

@@ -33,7 +33,7 @@ function setupPage() {
 
         	$(this).find("td.details").click( function() {
             		var datasetID = $(this).parent("tr").attr("id");
-            		$.get(contextPath + "/web/common/formatParameters.jsp", 
+            		$.get("/web/common/formatParameters.jsp",
 				{datasetID: datasetID, 
 				parameterType:"dataset"},
                 		function(data){
@@ -46,7 +46,7 @@ function setupPage() {
         	$(this).find("td").slice(1,9).css({"text-align" : "center"});
 	});
 
-	setupDeleteButton(contextPath + "/web/datasets/deleteDataset.jsp"); 
-	setupDownloadButton(contextPath + "/web/datasets/downloadDataset.jsp");
+	setupDeleteButton("/web/datasets/deleteDataset.jsp");
+	setupDownloadButton("/web/datasets/downloadDataset.jsp");
 }
 

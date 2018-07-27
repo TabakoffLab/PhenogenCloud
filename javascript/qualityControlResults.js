@@ -66,7 +66,7 @@ function setupPage() {
         	});
     	});
 
-	setupDeleteButton(contextPath + "/web/datasets/deleteArray.jsp"); 
+	setupDeleteButton( "/web/datasets/deleteArray.jsp");
 	setupDownloadLink("qualityControlResults");
 }
 
@@ -75,7 +75,7 @@ function setupArrayDetails(row) {
 		arrayDetails = createDialog(".arrayDetails" , {width: 833, height: 900, title: "Array Details", scrollbars: "yes"});
 	}
 	var arrayID = row.parent("tr").attr("id");
-        $.get(contextPath + "/web/datasets/arrayDetails.jsp", {arrayID: arrayID},
+        $.get("/web/datasets/arrayDetails.jsp", {arrayID: arrayID},
         	function(data){
 			arrayDetails.dialog("open").html(data);
 			initializeArrayDetailsTab();

@@ -30,5 +30,5 @@ function setupPage() {
 			document.allClusterResults.submit();
 		});
 	});
-	setupDeleteButton(contextPath + "/web/datasets/deleteClusterResults.jsp"); 
+	setupDeleteButton("/web/datasets/deleteClusterResults.jsp");
 }

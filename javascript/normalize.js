@@ -29,7 +29,7 @@ function setupPage() {
 			var grouping_id = $(this).parent("tr").attr("id");
 			$("input[name='grouping_id']").val(grouping_id); 
 			var parameters = {grouping_id: grouping_id};
-        		$.get(contextPath + "/web/datasets/showGroupingDetails.jsp", parameters, function(data){
+        		$.get("/web/datasets/showGroupingDetails.jsp", parameters, function(data){
             			itemDetails.dialog("open").html(data);
 				closeDialog(itemDetails);
         	});
@@ -64,7 +64,7 @@ function setupDeleteButton() {
             // send to .jsp to handle delete
             $.ajax({
                 type: "POST",
-                url: contextPath + "/web/datasets/deleteGrouping.jsp", // be sure to check security on this page!
+                url: "/web/datasets/deleteGrouping.jsp", // be sure to check security on this page!
                 dataType: "html",
                 data: dataParams,
                 async: false,

@@ -24,7 +24,7 @@ $(document).ready(function() {
            CodeLinkArrayChoice.push($(this).val());
         });
 					 
-        $.get(contextPath + "/web/geneLists/downloadAnnotationPopup.jsp?callingForm=advancedAnnotation.jsp", {'iDecoderChoice[]':iDecoderChoice, 'AffymetrixArrayChoice[]':AffymetrixArrayChoice , 'CodeLinkArrayChoice[]':CodeLinkArrayChoice},
+        $.get("/web/geneLists/downloadAnnotationPopup.jsp?callingForm=advancedAnnotation.jsp", {'iDecoderChoice[]':iDecoderChoice, 'AffymetrixArrayChoice[]':AffymetrixArrayChoice , 'CodeLinkArrayChoice[]':CodeLinkArrayChoice},
                 		function(data){							   
                     			itemDetails.dialog("open").html(data);
 					            closeDialog(itemDetails);					

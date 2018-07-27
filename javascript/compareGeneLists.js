@@ -31,7 +31,7 @@ function setupPage() {
 
         	$(this).find("td.details").click( function() {
             		var geneListID = $(this).parent("tr").attr("id");
-            		$.get(contextPath + "/web/common/formatParameters.jsp", 
+            		$.get("/web/common/formatParameters.jsp",
 				{geneListID: geneListID, 
 				parameterType:"geneList"},
                 		function(data){

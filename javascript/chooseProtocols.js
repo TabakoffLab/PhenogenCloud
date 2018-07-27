@@ -22,7 +22,7 @@ function setupPage() {
 	setupTable($("table[id='scanning']"));
 
 	setupCreateProtocol();
-	setupDeleteButton(contextPath + "/web/experiments/deleteProtocol.jsp");
+	setupDeleteButton("/web/experiments/deleteProtocol.jsp");
 }
 
 function setupTable(tableElement) {
@@ -46,7 +46,7 @@ function setupTable(tableElement) {
 			var parameters = {protocolID: id
 					//, title:title
 					};
-        		$.get(contextPath + "/web/experiments/publicDescription.jsp", 
+        		$.get("/web/experiments/publicDescription.jsp",
 				parameters, 
 				function(data){
 					itemDetails.dialog("open").html(data);
@@ -75,7 +75,7 @@ function setupCreateProtocol() {
 		var parameters = {protocolType: protocolType};
 
 		// Need to do path like this ==> otherwise ajax will log out of session
-        	$.get(contextPath + "/web/experiments/createProtocol.jsp", 
+        	$.get("/web/experiments/createProtocol.jsp",
 			parameters, 
 			function(data){
 				newProtocol.dialog("open").html(data);

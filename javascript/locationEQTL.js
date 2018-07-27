@@ -82,7 +82,7 @@ function setupCreateNewRegion() {
     $("div[name='createNewRegion']").click(function(){
         if ( newRegion == undefined )
             newRegion = createDialog("div.createNewRegion", {width: 900, height: 550});
-        $.get(contextPath + "/web/qtls/defineQTL.jsp?fromDialog=Y", function(data){
+        $.get( "/web/qtls/defineQTL.jsp?fromDialog=Y", function(data){
             newRegion.dialog("open").html(data);
         });
     });

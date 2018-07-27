@@ -18,7 +18,7 @@ function setupPage() {
     tableRows.each(function(){
 	$(this).find("td.details").click( function() {
         	var experimentID = $(this).parent("tr").attr("id"); 
-		$.get(contextPath + "/web/experiments/showExpDetails.jsp", 
+		$.get("/web/experiments/showExpDetails.jsp",
 			{experimentID: experimentID},
                         function(data){
                                 itemDetails.dialog("open").html(data);
@@ -29,7 +29,7 @@ function setupPage() {
 	$(this).find("td.chooseUser").click( function() {
 		var experimentID = $(this).parent("tr").attr("id"); 
 		var experimentName =  $(this).parent("tr").find("td.experimentName").text(); 
-                  $.get(contextPath + "/web/common/chooseUser.jsp", 
+                  $.get( "/web/common/chooseUser.jsp",
 			{experimentID: experimentID, experimentName:experimentName},
                         function(data){
                                 chooseUser.dialog("open").html(data);
@@ -41,7 +41,7 @@ function setupPage() {
                   var experimentID = $(this).parent("tr").attr("id"); 
                   var experimentName =  $(this).parent("tr").find("td.experimentName").text();   
                  
-		$.get(contextPath + "/web/experiments/confirmGrantAccessToPublic.jsp", 
+		$.get( "/web/experiments/confirmGrantAccessToPublic.jsp",
                         {experimentID: experimentID, experimentName:experimentName},
                         function(data){
                                 confirmGrantAccessToPublic.dialog("open").html(data);

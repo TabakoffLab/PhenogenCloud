@@ -50,7 +50,7 @@ function setupSaveClusterGeneList() {
 				clusterGroupID: clusterGroupID};
 
 		// Need to do path like this ==> otherwise ajax will log out of session
-        	$.get(contextPath + "/web/datasets/saveClusterGeneList.jsp", 
+        	$.get("/web/datasets/saveClusterGeneList.jsp",
 			parameters, 
 			function(data){
 				newList.dialog("open").html(data);
