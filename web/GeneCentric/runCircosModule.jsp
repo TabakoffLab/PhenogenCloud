@@ -62,8 +62,8 @@
             String perlEnvironmentVariables = (String)session.getAttribute("perlEnvVar");
 
             String hostName=request.getServerName();
-
-            if(hostName.equals("phenogen.ucdenver.edu")){
+            perlEnvironmentVariables += ":/usr/bin:/usr/share/circos/lib:/usr/share/circos/bin";
+            /*if(hostName.equals("phenogen.ucdenver.edu")){
                     perlEnvironmentVariables += ":/usr/bin/perl:/usr/local/circos-0.68/lib:/usr/local/circos-0.68/bin";
             }
             else if(hostName.equals("stan.ucdenver.pvt")){
@@ -72,7 +72,7 @@
             else{
                     perlEnvironmentVariables += ":/usr/bin/perl5.10:/usr/local/circos-0.68/lib:/usr/local/circos-0.68/bin";
 
-            }
+            }*/
 	    log.debug(perlEnvironmentVariables);	
             // create the short svg directory name which incoporates the date for uniqueness
             java.util.Date dNow = new java.util.Date( );

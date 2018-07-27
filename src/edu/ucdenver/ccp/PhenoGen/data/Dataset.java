@@ -972,7 +972,7 @@ public class Dataset {
                         "grps.has_expression_data, " +
                         "grps.has_genotype_data, " +
                         "grps.parent " +
-                        "order by to_number(grps.group_number)";
+                        "order by cast(grps.group_number as UNSIGNED)";
 
         log.debug("in getGroupsInGrouping.grouping_id = " + grouping_id);
         //log.debug("query = "+query);
@@ -2676,7 +2676,7 @@ public class Dataset {
                     thisVersion.setGeneLists(glArray);
                 }
                 setupDatasetParameterValues(userLoggedIn.getUser_id(), thisDataset, pool);
-                log.debug("setup param values");
+                //log.debug("setup param values");
             }
 
             myResults.close();
@@ -2721,7 +2721,7 @@ public class Dataset {
      * @throws SQLException if a database error occurs
      */
     public Dataset setupDatasetParameterValues(int user_id, Dataset thisDataset, DataSource pool) throws SQLException {
-        log.debug("in setupDatasetParameterValues for a dataset");
+        //log.debug("in setupDatasetParameterValues for a dataset");
         for (DatasetVersion thisDatasetVersion : thisDataset.getDatasetVersions()) {
             thisDatasetVersion.setParameters(new ParameterValue().getParameterValuesForDatasetVersion(thisDatasetVersion, pool));
             thisDatasetVersion.setGeneLists(new GeneList().getGeneListsForDatasetVersion(thisDatasetVersion, pool));
@@ -3863,7 +3863,7 @@ public class Dataset {
                     "and grpings.dataset_id = dv.dataset_id " +
                     "and dv.dataset_id = ? " +
                     "and dv.version = ? " +
-                    "order by to_number(grps.group_number)";
+                    "order by cast(grps.group_number as UNSIGNED)";
 
             //log.debug("query = "+query);
             List<Group> myGroupList = new ArrayList<Group>();
@@ -4003,7 +4003,7 @@ public class Dataset {
                             groupList +
                             " and uc.user_id = u.user_id " +
                             "and u.user_name = 'public' " +
-                            "and cg.user_chip_id = to_char(uc.user_chip_id) " +
+                            "and cg.user_chip_id = convert(uc.user_chip_id,char) " +
                             "order by uc.hybrid_id";
             log.info("in getChipsInOldDataset. dataset_id = " + this.getDataset().getDataset_id() +
                     ", and version = " + this.getVersion());

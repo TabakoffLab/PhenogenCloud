@@ -18,7 +18,7 @@
 
 	log.debug("phenotypeParameterGroupID = "+phenotypeParameterGroupID);
 	String phenotypeName = (phenotypeParameterGroupID != -99 ? 
-			myParameterValue.getPhenotypeName(phenotypeParameterGroupID, dbConn) :
+			myParameterValue.getPhenotypeName(phenotypeParameterGroupID, pool) :
 			"");	
 	log.debug("phenotypeName = "+phenotypeName);
 
@@ -40,7 +40,7 @@
 
         if ((action != null) && action.equals("Download")) {
 
-		mySessionHandler.createDatasetActivity("Downloaded QTL Analysis Results", dbConn);
+		mySessionHandler.createDatasetActivity("Downloaded QTL Analysis Results", pool);
 
 		if (request.getParameter("fileList") != null) {
                 	//

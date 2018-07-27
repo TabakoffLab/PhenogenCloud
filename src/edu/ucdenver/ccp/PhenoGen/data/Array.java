@@ -2374,8 +2374,8 @@ public class Array {
         log.debug("in getExperiment as an Experiment object");
 
         String query =
-                "select to_char(expDetails.exp_name), " +
-                        "to_char(expDetails.exp_description), " +
+                "select convert(expDetails.exp_name,char), " +
+                        "convert(expDetails.exp_description,char), " +
                         "expDetails.exp_created_by_login, " +
                         "date_format(expDetails.exp_create_date, '%m-%d-%Y %h:%i %p'), " +
                         "count(*), " +
@@ -2392,8 +2392,8 @@ public class Array {
                         "where expDetails.hybrid_array_id = TARRAY.tarray_sysuid " +
                         "and expDetails.exp_id = ? " +
                         "group by " +
-                        "to_char(expDetails.exp_name), " +
-                        "to_char(expDetails.exp_description), " +
+                        "convert(expDetails.exp_name,char), " +
+                        "convert(expDetails.exp_description,char), " +
                         "expDetails.exp_created_by_login, " +
                         "date_format(expDetails.exp_create_date, '%m-%d-%Y %h:%i %p'), " +
                         "expDetails.tntxsyn_name_txt, " +

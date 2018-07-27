@@ -119,7 +119,7 @@
 	<script type="text/javascript">
                 var goBrwsr=0;
                 var idToDelete=-99;
-                var analysisPath="<%=contextRoot%>/web/geneLists/include/getGOAnalyses.jsp";
+                var analysisPath="include/getGOAnalyses.jsp";
 		$(document).ready(function() {
 			setTimeout("setupMain()", 100); 
 			setupExpandCollapse();
@@ -174,7 +174,7 @@
 			$('#wait2').show();
 			$('#runStatus').html("");
 			$.ajax({
-				url: contextPath + "/web/geneLists/include/runGO.jsp",
+				url: "/web/geneLists/include/runGO.jsp",
    				type: 'GET',
 				data: {species:species,geneListID:id,name:name,genomeVer:selGV},
 				dataType: 'html',

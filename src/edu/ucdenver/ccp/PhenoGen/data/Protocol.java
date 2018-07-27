@@ -515,7 +515,7 @@ public class Protocol {
         String query =
                 "select " +
                         "protocol_id, protocol_type, protocol_name, ifnull(protocol_description, ''), ifnull(globid, ''), " +
-                        "created_by_login, to_char(protocol_create_date, '%d-%m-%Y %H:%i:%S'), b.value " +
+                        "created_by_login, date_format(protocol_create_date, '%d-%m-%Y %H:%i:%S'), b.value " +
                         "from protocols a, valid_terms b " +
                         "where a.protocol_type = b.term_id " +
                         "and a.protocol_name is not null " +

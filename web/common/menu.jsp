@@ -21,6 +21,7 @@
 		topPos="5px";
 	}
 	log.debug("begining of menu");
+	//log.debug("Context Dir:\n"+contextRoot+":"+commonDir+"\n\n");
 %>
 
 <style>
@@ -29,7 +30,7 @@
 
 
 <div id="page_header_wide" >
-    <div id="header_title"><a href="<%=contextPath%>">PhenoGen Informatics</a>
+    <div id="header_title"><a href="/">PhenoGen Informatics</a>
     <div style=" font-size:12px;">The site for quantitative genetics of the transcriptome.</div>
     </div>
     <div class="header_status">
@@ -72,7 +73,7 @@
         	<li><a href='<%=commonDir%>startPage.jsp'><span class="menu1line">Home</span></a></li>
         <%}%>
 
-            <% log.debug("after first menu");%>
+
        		<li class="hideLogin <%if(mainMenuSelected.equals("transcript")){%>selected<%}%>" ><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=contextRoot%>gene.jsp" <%if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%> class="public" <%}%>><span class="menu3line">Genome / Transcriptome Data Browser</span></a></li>
        		<li class="hideLogin <%if(mainMenuSelected.equals("download")){%>selected<%}%>"><a href='<%=commonDir%>selectMenu.jsp?menuURL=<%=sysBioDir%>resources.jsp' <%if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%> class="public" <%}%>><span class="menu2line">Available Data Downloads</span></a></li>
        

@@ -164,7 +164,7 @@
 function updateSmallNonCoding(idList,nameList,id){
 			var params={idList: idList,name: nameList, id: id};
 			$.ajax({
-				url: contextPath + "/web/GeneCentric/viewSmallNonCoding.jsp",
+				url: "/web/GeneCentric/viewSmallNonCoding.jsp",
    				type: 'GET',
 				data: params,
 				dataType: 'html',

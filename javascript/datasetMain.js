@@ -13,7 +13,7 @@ function setupFinalizeDataset() {
 	$("div#viewFinalizeDataset").click(function(){
 		var datasetID = $("input[name='dummyDatasetID']").val();
 		var parameters = {datasetID: datasetID};
-		$.get(contextPath + "/web/datasets/datasetDetails.jsp", parameters, function(data){
+		$.get("/web/datasets/datasetDetails.jsp", parameters, function(data){
 		  	datasetDetails.dialog("open").html(data);
             		datasetDetails.find("td.actionIcons .delete").click(function(){
             			var theRow = $(this).parents("tr");

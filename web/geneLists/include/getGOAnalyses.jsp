@@ -108,7 +108,7 @@
 	$(".goResultDetail").on("click",function (){
 		var id=$(this).attr('id');
 		$.ajax({
-				url: contextPath + "/web/geneLists/include/getGOResult.jsp",
+				url: "/web/geneLists/include/getGOResult.jsp",
    				type: 'GET',
 				data: {geneListAnalysisID:id,geneListID:id},
 				dataType: 'html',

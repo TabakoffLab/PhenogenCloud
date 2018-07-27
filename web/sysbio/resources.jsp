@@ -17,8 +17,8 @@
     log.info("in resources.jsp. user =  "+ userLoggedIn.getUser_name());
 	
 	log.debug("action = "+action);
-        extrasList.add("tooltipster.min.css");
-        extrasList.add("tabs.css");
+	extrasList.add("tooltipster.min.css");
+	extrasList.add("tabs.css");
 	extrasList.add("resources.js");
 	extrasList.add("jquery.tooltipster.min.js");
         extrasList.add("d3.v3.5.16.min.js");
@@ -27,11 +27,17 @@
 	mySessionHandler.createSessionActivity(session.getId(), "Looked at download systems biology resources page", pool);
 
 	Resource[] myExpressionResources = myResource.getExpressionResources();
+	log.debug("after expr");
 	Resource[] myMarkerResources = myResource.getMarkerResources();
+	log.debug("after marker");
 	Resource[] myRNASeqResources = myResource.getRNASeqResources();
+	log.debug("after rna");
 	Resource[] myDNASeqResources = myResource.getDNASeqResources();
+	log.debug("after dnaSeq");
 	Resource[] myGenotypeResources = myResource.getGenotypingResources();
+	log.debug("after genotype");
         Resource[] myPublicationResources1 = myResource.getPublicationResources1();
+	log.debug("after pub1");
         Resource[] myPublicationResources2 = myResource.getPublicationResources2();
         Resource[] myPublicationResources3 = myResource.getPublicationResources3();
         Resource[] myPublicationResources4 = myResource.getPublicationResources4();

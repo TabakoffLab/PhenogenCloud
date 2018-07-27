@@ -47,10 +47,11 @@
 	String sortOrder = "";
 	String sortColumn = "";
 	String sortPic = "";
-        String contextPath=request.getContextPath();
-        if(contextPath.startsWith("//")){
+	String contextPath="";/*request.getContextPath();
+	if(contextPath.startsWith("//")){
             contextPath=contextPath.substring(1);
-        }
+	}
+	log.debug("contextPath:\n"+contextPath+"\n\n");*/
 	// Used to store the values input or selected by the user
 	List<String> fieldNames = new ArrayList<String>();
 	List<String> multipleFieldNames = new ArrayList<String>();

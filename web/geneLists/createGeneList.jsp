@@ -13,6 +13,9 @@
 <%
         log.debug("after header in createGeneList");
 	log.info("in createGeneList.jsp. user = " + user);
+	if (userLoggedIn.getUser_name().equals("anon")) {
+		log.debug("\nCREATE GENELIST.jsp anon user:" + anonU.getUUID());
+	}
 
 	boolean fromMain = (request.getParameter("fromMain") != null ? true : false);
 	extrasList.add("createGeneList.js");

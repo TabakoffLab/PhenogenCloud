@@ -38,7 +38,7 @@ function setupPage() {
         $("table[id='expressionFiles']").find("tr.col_title").find("th").slice(0,1).addClass("headerSortDown");
 	$("table[id='markerFiles']").find("tr.col_title").find("th").slice(1,2).addClass("headerSortDown");
 
-	setupDownloadButtonByType(contextPath + "/web/sysbio/directDownloadFiles.jsp",contextPath + "/web/sysbio/seqFileDownload.jsp");
+	setupDownloadButtonByType"/web/sysbio/directDownloadFiles.jsp", "/web/sysbio/seqFileDownload.jsp");
 	
         if($("table#rnaseqTbl").size()>0){
             $("table#rnaseqTbl").find("td div.info").click(function() {
@@ -50,7 +50,7 @@ function setupPage() {
                     // send to .jsp to handle download
                     $.ajax({
                             type: "POST",
-                            url: contextPath + "/web/rnaseq/rnaSeqMetadata.jsp",
+                            url:  "/web/rnaseq/rnaSeqMetadata.jsp",
                             dataType: "html",
                             data: dataParams,
                             async: true,

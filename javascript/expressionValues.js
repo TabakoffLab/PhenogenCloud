@@ -44,7 +44,7 @@ function setupPage() {
 
         	$(this).find("td.details").click( function() {
             		var datasetID = $(this).parent("tr").attr("id");
-            		$.get(contextPath + "/web/common/formatParameters.jsp", 
+            		$.get("/web/common/formatParameters.jsp",
 				{datasetID: datasetID, 
 				parameterType:"dataset"},
                 		function(data){
@@ -76,7 +76,7 @@ function setupPage() {
                 $(this).find("td.details").click( function() {
                         var datasetID = $(this).parent("tr").attr("id").split( "|||" )[0];
                         var version = $(this).parent("tr").attr("id").split( "|||" )[1];
-                        $.get(contextPath + "/web/common/formatParameters.jsp",
+                        $.get("/web/common/formatParameters.jsp",
                                 {datasetID: datasetID,
                                 datasetVersion: version,
                                 parameterType:"datasetVersion"},

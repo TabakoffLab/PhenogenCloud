@@ -8,7 +8,7 @@ function setupPage() {
         	$(this).find("td.details").click( function() {
 
             	var arrayID = $(this).parent("tr").attr("hybridID");
-            	$.get(contextPath + "/web/datasets/arrayDetails.jsp", {arrayID: arrayID},
+            	$.get("/web/datasets/arrayDetails.jsp", {arrayID: arrayID},
                 	function(data){
                     		arrayDetails.dialog("open").html(data);
 							initializeArrayDetailsTab();

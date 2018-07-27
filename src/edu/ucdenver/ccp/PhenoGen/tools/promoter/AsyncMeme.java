@@ -67,8 +67,8 @@ public class AsyncMeme implements Runnable{
 		this.maxMotifs = maxMotifs;
 		this.minWidth = minWidth;
 		this.maxWidth = maxWidth;
-	        this.userLoggedIn = (User) session.getAttribute("userLoggedIn");
-		this.dbPropertiesFile = (String) session.getAttribute("dbPropertiesFile");
+		this.userLoggedIn = (User) session.getAttribute("userLoggedIn");
+		//this.dbPropertiesFile = (String) session.getAttribute("dbPropertiesFile");
 		this.perlDir = (String) session.getAttribute("perlDir");
                 this.pool = (DataSource) session.getAttribute("dbPool");
 		this.myGeneListAnalysis = myGeneListAnalysis;

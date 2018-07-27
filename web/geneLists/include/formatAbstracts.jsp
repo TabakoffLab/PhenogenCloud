@@ -83,11 +83,11 @@
 					// Get all the alternateIDs for this gene_id, so they can be highlighted in the abstract
 					//
 					alternateIDs = myLitSearch.getAlternateIdentifiersUsedInLitSearch(
-								keySplit[0], itemID, dbConn);
+								keySplit[0], itemID, pool);
 					//log.debug("keySplit[0] = xxx" + keySplit[0] + "xxx" + ", itemID = " + itemID); 
 					//log.debug("alternateIDs here 4= "); myDebugger.print(alternateIDs);
 					
-					keywords = myLitSearch.getKeywordsUsedInLitSearch(itemID, category, dbConn);
+					keywords = myLitSearch.getKeywordsUsedInLitSearch(itemID, category, pool);
 					//log.debug("keywords  = "); myDebugger.print(keywords);
 				} else {
 					//
@@ -101,7 +101,7 @@
 					//
 					List alternateIDList = Arrays.asList(
 							myLitSearch.getAlternateIdentifiersUsedInCoReference(
-								keySplit[0], corefID, dbConn));
+								keySplit[0], corefID, pool));
 					List allAlternateIDsList = new ArrayList();
 					allAlternateIDsList.addAll(alternateIDList);
 					//log.debug("keySplit[0] = xxx" + keySplit[0] + "xxx" + ", corefID = " + corefID); 
@@ -111,7 +111,7 @@
 						// add all alternateIDs for all genes into the alternateIDs array
 						//
 						List alternateIDList2 = Arrays.asList(myLitSearch.getAlternateIdentifiersUsedInCoReference(
-										keySplit[i], corefID, dbConn));
+										keySplit[i], corefID, pool));
 						allAlternateIDsList.addAll(alternateIDList2);
 					}
 					alternateIDs = (String[]) allAlternateIDsList.toArray(new String[allAlternateIDsList.size()]);

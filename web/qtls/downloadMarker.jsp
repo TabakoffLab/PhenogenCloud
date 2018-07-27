@@ -14,7 +14,7 @@
 	log.info("in downloadMarker.jsp. user =  "+ user);
 	
 	log.debug("action = "+action);
-	mySessionHandler.createDatasetActivity("Looked at download marker page", dbConn);
+	mySessionHandler.createDatasetActivity("Looked at download marker page", pool);
 
 	String BXDRIResourcesDir = myDataset.getResourcesDir(publicDatasets, myDataset.BXDRI_DATASET_NAME);
 	String HXBRIResourcesDir = myDataset.getResourcesDir(publicDatasets, myDataset.HXBRI_DATASET_NAME);
@@ -36,7 +36,7 @@
 			out = pageContext.pushBody(); 
                 }
 		
-		mySessionHandler.createDatasetActivity("Downloaded Marker Data", dbConn);
+		mySessionHandler.createDatasetActivity("Downloaded Marker Data", pool);
         }
 
 %>

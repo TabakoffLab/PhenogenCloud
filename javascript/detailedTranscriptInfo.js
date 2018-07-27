@@ -107,7 +107,7 @@ function openSmallNonCoding(id,name){
 			params={idList: id,name: name};
 		}
 			$.ajax({
-				url: contextPath + "/web/GeneCentric/viewSmallNonCoding.jsp",
+				url: "/web/GeneCentric/viewSmallNonCoding.jsp",
    				type: 'GET',
 				data: params,
 				dataType: 'html',

@@ -1,6 +1,4 @@
 <script type="text/javascript">
-//Bugsense.addExtraData( 'gene', '<%=selectedEnsemblID%>' );
-//Bugsense.addExtraData( 'region', '<%=chromosome+":"+min+"-"+max%>' );
 var section="<%=section%>";
 var urlprefix="<%=host+contextRoot%>";
 var trackString="coding,noncoding,snp,smallnc";
@@ -38,10 +36,7 @@ var iconPath="<%=imagesDir%>icons/";
 var trackMenu=[];
 var viewMenu=[];
 var fixedWidth=-1;
-
-/*Bugsense.clearBreadcrumbs();
-Bugsense.leaveBreadcrumb( 'gene.jsp' );
-Bugsense.leaveBreadcrumb( '<%=myGene+"::"+chromosome+":"+min+"-"+max%>');*/
+console.log("urlprefix:"+urlprefix);
 </script>
 
 <style>

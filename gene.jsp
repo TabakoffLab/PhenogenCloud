@@ -688,7 +688,7 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
         var species = $('#speciesCB').val();
         setTimeout(function () {
             $.ajax({
-                url: contextPath + "/web/GeneCentric/translateRegion.jsp",
+                url: "/web/GeneCentric/translateRegion.jsp",
                 type: 'GET',
                 data: {region: region, species: species},
                 dataType: 'html',
@@ -716,7 +716,8 @@ pageDescription="Genome/Transcriptome Browser provides a vizualization of Microa
     var filterViewList = [];
 
     function getMainViewData(shouldUpdate) {
-        var tmpContext = contextPath + "/" + pathPrefix;
+        var tmpContext = "/" + pathPrefix;
+        console.log("main view url:"+tmpContext);
         if (pathPrefix == "") {
             tmpContext = "";
         }

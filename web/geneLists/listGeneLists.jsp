@@ -194,7 +194,7 @@
                                $(this).find("td.details").click( function() {
                                        var geneListID = $(this).parent("tr").attr("id");
                                        var parameterGroupID = $(this).parent("tr").attr("parameterGroupID");
-                                       $.get(contextPath + "/web/common/formatParameters.jsp", 
+                                       $.get("/web/common/formatParameters.jsp",
                                                {geneListID: geneListID, 
                                                parameterGroupID: parameterGroupID,
                                                parameterType:"geneList"},
@@ -213,8 +213,8 @@
 
                        setupCreateNewList();
                        setupRecoverLostSessionByEmail();
-                       setupDeleteButton(contextPath + "/web/geneLists/deleteGeneList.jsp"); 
-                       setupDownloadButton(contextPath + "/web/geneLists/downloadGeneList.jsp");
+                       setupDeleteButton("/web/geneLists/deleteGeneList.jsp");
+                       setupDownloadButton("/web/geneLists/downloadGeneList.jsp");
                        
                 }
 

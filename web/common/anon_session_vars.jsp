@@ -16,7 +16,7 @@
 <jsp:useBean id="myPropertiesConnection" class="edu.ucdenver.ccp.util.sql.PropertiesConnection"
              scope="session"/>
 
-<jsp:useBean id="mySessionHandler" class="edu.ucdenver.ccp.PhenoGen.web.SessionHandler">
+<jsp:useBean id="mySessionHandler" class="edu.ucdenver.ccp.PhenoGen.web.SessionHandler" scope="session">
     <jsp:setProperty name="mySessionHandler" property="applicationRoot"
                      value="<%=application.getInitParameter(\"applicationRoot\") %>"/>
     <jsp:setProperty name="mySessionHandler" property="contextRoot"
@@ -186,15 +186,20 @@
         session.setAttribute("errorPageMsg", "The Database is currently unavailable.  The administrator has been notified and every effort will be made to return the database as soon as possible.");
         response.sendRedirect(commonDir + "errorPage.jsp");
     } else {
-        if (!loggedIn) {
+        if (!loggedIn && userLoggedIn == null) {
             log.debug("try logging in.");
             userLoggedIn = myUser.getUser("anon", "4lesw7n35h!", pool);
+
             log.debug("last_name = " + userLoggedIn.getLast_name() + ", id = " + userLoggedIn.getUser_id());
             if (userLoggedIn.getUser_id() == -1) {
                 log.info("anon just failed to log in.");
                 session.setAttribute("loginErrorMsg", "Invalid");
                 response.sendRedirect(accessDir + "loginError.jsp");
             } else {
+                loggedIn=true;
+                session.setAttribute("userLoggedIn", userLoggedIn);
+                session.setAttribute("userID", Integer.toString(userLoggedIn.getUser_id()));
+                userID = userLoggedIn.getUser_id();
                 session.setAttribute("isAdministrator", "N");
                 //log.debug("user is NOT an Administrator");
                 session.setAttribute("isISBRA", "N");
@@ -207,9 +212,8 @@
                 mySessionHandler.createSession(mySessionHandler, pool);
                 userFilesRoot = (String) session.getAttribute("userFilesRoot");
                 userLoggedIn.setUserMainDir(userFilesRoot);
-                session.setAttribute("userLoggedIn", userLoggedIn);
-                userID = Integer.parseInt((String) session.getAttribute("userID"));
-                session.setAttribute("userID", Integer.toString(userID));
+
+
                 session.setAttribute("user", userID + "-" + (String) session.getAttribute("userName"));
                 session.setAttribute("full_name", (String) session.getAttribute("full_name"));
                 log.info("anon just logged in.");

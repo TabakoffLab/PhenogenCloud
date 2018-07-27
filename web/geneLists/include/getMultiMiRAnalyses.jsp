@@ -119,7 +119,7 @@
 	$(".mirResultDetail").on("click",function (){
 		var id=$(this).attr('id');
 		$.ajax({
-				url: contextPath + "/web/geneLists/include/getMultiMiRResult.jsp",
+				url:  "/web/geneLists/include/getMultiMiRResult.jsp",
    				type: 'GET',
 				data: {geneListAnalysisID:id},
 				dataType: 'html',

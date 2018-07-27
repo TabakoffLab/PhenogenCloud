@@ -628,7 +628,7 @@ function getFirstChildByName(parentNode,name){
 }
 
 function getAddMenuDiv(level,type){
-	var tmpContext=contextPath +"/"+ pathPrefix;
+	var tmpContext="/"+ pathPrefix;
 	if(pathPrefix==""){
 		tmpContext="";
 	}
@@ -1145,7 +1145,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 						if(retry===0 ){
 							var tmpMin=that.xScale.domain()[0];
 							var tmpMax=that.xScale.domain()[1];
-							var tmpContext=contextPath +"/"+ pathPrefix;
+							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
 							}
@@ -1224,7 +1224,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 						if(retry===1 && track==="mergedTotal"){
 							var tmpMin=that.xScale.domain()[0];
 							var tmpMax=that.xScale.domain()[1];
-							var tmpContext=contextPath +"/"+ pathPrefix;
+							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
 							}
@@ -1296,7 +1296,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 					if(error){
 						console.log(error);
 						if(retry===0){
-							var tmpContext=contextPath +"/"+ pathPrefix;
+							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
 							}
@@ -1362,7 +1362,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 					if(error){
 						console.log(error);
 						if(retry==0){
-							var tmpContext=contextPath +"/"+ pathPrefix;
+							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
 							}
@@ -1511,7 +1511,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				d3.xml(file,function (error,d){
 					if(error){
 						if(retry==0 || retry==3){
-							var tmpContext=contextPath +"/"+ pathPrefix;
+							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
 							}
@@ -1639,7 +1639,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 					if(error){
 						console.log(error);
 						if(retry==0){
-							var tmpContext=contextPath +"/"+ pathPrefix;
+							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
 							}
@@ -1738,7 +1738,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 					if(error){
 						console.log(error);
 						if(retry===0){
-							var tmpContext=contextPath +"/"+ pathPrefix;
+							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
 							}
@@ -2088,7 +2088,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 
 	that.getAddMenus=function (){
 		
-		var tmpContext=contextPath +"/"+ pathPrefix;
+		var tmpContext="/"+ pathPrefix;
 		if(pathPrefix==""){
 			tmpContext="";
 		}
@@ -4858,7 +4858,7 @@ function SequenceTrack(gsvg,trackClass,label,additionalOptions){
 					if(error){
 						//console.log(error);
 						if(retry===0){
-								var tmpContext=contextPath +"/"+ pathPrefix;
+								var tmpContext="/"+ pathPrefix;
 								if(!pathPrefix){
 									tmpContext="";
 								}
@@ -5997,7 +5997,7 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
 		d3.xml(path,function (error,d){
 			if(error){
 				if(retry===0  && (that.trackClass==='mergedTotal' || that.trackClass.indexOf("smallnc")>-1)){
-                	var tmpContext=contextPath +"/"+ pathPrefix;
+                	var tmpContext="/"+ pathPrefix;
 					if(!pathPrefix){
 						tmpContext="";
 					}
@@ -6065,7 +6065,7 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
 		d3.xml(path,function (error,d){
 			if(error){
                 if(retry===0){
-                	var tmpContext=contextPath +"/"+ pathPrefix;
+                	var tmpContext="/"+ pathPrefix;
 					if(!pathPrefix){
 						tmpContext="";
 					}
@@ -10243,7 +10243,7 @@ function CustomCountTrack(gsvg,data,trackClass,density,additionalOptions){
 			d3.xml(file,function (error,d){
 						if(error){
 							if(retry==0||force==1){
-								var tmpContext=contextPath +"/"+ pathPrefix;
+								var tmpContext="/"+ pathPrefix;
 								if(!pathPrefix){
 									tmpContext="";
 								}
@@ -10619,7 +10619,7 @@ function CountTrack(gsvg,data,trackClass,density){
 		d3.xml(file,function (error,d){
 					if(error){
 						if(retry==0||force==1){
-							var tmpContext=contextPath +"/"+ pathPrefix;
+							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
 							}
@@ -11293,7 +11293,7 @@ function CustomTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpti
 							//console.log("ERROR******");
 							console.log(error);
 							if(retry==0 || force==1){
-								var tmpContext=contextPath +"/"+ pathPrefix;
+								var tmpContext="/"+ pathPrefix;
 								if(!pathPrefix){
 									tmpContext="";
 								}
@@ -12228,7 +12228,7 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 					if(error){
 						//console.log(error);
 						if(retry==0 || force==1){
-							var tmpContext=contextPath +"/"+ pathPrefix;
+							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
 							}

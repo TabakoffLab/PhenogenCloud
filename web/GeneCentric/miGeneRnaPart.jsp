@@ -79,7 +79,7 @@
 			var cutoff=$('input#cutoff').val();
 			$('#wait2').show();
 			$.ajax({
-				url: contextPath + "/web/GeneCentric/runMultiMiRGeneTargets.jsp",
+				url: "/web/GeneCentric/runMultiMiRGeneTargets.jsp",
    				type: 'GET',
 				data: {species:species,id:id,table:table,predType:predType,cutoff:cutoff,selectedID:id},
 				dataType: 'html',

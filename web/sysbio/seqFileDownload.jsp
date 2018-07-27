@@ -103,7 +103,7 @@
                     // send to .jsp to handle download
                     $.ajax({
                             type: "POST",
-                            url: contextPath + "/web/sysbio/pipelineMetadata.jsp",
+                            url: "/web/sysbio/pipelineMetadata.jsp",
                             dataType: "html",
                             data: dataParams,
                             async: true,

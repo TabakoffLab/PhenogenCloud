@@ -70,11 +70,11 @@
 
 		log.debug("creating QTL List");
 	
-		myQTL.createQTLList(myQTL, dbConn);
+		myQTL.createQTLList(myQTL, pool);
 
         	mySessionHandler.createSessionActivity(session.getId(), 
 			"Created QTL List called '" + phenotype + "'.  It contains " + myLocusArray.length + " Locus records." ,
-                	dbConn);
+                	pool);
 
 		//Success - "QTL list saved"
 		//session.setAttribute("successMsg", "QTL-003");
@@ -136,7 +136,7 @@
 
 						optionHash = new LinkedHashMap();
 						optionHash.put("-99", "-- Select an option --");
-						optionHash.putAll(new Organism().getOrganismsAsSelectOptions(dbConn));
+						optionHash.putAll(new Organism().getOrganismsAsSelectOptions(pool));
 
 						%>
                 				<%@ include file="/web/common/selectBox.jsp" %>

@@ -127,11 +127,18 @@
 								/*if(geneSymbols == null ||  geneSymbols.size()== 0){
 									geneSymbols = myIDecoderClient.getIdentifiersForTargetForOneIDIgnoreCase(thisIdentifier.getTargetHashMap(),new String[] {"Gene Symbol"});
 								}*/
-								if (geneSymbols != null && geneSymbols.size() > 0) { 
-									%><td><%
+								if (geneSymbols != null && geneSymbols.size() > 0) {
+								    HashMap<String,Integer> hm = new HashMap<String,Integer>();
+									%> <td> <%
 											for (Iterator symbolItr = geneSymbols.iterator(); symbolItr.hasNext();) { 
 												Identifier symbol = (Identifier) symbolItr.next();
-												%><a href="<%=request.getContextPath()%>/gene.jsp?geneTxt=<%=symbol.getIdentifier()%>&speciesCB=<%=selectedGeneList.getOrganism()%>&auto=Y&newWindow=Y" target="_blank"><%=symbol.getIdentifier()%></a><BR><%
+												if(hm.containsKey(symbol.getIdentifier().toLowerCase())){
+
+												}else{%>
+													<a href="<%=request.getContextPath()%>/gene.jsp?geneTxt=<%=symbol.getIdentifier()%>&speciesCB=<%=selectedGeneList.getOrganism()%>&auto=Y&newWindow=Y" target="_blank"> <%=symbol.getIdentifier()%> </a> <BR>
+													<%
+													hm.put(symbol.getIdentifier().toLowerCase(),1);
+												}
 									}
 									%></td><% 
 								} else { 

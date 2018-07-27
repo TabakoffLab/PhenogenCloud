@@ -143,8 +143,8 @@
             break;
     }
 
-    String servletSrc = request.getContextPath() + "/Chromosomes";
-
+    //String servletSrc = request.getContextPath() + "/Chromosomes";
+    String servletSrc = "/Chromosomes";
     DecimalFormat df = new DecimalFormat( "#,###" );
 %>
     <div class="mainImageMap"></div>

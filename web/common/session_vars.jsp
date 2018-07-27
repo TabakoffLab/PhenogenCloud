@@ -16,7 +16,7 @@
 <jsp:useBean id="myPropertiesConnection" class="edu.ucdenver.ccp.util.sql.PropertiesConnection" 
 	scope="session"/>
 
-<jsp:useBean id="mySessionHandler" class="edu.ucdenver.ccp.PhenoGen.web.SessionHandler"/>
+<jsp:useBean id="mySessionHandler" class="edu.ucdenver.ccp.PhenoGen.web.SessionHandler" scope="session"/>
 	<jsp:setProperty name="mySessionHandler" property="session" value="<%=session%>" />
 
 <jsp:useBean id="myArray" class="edu.ucdenver.ccp.PhenoGen.data.Array"/>
@@ -25,13 +25,13 @@
 <%
 	if((User)request.getSession(false).getAttribute("userLoggedIn")== null) {
 		log.debug("Invalid session");
-		response.sendRedirect(contextPath + "/index.jsp");
+		response.sendRedirect("/index.jsp");
 	} else {
 	
 		if( ((User)request.getSession(false).getAttribute("userLoggedIn")).getUser_name().equals("anon") ){
 			String url=request.getRequestURL().toString();
 			url=url.substring(url.indexOf("/web"));
-			response.sendRedirect(contextPath + "/web/access/loginPage.jsp?url="+contextPath+url);
+			response.sendRedirect("/web/access/loginPage.jsp?url="+contextPath+url);
 		}else{
 			userID = Integer.parseInt((String) session.getAttribute("userID"));
 			//

@@ -1,4 +1,3 @@
-
 <%
 	ArrayList extrasAttributes = (ArrayList)request.getAttribute( "extrasList" );
 

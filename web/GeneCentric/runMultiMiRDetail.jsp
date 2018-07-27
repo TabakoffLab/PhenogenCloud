@@ -254,7 +254,7 @@
 			var cutoff=$('input#cutoff').val();
 			var selectID="<%=selectedID%>";
 			$.ajax({
-				url: contextPath + "/web/GeneCentric/runMultiMiRGeneTargets.jsp",
+				url: "/web/GeneCentric/runMultiMiRGeneTargets.jsp",
    				type: 'GET',
 				data: {species:species,id:id,table:table,predType:predType,cutoff:cutoff,selectedID:selectID},
 				dataType: 'html',

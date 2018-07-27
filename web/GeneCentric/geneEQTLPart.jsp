@@ -58,7 +58,7 @@
 			var geneSymbol="<%=geneSymbol.get(selectedGene)%>";
                         console.log("before AJAX");
 			$.ajax({
-				url: contextPath + "/web/GeneCentric/runCircos.jsp",
+				url: "/web/GeneCentric/runCircos.jsp",
    				type: 'GET',
                                 cache: false,
 				data: {cutoffValue:pval,transcriptClusterID:tcID,tissues:tisList,chromosomes:chrList,geneCentricPath:path,hiddenGeneSymbol:geneSymbol,genomeVer:genomeVer,source:source},

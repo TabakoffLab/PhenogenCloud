@@ -22,7 +22,7 @@
         extrasList.add("eQTLResults.js");
 
 	String ensemblOrganism = new ObjectHandler().replaceBlanksWithUnderscores(
-					new Organism().getOrganism_name(selectedGeneList.getOrganism(), dbConn));
+					new Organism().getOrganism_name(selectedGeneList.getOrganism(), pool));
 
         String ensemblTarget = " target=\"Ensembl Window\">";
 
@@ -68,7 +68,7 @@
                                         request.getParameter( "advSettings" ).length() > 0 ?
                                         request.getParameter( "advSettings" ) : "closed");
 
-	QTL selectedQTLList = (qtlListID != -99 ? myQTL.getQTLList(qtlListID, dbConn) : null);
+	QTL selectedQTLList = (qtlListID != -99 ? myQTL.getQTLList(qtlListID, pool) : null);
 	QTL.Locus[] selectedLoci = (qtlListID != -99 ? selectedQTLList.getLoci() : null);
 	String qtl_list_name = (qtlListID != -99 ? selectedQTLList.getQtl_list_name() : "");
 
@@ -145,8 +145,8 @@
 	// matching on the gene symbol and probesetID for those with no gene symbols that have physical locations.  
 	// Otherwise, it will be called from the Basic Annotation page, so get all the eQTL records
 	// matching on probeset ID.
-	QTL.EQTL[] myEQTLsBasedOnProbesetID = myEQTL.getExpressionQTLInfo(qtlList, "ProbesetID", selectedGeneList.getOrganism(), tissue, dbConn);
-	QTL.EQTL[] myEQTLsBasedOnBoth = myEQTL.getExpressionQTLInfo(qtlList, "Both", selectedGeneList.getOrganism(), tissue, dbConn);
+	QTL.EQTL[] myEQTLsBasedOnProbesetID = myEQTL.getExpressionQTLInfo(qtlList, "ProbesetID", selectedGeneList.getOrganism(), tissue, pool);
+	QTL.EQTL[] myEQTLsBasedOnBoth = myEQTL.getExpressionQTLInfo(qtlList, "Both", selectedGeneList.getOrganism(), tissue, pool);
 
 	QTL.EQTL[] myEQTLs = (displayedGenes != null ? 
 				myEQTLsBasedOnBoth :
@@ -176,7 +176,7 @@
 	List noDisplayGeneList = myObjectHandler.getAsSeparatedStrings(noDisplayGeneStrings, ",", "'", 999); 
 	//log.debug("noDisplayGeneList = "); myDebugger.print(noDisplayGeneList);
 	QTL.EQTL[] noDisplayGenesWithEQTLs = myEQTL.getExpressionQTLInfo(
-					noDisplayGeneList, "ProbesetID", selectedGeneList.getOrganism(), tissue, dbConn);
+					noDisplayGeneList, "ProbesetID", selectedGeneList.getOrganism(), tissue, pool);
 	//log.debug("noDisplayGenesWithEQTLs = "); myDebugger.print(noDisplayGenesWithEQTLs);
 
 	//
@@ -276,12 +276,11 @@
 		out.clear();
 		out = pageContext.pushBody(); 
 
-                mySessionHandler.createGeneListActivity("Downloaded eQTLResults", dbConn);
+                mySessionHandler.createGeneListActivity("Downloaded eQTLResults", pool);
         }
 
         mySessionHandler.createGeneListActivity(
-		"Viewed eQTL results for eQTLIDs " + eQTLID.substring(0,Math.min(eQTLID.length(),20)) + ", and others",
-                dbConn);
+		"Viewed eQTL results for eQTLIDs " + eQTLID.substring(0,Math.min(eQTLID.length(),20)) + ", and others", pool);
 	
 %>
 

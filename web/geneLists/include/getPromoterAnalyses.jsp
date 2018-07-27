@@ -183,7 +183,7 @@
                     var type=$(this).attr('type');
                     
                     $.ajax({
-                                    url: contextPath + "/web/geneLists/include/getPromoterResult.jsp",
+                                    url:  "/web/geneLists/include/getPromoterResult.jsp",
                                     type: 'GET',
                                     data: {geneListAnalysisID:id,type:type},
                                     dataType: 'html',

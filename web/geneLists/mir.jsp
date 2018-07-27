@@ -241,7 +241,7 @@
 			$('#wait2').show();
 			$('#runStatus').html("");
 			$.ajax({
-				url: contextPath + "/web/geneLists/include/runMultiMiR.jsp",
+				url: "/web/geneLists/include/runMultiMiR.jsp",
    				type: 'GET',
 				data: {species:species,geneListID:id,table:table,predType:predType,cutoff:cutoff,disease:disease,name:name},
 				dataType: 'html',

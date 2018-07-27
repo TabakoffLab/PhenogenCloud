@@ -400,9 +400,9 @@ public class Resource {
 		List<Resource> resourceList = new ArrayList<Resource>();
 		log.debug("publicDatasets has " + publicDatasets.length + " entries");
 
-        	Dataset myDataset = new Dataset();
-        	Dataset BXDRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.BXDRI_DATASET_NAME);
-        	Dataset HXBRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_DATASET_NAME);
+		Dataset myDataset = new Dataset();
+		Dataset BXDRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.BXDRI_DATASET_NAME);
+		Dataset HXBRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_DATASET_NAME);
         	Dataset Inbred_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.INBRED_DATASET_NAME);
         	Dataset LXSRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.LXSRI_DATASET_NAME);
         	Dataset HXBRI_Brain_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_BRAIN_EXON_DATASET_NAME);
@@ -412,7 +412,7 @@ public class Resource {
 
 		// Setup the BXDRI stuff
 		String resourcesDir = BXDRI_Dataset.getResourcesDir();
-                resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
+		resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
 		String datasetDir = BXDRI_Dataset.getPath();
 
 		List<ExpressionDataFile> expressionFileList = new ArrayList<ExpressionDataFile>();
@@ -429,7 +429,7 @@ public class Resource {
 		heritabilityFileList.add(new HeritabilityDataFile("Heritability file from RMA normalization plus probe mask", resourcesDir + "herits.BXD.zip","Mm9"));
 		HeritabilityDataFile[] heritabilityFileArray = myObjectHandler.getAsArray(heritabilityFileList, HeritabilityDataFile.class);
 
-                resourceList.add(new Resource(1, "Mouse", BXDRI_PANEL, BXDRI_Dataset, "Whole Brain", myArray.MOUSE430V2_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
+		resourceList.add(new Resource(1, "Mouse", BXDRI_PANEL, BXDRI_Dataset, "Whole Brain", myArray.MOUSE430V2_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
 
 		// Setup the LXSRI stuff
 		resourcesDir = LXSRI_Dataset.getResourcesDir();
@@ -488,7 +488,7 @@ public class Resource {
                 maskFileList.add(new MaskDataFile("PGF File for ILS/ISS Mm10", resourcesDir + "MoEx-1_0-st-v1.r2.mm10.MASKED.LXS.pgf.zip","Mm10"));
 		MaskDataFile[] maskFileArray = myObjectHandler.getAsArray(maskFileList, MaskDataFile.class);
                 
-                resourceList.add(new Resource(2, "Mouse", LXSRI_PANEL, LXSRI_Dataset, "Whole Brain", myArray.MOUSE_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
+		resourceList.add(new Resource(2, "Mouse", LXSRI_PANEL, LXSRI_Dataset, "Whole Brain", myArray.MOUSE_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
 
 
 		// Setup the Inbred stuff

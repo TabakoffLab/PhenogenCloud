@@ -359,7 +359,8 @@
             String perlEnvironmentVariables = (String)session.getAttribute("perlEnvVar");
 
             String hostName=request.getServerName();
-            if(hostName.equals("phenogen.ucdenver.edu")){
+            perlEnvironmentVariables += ":/usr/bin:/usr/share/circos/lib:/usr/share/circos/bin";
+            /*if(hostName.equals("phenogen.ucdenver.edu")){
                     perlEnvironmentVariables += ":/usr/bin/perl5.10.1:/usr/local/circos-0.69-4/lib:/usr/local/circos-0.69-4/bin";
             }
             else if(hostName.equals("140.226.114.31")){
@@ -367,7 +368,7 @@
             }
             else{
                     perlEnvironmentVariables += ":/usr/bin/perl5.10.1:/usr/local/circos-0.69-4/lib:/usr/local/circos-0.69-4/bin";
-            }
+            }*/
             log.debug("Host Name "+hostName);
             String filePrefixWithPath="";			
             if(request.getParameter("geneCentricPath")!=null && source.equals("array") ){

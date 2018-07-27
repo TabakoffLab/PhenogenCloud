@@ -56,7 +56,7 @@ function setupPage() {
 				formName: formName,
 				datasetID: datasetID,
 				datasetVersion: datasetVersion};
-			$.get(contextPath + "/web/common/formatParameters.jsp", 
+			$.get( "/web/common/formatParameters.jsp",
 				parameters,
 				function(data){
 					itemDetails.dialog("open").html(data);
@@ -87,8 +87,8 @@ function setupPage() {
 		$("input:radio").change(changeDataset);
 	//}
 
-	setupDownloadButton(contextPath + "/web/common/downloadPhenotype.jsp");
-	setupDeleteButton(contextPath + "/web/datasets/deletePhenotypeData.jsp"); 
+	setupDownloadButton( "/web/common/downloadPhenotype.jsp");
+	setupDeleteButton( "/web/datasets/deletePhenotypeData.jsp");
 	setupCreatePhenotypeData();
 }
 
@@ -115,7 +115,7 @@ function setupCreatePhenotypeData() {
 				var parameters = {datasetID: $("input[name='datasetID']").val(), 
 						datasetVersion: $("input[name='datasetVersion']").val(),
 						formName: $("input[name='formName']").val()};
-					$.get(contextPath + "/web/datasets/createPhenotype.jsp", 
+					$.get("/web/datasets/createPhenotype.jsp",
 						parameters,
 						function(data){
 						newData.dialog("open").html(data);

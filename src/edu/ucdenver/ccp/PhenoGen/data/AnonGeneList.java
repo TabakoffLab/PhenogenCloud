@@ -116,7 +116,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
 			"	from users "+
 			"	where user_name = 'public') ";*/
 
-        log.debug("query = " + query);
+        //log.debug("query = " + query);
         String[] dataRow;
         List<AnonGeneList> geneLists = new ArrayList<AnonGeneList>();
         try {
@@ -286,10 +286,8 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
 
 
     public AnonGeneList getGeneList(int geneListID, DataSource pool) throws SQLException {
-        Connection conn = null;
         AnonGeneList myGeneList = null;
-        try {
-            conn = pool.getConnection();
+        try(Connection conn=pool.getConnection()) {
             log.info("in getGeneList as a GeneList object. geneListID = " + geneListID);
 
             String query =
@@ -297,15 +295,11 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
                             fromClause +
                             "where gl.gene_list_id = ? " +
                             groupByClause;
-            log.debug(query);
+            //log.debug(query);
             Results myResults = new Results(query, geneListID, conn);
-            log.debug("before first call");
             String[] dataRow = myResults.getNextRow();
-            log.debug("calling setupGeneListValues");
             myGeneList = setupGeneListValues(dataRow);
-            log.debug("after calling setupGeneListValues");
             if (myGeneList.getParameter_group_id() != -99) {
-                log.debug("before parameter group calls");
                 myGeneList.setAnovaPValue(
                         new ParameterValue().getAnovaPValue(
                                 myGeneList.getParameter_group_id(), pool));
@@ -313,19 +307,11 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
                         new ParameterValue().getStatisticalMethod(
                                 myGeneList.getParameter_group_id(), pool));
             }
-            log.debug("before column heading call");
             myGeneList.setColumnHeadings(getColumnHeadings(geneListID, pool));
-            log.debug("after all calls before closing");
             myResults.close();
-            log.debug("after closing results.");
-            conn.close();
-            log.debug("after closing connection");
         } catch (SQLException e) {
             log.debug("getGeneList ERROR:", e);
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-            throw new SQLException();
+            throw e;
         }
         return myGeneList;
     }
@@ -477,21 +463,19 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
             conn = pool.getConnection();
 
             PreparedStatement pstmt = conn.prepareStatement(query,
-                    PreparedStatement.RETURN_GENERATED_KEYS,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            pstmt.setInt(1, this.getGene_list_id());
-            pstmt.setString(2, this.getGene_list_name());
-            pstmt.setString(3, this.getDescription());
+                    PreparedStatement.RETURN_GENERATED_KEYS);
+            //pstmt.setInt(1, this.getGene_list_id());
+            pstmt.setString(1, this.getGene_list_name());
+            pstmt.setString(2, this.getDescription());
             // This is the create_date
-            pstmt.setTimestamp(4, now);
-            myDbUtils.setToNullIfZero(pstmt, 5, this.getCreated_by_user_id());
-            pstmt.setString(6, this.getPath());
-            pstmt.setString(7, this.getGene_list_source());
-            myDbUtils.setToNullIfZero(pstmt, 8, this.getParameter_group_id());
-            myDbUtils.setToNullIfZero(pstmt, 9, this.getDataset_id());
-            myDbUtils.setToNullIfZero(pstmt, 10, this.getVersion());
-            pstmt.setString(11, this.getOrganism());
+            pstmt.setTimestamp(3, now);
+            myDbUtils.setToNullIfZero(pstmt, 4, this.getCreated_by_user_id());
+            pstmt.setString(5, this.getPath());
+            pstmt.setString(6, this.getGene_list_source());
+            myDbUtils.setToNullIfZero(pstmt, 7, this.getParameter_group_id());
+            myDbUtils.setToNullIfZero(pstmt, 8, this.getDataset_id());
+            myDbUtils.setToNullIfZero(pstmt, 9, this.getVersion());
+            pstmt.setString(10, this.getOrganism());
 
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();

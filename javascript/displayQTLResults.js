@@ -12,7 +12,7 @@ var downloadModal; // modal used for download QTL results
 function setupPage() {
 	show_more_parameters();
 	show_conf_parameters();
-	setupDownloadPage(contextPath + "/web/qtls/downloadQTLAnalysisResults.jsp?itemID=" + 
+	setupDownloadPage("/web/qtls/downloadQTLAnalysisResults.jsp?itemID=" +
 					$("input[name='phenotypeParameterGroupID']").val());
 }
 

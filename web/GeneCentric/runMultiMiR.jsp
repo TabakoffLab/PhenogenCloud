@@ -272,7 +272,7 @@
 			$('table#mirTbl tr.'+selectedID).addClass("selected");
 			//$('#wait2').show();
 			$.ajax({
-				url: contextPath + "/web/GeneCentric/runMultiMiRDetail.jsp",
+				url:  "/web/GeneCentric/runMultiMiRDetail.jsp",
    				type: 'GET',
 				data: {species:species,id:id,table:table,predType:predType,cutoff:cutoff,selectedID:selectedID},
 				dataType: 'html',

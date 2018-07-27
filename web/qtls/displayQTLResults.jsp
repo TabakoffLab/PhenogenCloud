@@ -13,7 +13,7 @@
 <%
 	log.info("in displayQTLResults.jsp. user =  "+ user);
 
-	mySessionHandler.createDatasetActivity("Viewed QTL Results", dbConn);
+	mySessionHandler.createDatasetActivity("Viewed QTL Results", pool);
 
 	extrasList.add("qtlMain.css");
 	extrasList.add("viewingPane.css");
@@ -52,7 +52,7 @@
         String groupingUserPhenotypeDir = selectedDatasetVersion.getGroupingUserPhenotypeDir(userName, phenotypeName);
 	String analysisOutputRdataFileName = groupingUserPhenotypeDir + "QTLAnalysisOutput.Rdata"; 
         String[] summaryResults = null;
-	mySessionHandler.createDatasetActivity("Viewed QTL Calculation results", dbConn);
+	mySessionHandler.createDatasetActivity("Viewed QTL Calculation results", pool);
 
         if ((action != null) && action.equals("Run Summary")) {
 		String criteria=(String) fieldValues.get("narrowBy");
@@ -77,11 +77,11 @@
                                         	confidenceType,
                                         	confidenceCriteria,
                                         	summaryOutputTxtFile);
-                        mySessionHandler.createDatasetActivity("Ran QTL.summary Function", dbConn);
+                        mySessionHandler.createDatasetActivity("Ran QTL.summary Function", pool);
         		summaryResults = myFileHandler.getFileContents(new File(summaryOutputTxtFile), "withSpaces");
                 } catch (RException e) {
                         rExceptionErrorMsg = e.getMessage();
-                        mySessionHandler.createDatasetActivity("Got RException When Running R QTL.summary Function", dbConn);
+                        mySessionHandler.createDatasetActivity("Got RException When Running R QTL.summary Function", pool);
                         %><%@ include file="/web/datasets/include/rError.jsp" %><%
 		}
 

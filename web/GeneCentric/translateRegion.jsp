@@ -174,7 +174,7 @@ This filters the results based on length of the target sequence and qeury sequen
 			}else{
                             $('#waitTranslate').show();
                             setTimeout(function(){
-                            $.get(	contextPath + "/web/GeneCentric/runTranslation.jsp", 
+                            $.get(	"/web/GeneCentric/runTranslation.jsp",
 				{region: regionTxt, minLen: minLen, minRatio: minRatio, targetSpecies: species, sourceSpecies: srcSpecies},
 				function(data){ 
 									var prevData="<BR><BR>"+$('#translateResults').html();

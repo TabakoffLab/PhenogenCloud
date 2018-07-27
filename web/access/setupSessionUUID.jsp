@@ -27,7 +27,7 @@
     anonU.setAccess_count(tmp.getAccess_count());
     anonU.setEmail(tmp.getEmail());
     //anonU.incrementLogin(pool);
-    log.debug(anonU.getUUID());
+    log.debug("\nSETUP ANON SESSION:"+anonU.getUUID());
     if(anonU!=null){
 %>
     {"status":"SUCCESS","id":"<%=anonU.getUUID()%>"}

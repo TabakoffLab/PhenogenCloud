@@ -11,7 +11,7 @@
 	log.info("in callIdecoder.jsp. user = " + user);
 	noIDecoderList = new ArrayList();
 	String[] targets = null;
-
+	myIDecoderClient.setNum_iterations(0);
 	if (selectedGeneList.getNumber_of_genes() > 200) {
 		log.debug("trying to do annotation on list with more than 200 genes");
 		//Error - "Cannot do annotation on list with more than 200 genes"

@@ -348,7 +348,7 @@ Detailed Summary Table
 			$('#detailResultLoading').show();
 				//},4000);
 			$.ajax({
-				url: contextPath + "/web/geneLists/include/getMultiMiRDetail.jsp",
+				url: "/web/geneLists/include/getMultiMiRDetail.jsp",
    				type: 'GET',
 				data: {geneListAnalysisID:id,selectedID:selectedID},
 				dataType: 'html',

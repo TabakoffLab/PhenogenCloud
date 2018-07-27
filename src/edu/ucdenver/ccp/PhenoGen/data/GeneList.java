@@ -70,7 +70,7 @@ public class GeneList {
     private String gene_list_owner;
     private String organism;
     private String userIsOwner;
-    private String alternateIdentifierSource;
+    private String alternateIdentifierSource="";
     private int alternateIdentifierSourceID;
     private String alternateIdentifierSourceLinkColumn;
     private String create_date_as_string;
@@ -471,7 +471,7 @@ public class GeneList {
                         "and pg.parameter_group_id = gl.parameter_group_id " +
                         "and pv.parameter = 'Parameter Group ID' " +
                         "and pv.category = 'Phenotype Data' " +
-                        "and to_char(phenotypePG.parameter_group_id) = pv.value " +
+                        "and convert(phenotypePG.parameter_group_id,char) = pv.value " +
                         "and phenotypePG.parameter_group_id = ? " +
                         geneListGroupByClause;
 
@@ -636,7 +636,7 @@ public class GeneList {
                         // since this is left-joined, we only want the rows that actually have gene_values
                         //
                         "and sc.description is not null " +
-                        "order by sc.sort_order, if(gv.group_number='NA', 0, to_number(gv.group_number))";
+                        "order by sc.sort_order, if(gv.group_number='NA', 0, cast(gv.group_number as UNSIGNED))";
 
         //log.debug("query = "+query);
         try(Connection conn=pool.getConnection()) {
@@ -1050,7 +1050,8 @@ public class GeneList {
                     ResultSet.CONCUR_UPDATABLE);
             pstmt.setInt(1, myGeneList.getGene_list_id());
 
-            if (myGeneList.getAlternateIdentifierSource() != null) {
+            if (myGeneList.getAlternateIdentifierSource() != null &&
+                    !myGeneList.getAlternateIdentifierSource().equals("")) {
                 pstmt.setString(6, myGeneList.getAlternateIdentifierSource());
             }
             pstmt.setInt(4, myGeneList.getAlternateIdentifierSourceID());
@@ -2161,16 +2162,21 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public Set<String> getNonProbeIDs(DataSource pool) throws SQLException {
-        Connection conn = null;
         Set<String> setOfIDs = null;
         log.debug("in getNonProbeIDs");
         Array myArray = new edu.ucdenver.ccp.PhenoGen.data.Array();
         String chip_names = "(" + myObjectHandler.getAsSeparatedString(myArray.EQTL_ARRAY_TYPES, ",", "'") + ")";
 
         String query =
-                "select g.gene_id " +
-                        "from genes g " +
-                        "where g.gene_list_id = ? " +
+                "select g.gene_id from genes g " +
+                        "left join genes g2 on g.gene_id=g2.gene_id "+
+                        "left join identifiers id on g.gene_id = id.identifier "+
+                        "left join identifier_arrays array on id.id_number = array.id_number "+
+                        "where g.gene_list_id = ?  and g2.gene_list_id = ? " +
+                        "and g2.gene_id IS NULL " +
+                        "and array.array_name in " +
+                        chip_names;
+                        /*
                         "minus " +
                         "select g.gene_id " +
                         "from genes g, " +
@@ -2179,26 +2185,22 @@ public class GeneList {
                         "where g.gene_id = id.identifier " +
                         "and g.gene_list_id = ? " +
                         "and array.array_name in " +
-                        chip_names +
+                        chip_names ;*/
 /*
 			"('Mouse Genome 430 2.0 Array', "+
 			"'CodeLink Mouse Whole Genome Array') "+
 */
-                        " order by 1";
+                        //" order by 1";
 
         //log.debug("in getNonProbeIDs. gene_list_id = "+this.getGene_list_id());
-        //log.debug("query = "+query);
-        try {
-            conn = pool.getConnection();
+        log.debug("query = "+query);
+        try(Connection conn=pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{this.getGene_list_id(), this.getGene_list_id()}, conn);
             setOfIDs = new ObjectHandler().getResultsAsSet(myResults, 0);
             myResults.close();
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-            throw new SQLException();
+            log.error("SQLException:",e);
+            throw e;
         }
         return setOfIDs;
     }
@@ -2317,7 +2319,8 @@ public class GeneList {
                     "select g.gene_list_id, " +
                             "g.gene_id \"Original Accession ID\", " +
                             "ai.alternate_id \"Current Selection\", " +
-                            "to_char(gv.value, '9.9999EEEE') " +
+                            //"to_char(gv.value, '9.9999EEEE') " +
+                            "format(gv.value, 4) " +
                             "from genes g left join gene_values gv " +
                             "	on gv.gene_list_id = g.gene_list_id and gv.gene_id = g.gene_id " +
                             "left join statistic_codes sc on gv.statistic_code = sc.statistic_code " +
@@ -2328,7 +2331,7 @@ public class GeneList {
                             "order by g.gene_list_id, " +
                             "g.gene_id, " +
                             "sc.sort_order, " +
-                            "if(gv.group_number='NA', 0, to_number(gv.group_number))";
+                            "if(gv.group_number='NA', 0, cast(gv.group_number as UNSIGNED))";
 
             //log.debug("in getGenesAsGeneArray. gene_list_id = "+this.getGene_list_id());
             //log.debug("query = "+query);

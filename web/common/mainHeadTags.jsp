@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta charset="UTF-8">
     <title>PhenoGen <%if(pageTitle!=null && !pageTitle.equals("")){%>- <%=pageTitle%> <%}%></title>
     <meta http-equiv="content-language" content="en-us">

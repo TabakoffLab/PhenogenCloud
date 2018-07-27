@@ -104,19 +104,19 @@ public class Results{
 	public Results(String query, Object[] queryVariables, DataSource pool) throws SQLException {
 		log = Logger.getRootLogger();
 
-		log.debug("pstmt is open here 2.5. This is good");
+		//log.debug("pstmt is open here 2.5. This is good");
 		//log.debug("in Results passing in queryVariables");
 	
                 Connection conn=pool.getConnection();
                 pstmt = conn.prepareStatement(query,
 				ResultSet.TYPE_SCROLL_INSENSITIVE,
 				ResultSet.CONCUR_UPDATABLE);
-                log.debug("after pstmt");
+                //log.debug("after pstmt");
 		int ctr = 1;
-                log.debug("queryVars:"+queryVariables.length);
+                //log.debug("queryVars:"+queryVariables.length);
                 for (Object thisVar : queryVariables) {
                     String className = thisVar.getClass().getName();
-                    log.debug(className+":"+thisVar);
+                    //log.debug(className+":"+thisVar);
                     //log.debug("object value = "+((String)thisVar).toString());
                     //log.debug("object class = "+className);
                     if(className.equals("java.lang.String")){
@@ -128,11 +128,11 @@ public class Results{
                     }
                     ctr++;
                 }
-                log.debug("set vars");
+                //log.debug("set vars");
 		rs = pstmt.executeQuery();
-                log.debug("execute query");
+                //log.debug("execute query");
 		rsmd = rs.getMetaData();
-                log.debug("meta");
+                //log.debug("meta");
   	}
         
 	/**
@@ -180,7 +180,7 @@ public class Results{
 	public Results(String query, List<Object>queryVariables, Connection conn) throws SQLException {
 		log = Logger.getRootLogger();
 
-		log.debug("pstmt is open here 3. Should be fixed. query = " +query);
+		//log.debug("pstmt is open here 3. Should be fixed. query = " +query);
 		//log.debug("in Results passing in queryVariables");
 	
                 pstmt = conn.prepareStatement(query,
@@ -213,16 +213,16 @@ public class Results{
 	 */
 	public Results(String query, int inInt, Connection conn) throws SQLException {
 		log = Logger.getRootLogger();
-		log.debug("pstmt is open here 4. Not a problem");
+		//log.debug("pstmt is open here 4. Not a problem");
 		pstmt = conn.prepareStatement(query,
 				ResultSet.TYPE_SCROLL_INSENSITIVE,
 				ResultSet.CONCUR_UPDATABLE);
 		pstmt.setInt(1, inInt);
-		log.debug("pstmt is before execute"+inInt+":"+query);
+		//log.debug("pstmt is before execute"+inInt+":"+query);
 		rs = pstmt.executeQuery();
-		log.debug("pstmt after execute"+inInt+":"+query);
+		//log.debug("pstmt after execute"+inInt+":"+query);
 		rsmd = rs.getMetaData();
-		log.debug("pstmt after metadata"+inInt+":"+query);
+		//log.debug("pstmt after metadata"+inInt+":"+query);
   	}
 
 	/**
@@ -254,7 +254,7 @@ public class Results{
 	public Results(String query, String inString, String inString2, Connection conn) throws SQLException {
 		log = Logger.getRootLogger();
 	
-		log.debug("pstmt is open here 6. Should be fixed. query = " + query);
+		//log.debug("pstmt is open here 6. Should be fixed. query = " + query);
                 pstmt = conn.prepareStatement(query,
 				ResultSet.TYPE_SCROLL_INSENSITIVE,
 				ResultSet.CONCUR_UPDATABLE);
@@ -274,7 +274,7 @@ public class Results{
 	 */
 	public Results(String query, int inInt, int inInt2, Connection conn) throws SQLException {
 		log = Logger.getRootLogger();
-		log.debug("pstmt is open here 7. Should be fixed. query = " + query);
+		//log.debug("pstmt is open here 7. Should be fixed. query = " + query);
 	
                 pstmt = conn.prepareStatement(query,
 				ResultSet.TYPE_SCROLL_INSENSITIVE,

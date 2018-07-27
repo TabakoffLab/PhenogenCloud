@@ -48,7 +48,7 @@
     */
     function runDeleteGeneListAnalysis(id,type){
         jQuery.ajax({
-                    url: contextPath + "/web/geneLists/include/deleteAjaxGLA.jsp",
+                    url: "/web/geneLists/include/deleteAjaxGLA.jsp",
                     type: 'GET',
                     data: {geneListAnalysisID:id},
                     dataType: 'html',

@@ -1144,7 +1144,7 @@ public class ParameterValue implements Comparable {
                         "and gl.version = dv.version " +
                         "and dv.grouping_id = grps.grouping_id " +
                         "and pv2.parameter_group_id = ? " +
-                        "and pv.parameter = to_char(grps.group_number) " +
+                        "and pv.parameter = convert(grps.group_number,char) " +
                         "and pv2.category = 'Phenotype Data' " +
                         "and pv2.parameter = 'Parameter Group ID' " +
                         "and pv.category = 'Phenotype Group Value' " +
@@ -1524,7 +1524,7 @@ public class ParameterValue implements Comparable {
                         "and dv.grouping_id = grps.grouping_id  " +
                         "and dv.dataset_id = pg.dataset_id  " +
                         "and dv.version = pg.version  " +
-                        "and pv.parameter = to_char(grps.group_number)  " +
+                        "and pv.parameter = convert(grps.group_number,char)  " +
                         "and pg.dataset_id = ? " +
                         "and pv_user.parameter = 'User ID' " +
                         "and pv_user.value = ? " +
@@ -1640,7 +1640,7 @@ public class ParameterValue implements Comparable {
                         "and grpings.grouping_id = grps.grouping_id " +
                         "and dv.dataset_id = pg.dataset_id " +
                         "and dv.version = pg.version " +
-                        "and pv.parameter = to_char(grps.group_number) " +
+                        "and pv.parameter = convert(grps.group_number,char) " +
                         "and pv.parameter_group_id = ? " +
                         "order by grps.group_number";
 
