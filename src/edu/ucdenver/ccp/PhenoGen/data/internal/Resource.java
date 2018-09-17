@@ -970,7 +970,7 @@ public class Resource {
 	 */
 	public Resource[] getDNASeqResources() {
 		log.debug("in getRNASeqResources");
-                String seqFilePath="/userFiles/public/DNASeq/";
+                String seqFilePath="/downloads/DNASeq/";
 		List<Resource> resourceList = new ArrayList<Resource>();
                 
                 SAMDataFile[] bnlxFileList = new SAMDataFile[2];
@@ -1045,7 +1045,7 @@ public class Resource {
         
         public Resource[] getPublicationResources1() {
             log.debug("in getPublicationResources");
-            String pubFilePath="/userFiles/public/Publication/";
+            String pubFilePath="/downloads/Publication/";
             List<Resource> resourceList = new ArrayList<Resource>();
                 
                 PublicationFile[] fileList = new PublicationFile[2];
@@ -1092,7 +1092,7 @@ public class Resource {
         }
         public Resource[] getPublicationResources2() {
             log.debug("in getPublicationResources");
-            String pubFilePath="/userFiles/public/Publication/harrall/";
+            String pubFilePath="/downloads/Publication/harrall/";
             List<Resource> resourceList = new ArrayList<Resource>();
                 
                 PublicationFile[] fileList = new PublicationFile[2];
@@ -1141,7 +1141,7 @@ public class Resource {
         }
         public Resource[] getPublicationResources3() {
             log.debug("in getPublicationResources3");
-            String pubFilePath="/userFiles/public/Publication/pravenec/";
+            String pubFilePath="/downloads/Publication/pravenec/";
             List<Resource> resourceList = new ArrayList<Resource>();
                 
             PublicationFile[] fileList = new PublicationFile[4];
@@ -1165,7 +1165,7 @@ public class Resource {
         }
         public Resource[] getPublicationResources4() {
             log.debug("in getPublicationResources4");
-            String pubFilePath="/userFiles/public/Publication/kechris/";
+            String pubFilePath="/downloads/Publication/kechris/";
             List<Resource> resourceList = new ArrayList<Resource>();
                 
             PublicationFile[] fileList = new PublicationFile[15];

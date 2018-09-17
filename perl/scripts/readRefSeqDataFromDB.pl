@@ -42,12 +42,22 @@ sub readRefSeqDataFromDB{
 	# PERL DBI CONNECT
 	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
-		$query ="SELECT g.name,g.chrom,g.strand,g.txStart,g.txEnd,g.cdsStart,g.cdsEnd,g.exonStarts,g.exonEnds,g.name2,s.status
+	$query ="SELECT g.name,g.chrom,g.strand,g.txStart,g.txEnd,g.cdsStart,g.cdsEnd,g.exonStarts,g.exonEnds,g.name2,s.status
 			FROM refGene g, refSeqStatus s
 			where g.chrom='".$geneChrom."'
 			and ((".$geneStart."<=g.txStart and g.txStart<=".$geneStop.") or (".$geneStart."<=g.txEnd and g.txEnd<=".$geneStop.") or (g.txStart<=".$geneStart." and ".$geneStop."<=g.txEnd))
 			and g.name=s.mrnaAcc
 			order by g.txStart,g.name2;";
+
+	#if DB is rn6 or mm10 use new query
+	if(index($dsn,"rn6")>-1 || index($dsn,"mm10")){
+		$query ="SELECT g.name,g.chrom,g.strand,g.txStart,g.txEnd,g.cdsStart,g.cdsEnd,g.exonStarts,g.exonEnds,g.name2,s.status
+			FROM ncbiRefSeq g, ncbiRefSeqLink s
+			where g.chrom='".$geneChrom."'
+			and ((".$geneStart."<=g.txStart and g.txStart<=".$geneStop.") or (".$geneStart."<=g.txEnd and g.txEnd<=".$geneStop.") or (g.txStart<=".$geneStart." and ".$geneStop."<=g.txEnd))
+			and g.name=s.id
+			order by g.txStart,g.name2;";
+	}
 	
 	print "Updated\n$shortOrg\n".$organism."\n".$query."\n";
 	$query_handle = $connect->prepare($query) or die (" RNA Isoform query prepare failed \n");

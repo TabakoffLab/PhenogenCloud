@@ -883,7 +883,7 @@ sub readRNACountsDataFromMongo{
 	
 	# PERL DBI CONNECT
 	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
-	
+
 	$geneChrom=uc($geneChrom);
 	
 	$query ="Select rd.shared_id from rna_dataset rd
@@ -909,14 +909,15 @@ sub readRNACountsDataFromMongo{
 	$query_handle->fetch();
 	
 	my $dsid=$sharedID;
+
 	$query_handle->finish();
 	$connect->disconnect();
 	my %countHOH;
         print "mongohost:".$mongoHost."\n";
         print "mongouser:".$mongoUsr."\n";
         print "mongopassword:".$mongoPwd."\n";
-	my $client = MongoDB::MongoClient->new(host => $mongoHost,username => $mongoUsr, password => $mongoPwd, db_name => 'shared');
-        my $database   = $client->get_database( 'shared' );
+	my $client = MongoDB::MongoClient->new(host => $mongoHost,username => $mongoUsr, password => $mongoPwd, db_name => 'admin');
+	my $database   = $client->get_database( 'shared' );
 	my $col = $database->get_collection( 'RNA_COUNTS_'.$dsid );
 	
 	print "RNA_COUNTS_$dsid\n";

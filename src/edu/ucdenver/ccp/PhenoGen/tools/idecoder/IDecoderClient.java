@@ -50,23 +50,6 @@ public class IDecoderClient {
     List targetsList = Arrays.asList(targets);
     private String organism;
     private String gene_chip_name;
-    private String createTempTable = "CREATE TEMPORARY TABLE IF NOT EXISTS INIA_DEV.GENELISTGRAPH (" +
-            "START_ID_NUMBER DECIMAL(10,0) DEFAULT NULL," +
-            "START_IDENTIFIER VARCHAR(2000) DEFAULT NULL," +
-            "IDENT_TYPE_ID DECIMAL(2,0) DEFAULT NULL," +
-            "NAME VARCHAR(50) DEFAULT NULL," +
-            "ID_NUMBER DECIMAL(10,0) DEFAULT NULL," +
-            "IDENTIFIER VARCHAR(2000) DEFAULT NULL," +
-            "CHROMOSOME VARCHAR(30) DEFAULT NULL," +
-            "MAP_LOCATION VARCHAR(50) DEFAULT NULL," +
-            "CM DECIMAL(10,5) DEFAULT NULL," +
-            "START_BP DOUBLE DEFAULT NULL," +
-            "CATEGORY VARCHAR(25) DEFAULT NULL," +
-            "ORGANISM VARCHAR(2) DEFAULT NULL," +
-            "ARRAY_NAME VARCHAR(2000) DEFAULT NULL," +
-            "FROM_ID_NUMBER DECIMAL(10,0) DEFAULT NULL," +
-            "FROM_IDENTIFIER VARCHAR(2000) DEFAULT NULL," +
-            "LINK_SOURCE_NAME VARCHAR(2000) DEFAULT NULL)";
 
     private static final long NOT_APPLICABLE_TAXON_ID = 9999;
     private static final long RAT_TAXON_ID = 10116;
@@ -341,18 +324,18 @@ public class IDecoderClient {
             organismString = "and id.organism = '" + organism + "' ";
         }
 
-        String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier" +
+        String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
                 "from id_lookup idl left outer join identifiers id1 on idl.id1_number=id1.id_number " +
                 "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
                 "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
         String where=" where idl.level<= ? ";
         String whereList=" and idl.id1_number in (Select id_number from identifiers where identifier in ( ";
-        String whereTrgt=" and type.name in ( ";
+        String whereTrgt=" and type.name in  ";
 
         String finalQuery=query+where+whereList+idString+" ) ) ";
         if (targetsList != null && !targetsList.contains("Location")) {
-            finalQuery = finalQuery +whereTrgt+  targetString + " ) ";
+            finalQuery = finalQuery +whereTrgt+  targetString + " ";
         }
         finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
 
@@ -421,11 +404,11 @@ public class IDecoderClient {
 
         String where=" where idl.level<= ? ";
         String whereList=" and idl.id1_number in (Select id_number from identifiers where lower(identifier) in ( ";
-        String whereTrgt=" and type.name in ( ";
+        String whereTrgt=" and type.name in  ";
 
         String finalQuery=query+where+whereList+idString+" ) ) ";
         if (targetsList != null && !targetsList.contains("Location")) {
-            finalQuery = finalQuery +whereTrgt+  targetString + " ) ";
+            finalQuery = finalQuery +whereTrgt+  targetString + " ";
         }
         finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
 
@@ -657,9 +640,7 @@ public class IDecoderClient {
 
     private HashMap<Identifier, Set<Identifier>> doSearch(String gene, String organism, DataSource pool) throws SQLException {
         log.debug("in doSearch passing gene ID");
-
-        results = doSearchAll(gene,organism, pool);
-
+        HashMap<Identifier, Set<Identifier>> results = doSearchAll(gene,organism, pool);
         return results;
     }
 
@@ -756,41 +737,82 @@ public class IDecoderClient {
      * @throws Exception from any other method calls
      */
     private HashMap<Identifier, Set<Identifier>> doSearchAll(String geneIDString,String organism, DataSource pool) throws SQLException {
-
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearchAll");
         String targetString = "(" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ")";
         //
         // Match on organism if the target is not 'Homologene ID'
         //
-        String organismString = "and 1=1 ";
+        String organismString = "";
 
         if (!targetsList.contains("Homologene ID")) {
             organismString = "and id.organism = '" + organism + "' ";
         }
+        String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
+                "from id_lookup idl left outer join identifiers id1 on idl.id1_number=id1.id_number " +
+                "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
+                "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
+        String where=" where idl.level<= ? ";
+        String whereList=" and idl.id1_number in (Select id_number from identifiers where identifier like '";
+        String whereTrgt=" and type.name in  ";
 
-        String countQuery2 =
-                "select count(*) from geneListGraph";
-        String glgContents =
-                "select * from geneListGraph";
+        String finalQuery=query+where+whereList+geneIDString+"' ) ";
+        if (targetsList != null && !targetsList.contains("Location")) {
+            finalQuery = finalQuery +whereTrgt+  targetString + " ";
+        }
+        finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
 
+        log.debug("in getRecords");
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement pstmt = conn.prepareStatement(finalQuery);
+            pstmt.setInt(1,num_iterations+1);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Identifier foundID = new Identifier(rs.getString(13));
+                LinkedHashSet<Identifier> resultIDSet = new LinkedHashSet<Identifier>();
+                if(resultsHashMap.containsKey(foundID)){
+                    resultIDSet = (LinkedHashSet<Identifier>) resultsHashMap.get(foundID);
+                }
+                Identifier relatedID = new Identifier(rs.getInt(1), rs.getString(2),
+                        rs.getLong(3), rs.getString(4), rs.getString(5),
+                        rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10),
+                        rs.getString(11));
+                resultIDSet.add(relatedID);
+                resultsHashMap.put(foundID, resultIDSet);
+            }
+            pstmt.close();
+        }catch(SQLException e){
+            log.debug("SQL Exception:",e);
+            throw e;
+        }
+        log.debug("resultsHashMap contains " + resultsHashMap.size() + " entries");
+        return resultsHashMap;
 
-        conn.setAutoCommit(false);
-        //conn.setAutoCommit(true);
-        //log.debug("query1 = "+query);
+    }
 
-        PreparedStatement ct = conn.prepareStatement(createTempTable);
-        ct.executeUpdate();
-        ct.close();
+    /**
+     * Returns the main HashMap that is used by other methods
+     *
+     * @param conn database connection
+     * @return HashMap of results that contains the original Identifier and points to a Set of Identifiers.
+     * The set of Identifiers contains ALL the Identifiers that were discovered during breadth-first-search
+     * of graph.  Modified to follow links from Affy IDs as they can be needed to link Ensembl IDs
+     * To obtain the subset of Identifiers for a list of particular targets, see
+     * {@link #getIdentifiersByInputIDAndTarget(int geneListID, String[] targets, Connection conn) getIdentifiersByInputIDAndTarget}
+     * <br><pre>
+     *
+     *      ------------------       -------------------------------------------------------------------
+     *      | Identifier CDX4 | -------->  | Affy Identifier 15112_at | Entrez Gene Identifier 10329  |...    |
+     *      ------------------|       -------------------------------------------------------------------
+     *      | Identifier CDX3 | ...|
+     *      ------------------
+     * </pre>
+     * @throws Exception from any other method calls
+     */
+    /*private HashMap<Identifier, Set<Identifier>> doSearchAll(String geneIDString,String organism, DataSource pool) throws SQLException {
 
-        //Results myGLGResults = new Results(glgContents, conn);
-        //myGLGResults.print();
-
-        //
-        // Then insert the identifiers that have a row in the identifier_arrays table
-        // but don't have any links from them
-        //
+        ///*******************************
         String query = "insert into geneListGraph " +
                 "(start_id_number, " +
                 "start_identifier, " +
@@ -808,7 +830,7 @@ public class IDecoderClient {
                 "from_id_number, " +
                 "from_identifier, " +
                 "link_source_name) " +
-                "select distinct /*+ index (id identifiers_pk) */ glg.id_number start_id_number, " +
+                "select distinct  glg.id_number start_id_number, " +
                 "glg.start_identifier, " +
                 "id.ident_type_id, " +
                 "type.name, " +
@@ -878,7 +900,7 @@ public class IDecoderClient {
                 "from_id_number, " +
                 "from_identifier, " +
                 "link_source_name) " +
-                "select distinct /*+ index (id identifiers_pk) */ glg.id_number start_id_number, " +
+                "select distinct  glg.id_number start_id_number, " +
                 "glg.start_identifier, " +
                 "id.ident_type_id, " +
                 "type.name, " +
@@ -909,7 +931,7 @@ public class IDecoderClient {
                 organismString +
                 //"and id.organism = ? "+
                 "union " +
-                "select distinct /*+ index (id identifiers_pk) */ glg.id_number start_id_number, " +
+                "select distinct glg.id_number start_id_number, " +
                 "glg.start_identifier, " +
                 "id.ident_type_id, " +
                 "type.name, " +
@@ -1128,52 +1150,7 @@ public class IDecoderClient {
             query2 = query2 + "where glg.name in " + targetString + " ";
         }
         query2 = query2 + "order by glg.start_id_number, glg.ident_type_id, glg.identifier";
-/*
-			", id.identifier, "+
-			"idtype.name "+
-			", identifiers id, "+
-			"identifier_types idtype "+
-			"where glg.start_id_number = id.id_number "+
-			"and id.ident_type_id = idtype.ident_type_id "+
-*/
 
-       		/*String query3 =
-                	"select start_id_number, "+
-			"start_identifier, "+
-			"fromID.ident_type_id, "+
-			"from_types.name, "+
-			"fromID.id_number, "+
-			"fromID.identifier, "+
-			"fromID.chromosome, "+
-			"fromID.map_location, "+
-			"fromID.cM, " +
-			"fromID.start_bp, " +
-			"from_types.category, " +
-			"fromID.organism, " +
-			"from_arrays.array_name, "+
-                	"toID.ident_type_id, "+
-			"to_types.name, "+
-			"toID.id_number, "+
-			"toID.identifier, "+
-			"toID.chromosome, "+
-			"toID.map_location, "+
-			"toID.cM, " +
-			"toID.start_bp, " +
-			"to_types.category, " +
-			"toID.organism, " +
-			"to_arrays.array_name, "+
-			"link_source_name "+
-                	"from geneListGraph glg, "+
-                	"identifiers fromID left join identifier_arrays from_arrays on fromID.id_number = from_arrays.id_number, "+
-                	"identifiers toID left join identifier_arrays to_arrays on toID.id_number = to_arrays.id_number, "+
-                	"identifier_types from_types, "+
-                	"identifier_types to_types "+
-			"where glg.from_id_number = fromID.id_number "+
-			"and glg.id_number = toID.id_number "+
-			"and fromID.ident_type_id = from_types.ident_type_id "+
-			"and toID.ident_type_id = to_types.ident_type_id "+
-			"order by start_id_number, fromID.ident_type_id, fromID.identifier, toID.ident_type_id, toID.identifier";
-                */
         log.debug("in getRecords");
         //log.debug("getTab1 query = "+query);
         //log.debug("getTab2 query = "+query2);
@@ -1187,9 +1164,7 @@ public class IDecoderClient {
         while (rs.next()) {
             Identifier foundID = new Identifier(rs.getString(4));
             //log.debug("query1: org:"+foundID.getIdentifier()+":"+foundID.getIdentifierTypeName()+":"+foundID.getOrganism());
-            		/*Identifier foundID = new Identifier(rs.getInt(1), rs.getString(2),
-				rs.getLong(3), rs.getString(4), rs.getString(5),
-				rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10), "");*/
+
             resultsHashMap.put(foundID, new LinkedHashSet<Identifier>());
             //linkGraph.put(foundID, new LinkedHashSet<IdentifierLink>());
         }
@@ -1210,48 +1185,11 @@ public class IDecoderClient {
             resultIDSet.add(relatedID);
             resultsHashMap.put(foundID, resultIDSet);
 
-			/*
-			LinkedHashSet<IdentifierLink> identifierLinkSet = (LinkedHashSet) linkGraph.get(foundID);
-			Identifier fromID = new Identifier(rs.getInt(12), rs.getString(13));
-			Identifier toID = new Identifier(rs.getInt(3), rs.getString(4));
-			String linkSource = (rs.getString(14) != null ? rs.getString(14) : "Unknown");
 
-			IdentifierLink thisIdentifierLink = new IdentifierLink(fromID, toID, linkSource);
-			identifierLinkSet.add(thisIdentifierLink);
-			linkGraph.put(foundID, identifierLinkSet);
-			*/
         }
 
         log.debug("resultsHashMap contains " + resultsHashMap.size() + " entries");
-		/*
-		//
-		// This is commented out because it takes too much memory.  Only place linkGraph is used is in DrawGraph
-		//
-		pstmt = conn.prepareStatement(query3);
-		rs = pstmt.executeQuery();
-        	while (rs.next()){
-            		Identifier foundID = new Identifier(rs.getString(2));
-			LinkedHashSet<IdentifierLink> identifierLinkSet = (LinkedHashSet<IdentifierLink>) linkGraph.get(foundID);
-            		Identifier fromID = new Identifier(rs.getInt(3), rs.getString(4),
-				rs.getLong(5), rs.getString(6), rs.getString(7),
-				rs.getString(8), rs.getString(9), rs.getString(10), rs.getString(11), rs.getString(12),
-				rs.getString(13));
-            		Identifier toID = new Identifier(rs.getInt(14), rs.getString(15),
-				rs.getLong(16), rs.getString(17), rs.getString(18),
-				rs.getString(19), rs.getString(20), rs.getString(21), rs.getString(22), rs.getString(23),
-				rs.getString(24));
 
-			//Identifier fromID = new Identifier(rs.getInt(12), rs.getString(13));
-			//Identifier toID = new Identifier(rs.getInt(3), rs.getString(4));
-			String linkSource = (rs.getString(25) != null ? rs.getString(25) : "Unknown");
-
-			IdentifierLink thisIdentifierLink = new IdentifierLink(fromID, toID, linkSource);
-			identifierLinkSet.add(thisIdentifierLink);
-			linkGraph.put(foundID, identifierLinkSet);
-        	}
-
-		log.debug("Now 2 linkGraph contains "+linkGraph.size() + " entries");
-		*/
         pstmt.close();
 
         conn.commit();
@@ -1260,7 +1198,8 @@ public class IDecoderClient {
         //myGLGResults.close();
         //log.debug("linkGraph = "); myDebugger.print(linkGraph);
         return resultsHashMap;
-    }
+    }*/
+
 //    /**
 //     * Returns the main HashMap that is used by other methods
 //     *
@@ -1829,9 +1768,7 @@ public class IDecoderClient {
 
 
         conn.setAutoCommit(false);
-        PreparedStatement ct = conn.prepareStatement(createTempTable);
-        ct.executeUpdate();
-        ct.close();
+
         //conn.setAutoCommit(true);
         //log.debug("query1 = "+query);
 
@@ -2849,8 +2786,6 @@ public class IDecoderClient {
         log.debug("in getIdentifiersByInputID passing in gene ID");
 
         setTargets(targets);
-        log.debug("targetsList = " + targetsList);
-        Connection conn = pool.getConnection();
         HashMap<Identifier, Set<Identifier>> startHashMap = doSearch(geneID, organism, pool);
         log.debug("startHashMap = ");
         myDebugger.print(startHashMap);
@@ -2884,10 +2819,7 @@ public class IDecoderClient {
             inputID.setLocationIdentifiers(setOfLocationIdentifiers);
             setOfInputIdentifiers.add(inputID);
         }
-        try {
-            conn.close();
-        } catch (Exception e) {
-        }
+
         return setOfInputIdentifiers;
     }
 

@@ -34,7 +34,7 @@
 	log.debug("after rna");
 	Resource[] myDNASeqResources = myResource.getDNASeqResources();
 	log.debug("after dnaSeq");
-	Resource[] myGenotypeResources = myResource.getGenotypingResources();
+	//Resource[] myGenotypeResources = myResource.getGenotypingResources();
 	log.debug("after genotype");
         Resource[] myPublicationResources1 = myResource.getPublicationResources1();
 	log.debug("after pub1");
@@ -588,42 +588,6 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 			<% } %>
 			</tbody>
 		</table>
-                        <BR>
-        
-        
-                        
-                <BR>
-		<BR>
-                <div class="title">Human Genotype Data Files used in "Genetic markers of comorbid depression and alcoholism in women."<BR>(Procopio et. al. 2013, Alcohol Clin Exp Res.)<a href="https://www.ncbi.nlm.nih.gov/pubmed/23278386" target="_blank">Abstract</a></div>
-		      <table id="genotypingFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
-            	<thead>
-                    <tr class="col_title">
-					<th >Organism</th>
-					<th >Population</th>
-                    <th >Ancestry</th>
-                    <th >Array Type</th>
-					<th >.CEL Files</th>
-					</tr>
-				</thead>
-			<tbody>
-			<% for (Resource resource: myGenotypeResources) { %> 
-				<tr id="<%=resource.getID()%>">  
-				<td> <%=resource.getOrganism()%> </td>
-				<td> <%=resource.getPopulation()%></td>
-                <td> <%=resource.getAncestry()%></td>
-                <td> <%=resource.getTechType()%></td>    
-				<% if (resource.getGenotypeDataFiles() != null && resource.getGenotypeDataFiles().length > 0) { %>
-					<td class="actionIcons">
-						<div class="linkedImg download" type="genotype"><div>
-					</td>
-				<% } else { %>
-                                	<td>&nbsp;</td>
-				<% } %>
-				</tr> 
-			<% } %>
-			</tbody>
-		</table>
-                        <BR>
         
 	</form>
 </div>

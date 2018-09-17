@@ -93,14 +93,12 @@ public class GeneDataTools {
     private String  returnUCSCURL= "";
     private String  returnOutputDir="";
     private String returnGeneSymbol="";
-    
-    private String getNextID="select TRANS_DETAIL_USAGE_SEQ.nextVal from dual";
-    private String insertUsage="insert into TRANS_DETAIL_USAGE (TRANS_DETAIL_ID,INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?,?)";
+
+    private String insertUsage="insert into TRANS_DETAIL_USAGE (INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?)";
     String updateSQL="update TRANS_DETAIL_USAGE set TIME_TO_RETURN=? , RESULT=? where TRANS_DETAIL_ID=?";
-    private HashMap eQTLRegions=null;
-    
-    HashMap<String,HashMap> cacheHM=new HashMap<String,HashMap>();
-    ArrayList<String> cacheList=new ArrayList<String>();
+    //private HashMap eQTLRegions=null;
+    //HashMap<String,HashMap> cacheHM=new HashMap<String,HashMap>();
+    //ArrayList<String> cacheList=new ArrayList<String>();
     int maxCacheList=5;
     
     
@@ -340,43 +338,23 @@ public class GeneDataTools {
         returnGenURL="";
         HashMap<String,String> source=this.getGenomeVersionSource(genomeVer);
         
-        Connection conn=null;
-        try{
-            conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(getNextID, 
-						ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);
-            ResultSet rs=ps.executeQuery();
-            if (rs.next()){
-                usageID=rs.getInt(1);
-            }
-            ps.close();
-        }catch(SQLException e){
-            log.error("Error getting Transcription Detail Usage ID.next()",e);
-        }
-        try{
-            if(conn.isClosed()){
-                conn=pool.getConnection();
-            }
-            PreparedStatement ps=conn.prepareStatement(insertUsage, 
-						ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);
-            ps.setInt(1, usageID);
-            ps.setString(2,inputID);
-            ps.setString(3, ensemblIDList);
-            ps.setTimestamp(4, new Timestamp(start.getTime()));
-            ps.setString(5, organism);
+
+        try(Connection conn=pool.getConnection()){
+            PreparedStatement ps=conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
+            //ps.setInt(1, usageID);
+            ps.setString(1,inputID);
+            ps.setString(2, ensemblIDList);
+            ps.setTimestamp(3, new Timestamp(start.getTime()));
+            ps.setString(4, organism);
             ps.execute();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                usageID = rs.getInt(1);
+            }
             ps.close();
-            conn.close();
+
         }catch(SQLException e){
             log.error("Error saving Transcription Detail Usage",e);
-        }finally{
-            try {
-                    if(conn!=null)
-                        conn.close();
-                } catch (SQLException ex) {
-                }
         }
         Date endDBSetup=new Date();
         //EnsemblIDList can be a comma separated list break up the list
@@ -399,12 +377,11 @@ public class GeneDataTools {
                     Date lastMod=new Date(geneDir.lastModified());
                     Date prev2Months=new Date(start.getTime()-(60*24*60*60*1000));
                     if(lastMod.before(prev2Months)||errorFile.exists()){
-                        if(myFH.deleteAllFilesPlusDirectory(geneDir)){
-                             error=generateFiles(organism,genomeVer,source.get("ensembl"),rOutputPath,ensemblIDList,folderName,ensemblID1,RNADatasetID,arrayTypeID,panel);
-                             result="old files, regenerated all files";
-                        }else{
-                            error=true;
+                        if(myFH.deleteAllFilesPlusDirectory(geneDir)) {
                         }
+                        error=generateFiles(organism,genomeVer,source.get("ensembl"),rOutputPath,ensemblIDList,folderName,ensemblID1,RNADatasetID,arrayTypeID,panel);
+                        result="old files, regenerated all files";
+
                     }else{
                         //do nothing just need to set session var
                         String errors;
@@ -415,12 +392,11 @@ public class GeneDataTools {
                             //getUCSCUrls(ensemblID1);
                             result="cache hit files not generated";
                         }else{
-                            if(myFH.deleteAllFilesPlusDirectory(geneDir)){
-                             error=generateFiles(organism,genomeVer,source.get("ensembl"),rOutputPath,ensemblIDList,folderName,ensemblID1,RNADatasetID,arrayTypeID,panel);
-                             result="old files, regenerated all files";
-                            }else{
-                                error=true;
+                            if(myFH.deleteAllFilesPlusDirectory(geneDir)) {
                             }
+                            error=generateFiles(organism,genomeVer,source.get("ensembl"),rOutputPath,ensemblIDList,folderName,ensemblID1,RNADatasetID,arrayTypeID,panel);
+                            result="old files, regenerated all files";
+
                         }
                     }
                 }else{
@@ -494,9 +470,7 @@ public class GeneDataTools {
             }
             endRegion=new Date();
         }
-        conn=null;
-        try{
-            conn=pool.getConnection();
+        try(Connection conn=pool.getConnection()){
             PreparedStatement ps=conn.prepareStatement(updateSQL, 
 						ResultSet.TYPE_SCROLL_INSENSITIVE,
 						ResultSet.CONCUR_UPDATABLE);
@@ -507,16 +481,8 @@ public class GeneDataTools {
             ps.setInt(3, usageID);
             ps.executeUpdate();
             ps.close();
-            conn.close();
         }catch(SQLException e){
             log.error("Error saving Transcription Detail Usage",e);
-        }finally{
-            
-            try {
-                    if(conn!=null)
-                        conn.close();
-                } catch (SQLException ex) {
-                }
         }
         Date endDB=new Date();
         
@@ -655,43 +621,23 @@ public class GeneDataTools {
         this.chrom=chromosome;
         String inputID=organism+":"+chromosome+":"+minCoord+"-"+maxCoord;
         HashMap<String,String> source=this.getGenomeVersionSource(genomeVer);
-        Connection conn=null;
-        try{
-            conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(getNextID, 
-						ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);
-            ResultSet rs=ps.executeQuery();
-            if (rs.next()){
-                usageID=rs.getInt(1);
-            }
-            ps.close();
-        }catch(SQLException e){
-            log.error("Error getting Transcription Detail Usage ID.next()",e);
-        }
-        try{
-            if(conn==null || conn.isClosed()){
-                conn=pool.getConnection();
-            }
-            PreparedStatement ps=conn.prepareStatement(insertUsage, 
-						ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);
-            ps.setInt(1, usageID);
-            ps.setString(2,inputID);
-            ps.setString(3, "");
-            ps.setTimestamp(4, new Timestamp(start.getTime()));
-            ps.setString(5, organism);
+
+        try(Connection conn=pool.getConnection()){
+
+            PreparedStatement ps=conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
+            //ps.setInt(1, usageID);
+            ps.setString(1,inputID);
+            ps.setString(2, "");
+            ps.setTimestamp(3, new Timestamp(start.getTime()));
+            ps.setString(4, organism);
             ps.execute();
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                usageID = rs.getInt(1);
+            }
             ps.close();
-            conn.close();
         }catch(SQLException e){
             log.error("Error saving Transcription Detail Usage",e);
-        }finally{
-            try {
-                    if(conn!=null)
-                        conn.close();
-            } catch (SQLException ex) {
-            }
         }
         
         //EnsemblIDList can be a comma separated list break up the list
@@ -801,9 +747,8 @@ public class GeneDataTools {
             }
             addFromQTLS(ret,transInQTLsCore,transInQTLsExtended,transInQTLsFull);
         }
-        conn=null;
-        try{
-            conn=pool.getConnection();
+
+        try(Connection conn=pool.getConnection()){
             PreparedStatement ps=conn.prepareStatement(updateSQL, 
 						ResultSet.TYPE_SCROLL_INSENSITIVE,
 						ResultSet.CONCUR_UPDATABLE);
@@ -814,15 +759,8 @@ public class GeneDataTools {
             ps.setInt(3, usageID);
             ps.executeUpdate();
             ps.close();
-            conn.close();
         }catch(SQLException e){
             log.error("Error saving Transcription Detail Usage",e);
-        }finally{
-            try {
-                    if(conn!=null)
-                        conn.close();
-                } catch (SQLException ex) {
-                }
         }
         return ret;
     }
@@ -1002,9 +940,10 @@ public class GeneDataTools {
             //log.debug("make output dir");
             outDirF.mkdirs();
         }
-        boolean createdXML=this.createRegionImagesXMLFiles(folderName,organism,genomeVer,ensemblPath,arrayTypeID,RNADatasetID,ucscDB);
-        AsyncGeneDataTools prevThread=callAsyncGeneDataTools(chrom, minCoord, maxCoord,arrayTypeID,RNADatasetID,genomeVer,false);
-        return createdXML;
+        AsyncBrowserRegion abr=new AsyncBrowserRegion(session,pool,organism,outputDir,chrom,minCoord,maxCoord,arrayTypeID,RNADatasetID,genomeVer,ucscDB,ensemblPath,usageID);
+        //boolean createdXML=this.createRegionImagesXMLFiles(folderName,organism,genomeVer,ensemblPath,arrayTypeID,RNADatasetID,ucscDB);
+        //AsyncGeneDataTools prevThread=callAsyncGeneDataTools(chrom, minCoord, maxCoord,arrayTypeID,RNADatasetID,genomeVer,false);
+        return true;
     }
     
     public ArrayList<String> getPhenoGenID(String ensemblID,String genomeVer) throws SQLException{
@@ -1072,18 +1011,20 @@ public class GeneDataTools {
                             "and s.updatedlocation = 'Y' "+
                             "and s.Array_TYPE_ID = "+arrayTypeID;
         
-        String probeTransQuery="select s.Probeset_ID,c.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
+        String probeTransQuery="select distinct s.Probeset_ID,c.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
                                 "from Chromosomes c, Affy_Exon_ProbeSet s "+
+                                "left outer join location_specific_eqtl l on l.probe_id=s.Probeset_ID " +
+                                "left outer join snps sn on sn.snp_id=l.SNP_ID "+
                                 "where s.chromosome_id = c.chromosome_id "+
                                 "and c.name = '"+chr.toUpperCase()+"' "+
+                                "and sn.genome_id='"+genomeVer+"' "+
                             "and ( "+
                             "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
                             "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
                             "(s.psstart <= "+min+" and s.psstop >="+min+") )"+
-                            "and s.psannotation like 'transcript' " +
+                            "and s.psannotation = 'transcript' " +
                             "and s.updatedlocation = 'Y' "+
-                            "and s.Array_TYPE_ID = " + arrayTypeID +
-                            " and s.PROBESET_ID in (select l.probe_id from location_specific_eqtl l,snps sn where sn.genome_id='"+genomeVer+"' and l.snp_id=sn.snp_id)";
+                            "and s.Array_TYPE_ID = " + arrayTypeID;
         
         log.debug("PSLEVEL SQL:"+probeQuery);
         log.debug("Transcript Level SQL:"+probeTransQuery);
@@ -1310,7 +1251,7 @@ public class GeneDataTools {
             File myPropertiesFile = new File(dbPropertiesFile);
             myProperties.load(new FileInputStream(myPropertiesFile));
 
-            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":"+myProperties.getProperty("DATABASE");
+            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
             String dbUser=myProperties.getProperty("USER");
             String dbPassword=myProperties.getProperty("PASSWORD");
             log.debug("after dbprop");
@@ -1480,7 +1421,7 @@ public class GeneDataTools {
             File myPropertiesFile = new File(dbPropertiesFile);
             myProperties.load(new FileInputStream(myPropertiesFile));
 
-            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":"+myProperties.getProperty("DATABASE");
+            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
             String dbUser=myProperties.getProperty("USER");
             String dbPassword=myProperties.getProperty("PASSWORD");
             
@@ -1981,7 +1922,7 @@ public class GeneDataTools {
             File myPropertiesFile = new File(dbPropertiesFile);
             myProperties.load(new FileInputStream(myPropertiesFile));
 
-            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":"+myProperties.getProperty("DATABASE");
+            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
             String dbUser=myProperties.getProperty("USER");
             String dbPassword=myProperties.getProperty("PASSWORD");
 
@@ -2133,6 +2074,7 @@ public class GeneDataTools {
     
     public boolean callWriteXML(String id,String organism,String genomeVer,String chr, int min, int max,int arrayTypeID,int rnaDS_ID){
         boolean completedSuccessfully=false;
+        log.debug("callWriteXML()"+id+","+organism+","+genomeVer+","+arrayTypeID+","+rnaDS_ID);
         try{
             //Connection tmpConn=pool.getConnection();
             int publicUserID=new User().getUser_id("public",pool);
@@ -2154,7 +2096,7 @@ public class GeneDataTools {
                 File myPropertiesFile = new File(dbPropertiesFile);
                 myProperties.load(new FileInputStream(myPropertiesFile));
 
-                String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":"+myProperties.getProperty("DATABASE");
+                String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
                 String dbUser=myProperties.getProperty("USER");
                 String dbPassword=myProperties.getProperty("PASSWORD");
 
@@ -2172,7 +2114,7 @@ public class GeneDataTools {
                 String mongoHost=myMongoProperties.getProperty("HOST");
                 String mongoUser=myMongoProperties.getProperty("USER");
                 String mongoPassword=myMongoProperties.getProperty("PASSWORD");
-
+                log.debug("loaded properties");
 
                 //construct perl Args
                 String[] perlArgs = new String[21];
@@ -2213,15 +2155,12 @@ public class GeneDataTools {
                     }
                     log.debug(i + " EnvVar::" + envVar[i]);
                 }
-
                 log.debug("setup envVar");
                 //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
                 myExec_session = new ExecHandler(perlDir, perlArgs, envVar, fullPath + "tmpData/browserCache/"+genomeVer+"/geneData/"+id+"/");
                 boolean exception = false;
                 try {
-
                     myExec_session.runExec();
-
                 } catch (ExecException e) {
                     exception=true;
                     completedSuccessfully=false;
@@ -2892,7 +2831,7 @@ public class GeneDataTools {
         String tmpRegion=chr+":"+min+"-"+max;
         String curParams="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",pvalue="+pvalue+",level="+level;
         ArrayList<TranscriptCluster> transcriptClusters=new ArrayList<TranscriptCluster>();
-        boolean run=true;
+        /*boolean run=true;
         if(this.cacheHM.containsKey(tmpRegion)){
             HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
             String testParam=(String)regionHM.get("fromRegionParams");
@@ -2902,7 +2841,7 @@ public class GeneDataTools {
                 run=false;
             }
         }
-        if(run){
+        if(run){*/
             log.debug("\ngenerating new-controlled from\n");
             String qtlQuery="select aep.transcript_cluster_id,c1.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c2.name,s.snp_start,s.snp_end "+
                                 "from affy_exon_probeset aep, location_specific_eqtl lse, snps s, chromosomes c1,chromosomes c2 "+
@@ -2924,10 +2863,8 @@ public class GeneDataTools {
                                 //"and TO_CHAR(aep.probeset_id)=eq.identifier (+) "+
                                 //"and (s.tissue=eq.tissue or eq.tissue is null) "+
                                 "order by aep.probeset_id,s.tissue,s.chromosome_id,s.snp_start";
-            Connection conn=null;
-            try{
+            try(Connection conn=pool.getConnection()){
                 log.debug("SQL eQTL FROM QUERY\n"+qtlQuery);
-                conn=pool.getConnection();
                 PreparedStatement ps = conn.prepareStatement(qtlQuery);
                 ResultSet rs = ps.executeQuery();
                 TranscriptCluster curTC=null;
@@ -2962,7 +2899,7 @@ public class GeneDataTools {
                 ps.close();
                 conn.close();
                 //log.debug("Transcript Cluster Size:"+transcriptClusters.size());
-                if(cacheHM.containsKey(tmpRegion)){
+                /*if(cacheHM.containsKey(tmpRegion)){
                     HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
                     regionHM.put("fromRegionParams",curParams);        
                     regionHM.put("fromRegion",transcriptClusters);
@@ -2972,20 +2909,14 @@ public class GeneDataTools {
                     regionHM.put("fromRegion",transcriptClusters);
                     cacheHM.put(tmpRegion,regionHM);
                     this.cacheList.add(tmpRegion);
-                }
+                }*/
                 //this.fromRegionParams=curParams;
                 //this.fromRegion=transcriptClusters;
             }catch(SQLException e){
                 log.error("Error retreiving EQTLs.",e);
                 e.printStackTrace(System.err);
-            }finally{
-                try {
-                    if(conn!=null)
-                        conn.close();
-                } catch (SQLException ex) {
-                }
             }
-        }
+        //}
         return transcriptClusters;
     }
     
@@ -3056,7 +2987,7 @@ public class GeneDataTools {
         String curCircosParams="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",pvalue="+pvalue+",level="+level+",org="+organism+",circosTissue="+circosTissue+",circosChr="+circosChr;
         boolean run=true;
         boolean filter=false;
-        if(this.cacheHM.containsKey(tmpRegion)){
+        /*if(this.cacheHM.containsKey(tmpRegion)){
             HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
             String testParam=(String)regionHM.get("controlledRegionParams");
             String testMinusPval="";
@@ -3090,7 +3021,7 @@ public class GeneDataTools {
                 run=true;
             }
         }
-        if(run){
+        if(run){*/
             HashMap tmpHM=new HashMap();
             String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end " +
                                 "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep " +
@@ -3212,13 +3143,11 @@ public class GeneDataTools {
 //                                "and s.chromosome_id=c.chromosome_id "+
 //                                "and c2.chromosome_id=aep.chromosome_id "+
 //                                "order by aep.transcript_cluster_id,s.tissue,aep.chromosome_id,aep.psstart";
-            Connection conn=null;
-            try{
+            try(Connection conn=pool.getConnection()){
                 log.debug("SQL eQTL FROM QUERY\n"+qtlQuery);
-                conn=pool.getConnection();
                 PreparedStatement ps = conn.prepareStatement(qtlQuery);
                 ResultSet rs = ps.executeQuery();
-                eQTLRegions=new HashMap();
+                //eQTLRegions=new HashMap();
                 TranscriptCluster curTC=null;
                 while(rs.next()){
                     String tcID=rs.getString(1);
@@ -3249,9 +3178,9 @@ public class GeneDataTools {
                         curTC.addRegionEQTL(tissue,pval,marker_name,marker_chr,marker_start,marker_end,-1);
                         DecimalFormat df=new DecimalFormat("#,###");
                         String eqtl="chr"+marker_chr+":"+df.format(marker_start)+"-"+df.format(marker_end);
-                        if(!eQTLRegions.containsKey(eqtl)){
+                        /*if(!eQTLRegions.containsKey(eqtl)){
                             eQTLRegions.put(eqtl, 1);
-                        }
+                        }*/
                     }else{
                         curTC.addEQTL(tissue,pval,marker_name,marker_chr,marker_start,marker_end,-1);
                     }
@@ -3527,7 +3456,7 @@ public class GeneDataTools {
                 log.debug("Transcript Cluster Size:"+transcriptClusters.size());
                 //this.controlledRegionParams=curParams;
                 //this.controlledRegion=transcriptClusters;
-                if(cacheHM.containsKey(tmpRegion)){
+                /*if(cacheHM.containsKey(tmpRegion)){
                     HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
                     regionHM.put("controlledRegionParams",curParams);        
                     regionHM.put("controlledRegion",transcriptClusters);
@@ -3537,7 +3466,7 @@ public class GeneDataTools {
                     regionHM.put("controlledRegion",transcriptClusters);
                     cacheHM.put(tmpRegion,regionHM);
                     this.cacheList.add(tmpRegion);
-                }
+                }*/
             }catch(SQLException e){
                 log.error("Error retreiving EQTLs.",e);
                 session.setAttribute("getTransControllingEQTL","Error retreiving eQTLs.  Please try again later.  The administrator has been notified of the problem.");
@@ -3550,14 +3479,8 @@ public class GeneDataTools {
                     } catch (Exception mailException) {
                         log.error("error sending message", mailException);
                     }
-            }finally{
-                try {
-                    if(conn!=null)
-                        conn.close();
-                } catch (SQLException ex) {
-                }
             }
-        }else if(filter){//don't need to rerun just filter.
+        /*}else if(filter){//don't need to rerun just filter.
             log.debug("transcript controlling Filtering");
             String[] includedTissues=circosTissue.split(";");
             for(int i=0;i<includedTissues.length;i++){
@@ -3584,16 +3507,16 @@ public class GeneDataTools {
                     transcriptClusters.add(tc);
                 }
             }
-        }
+        }*/
         run=true;
-        if(this.cacheHM.containsKey(tmpRegion)){   
+        /*if(this.cacheHM.containsKey(tmpRegion)){
             HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
             String testParam=(String)regionHM.get("controlledCircosRegionParams");
             if(curCircosParams.equals(testParam)){
                 //log.debug("\nreturning previous-circos\n");
                 run=false;
             }
-        }
+        }*/
         
         //File test=new File(tmpOutputDir.substring(0,tmpOutputDir.length()-1)+"/circos"+Double.toString(-Math.log10(pvalue)));
         File test=new File(tmpOutputDir.substring(0,tmpOutputDir.length()-1)+"/circos"+pvalue);
@@ -3643,7 +3566,7 @@ public class GeneDataTools {
             try {
 
                 myExec_session.runExec();
-                if(cacheHM.containsKey(tmpRegion)){
+                /*if(cacheHM.containsKey(tmpRegion)){
                     HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
                     regionHM.put("controlledCircosRegionParams",curCircosParams);        
                 }else{
@@ -3651,7 +3574,7 @@ public class GeneDataTools {
                     regionHM.put("controlledCircosRegionParams",curCircosParams);        
                     cacheHM.put(tmpRegion,regionHM);
                     this.cacheList.add(tmpRegion);
-                }
+                }*/
                 //this.controlledCircosRegionParams=curCircosParams;
             } catch (ExecException e) {
                 //error=true;
@@ -3688,7 +3611,7 @@ public class GeneDataTools {
         String tmpRegion=chr+":"+min+"-"+max;
         String curParams="min="+min+",max="+max+",chr="+chr+",org="+organism;
   
-        boolean run=true;
+        /*boolean run=true;
         if(this.cacheHM.containsKey(tmpRegion)){
             HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
             String testParam=(String)regionHM.get("smallNonCodingParams");
@@ -3698,7 +3621,7 @@ public class GeneDataTools {
                 run=false;
             }
         }
-        if(run){
+        if(run){*/
             HashMap tmpHM=new HashMap();
 
             String smncQuery="Select rsn.rna_smnc_id,rsn.feature_start,rsn.feature_stop,rsn.sample_count,rsn.total_reads,rsn.strand,rsn.reference_seq,c.name "+
@@ -3738,10 +3661,9 @@ public class GeneDataTools {
                                 "and rsn.rna_dataset_id="+rnaDatasetID+" "+
                                 "and ((rsn.feature_start>="+min+" and rsn.feature_start<="+max+") OR (rsn.feature_stop>="+min+" and rsn.feature_stop<="+max+") OR (rsn.feature_start<="+min+" and rsn.feature_stop>="+max+")) "+
                                 ")";
-           Connection conn=null;
-            try{
+
+            try(Connection conn=pool.getConnection()){
                 log.debug("SQL smnc FROM QUERY\n"+smncQuery);
-                conn=pool.getConnection();
                 PreparedStatement ps = conn.prepareStatement(smncQuery);
                 ResultSet rs = ps.executeQuery();
                 while(rs.next()){
@@ -3816,7 +3738,7 @@ public class GeneDataTools {
                     }
                 }
                 ps.close();
-                if(cacheHM.containsKey(tmpRegion)){
+                /*if(cacheHM.containsKey(tmpRegion)){
                     HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
                     regionHM.put("smallNonCodingParams",curParams); 
                     regionHM.put("smallNonCoding",smncRNA);
@@ -3826,7 +3748,7 @@ public class GeneDataTools {
                     regionHM.put("smallNonCoding",smncRNA);       
                     cacheHM.put(tmpRegion,regionHM);
                     this.cacheList.add(tmpRegion);
-                }
+                }*/
                 conn.close();
             
             }catch(SQLException e){
@@ -3841,18 +3763,12 @@ public class GeneDataTools {
                     } catch (Exception mailException) {
                         log.error("error sending message", mailException);
                     }
-            }finally{
-                try {
-                    if(conn!=null)
-                        conn.close();
-                } catch (SQLException ex) {
-                }
             }
-        }
+
         return smncRNA;
     }
     
-    public ArrayList<String> getEQTLRegions(){
+    /*public ArrayList<String> getEQTLRegions(){
         ArrayList<String> ret=new ArrayList<String>();
         Set tmp=this.eQTLRegions.keySet();
         Iterator itr=tmp.iterator();
@@ -3861,7 +3777,7 @@ public class GeneDataTools {
             ret.add(key);
         }
         return ret;
-    }
+    }*/
     
     public ArrayList<BQTL> getBQTLs(int min,int max,String chr,String organism,String genomeVer){
         if(chr.startsWith("chr")){
@@ -3878,11 +3794,9 @@ public class GeneDataTools {
                             "and ((pq.qtl_start>="+min+" and pq.qtl_start<="+max+") or (pq.qtl_end>="+min+" and pq.qtl_end<="+max+") or (pq.qtl_start<="+min+" and pq.qtl_end>="+max+")) "+
                             "and c.name='"+chr.toUpperCase()+"' "+ 
                             "and c.chromosome_id=pq.chromosome";
-            Connection conn=null;
             try{ 
-            try{
+            try(Connection conn=pool.getConnection()){
                 log.debug("SQL eQTL FROM QUERY\n"+query);
-                conn=pool.getConnection();
                 PreparedStatement ps = conn.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 while(rs.next()){
@@ -3911,7 +3825,7 @@ public class GeneDataTools {
                 }
                 ps.close();
                 conn.close();
-                if(cacheHM.containsKey(tmpRegion)){
+                /*if(cacheHM.containsKey(tmpRegion)){
                     HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
                     regionHM.put("bqtlParams",curParams);        
                     regionHM.put("bqtl",bqtl);
@@ -3921,7 +3835,7 @@ public class GeneDataTools {
                     regionHM.put("controlledRegion",bqtl);
                     cacheHM.put(tmpRegion,regionHM);
                     this.cacheList.add(tmpRegion);
-                }
+                }*/
             }catch(SQLException e){
                 log.error("Error retreiving bQTLs.",e);
                 e.printStackTrace(System.err);
@@ -3933,12 +3847,6 @@ public class GeneDataTools {
                     myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
                 } catch (Exception mailException) {
                     log.error("error sending message", mailException);
-                }
-            }finally{
-                try {
-                    if(conn!=null)
-                        conn.close();
-                } catch (SQLException ex) {
                 }
             }
             }catch(Exception er){

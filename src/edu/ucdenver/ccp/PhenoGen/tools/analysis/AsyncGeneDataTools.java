@@ -222,17 +222,20 @@ public class AsyncGeneDataTools extends Thread {
         
         String probeTransQuery="select s.Probeset_ID,c.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
                                 "from Chromosomes c, Affy_Exon_ProbeSet s "+
+                                "left outer join location_specific_eqtl l on l.probe_id=s.Probeset_ID " +
+                                "left outer join snps sn on sn.snp_id=l.SNP_ID "+
                                 "where s.chromosome_id = c.chromosome_id "+
                                 "and c.name = '"+chr.toUpperCase()+"' "+
                                 "and s.genome_id='"+genomeVer+"' "+
+                                "and sn.genome_id='"+genomeVer+"' "+
                             "and ( "+
                             "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
                             "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
                             "(s.psstart <= "+min+" and s.psstop >="+min+") )"+
-                            "and s.psannotation like 'transcript' " +
+                            "and s.psannotation = 'transcript' " +
                             "and s.updatedlocation = 'Y' "+
-                            "and s.Array_TYPE_ID = " + arrayTypeID +
-                            " and s.PROBESET_ID in (select l.probe_id from location_specific_eqtl l,snps sn where sn.genome_id='"+genomeVer+"' and l.snp_id=sn.snp_id)";
+                            "and s.Array_TYPE_ID = " + arrayTypeID ;
+                            //" and s.PROBESET_ID in (select l.probe_id from location_specific_eqtl l,snps sn where sn.genome_id='"+genomeVer+"' and l.snp_id=sn.snp_id)";
         
         log.debug("PSLEVEL SQL:"+probeQuery);
         log.debug("Transcript Level SQL:"+probeTransQuery);

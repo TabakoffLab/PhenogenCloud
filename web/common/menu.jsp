@@ -147,7 +147,7 @@
 </div>
 
 <!-- Website status message or other important message-->
-<span style="color:#FF0000;display:none;" ></span>
+<span style="color:#FF0000;font-size: large; text-align: center;" >phenogen.org is still under construction.  Please continue to use <a href="https://phenogen.ucdenver.edu/PhenoGen">phenogen.ucdenver.edu</a></span>
 
 <span id="noJS" style="color:#FF0000;display:inline-block;" >This site requires JavaScript and it is currently disabled.  Please visit <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Software Requirments</a>.</span>
 <script type="text/javascript">	
