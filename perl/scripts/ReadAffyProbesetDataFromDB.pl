@@ -503,20 +503,18 @@ sub readAffyProbesetDataFromDBwoProbes{
 		$org="Rn";
 	}
 	
-	$query = "select p.probeset_id,t.tissue,p.dabg, p.herit from probeset_herit_dabg p , rnadataset_dataset t where
-                    p.genome_id='".$genomeVer."'
-			and t.organism = '".$org."'
+	$query = "select p.probeset_id,t.tissue,p.dabg, p.herit from probeset_herit_dabg p , rnadataset_dataset t, $probesetTablename s
+			left outer join $chromosomeTablename c on c.chromosome_id=s.chromosome_id
+			where c.name =  '".uc($geneChromNumber)."'
 			and t.dataset_id = p.dataset_id
-			and p.probeset_ID in
-		(select s.Probeset_ID from $chromosomeTablename c, $probesetTablename s
-		where s.chromosome_id = c.chromosome_id
-		and c.name =  '".uc($geneChromNumber)."'
-		and 
-		((s.psstart >= $geneStart and s.psstart <=$geneStop) OR
-		(s.psstop >= $geneStart and s.psstop <= $geneStop))
-		and s.psannotation <> 'transcript'
-		and s.Array_TYPE_ID = $arrayTypeID
-		and s.updatedlocation='Y')";
+			and s.probeset_id=p.PROBESET_ID
+			and s.psannotation <> 'transcript'
+			and s.Array_TYPE_ID = $arrayTypeID
+			and s.updatedlocation='Y'
+			and ((s.psstart >= $geneStart and s.psstart <=$geneStop) OR
+				(s.psstop >= $geneStart and s.psstop <= $geneStop))
+            and p.genome_id='".$genomeVer."'
+			and t.organism = '".$org."'";
 	
 	$query_handle = $connect->prepare($query) or die (" Probeset query prepare failed \n");
 
@@ -571,7 +569,7 @@ sub readTissueEQTLProbesetDataFromDB{
 		$query = "select s.Probeset_ID, s.psstart, s.psstop, s.strand, s.pslevel, h.dabg, rd.tissue
 		from $chromosomeTablename c, $probesetTablename s
 		left outer join $heritTablename h on s.probeset_id = h.probeset_id  and h.genome_id=s.genome_id
-                left outer join $rnaTissueTablename rd on h.dataset_id=rd.dataset_id
+        left outer join $rnaTissueTablename rd on h.dataset_id=rd.dataset_id
 		where s.chromosome_id = c.chromosome_id
 		and c.name =  "."'".uc($geneChrom)."'"."
                 and s.genome_id='".$genomeVer."'
@@ -581,7 +579,7 @@ sub readTissueEQTLProbesetDataFromDB{
 		and s.psannotation <> 'transcript'
 		and s.Array_TYPE_ID = $arrayTypeID
 		and rd.rna_dataset_id=$rnaDatasetID
-                and h.dabg>$percCutoff
+        and h.dabg>$percCutoff
 		and s.updatedlocation='Y'
 		order by s.probeset_id";
 

@@ -20,7 +20,9 @@
     log.debug("SESSION UUID:\n"+id);
     //anonU=myAnonUser.getAnonUser(id,pool);
     AnonUser tmp=myAnonUser.getAnonUser(id,true,pool);
-    
+    if(tmp==null){
+        tmp=myAnonUser.createAnonUser(id.toString(),pool);
+    }
     anonU.setUUID(tmp.getUUID());
     anonU.setCreated(tmp.getCreated());
     anonU.setLast_access(tmp.getLast_access());

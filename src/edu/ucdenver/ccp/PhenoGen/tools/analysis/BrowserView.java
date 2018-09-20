@@ -163,7 +163,8 @@ public class BrowserView{
         String trackquery="select bvt.bvid,bt.*,bts.settings,bvt.ordering from BROWSER_VIEWS_TRACKS bvt,BROWSER_TRACKS bt, BROWSER_TRACK_SETTINGS bts where "+
                         " bvt.trackid=bt.trackid and bvt.tracksettingid=bts.tracksettingid "+
                         " and bt.visible=1 "+
-                        " and bvt.bvid in (select bvid from browser_views where bvid="+viewid+") "+
+                        " and bvt.bvid ="+viewid+") "+
+                        //" and bvt.bvid in (select bvid from browser_views where bvid="+viewid+") "+
                         " order by bvt.bvid,bvt.ordering";
             Connection conn=null;
             PreparedStatement ps=null;

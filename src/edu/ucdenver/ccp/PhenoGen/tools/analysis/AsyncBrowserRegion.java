@@ -38,13 +38,14 @@ public class AsyncBrowserRegion extends Thread {
     private int rnaDatasetID=0;
     private int usageID=-1;
     private boolean done=false;
+    private boolean runAGDT=false;
     private boolean isEnsemblGene=true;
     private String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_TOOLS=? , RESULT=? where TRANS_DETAIL_ID=?";
     private String[] tissues=new String[2];
     private ExecHandler myExec_session = null;
-    //test
 
-    public AsyncBrowserRegion(HttpSession inSession,DataSource pool,String organism,String outputDir,String chr,int min,int max,int arrayTypeID,int rnaDS_ID,String genomeVer,String ucscDB,String ensemblPath,int usageID) {
+
+    public AsyncBrowserRegion(HttpSession inSession,DataSource pool,String organism,String outputDir,String chr,int min,int max,int arrayTypeID,int rnaDS_ID,String genomeVer,String ucscDB,String ensemblPath,int usageID,boolean runAGDT) {
         this.session = inSession;
         this.outputDir=outputDir;
         log = Logger.getRootLogger();
@@ -60,12 +61,13 @@ public class AsyncBrowserRegion extends Thread {
         this.ensemblPath=ensemblPath;
         this.usageID=usageID;
         this.org=organism;
+        this.runAGDT=runAGDT;
 
         this.genomeVer=genomeVer;
         this.isEnsemblGene=isEnsemblGene;
         this.pool = pool;
         dbPropertiesFile = (String) session.getAttribute("dbPropertiesFile");
-        ensemblDBPropertiesFile = (String) session.getAttribute("ensemblDbPropertiesFile");
+        ensemblDBPropertiesFile = (String) session.getAttribute("ensDbPropertiesFile");
         mongoDBPropertiesFile = (String)session.getAttribute("mongoDbPropertiesFile");
         //log.debug("db");
         this.perlDir = (String) session.getAttribute("perlDir") + "scripts/";
@@ -82,14 +84,16 @@ public class AsyncBrowserRegion extends Thread {
     public void run() throws RuntimeException {
         done=false;
         createRegionImagesXMLFiles(outputDir,org,genomeVer,ensemblPath,arrayTypeID,rnaDatasetID,ucscDB);
-        AsyncGeneDataTools agdt;
-        agdt = new AsyncGeneDataTools(session,pool,outputDir,chrom, minCoord, maxCoord,arrayTypeID,rnaDatasetID,usageID,genomeVer,false);
-        agdt.start();
-        try {
-            agdt.join();
-        }catch(InterruptedException e){
-            e.printStackTrace();
-            log.error("Error waiting on AsyncGeneDataTools:"+chrom+":"+minCoord+"-"+maxCoord+":",e);
+        if(runAGDT) {
+            AsyncGeneDataTools agdt;
+            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false);
+            agdt.start();
+            try {
+                agdt.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                log.error("Error waiting on AsyncGeneDataTools:" + chrom + ":" + minCoord + "-" + maxCoord + ":", e);
+            }
         }
         done=true;
     }

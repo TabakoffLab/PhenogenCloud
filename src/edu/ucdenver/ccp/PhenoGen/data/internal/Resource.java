@@ -60,7 +60,7 @@ public class Resource {
         private String ancestry;
         private String description;
         private String genomeVer;
-        
+        private String downloadHeader;
         //private String context="";
 
 
@@ -147,13 +147,14 @@ public class Resource {
 		setPanel(panel);
 	}
         
-        public Resource(int id, String organism, String panel,String description,PublicationFile[] files) {
+        public Resource(int id, String organism, String panel,String description,PublicationFile[] files,String downloadHeader) {
 		log = Logger.getRootLogger();
 		setID(id);
 		setOrganism(organism);
 		setPanel(panel);
                 setDescription(description);
                 setPublicationFiles(files);
+                setDownloadHeader(downloadHeader);
 	}
 
         public Resource(HttpSession session) {
@@ -343,6 +344,14 @@ public class Resource {
         public void setAncestry(String ancestry) {
             this.ancestry = ancestry;
         }
+
+        public String getDownloadHeader() {
+            return downloadHeader;
+        }
+
+        public void setDownloadHeader(String downloadHeader) {
+            this.downloadHeader = downloadHeader;
+        }
         
         
 
@@ -375,6 +384,9 @@ public class Resource {
                 List<Resource> pubResources2 = Arrays.asList(getPublicationResources2());
                 List<Resource> pubResources3 = Arrays.asList(getPublicationResources3());
                 List<Resource> pubResources4 = Arrays.asList(getPublicationResources4());
+                List<Resource> pubResources5 = Arrays.asList(getPublicationResources5());
+                List<Resource> pubResources6 = Arrays.asList(getPublicationResources6());
+                List<Resource> pubResources7 = Arrays.asList(getPublicationResources7());
                 List<Resource> gtfResources = Arrays.asList(getGTFResources());
 		List<Resource> allResources = new ArrayList<Resource>(expressionResources);
 		allResources.addAll(markerResources);
@@ -385,6 +397,9 @@ public class Resource {
                 allResources.addAll(pubResources2);
                 allResources.addAll(pubResources3);
                 allResources.addAll(pubResources4);
+                allResources.addAll(pubResources5);
+                allResources.addAll(pubResources6);
+                allResources.addAll(pubResources7);
                 allResources.addAll(gtfResources);
 		Resource[] allResourcesArray = myObjectHandler.getAsArray(allResources, Resource.class);
 		return allResourcesArray;
@@ -429,7 +444,7 @@ public class Resource {
 		heritabilityFileList.add(new HeritabilityDataFile("Heritability file from RMA normalization plus probe mask", resourcesDir + "herits.BXD.zip","Mm9"));
 		HeritabilityDataFile[] heritabilityFileArray = myObjectHandler.getAsArray(heritabilityFileList, HeritabilityDataFile.class);
 
-		resourceList.add(new Resource(1, "Mouse", BXDRI_PANEL, BXDRI_Dataset, "Whole Brain", myArray.MOUSE430V2_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
+                resourceList.add(new Resource(257, "Mouse", BXDRI_PANEL, BXDRI_Dataset, "Whole Brain", myArray.MOUSE430V2_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
 
 		// Setup the LXSRI stuff
 		resourcesDir = LXSRI_Dataset.getResourcesDir();
@@ -488,7 +503,7 @@ public class Resource {
                 maskFileList.add(new MaskDataFile("PGF File for ILS/ISS Mm10", resourcesDir + "MoEx-1_0-st-v1.r2.mm10.MASKED.LXS.pgf.zip","Mm10"));
 		MaskDataFile[] maskFileArray = myObjectHandler.getAsArray(maskFileList, MaskDataFile.class);
                 
-		resourceList.add(new Resource(2, "Mouse", LXSRI_PANEL, LXSRI_Dataset, "Whole Brain", myArray.MOUSE_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
+                resourceList.add(new Resource(707, "Mouse", LXSRI_PANEL, LXSRI_Dataset, "Whole Brain", myArray.MOUSE_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
 
 
 		// Setup the Inbred stuff
@@ -509,7 +524,7 @@ public class Resource {
 		heritabilityFileList.add(new HeritabilityDataFile("Heritability file from RMA normalization plus probe mask", resourcesDir + "herits.Inbred.txt.zip","Mm10"));
 		heritabilityFileArray = myObjectHandler.getAsArray(heritabilityFileList, HeritabilityDataFile.class);
 
-                resourceList.add(new Resource(3, "Mouse", INBRED_PANEL, Inbred_Dataset, "Whole Brain", myArray.MOUSE430V2_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
+                resourceList.add(new Resource(258, "Mouse", INBRED_PANEL, Inbred_Dataset, "Whole Brain", myArray.MOUSE430V2_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
 
 		// Setup the HXBRI stuff
 		resourcesDir = HXBRI_Dataset.getResourcesDir();
@@ -529,7 +544,7 @@ public class Resource {
 		heritabilityFileList.add(new HeritabilityDataFile("Heritability file from RMA normalization plus probe mask", resourcesDir + "herits.HXB.txt.zip","Rn5"));
 		heritabilityFileArray = myObjectHandler.getAsArray(heritabilityFileList, HeritabilityDataFile.class);
 
-                resourceList.add(new Resource(4, "Rat", HXBRI_PANEL, HXBRI_Dataset, "Whole Brain", myArray.CODELINK_RAT_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
+                resourceList.add(new Resource(261, "Rat", HXBRI_PANEL, HXBRI_Dataset, "Whole Brain", myArray.CODELINK_RAT_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
 
 		// Setup the HXBRI Brain Exon stuff
 		resourcesDir = HXBRI_Brain_Exon_Dataset.getResourcesDir();
@@ -599,7 +614,7 @@ public class Resource {
                 maskFileList.add(new MaskDataFile("PGF File for HXB Rn5", resourcesDir + "RaEx-1_0-st-v1.r2.rn5.MASKED.HXB.pgf.zip","Rn5"));
 		maskFileArray = myObjectHandler.getAsArray(maskFileList, MaskDataFile.class);
 
-                resourceList.add(new Resource(5, "Rat", HXBRI_PANEL, HXBRI_Brain_Exon_Dataset, "Whole Brain", myArray.RAT_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
+                resourceList.add(new Resource(730, "Rat", HXBRI_PANEL, HXBRI_Brain_Exon_Dataset, "Whole Brain", myArray.RAT_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
 
 		// Setup the HXBRI Heart Exon stuff
 		resourcesDir = HXBRI_Heart_Exon_Dataset.getResourcesDir();
@@ -672,7 +687,7 @@ public class Resource {
                 maskFileList.add(new MaskDataFile("PGF File for HXB Rn5", resourcesDir + "RaEx-1_0-st-v1.r2.rn5.MASKED.HXB.pgf.zip","Rn5"));
 		maskFileArray = myObjectHandler.getAsArray(maskFileList, MaskDataFile.class);
                 
-                resourceList.add(new Resource(6, "Rat", HXBRI_PANEL, HXBRI_Heart_Exon_Dataset, "Heart", myArray.RAT_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
+                resourceList.add(new Resource(729, "Rat", HXBRI_PANEL, HXBRI_Heart_Exon_Dataset, "Heart", myArray.RAT_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
 
 		// Setup the HXBRI Liver Exon stuff
 		resourcesDir = HXBRI_Liver_Exon_Dataset.getResourcesDir();
@@ -741,7 +756,7 @@ public class Resource {
                 maskFileList.add(new MaskDataFile("PGF File for HXB Rn5", resourcesDir + "RaEx-1_0-st-v1.r2.rn5.MASKED.HXB.pgf.zip","Rn5"));
 		maskFileArray = myObjectHandler.getAsArray(maskFileList, MaskDataFile.class);
                 
-                resourceList.add(new Resource(7, "Rat", HXBRI_PANEL, HXBRI_Liver_Exon_Dataset, "Liver", myArray.RAT_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
+                resourceList.add(new Resource(727, "Rat", HXBRI_PANEL, HXBRI_Liver_Exon_Dataset, "Liver", myArray.RAT_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
 
 		// Setup the HXBRI Brown Adipose Exon stuff
 		resourcesDir = HXBRI_Brown_Adipose_Exon_Dataset.getResourcesDir();
@@ -810,7 +825,7 @@ public class Resource {
                 maskFileList.add(new MaskDataFile("PGF File for HXB Rn5", resourcesDir + "RaEx-1_0-st-v1.r2.rn5.MASKED.HXB.pgf.zip","Rn5"));
 		maskFileArray = myObjectHandler.getAsArray(maskFileList, MaskDataFile.class);
                 
-                resourceList.add(new Resource(8, "Rat", HXBRI_PANEL, HXBRI_Brown_Adipose_Exon_Dataset, "Brown Adipose", myArray.RAT_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
+                resourceList.add(new Resource(760, "Rat", HXBRI_PANEL, HXBRI_Brown_Adipose_Exon_Dataset, "Brown Adipose", myArray.RAT_EXON_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,maskFileArray));
 
 		Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
 		return resourceArray;
@@ -1030,14 +1045,14 @@ public class Resource {
                 String seqFilePath="/userFiles/public/Genotyping/";
 		List<Resource> resourceList = new ArrayList<Resource>();
                 
-                GenotypeDataFile[] genotypingFileList = new GenotypeDataFile[5];
+                /*GenotypeDataFile[] genotypingFileList = new GenotypeDataFile[5];
                 genotypingFileList[0]=new GenotypeDataFile("Genotype CEL Files Part 1",seqFilePath+"Genotyping_1.zip");
                 genotypingFileList[1]=new GenotypeDataFile("Genotype CEL Files Part 2",seqFilePath+"Genotyping_2.zip");
                 genotypingFileList[2]=new GenotypeDataFile("Genotype CEL Files Part 3",seqFilePath+"Genotyping_3.zip");
                 genotypingFileList[3]=new GenotypeDataFile("Genotype CEL Files Part 4",seqFilePath+"Genotyping_4.zip");
                 genotypingFileList[4]=new GenotypeDataFile("Genotype CEL Files Part 5",seqFilePath+"Genotyping_5.zip");
                 resourceList.add(new Resource(70, "Human", "Alcohol dependent subjects receiving outpatient treatment at the Medical University of Vienna (Austria)",
-                                            "self-reported European","Affymetrix Genome-Wide Human SNP Array 6.0", genotypingFileList ));
+                                            "self-reported European","Affymetrix Genome-Wide Human SNP Array 6.0", genotypingFileList ));*/
         	
                 Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
 		return resourceArray;
@@ -1051,41 +1066,41 @@ public class Resource {
                 PublicationFile[] fileList = new PublicationFile[2];
                 fileList[0]=new PublicationFile("Reconstructed PolyA Transcriptome",pubFilePath+"reconPolyA.13Feb14.gtf.zip");
                 fileList[1]=new PublicationFile("Reconstructed NonPolyA Transcriptome",pubFilePath+"reconNonPolyA.13Feb14.gtf.zip");
-                resourceList.add(new Resource(90, "Rat", "BN-Lx/SHR","Reconstructed Brain Transcriptome",fileList));
+                resourceList.add(new Resource(90, "Rat", "BN-Lx/SHR","Reconstructed Brain Transcriptome",fileList,"\"The sequenced rat brain transcriptome, its use in identifying networks predisposing alcohol consumption\"(Saba et. al. 2015, FEBS)"));
                 
                 fileList = new PublicationFile[1];
                 fileList[0]=new PublicationFile("SNPs for bQTL",pubFilePath+"SDPsforbQTL.csv.zip");
-                resourceList.add(new Resource(91, "Rat", "HXB/BXH","SNPs used for alcohol consumption QTL",fileList));
+                resourceList.add(new Resource(91, "Rat", "HXB/BXH","SNPs used for alcohol consumption QTL",fileList,"\"The sequenced rat brain transcriptome, its use in identifying networks predisposing alcohol consumption\"(Saba et. al. 2015, FEBS)"));
                 
                 fileList = new PublicationFile[1];
                 fileList[0]=new PublicationFile("Strain Mean Alcohol Consumption Week 2",pubFilePath+"StrainMeans_ConsumpWk2.txt.zip");
-                resourceList.add(new Resource(92, "Rat","HXB/BXH", "Alcohol Consumption (2 bottle choice, 10% ethanol, week 2)",fileList));
+                resourceList.add(new Resource(92, "Rat","HXB/BXH", "Alcohol Consumption (2 bottle choice, 10% ethanol, week 2)",fileList,"\"The sequenced rat brain transcriptome, its use in identifying networks predisposing alcohol consumption\"(Saba et. al. 2015, FEBS)"));
                 
                 fileList = new PublicationFile[2];
                 fileList[0]=new PublicationFile("Detection Above Background - Gene Level",pubFilePath+"dabg.brain.reconTrans.geneLevel.txt.zip");
                 fileList[1]=new PublicationFile("Normalized Expression values - Gene Level",pubFilePath+"Adjusted_rma.brain.reconTrans.geneLevel.txt.zip");
-                resourceList.add(new Resource(93, "Rat","HXB/BXH", "Normalized exon array data - gene level",fileList));
+                resourceList.add(new Resource(93, "Rat","HXB/BXH", "Normalized exon array data - gene level",fileList,"\"The sequenced rat brain transcriptome, its use in identifying networks predisposing alcohol consumption\"(Saba et. al. 2015, FEBS)"));
                 
                 fileList = new PublicationFile[2];
                 fileList[0]=new PublicationFile("Detection Above Background - Isoform Level",pubFilePath+"dabg.brain.reconTrans.isoformLevel.txt.zip");
                 fileList[1]=new PublicationFile("Normalized Expression values - Isoform Level",pubFilePath+"Adjusted_rma.brain.reconTrans.isoformLevel.txt.zip");
-                resourceList.add(new Resource(94, "Rat","HXB/BXH", "Normalized exon array data - isoform level",fileList));
+                resourceList.add(new Resource(94, "Rat","HXB/BXH", "Normalized exon array data - isoform level",fileList,"\"The sequenced rat brain transcriptome, its use in identifying networks predisposing alcohol consumption\"(Saba et. al. 2015, FEBS)"));
                 
                 fileList = new PublicationFile[2];
                 fileList[0]=new PublicationFile("Detection Above Background - Gene Level",pubFilePath+"dabg.brain.reconTrans.geneLevel.selectedLines.txt.zip");
                 fileList[1]=new PublicationFile("Normalized Expression values - Gene Level",pubFilePath+"rma.brain.reconTrans.geneLevel.selectedLines.txt.zip");
-                resourceList.add(new Resource(95, "Rat","Selected Lines", "Normalized exon array data - gene level",fileList));
+                resourceList.add(new Resource(95, "Rat","Selected Lines", "Normalized exon array data - gene level",fileList,"\"The sequenced rat brain transcriptome, its use in identifying networks predisposing alcohol consumption\"(Saba et. al. 2015, FEBS)"));
                 
                 fileList = new PublicationFile[2];
                 fileList[0]=new PublicationFile("Detection Above Background - Isoform Level",pubFilePath+"dabg.brain.reconTrans.isoformLevel.selectedLines.txt.zip");
                 fileList[1]=new PublicationFile("Normalized Expression values - Isoform Level",pubFilePath+"rma.brain.reconTrans.isoformLevel.selectedLines.txt.zip");
-                resourceList.add(new Resource(96, "Rat","Selected Lines", "Normalized exon array data - isoform level",fileList));
+                resourceList.add(new Resource(96, "Rat","Selected Lines", "Normalized exon array data - isoform level",fileList,"\"The sequenced rat brain transcriptome, its use in identifying networks predisposing alcohol consumption\"(Saba et. al. 2015, FEBS)"));
                 
                 fileList = new PublicationFile[3];
                 fileList[0]=new PublicationFile("Masked MPS file by gene",pubFilePath+"RaEx-1_0-st-v1.r2.dt1.rn5.reconstruction.withStrand.byGene.MASKED.mps.zip");
                 fileList[1]=new PublicationFile("Masked MPS file",pubFilePath+"RaEx-1_0-st-v1.r2.dt1.rn5.reconstruction.withStrand.MASKED.mps.zip");
                 fileList[2]=new PublicationFile("Masked PGF File",pubFilePath+"RaEx-1_0-st-v1.r2.rn5masked.pgf.zip");
-                resourceList.add(new Resource(97, "Rat","N/A", "Array Masks",fileList));
+                resourceList.add(new Resource(97, "Rat","N/A", "Array Masks",fileList,"\"The sequenced rat brain transcriptome, its use in identifying networks predisposing alcohol consumption\"(Saba et. al. 2015, FEBS)"));
         	
             Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
             return resourceArray;
@@ -1098,20 +1113,20 @@ public class Resource {
                 PublicationFile[] fileList = new PublicationFile[2];
                 fileList[0]=new PublicationFile("Affymetrix Mask File",pubFilePath+"RaEx-1_0-st-v1.r2.dt1.rn5.reconstruction.withStrand.byGene.29Oct15.v2.mps");
                 fileList[1]=new PublicationFile("Affymetrix PGF File",pubFilePath+"RaEx-1_0-st-v1.r2.rn5masked.pgf.zip");
-                resourceList.add(new Resource(100, "Rat", "N/A","Array Masks",fileList));
+                resourceList.add(new Resource(100, "Rat", "N/A","Array Masks",fileList,"\"Uncovering the liver's role in immunity through RNA co-expression networks.\" Harrall et. al. (2016, Mamm. Genome)"));
                 
                 fileList = new PublicationFile[1];
                 fileList[0]=new PublicationFile("Normalized Array Data",pubFilePath+"Adjusted_rma.cellSpecific.txt");
-                resourceList.add(new Resource(101, "Rat", "N/A","Cell Type Specific Normalized Exon Array",fileList));
+                resourceList.add(new Resource(101, "Rat", "N/A","Cell Type Specific Normalized Exon Array",fileList,"\"Uncovering the liver's role in immunity through RNA co-expression networks.\" Harrall et. al. (2016, Mamm. Genome)"));
                 
                 fileList = new PublicationFile[2];
                 fileList[0]=new PublicationFile("Normalized Array Data",pubFilePath+"Adjusted_rma.liver.reconTrans.withStrand.byGene.txt");
                 fileList[1]=new PublicationFile("Detection Above Background",pubFilePath+"dabg.liver.reconTrans.geneLevel.txt");
-                resourceList.add(new Resource(102, "Rat","N/A", "HXB Normalized Exon Array",fileList));
+                resourceList.add(new Resource(102, "Rat","N/A", "HXB Normalized Exon Array",fileList,"\"Uncovering the liver's role in immunity through RNA co-expression networks.\" Harrall et. al. (2016, Mamm. Genome)"));
                 
                 fileList = new PublicationFile[1];
                 fileList[0]=new PublicationFile("Reconstructed Transcriptome",pubFilePath+"reconstruct.liver.23Oct15.FINAL.gtf");
-                resourceList.add(new Resource(103, "Rat","N/A", "Reconstructed Liver Transcriptome",fileList));
+                resourceList.add(new Resource(103, "Rat","N/A", "Reconstructed Liver Transcriptome",fileList,"\"Uncovering the liver's role in immunity through RNA co-expression networks.\" Harrall et. al. (2016, Mamm. Genome)"));
                 
                 fileList = new PublicationFile[14];
                 fileList[0]=new PublicationFile("Aligned BNLx BAM",pubFilePath+"BNLx123.liver.bam");
@@ -1129,11 +1144,11 @@ public class Resource {
                 fileList[12]=new PublicationFile("SHR #3 R1 FastQ",pubFilePath+"SHR_L25_ACAGTG_L001_R1_001.fastq.gz");
                 fileList[13]=new PublicationFile("SHR #3 R2 FastQ",pubFilePath+"SHR_L25_ACAGTG_L001_R2_001.fastq.gz");
 
-                resourceList.add(new Resource(104, "Rat","N/A", "RNA-Seq",fileList));
+                resourceList.add(new Resource(104, "Rat","N/A", "RNA-Seq",fileList,"\"Uncovering the liver's role in immunity through RNA co-expression networks.\" Harrall et. al. (2016, Mamm. Genome)"));
                 
                 fileList = new PublicationFile[1];
                 fileList[0]=new PublicationFile("Strain Distibution Patterns",pubFilePath+"HXB.eQTL.masterList.rn5.txt");
-                resourceList.add(new Resource(105, "Rat","N/A", "SDPs",fileList));
+                resourceList.add(new Resource(105, "Rat","N/A", "SDPs",fileList,"\"Uncovering the liver's role in immunity through RNA co-expression networks.\" Harrall et. al. (2016, Mamm. Genome)"));
 
         	
             Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
@@ -1149,16 +1164,16 @@ public class Resource {
             fileList[1]=new PublicationFile("CEL Files Part 2",pubFilePath+"BAT_pravenec_CEL_part2.zip");
             fileList[2]=new PublicationFile("CEL Files Part 3",pubFilePath+"BAT_pravenec_CEL_part3.zip");
             fileList[3]=new PublicationFile("CEL Files Part 4",pubFilePath+"BAT_pravenec_CEL_part4.zip");
-            resourceList.add(new Resource(110, "Rat", "N/A","CEL Files",fileList));
+            resourceList.add(new Resource(110, "Rat", "N/A","CEL Files",fileList,"\"Systems Genetic Analysis of Brown Adipose Tissue Function\" by Michal Pravenec et al. (Nov 10, 2017, Physiol Genomics.)"));
 
             fileList = new PublicationFile[1];
             fileList[0]=new PublicationFile("Normalized Array Data",pubFilePath+"BAT.norm.exparray.txt.zip");
-            resourceList.add(new Resource(111, "Rat", "N/A","Normalized Gene Array",fileList));
+            resourceList.add(new Resource(111, "Rat", "N/A","Normalized Gene Array",fileList,"\"Systems Genetic Analysis of Brown Adipose Tissue Function\" by Michal Pravenec et al. (Nov 10, 2017, Physiol Genomics.)"));
 
             fileList = new PublicationFile[2];
             fileList[0]=new PublicationFile("Probe Module Summary",pubFilePath+"BAT_pravenec_Probe_Module_Summary_8_2017.txt");
             fileList[1]=new PublicationFile("Module Eigengene Matrix",pubFilePath+"BAT_pravenec_Module_Eigengene_Matrix_8_2017.txt");
-            resourceList.add(new Resource(112, "Rat","N/A", "WGCNA Module Data",fileList));
+            resourceList.add(new Resource(112, "Rat","N/A", "WGCNA Module Data",fileList,"\"Systems Genetic Analysis of Brown Adipose Tissue Function\" by Michal Pravenec et al. (Nov 10, 2017, Physiol Genomics.)"));
             
             Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
             return resourceArray;
@@ -1184,11 +1199,108 @@ public class Resource {
             fileList[12]=new PublicationFile("Fastq Files Part 5.3",pubFilePath+"reads_smRNA.Stage5.3.tar.gz");
             fileList[13]=new PublicationFile("Fastq Files Part 5.4",pubFilePath+"reads_smRNA.Stage5.4.tar.gz");
             fileList[14]=new PublicationFile("Fastq Files Part 5.5",pubFilePath+"reads_smRNA.Stage5.5.tar.gz");
-            resourceList.add(new Resource(150, "Mouse", "N/A","Fastq Files",fileList));
+            resourceList.add(new Resource(150, "Mouse", "N/A","Fastq Files",fileList,"\"\"miR-MaGiC improves quantification accuracy for small RNA-seq\" by Pamela Russell et al."));
 
             Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
             return resourceArray;
         }
+        
+        public Resource[] getPublicationResources5() {
+            log.debug("in getPublicationResources5");
+            String pubFilePath="/downloads/Publication/vanderlinden/";
+            List<Resource> resourceList = new ArrayList<Resource>();
+                
+            PublicationFile[] fileList = new PublicationFile[1];
+            fileList[0]=new PublicationFile("BXD Whole Brain Expression Data for WGCNA",pubFilePath+"BXD.wholeBrain.priorToWGCNA.txt.zip");
+            resourceList.add(new Resource(162, "Mouse", "BXD","BXD Whole Brain Expression Data for WGCNA",fileList, "\"Whole Brain and Brain Regional Coexpression Network Interactions Associated with Predisposition to Alcohol Consumption\" (Vanderlinden et. al. 2013 PLOS)"));
+
+            fileList = new PublicationFile[1];
+            fileList[0]=new PublicationFile("Module Membership Key",pubFilePath+"BXD.wholeBrain.moduleMembershipKey.txt");
+            resourceList.add(new Resource(161, "Mouse", "BXD","Module Membership Key",fileList,"\"Whole Brain and Brain Regional Coexpression Network Interactions Associated with Predisposition to Alcohol Consumption\" (Vanderlinden et. al. 2013 PLOS)"));
+
+            fileList = new PublicationFile[1];
+            fileList[0]=new PublicationFile("Module Eigengene Matrix",pubFilePath+"BXD.wholeBrain.ModuleEigengeneMatrix.txt");
+            resourceList.add(new Resource(160, "Mouse","BXD", "Module Eigengene Matrix",fileList,"\"Whole Brain and Brain Regional Coexpression Network Interactions Associated with Predisposition to Alcohol Consumption\" (Vanderlinden et. al. 2013 PLOS)"));
+            
+            Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
+            return resourceArray;
+        }
+         public Resource[] getPublicationResources6() {
+            log.debug("in getPublicationResources6");
+            String pubFilePath="/downloads/Publication/kechris/";
+            List<Resource> resourceList = new ArrayList<Resource>();
+                
+            PublicationFile[] fileList = new PublicationFile[15];
+            fileList[0]=new PublicationFile("Fastq Files Part 1",pubFilePath+"reads_smRNA.Stage1.tar.gz");
+            fileList[1]=new PublicationFile("Fastq Files Part 2.1",pubFilePath+"reads_smRNA.Stage2.1.tar.gz");
+            fileList[2]=new PublicationFile("Fastq Files Part 2.2",pubFilePath+"reads_smRNA.Stage2.2.tar.gz");
+            fileList[3]=new PublicationFile("Fastq Files Part 3.1",pubFilePath+"reads_smRNA.Stage3.1.tar.gz");
+            fileList[4]=new PublicationFile("Fastq Files Part 3.2",pubFilePath+"reads_smRNA.Stage3.2.tar.gz");
+            fileList[5]=new PublicationFile("Fastq Files Part 3.3",pubFilePath+"reads_smRNA.Stage3.3.tar.gz");
+            fileList[6]=new PublicationFile("Fastq Files Part 4.1",pubFilePath+"reads_smRNA.Stage4.1.tar.gz");
+            fileList[7]=new PublicationFile("Fastq Files Part 4.2",pubFilePath+"reads_smRNA.Stage4.2.tar.gz");
+            fileList[8]=new PublicationFile("Fastq Files Part 4.3",pubFilePath+"reads_smRNA.Stage4.3.tar.gz");
+            fileList[9]=new PublicationFile("Fastq Files Part 4.4",pubFilePath+"reads_smRNA.Stage4.4.tar.gz");
+            fileList[10]=new PublicationFile("Fastq Files Part 5.1",pubFilePath+"reads_smRNA.Stage5.1.tar.gz");
+            fileList[11]=new PublicationFile("Fastq Files Part 5.2",pubFilePath+"reads_smRNA.Stage5.2.tar.gz");
+            fileList[12]=new PublicationFile("Fastq Files Part 5.3",pubFilePath+"reads_smRNA.Stage5.3.tar.gz");
+            fileList[13]=new PublicationFile("Fastq Files Part 5.4",pubFilePath+"reads_smRNA.Stage5.4.tar.gz");
+            fileList[14]=new PublicationFile("Fastq Files Part 5.5",pubFilePath+"reads_smRNA.Stage5.5.tar.gz");
+            resourceList.add(new Resource(170, "Mouse", "N/A","Fastq Files",fileList,"\"Predictive Modeling of miRNA-mediated Predisposition to Alcohol-related Phenotypes in Mouse\" by Pratyaydipta Rudra et al."));
+            
+            fileList = new PublicationFile[6];
+            fileList[0]=new PublicationFile("miRNA Normalized Expression - This table (881 x 59) contains the filtered, normalized and batch effect corrected miRNA expression data. Each row is a miRNA and each column is a sample. ",pubFilePath+"mirna_expression_normalized.csv.zip");
+            fileList[1]=new PublicationFile("miRNA Variance Stabilized Expression - This table (881 x 59) contains the filtered, normalized and batch effect corrected and variance stabilized miRNA expression data after variance stabilizing transformation from DESeq was performed. Each row is a miRNA and each column is a sample.",pubFilePath+"mirna_expression_variance_stabilized.csv.zip");
+            fileList[2]=new PublicationFile("mRNA Expression Strain Means",pubFilePath+"mRNA_expression_data_strainmeans.csv.zip");
+            fileList[3]=new PublicationFile("mRNA Expression Full",pubFilePath+"mRNA_expression_data_full.csv.zip");
+            fileList[4]=new PublicationFile("All SDPs - This table (1416 x 7) shows the list of all SDPs along with the number of SNPs, chromosome number, the rs number and base-pair location for the first and last SNP corresponding to every SDP. ",pubFilePath+"Table_of_all_SDPs.csv.zip");
+            fileList[5]=new PublicationFile("All Quadruples - This table (2916 x 10) shows the list of all the 2916 cohesive quadruples. Each row corresponds to a quadruple. The first four columns show the phenotype name, SDP number, miRNA name and the gene (mRNA) name.  The next 6 columns show the pairwise correlations between the 4 variables for each quadruple.",pubFilePath+"Table_of_all_quadruples.csv.zip");
+            resourceList.add(new Resource(171, "Mouse", "N/A","Processed Data",fileList,"\"Predictive Modeling of miRNA-mediated Predisposition to Alcohol-related Phenotypes in Mouse\" by Pratyaydipta Rudra et al."));
+            
+            Dataset myDataset = new Dataset();
+            Dataset LXSRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.LXSRI_DATASET_NAME);
+            String resourcesDir = LXSRI_Dataset.getResourcesDir();
+            resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
+
+            fileList = new PublicationFile[1];
+            fileList[0] = new PublicationFile("SNP information on the LXS RI panel was collected by Dr. Gary Churchill and colleagues at the Jackson Laboratory using the Affymetrix Mouse Diversity Genotyping array.  This information was gathered with funding from NIH grants (GM0706833 and AG0038070).", resourcesDir + "LXS.markers.mm10.txt.zip");
+            resourceList.add(new Resource(172, "Mouse", "N/A","Markers",fileList,"\"Predictive Modeling of miRNA-mediated Predisposition to Alcohol-related Phenotypes in Mouse\" by Pratyaydipta Rudra et al."));
+            
+
+            Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
+            return resourceArray;
+        }
+         
+         public Resource[] getPublicationResources7() {
+            log.debug("in getPublicationResources7");
+            String pubFilePath="/downloads/Publication/Li.PSU/";
+            List<Resource> resourceList = new ArrayList<Resource>();
+            Dataset myDataset = new Dataset();
+            Dataset HXBRI_Brain_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_BRAIN_EXON_DATASET_NAME);
+            Dataset HXBRI_Heart_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_HEART_EXON_DATASET_NAME);
+            
+            PublicationFile[] fileList = new PublicationFile[10];
+            fileList[0]=new PublicationFile("Brain - Normalized Expression Values",pubFilePath+"HXB.Brain.rn6.expr.TC.core.v2.txt.zip");
+            fileList[1]=new PublicationFile("Heart - Normalized Expression Values",pubFilePath+"HXB.Heart.rn6.expr.TC.core.v2.txt.zip");            
+            String resourcesDir = HXBRI_Brain_Exon_Dataset.getResourcesDir();
+            resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
+            fileList[2]=new PublicationFile("Brain - Raw Data - CEL Files, Part 1", resourcesDir + "PublicHXB_BXH.Brain.Exon.RawData_Part1.zip");
+            fileList[3]=new PublicationFile("Brain - Raw Data - CEL Files, Part 2", resourcesDir + "PublicHXB_BXH.Brain.Exon.RawData_Part2.zip");
+            fileList[4]=new PublicationFile("Brain - Raw Data - CEL Files, Part 3", resourcesDir + "PublicHXB_BXH.Brain.Exon.RawData_Part3.zip");
+            fileList[5]=new PublicationFile("Brain - Raw Data - CEL Files, Part 4", resourcesDir + "PublicHXB_BXH.Brain.Exon.RawData_Part4.zip");
+            resourcesDir = HXBRI_Heart_Exon_Dataset.getResourcesDir();
+            resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
+            fileList[6]=new PublicationFile("Heart - Raw Data - CEL Files, Part 1", resourcesDir + "PublicHXB_BXH.Heart.Exon.RawData_Part1.zip");
+            fileList[7]=new PublicationFile("Heart - Raw Data - CEL Files, Part 2", resourcesDir + "PublicHXB_BXH.Heart.Exon.RawData_Part2.zip");
+            fileList[8]=new PublicationFile("Heart - Raw Data - CEL Files, Part 3", resourcesDir + "PublicHXB_BXH.Heart.Exon.RawData_Part3.zip");
+            fileList[9]=new PublicationFile("Heart - Raw Data - CEL Files, Part 4", resourcesDir + "PublicHXB_BXH.Heart.Exon.RawData_Part4.zip");
+            
+            resourceList.add(new Resource(180, "Rat", "N/A","Normalized Expression/Raw CEL Files",fileList,"\"Condition-adaptive fusion graphical lasso (CFGL): an adaptive procedure for inferring condition-specific gene co-expression network.\" by Y. Lyu et al."));
+            
+            Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
+            return resourceArray;
+        }
+         
 	/**
 	 * Returns one Resource object from an array of Resource objects
 	 * @param myResources	an array of Resource objects 

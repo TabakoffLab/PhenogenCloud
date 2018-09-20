@@ -100,6 +100,7 @@ public class GeneDataTools {
     //HashMap<String,HashMap> cacheHM=new HashMap<String,HashMap>();
     //ArrayList<String> cacheList=new ArrayList<String>();
     int maxCacheList=5;
+
     
     
 
@@ -926,8 +927,10 @@ public class GeneDataTools {
         }
         HashMap<String,String> source=this.getGenomeVersionSource(genomeVer);
         String ensemblPath=source.get("ensembl");
-        boolean createdXML=this.createRegionImagesXMLFiles(folderName,organism,genomeVer,ensemblPath,arrayTypeID,RNADatasetID,source.get("ucsc"));
-        return createdXML;
+        //boolean createdXML=this.createRegionImagesXMLFiles(folderName,organism,genomeVer,ensemblPath,arrayTypeID,RNADatasetID,source.get("ucsc"));
+        AsyncBrowserRegion abr=new AsyncBrowserRegion(session,pool,organism,outputDir,chrom,minCoord,maxCoord,arrayTypeID,RNADatasetID,genomeVer,source.get("ucsc"),ensemblPath,usageID,false);
+        abr.start();
+        return true;
     }
     
     public boolean generateRegionFiles(String organism,String genomeVer,String ensemblPath,String folderName,int RNADatasetID,int arrayTypeID,String ucscDB) {
@@ -940,7 +943,8 @@ public class GeneDataTools {
             //log.debug("make output dir");
             outDirF.mkdirs();
         }
-        AsyncBrowserRegion abr=new AsyncBrowserRegion(session,pool,organism,outputDir,chrom,minCoord,maxCoord,arrayTypeID,RNADatasetID,genomeVer,ucscDB,ensemblPath,usageID);
+        AsyncBrowserRegion abr=new AsyncBrowserRegion(session,pool,organism,outputDir,chrom,minCoord,maxCoord,arrayTypeID,RNADatasetID,genomeVer,ucscDB,ensemblPath,usageID,true);
+        abr.start();
         //boolean createdXML=this.createRegionImagesXMLFiles(folderName,organism,genomeVer,ensemblPath,arrayTypeID,RNADatasetID,ucscDB);
         //AsyncGeneDataTools prevThread=callAsyncGeneDataTools(chrom, minCoord, maxCoord,arrayTypeID,RNADatasetID,genomeVer,false);
         return true;
@@ -1912,7 +1916,7 @@ public class GeneDataTools {
         return status;
     }
      
-    public boolean createRegionImagesXMLFiles(String folderName,String organism,String genomeVer,String ensemblPath,int arrayTypeID,int rnaDatasetID,String ucscDB){
+    /*public boolean createRegionImagesXMLFiles(String folderName,String organism,String genomeVer,String ensemblPath,int arrayTypeID,int rnaDatasetID,String ucscDB){
         boolean completedSuccessfully=false;
         try{
             //Connection tmpConn=pool.getConnection();
@@ -2059,7 +2063,7 @@ public class GeneDataTools {
                 }
         }
         return completedSuccessfully;
-    }
+    }*/
     
     public AsyncGeneDataTools callAsyncGeneDataTools(String chr, int min, int max,int arrayTypeID,int rnaDS_ID,String genomeVer,boolean isENSGene){
         AsyncGeneDataTools agdt;         

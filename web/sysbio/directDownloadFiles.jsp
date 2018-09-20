@@ -41,7 +41,12 @@
 		action="downloadFiles.jsp" 
 		enctype="application/x-www-form-urlencoded" 
 		name="downloadFiles"> 
-		<div class="leftTitle">Files That Can Be Downloaded For <%=type%>:</div>
+            <% if(type.equals("pub")){%>
+                <div class="leftTitle">Files That Can Be Downloaded For <%=thisResource.getDownloadHeader()%>:</div>
+            <%}else{%>
+                <div class="leftTitle">Files That Can Be Downloaded For <%=type%>:</div>
+            <%}%>
+		
 		<table name="items" class="list_base" cellpadding="0" cellspacing="3" width="90%">
 			<thead>
 			<tr class="col_title">
@@ -55,22 +60,23 @@
 			</tr>
 			</thead>
 			<tbody>
-				<% for (DataFile dataFile : dataFiles) { 
-                                    log.debug("inside For loop:"+dataFile.getFileName());
+				<% int i=0;
+                                    for (DataFile dataFile : dataFiles) { 
+                                        i++;
                                     %>
 				<tr>  
-					<td> 
+					<td class="<%if(i%2==0){%>alt_stripe<%}%>"> 
 					<center>
 						<a href="downloadLink.jsp?url=<%=dataFile.getFileName()%>" target="_blank" > <img src="../images/icons/download_g.png" /></a>
 					</center>
 					</td>  
                                         <%if(type.equals("rnaseq") || type.equals("expression")|| type.equals("mask")
                                                  || type.equals("heritability") || type.equals("gtf") ){%>
-                                        <TD><%=dataFile.getGenome()%></TD>
+                                        <TD class="<%if(i%2==0){%>alt_stripe<%}%>"><%=dataFile.getGenome()%></TD>
                                         <%}%>
-					<td><%=dataFile.getType()%></td>
-                    <td><%=dataFile.getFileName().substring(dataFile.getFileName().lastIndexOf("/")+1)%></td>
-					</tr> 
+					<td class="<%if(i%2==0){%>alt_stripe<%}%>"><%=dataFile.getType()%></td>
+                                        <td class="<%if(i%2==0){%>alt_stripe<%}%>"><%=dataFile.getFileName().substring(dataFile.getFileName().lastIndexOf("/")+1)%></td>
+				</tr> 
 				<% } %>
 			</tbody>
 		</table>

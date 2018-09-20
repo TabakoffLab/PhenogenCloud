@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import javax.sql.DataSource;
 
 
-
 /* for logging messages */
 import org.apache.log4j.Logger;
 

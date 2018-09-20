@@ -13,13 +13,14 @@
 <%
 	
     RNADataset myRNADataset=new RNADataset();
-    
-    log.info("in resources.jsp. user =  "+ userLoggedIn.getUser_name());
+    int pubID=0;
+    String section="rnaseq";
+        log.info("in resources.jsp. user =  "+ user);
 	
 	log.debug("action = "+action);
-	extrasList.add("tooltipster.min.css");
-	extrasList.add("tabs.css");
-	extrasList.add("resources.js");
+        extrasList.add("tooltipster.min.css");
+        extrasList.add("tabs.css");
+	extrasList.add("resources1.0.js");
 	extrasList.add("jquery.tooltipster.min.js");
         extrasList.add("d3.v3.5.16.min.js");
         extrasList.add("jquery.dataTables.1.10.9.min.js");
@@ -41,11 +42,20 @@
         Resource[] myPublicationResources2 = myResource.getPublicationResources2();
         Resource[] myPublicationResources3 = myResource.getPublicationResources3();
         Resource[] myPublicationResources4 = myResource.getPublicationResources4();
+        Resource[] myPublicationResources5 = myResource.getPublicationResources5();
+        Resource[] myPublicationResources6 = myResource.getPublicationResources6();
+        Resource[] myPublicationResources7 = myResource.getPublicationResources7();
         Resource[] myGTFResources=myResource.getGTFResources();
 	// Sort by organism first, dataset second (seems backwards!)
 	myExpressionResources = myResource.sortResources(myResource.sortResources(myExpressionResources, "dataset"), "organism");
 	ArrayList checkedList = new ArrayList();
         ArrayList<RNADataset> publicRNADatasets=myRNADataset.getRNADatasetsByPublic(true,"All",pool);
+        if(request.getParameter("section")!=null){
+            section=FilterInput.getFilteredInput(request.getParameter("section").trim());
+        }
+        if(request.getParameter("publication")!=null){
+            pubID=Integer.parseInt(FilterInput.getFilteredInput(request.getParameter("publication").trim()));
+        }
 %>
 <style>
         span.detailMenu{
@@ -110,16 +120,16 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 
 <div style="width:100%;">
     <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
-            <span id="d2" class="detailMenu selected" name="rnaseq">RNA-Seq</span>
-            <span id="d6" class="detailMenu" name="dnaseq">DNA-Seq</span>
-            <span id="d1" class="detailMenu" name="array">Microarray</span>
-            <span id="d3" class="detailMenu" name="marker">Genomic Marker</span>
-            <span id="d4" class="detailMenu" name="pub">Publications</span>
+            <span id="d2" class="detailMenu <%if(section.equals("rnaseq")){%>selected<%}%>" name="rnaseq">RNA-Seq</span>
+            <span id="d6" class="detailMenu <%if(section.equals("dnaseq")){%>selected<%}%>" name="dnaseq">DNA-Seq</span>
+            <span id="d1" class="detailMenu <%if(section.equals("array")){%>selected<%}%>" name="array">Microarray</span>
+            <span id="d3" class="detailMenu <%if(section.equals("marker")){%>selected<%}%>" name="marker">Genomic Marker</span>
+            <span id="d4" class="detailMenu <%if(section.equals("pub")){%>selected<%}%>" name="pub">Publications</span>
             
     </div>
 </div>
 
-<div id="array" style="display:none;border-top:1px solid black;">
+<div id="array" style="<%if(!section.equals("array")){%>display:none;<%}%>border-top:1px solid black;">
 	<form	method="post" 
 		action="resources.jsp" 
 		enctype="application/x-www-form-urlencoded"
@@ -131,6 +141,7 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 		      <table id="expressionFiles" name="items" class="list_base tablesorter" cellpadding="0" cellspacing="3" width="98%">
             		<thead>
                                <tr class="col_title">
+                                        <TH>Experiment Accession ID</TH>
 					<th>Organism</th>
 					<th>Dataset</th>
 					<th>Tissue</th>
@@ -146,6 +157,7 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 			<% for (Resource resource: myExpressionResources) { 
 			%> 
 				<tr id="<%=resource.getID()%>">  
+                                    <TD><%=resource.getID()%></TD>
 				<td> <%=resource.getOrganism()%> </td>
 				<td> <%=resource.getDataset().getName()%></td> 
 				<td> <%=resource.getTissue()%></td>
@@ -195,7 +207,7 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 		<BR>
         *The mask files are the same for all of these datasets.
         </div>
-        <div id="marker" style="display:none;border-top:1px solid black;">
+        <div id="marker" style="<%if(!section.equals("marker")){%>display:none;<%}%>border-top:1px solid black;">
 	<form	method="post" 
 		action="resources.jsp" 
 		enctype="application/x-www-form-urlencoded"
@@ -238,7 +250,7 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 		</table> 
         </form>
         </div>
-        <div id="rnaseq" style="border-top:1px solid black;">
+        <div id="rnaseq" style="<%if(!section.equals("rnaseq")){%>display:none;<%}%>border-top:1px solid black;">
                 <div class="title"> New RNA Sequencing Datasets Experimental Details/Downloads</div>
                 <form	method="post" 
 		action="resources.jsp" 
@@ -381,7 +393,7 @@ pageDescription="Data resources available for downloading includes Microarrays, 
                       </table>
                 </form>
         </div>
-        <div id="dnaseq" style="display:none;border-top:1px solid black;">
+        <div id="dnaseq" style="<%if(!section.equals("dnaseq")){%>display:none;<%}%>border-top:1px solid black;">
 	<form	method="post" 
 		action="resources.jsp" 
 		enctype="application/x-www-form-urlencoded"
@@ -491,12 +503,56 @@ pageDescription="Data resources available for downloading includes Microarrays, 
         </form>
 </div>
              
-<div id="pub" style="display:none;border-top:1px solid black;">
+<div id="pub" style="<%if(!section.equals("pub")){%>display:none;<%}%>border-top:1px solid black;">
 	<form	method="post" 
 		action="resources.jsp" 
 		enctype="application/x-www-form-urlencoded"
-		name="resources">    
-          <div class="title">Data Files for "Toward effective, functional quantification of miRNAs by small RNA-seq" by Pamela Russell et al. (submitted, NAR.)
+		name="resources">   
+            <div class="title">Data Files for "Condition-adaptive fusion graphical lasso (CFGL): an adaptive procedure for inferring condition-specific gene co-expression network." by Lyu, Y., Xue, L., Zhang, F., Koch, H., Saba, L., Kechris, K., & Li, Q. (in press, PLoS Computational Biology)
+               </div>
+		      <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
+                        <thead>
+                            <tr class="col_title">
+					<th>Data</th>
+                                        <TH>Files</TH>
+                            </tr>
+			</thead>
+			<tbody>
+			<% for (Resource resource: myPublicationResources7) { %> 
+				<tr id="<%=resource.getID()%>">  
+                                    
+                                    <TD><%=resource.getDescription()%></TD>
+                                    <td class="actionIcons">
+						<div class="linkedImg download" type="pub"><div>
+                                    </td>
+				</tr> 
+			<% } %>
+			</tbody>
+		</table>
+                        <BR><BR>
+             <div class="title">Data Files for "Predictive Modeling of miRNA-mediated Predisposition to Alcohol-related Phenotypes in Mouse" by Pratyaydipta Rudra et al. (submitted, BMC Genomics)
+               </div>
+		      <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
+                        <thead>
+                            <tr class="col_title">
+					<th>Data</th>
+                                        <TH>Files</TH>
+                            </tr>
+			</thead>
+			<tbody>
+			<% for (Resource resource: myPublicationResources6) { %> 
+				<tr id="<%=resource.getID()%>">  
+                                    
+                                    <TD><%=resource.getDescription()%></TD>
+                                    <td class="actionIcons">
+						<div class="linkedImg download" type="pub"><div>
+                                    </td>
+				</tr> 
+			<% } %>
+			</tbody>
+		</table>
+                        <BR><BR>
+          <div class="title">Data Files for "miR-MaGiC improves quantification accuracy for small RNA-seq." by Pamela Russell et al. (2018 May 15, BMC Res Notes)<a target="_blank" href="https://www.ncbi.nlm.nih.gov/pubmed/29764489">Abstract</a>
                </div>
 		      <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
                         <thead>
@@ -588,7 +644,33 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 			<% } %>
 			</tbody>
 		</table>
+                        <BR>
+                        <BR>
         
+                        <div class="title">Data Files used in "Whole Brain and Brain Regional Coexpression Network Interactions Associated with Predisposition to Alcohol Consumption"<BR>
+                            (Vanderlinden et. al. 2013 PLOS) <a href="http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0068878" target="_blank">Abstract</a></div>
+                        <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
+                        <thead>
+                            <tr class="col_title">
+					<th>Data</th>
+                                        <TH>Files</TH>
+                            </tr>
+			</thead>
+			<tbody>
+			<% for (Resource resource: myPublicationResources5) { %> 
+				<tr id="<%=resource.getID()%>">  
+                                    <TD><%=resource.getDescription()%></TD>
+                                    <td class="actionIcons">
+						<div class="linkedImg download" type="pub"><div>
+                                    </td>
+				</tr> 
+			<% } %>
+			</tbody>
+		</table>
+                        
+                        
+                <BR>
+		<BR>
 	</form>
 </div>
 
@@ -661,6 +743,8 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 <%@ include file="/web/common/footer.jsp"  %>
 <script type="text/javascript">
         var curUID=<%=userLoggedIn.getUser_id()%>;
+        var section="<%=section%>";
+        var publicationID=<%=pubID%>;
         var pipelineModal;
         var metaModal;
 	$(document).ready(function() {
@@ -694,6 +778,25 @@ pageDescription="Data resources available for downloading includes Microarrays, 
                     metaModal = createDialog( ".metaData", {height: tmpH, width: tmpW, position: { my: "center", at: "center", of: window }, title: "Experiment Details"} );
                     pipelineModal = createDialog( ".pipelineData", {height: tmpH, width: tmpW, position: { my: "center", at: "center", of: window }, title: "Analysis Pipeline Details"} );
                 },10);
+                
+                /*setTimeout(function(){
+                    if(publicationID>0){
+                        console.log("pub:"+publicationID);
+                        $.ajax({
+                            type: "POST",
+                            url: contextPath + "/web/sysbio/directDownloadFiles.jsp",
+                            dataType: "html",
+                            data: { resource:publicationID, type: "pub" },
+                            async: false,
+                            success: function( html ){
+                            downloadModal.html( html ).dialog( "open" );
+                            },
+                            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                                    alert( "there was an error processing this request: " + textStatus + " " + errorThrown );
+                            }
+                        });
+                    }
+                },500);*/
                 
 	});
         
