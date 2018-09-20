@@ -11,7 +11,6 @@
 
 <jsp:useBean id="myAnonUser" class="edu.ucdenver.ccp.PhenoGen.data.AnonUser"> </jsp:useBean>
 <jsp:useBean id="anonU" class="edu.ucdenver.ccp.PhenoGen.data.AnonUser" scope="session" />
-
 <%
     String id="";
     if(request.getParameter("uuid") != null){
@@ -33,7 +32,6 @@
     if(anonU!=null){
 %>
     {"status":"SUCCESS","id":"<%=anonU.getUUID()%>"}
-    
     
 <%}else{%>
     { "status":"ERROR" }

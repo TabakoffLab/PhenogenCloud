@@ -1053,7 +1053,6 @@ public class Resource {
                 genotypingFileList[4]=new GenotypeDataFile("Genotype CEL Files Part 5",seqFilePath+"Genotyping_5.zip");
                 resourceList.add(new Resource(70, "Human", "Alcohol dependent subjects receiving outpatient treatment at the Medical University of Vienna (Austria)",
                                             "self-reported European","Affymetrix Genome-Wide Human SNP Array 6.0", genotypingFileList ));*/
-        	
                 Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
 		return resourceArray;
 	}

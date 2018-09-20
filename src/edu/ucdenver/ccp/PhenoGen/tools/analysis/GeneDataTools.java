@@ -2735,8 +2735,6 @@ public class GeneDataTools {
         }
         
     }
-    
-    
     //calculate the % of gene1 that overlaps gene2
     public double calculateOverlap(Gene gene1, Gene gene2){
         double ret=0;

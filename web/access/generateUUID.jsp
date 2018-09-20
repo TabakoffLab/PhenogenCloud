@@ -11,7 +11,6 @@
 
 <jsp:useBean id="myAnonUser" class="edu.ucdenver.ccp.PhenoGen.data.AnonUser"> </jsp:useBean>
 <jsp:useBean id="anonU" class="edu.ucdenver.ccp.PhenoGen.data.AnonUser" scope="session"> </jsp:useBean>
-
 <%    
     java.util.UUID id=java.util.UUID.randomUUID();
     AnonUser anonUser=myAnonUser.createAnonUser(id.toString(),pool);

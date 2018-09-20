@@ -613,6 +613,5 @@ sub readTissueEQTLProbesetDataFromDB{
 	#close PSFILE;
 	return (\%probesetHOH);
 }
-
 1;
 

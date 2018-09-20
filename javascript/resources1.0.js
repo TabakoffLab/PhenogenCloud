@@ -6,9 +6,7 @@
 /* * * *
  *  this function sets up all the functionality for this page
 /*/
-
 var downloadModal; // modal used for download resources interaction box
-
 function setupPage() {
 
 	var itemDetails = createDialog(".itemDetails" , {width: 950, height: 800, title: "Resource Details"});

@@ -157,7 +157,6 @@ public class BrowserView{
     public BrowserView getBrowserView(int viewid,DataSource pool){
         Logger log=Logger.getRootLogger();
         BrowserView ret=null;
-        
         String query="select bv.*,gbv.genome_id from BROWSER_VIEWS bv, BROWSER_GV2VIEW gbv "+
                         "where bvid="+viewid+" and bv.bvid=gbv.bvid";
         String trackquery="select bvt.bvid,bt.*,bts.settings,bvt.ordering from BROWSER_VIEWS_TRACKS bvt,BROWSER_TRACKS bt, BROWSER_TRACK_SETTINGS bts where "+

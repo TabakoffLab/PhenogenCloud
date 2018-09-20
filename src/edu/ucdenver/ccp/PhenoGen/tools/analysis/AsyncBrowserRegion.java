@@ -44,7 +44,6 @@ public class AsyncBrowserRegion extends Thread {
     private String[] tissues=new String[2];
     private ExecHandler myExec_session = null;
 
-
     public AsyncBrowserRegion(HttpSession inSession,DataSource pool,String organism,String outputDir,String chr,int min,int max,int arrayTypeID,int rnaDS_ID,String genomeVer,String ucscDB,String ensemblPath,int usageID,boolean runAGDT) {
         this.session = inSession;
         this.outputDir=outputDir;

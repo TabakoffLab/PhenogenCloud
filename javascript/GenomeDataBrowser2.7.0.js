@@ -11,7 +11,6 @@
 */
 
 $.cookie.defaults.expires=365;
-
 //global varaiable to store a list of GenomeSVG images representing each level.
 var svgList=[];
 var svgViewIDList=[];

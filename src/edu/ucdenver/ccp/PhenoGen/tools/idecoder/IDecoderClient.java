@@ -291,7 +291,6 @@ public class IDecoderClient {
 
             return doSearch(organism,conn);
         }*/
-
     /**
      * Returns the main HashMap that is used by other methods
      *

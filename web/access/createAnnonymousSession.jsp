@@ -2,7 +2,6 @@
 
 
 <%
-
     //uncomment following line when the site needs to be down.  This will just redirect users to the siteDownPage.jsp instead of trying to create a session.
     if (!loginEnabled) {
         response.sendRedirect(accessDir + "siteDownPage.jsp");

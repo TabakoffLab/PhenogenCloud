@@ -4884,9 +4884,6 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                 
 		return thatimg;
 	};
-
-	
-
   	that.singleWGCNATableMetaView=function(){
   		$('div#wgcnaModuleTable').hide();
         $('div#wgcnaMirTable').hide();

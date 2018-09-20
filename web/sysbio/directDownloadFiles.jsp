@@ -8,7 +8,6 @@
  *      
 --%>
 <%@ include file="/web/sysbio/include/sysBioHeader.jsp"  %>
-
 <%
 	int resource = (request.getParameter("resource") == null ? -99 : Integer.parseInt((String) request.getParameter("resource")));
 	String type = (request.getParameter("type") == null ? "" : (String) request.getParameter("type"));
@@ -83,7 +82,7 @@
 
 		<BR>
         <% if(type.equals("expression")){ %>
-		<center>*For the Affymetrix Exon Arrays, expression levels are estimated on the exon level (i.e., probe set) or gene level (i.e. transcript cluster) and inclusion in the data set is determined based on confidence in annotation (core,extended, and full). For more details, see the Affymetrix GeneChip ® Exon Array whitepaper, Exon Probeset Annotations and Transcript Cluster Groupings (2005).</center>
+		<center>*For the Affymetrix Exon Arrays, expression levels are estimated on the exon level (i.e., probe set) or gene level (i.e. transcript cluster) and inclusion in the data set is determined based on confidence in annotation (core,extended, and full). For more details, see the Affymetrix GeneChip ï¿½ Exon Array whitepaper, Exon Probeset Annotations and Transcript Cluster Groupings (2005).</center>
         <% } %>
 		<input type="hidden" name="resource" value=<%=resource%> />
 		<input type="hidden" name="type" value=<%=type%> />

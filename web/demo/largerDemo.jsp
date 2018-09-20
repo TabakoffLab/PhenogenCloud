@@ -22,8 +22,6 @@
                         </video>
     
 </div>
-    
-
 <%@ include file="/web/common/basicFooter.jsp" %>
 
  

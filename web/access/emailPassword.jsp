@@ -15,7 +15,6 @@
 	extrasList.add("main.min.css");
 	extrasList.add("main1.0.2.js");
 	loggedIn = false;
-	
 	String emailAddress = "";
 	String firstName = "";
 	String lastName = "";

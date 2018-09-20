@@ -100,7 +100,6 @@
 </style>
 <%pageTitle="Download Resources";
 pageDescription="Data resources available for downloading includes Microarrays, Sequencing, and GWAS data";%>
-
 <%@ include file="/web/common/header_noBorder.jsp"  %>
 <% if(loggedIn && !(userLoggedIn.getUser_name().equals("anon")) ){%>
 <div style="width:100%;">
@@ -117,7 +116,6 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 </script>
 <div id="public" style='min-height:1030px;'>
 <h2>Select the download icon(<img src="<%=imagesDir%>icons/download_g.png" />) to download data from any of the datasets below.  For some data types multiple options may be available. For these types, a window displays that allows you to choose specific files.</h2>
-
 <div style="width:100%;">
     <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
             <span id="d2" class="detailMenu <%if(section.equals("rnaseq")){%>selected<%}%>" name="rnaseq">RNA-Seq</span>

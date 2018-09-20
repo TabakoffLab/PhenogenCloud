@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 import javax.mail.SendFailedException;
-
 import javax.servlet.http.HttpSession;
 
 import edu.ucdenver.ccp.util.Debugger;

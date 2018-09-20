@@ -3,7 +3,6 @@ var tt=d3.select("body").append("div")
 	    	.style("z-index",1001) 
 	    	.attr("pointer-events", "all")              
 	    	.style("opacity", 0);
-
 function removeColon(str){
     return str.replace(/:/g, '');
 }
@@ -14,7 +13,6 @@ $(window).resize(function(){
 		goBrwsr.singleImage.draw();
 	}
 });
-
 function GOBrowser(path,fileName){
 	that={};
 	that.path=path;

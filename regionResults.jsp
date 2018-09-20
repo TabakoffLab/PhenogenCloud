@@ -173,8 +173,6 @@ console.log("urlprefix:"+urlprefix);
         </div>
 
     </div><!--end Border Div -->
-    
-    
     <div id="regionDiv">
     <BR />
     <div style="width:100%;">

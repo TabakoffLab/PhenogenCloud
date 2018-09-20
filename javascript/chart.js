@@ -27,7 +27,6 @@ chart=function(params){
 	that.display.controls=true;
 	that.filteredID="";
 
-
 	
 	that.parseOptions=function(params){
 		//Initialize from Parameters
