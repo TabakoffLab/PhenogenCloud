@@ -85,7 +85,7 @@ public class Demo {
     
     public ArrayList<String> getAllDemoCategories(DataSource pool){
         ArrayList<String> ret=new ArrayList<String>();
-        String query="select unique category from demo_files where visible=1";
+        String query="select distinct category from demo_files where visible=1";
         try{
             Connection conn=pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(query);

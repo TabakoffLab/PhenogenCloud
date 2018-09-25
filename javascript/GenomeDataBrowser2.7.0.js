@@ -4190,6 +4190,9 @@ function Track(gsvgP,dataP,trackClassP,labelP){
 	}
     that.scanBackYLines=12;
     that.xPadding=2;
+    if(that.gsvg.xScale.domain()[1]-that.gsvg.xScale.domain()[0]>3000000){
+        that.xPadding=1;
+    }
 
 	that.vis=d3.select("#Level"+that.gsvg.levelNumber+that.trackClass);
 	that.svg=d3.select("svg#Level"+that.gsvg.levelNumber+that.trackClass);

@@ -119,6 +119,7 @@ $(document).ready(function() {
                         }
             }
         });
+    $('#largerView').attr("href","<%=webDir%>demo/largerDemo.jsp?demoPath=<%=defaultVideo.getFileBase()%>");
 	
 	var tableRows = getRows();
 	hoverRows(tableRows);
@@ -133,7 +134,7 @@ $(document).ready(function() {
 			$('#videoTitle').html(list[1]);
 			$('#videoDesc').html(list[2]);
 			$('#video').load();
-                        $('#largerView').attr("href","<%=webDir%>demo/largerDemo.jsp?demoPath=<%=webDir%>demo/"+list[0]);
+			$('#largerView').attr("href","<%=webDir%>demo/largerDemo.jsp?demoPath="+list[0]);
                         if(ga){
                                 ga('send','event','selectDemo',full);
                         }

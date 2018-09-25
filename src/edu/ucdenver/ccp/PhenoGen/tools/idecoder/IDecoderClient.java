@@ -320,7 +320,7 @@ public class IDecoderClient {
         //
         String organismString = "";
         if (!targetsList.contains("Homologene ID")) {
-            organismString = "and id.organism = '" + organism + "' ";
+            organismString = "and id1.organism = '" + organism + "' and id2.organism = '" + organism + "' ";
         }
 
         String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
@@ -336,6 +336,7 @@ public class IDecoderClient {
         if (targetsList != null && !targetsList.contains("Location")) {
             finalQuery = finalQuery +whereTrgt+  targetString + " ";
         }
+        finalQuery = finalQuery + organismString +" ";
         finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
 
         log.debug("in getRecords");
@@ -393,7 +394,7 @@ public class IDecoderClient {
         //
         String organismString = "";
         if (!targetsList.contains("Homologene ID")) {
-            organismString = "and id.organism = '" + organism + "' ";
+            organismString = "and id1.organism = '" + organism + "' and id2.organism = '" + organism + "' ";
         }
 
         String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
@@ -402,13 +403,14 @@ public class IDecoderClient {
                 "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
         String where=" where idl.level<= ? ";
-        String whereList=" and idl.id1_number in (Select id_number from identifiers where lower(identifier) in ( ";
+        String whereList=" and idl.id1_number in (Select id_number from identifiers where identifier_lower in ( ";
         String whereTrgt=" and type.name in  ";
 
         String finalQuery=query+where+whereList+idString+" ) ) ";
         if (targetsList != null && !targetsList.contains("Location")) {
             finalQuery = finalQuery +whereTrgt+  targetString + " ";
         }
+        finalQuery = finalQuery + organismString+" ";
         finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
 
         log.debug("in getRecords");
@@ -745,7 +747,8 @@ public class IDecoderClient {
         String organismString = "";
 
         if (!targetsList.contains("Homologene ID")) {
-            organismString = "and id.organism = '" + organism + "' ";
+            //organismString = "and id.organism = '" + organism + "' ";
+            organismString = "and id1.organism = '" + organism + "' and id2.organism = '" + organism + "' ";
         }
         String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
                 "from id_lookup idl left outer join identifiers id1 on idl.id1_number=id1.id_number " +
@@ -760,6 +763,7 @@ public class IDecoderClient {
         if (targetsList != null && !targetsList.contains("Location")) {
             finalQuery = finalQuery +whereTrgt+  targetString + " ";
         }
+        finalQuery = finalQuery + organismString +" ";
         finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
 
         log.debug("in getRecords");

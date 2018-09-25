@@ -70,11 +70,11 @@ sub readAffyProbesetDataFromDB{
 
 	# PREPARE THE QUERY for probesets
         $query = "select s.Probeset_ID, s.psstart, s.psstop, s.strand, s.pslevel, s.pssequence, s.updatedlocation, h.herit, h.dabg, p.PROBE_ID, p.STRAND, p.PROBESEQUENCE
-        from $chromosomeTablename c, $probesetTablename s
+        from  $probesetTablename s
+        left outer join $chromosomeTablename c on c.chromosome_id = s.chromosome_id
         left outer join $heritTablename h on s.probeset_id = h.probeset_id and h.genome_id=s.genome_id
         left outer join $probeTablename p on p.probeset_id = s.probeset_id and p.genome_id=s.genome_id
-        where s.chromosome_id = c.chromosome_id
-        and c.name =  "."'".uc($geneChromNumber)."'"."
+        where c.name =  "."'".uc($geneChromNumber)."'"."
         and s.genome_id='".$genomeVer."'
         and 
         ((s.psstart >= $geneStart and s.psstart <=$geneStop) OR
@@ -223,11 +223,11 @@ sub readAffyProbesetDataFromDBwoHeritDABG{
 	# PREPARE THE QUERY for probesets
 		
 		$query = "select s.Probeset_ID, s.psstart, s.psstop, s.strand, s.pslevel, s.pssequence, s.updatedlocation, p.PROBE_ID, p.STRAND, p.PROBESEQUENCE
-		from $chromosomeTablename c, $probesetTablename s
+		from  $probesetTablename s
+		left outer join $chromosomeTablename c on c.chromosome_id = s.chromosome_id
 		left outer join $probeTablename p on p.probeset_id = s.probeset_id and p.genome_id=s.genome_id
-		where s.chromosome_id = c.chromosome_id
-		and c.name =  "."'".uc($geneChromNumber)."'"."
-                and s.genome_id='".$genomeVer."'
+		where c.name =  "."'".uc($geneChromNumber)."'"."
+        and s.genome_id='".$genomeVer."'
 		and 
 		((s.psstart >= $geneStart and s.psstart <=$geneStop) OR
 		(s.psstop >= $geneStart and s.psstop <= $geneStop))
@@ -440,9 +440,9 @@ sub readAffyProbesetDataFromDBwoProbes{
 	my $geneChromNumber = addChr($geneChrom,"subtract");
 		
 		$query = "select s.Probeset_ID, s.psstart, s.psstop, s.strand, s.pslevel, s.pssequence, s.updatedlocation
-		from $chromosomeTablename c, $probesetTablename s
-		where s.chromosome_id = c.chromosome_id
-		and c.name =  "."'".uc($geneChromNumber)."'"."
+		from  $probesetTablename s
+		left outer join $chromosomeTablename c on c.chromosome_id = s.chromosome_id
+		where c.name =  "."'".uc($geneChromNumber)."'"."
 		and s.genome_id='".$genomeVer."' 
                 and
 		((s.psstart >= $geneStart and s.psstart <=$geneStop) OR

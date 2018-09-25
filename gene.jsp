@@ -1169,10 +1169,10 @@ Hint: Try other synonyms if the first ID that you enter is not found.
                 <h2>Quick Navigation Demonstration</h2>
                 <BR/>
                 <video width="350" height="250" controls="controls"
-                       poster="<%=contextRoot%>web/demo/BrowserNavDemo_350.png" preload="none">
-                    <source src="<%=contextRoot%>web/demo/BrowserNavDemo.mp4" type="video/mp4">
-                    <source src="<%=contextRoot%>web/demo/BrowserNavDemo.webm" type="video/webm">
-                    <object data="<%=contextRoot%>web/demo/BrowserNavDemo.mp4" width="350" height="250">
+                       poster="downloads/Demos/BrowserNavDemo_350.png" preload="none">
+                    <source src="downloads/Demos/BrowserNavDemo.mp4" type="video/mp4">
+                    <source src="downloads/Demos/BrowserNavDemo.webm" type="video/webm">
+                    <object data="downloads/Demos/BrowserNavDemo.mp4" width="350" height="250">
                     </object>
                     Your browser is not likely to work with the Genome Browser if you are seeing this message. Please
                     see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
@@ -1181,10 +1181,10 @@ Hint: Try other synonyms if the first ID that you enter is not found.
             <TD style="text-align:center;">
                 <h2>Custom View/Custom Track Demonstration</h2><BR/>
                 <video width="350" height="250" controls="controls"
-                       poster="<%=contextRoot%>web/demo/customTrackDemo_350.png" preload="none">
-                    <source src="<%=contextRoot%>web/demo/customTrackDemo.mp4" type="video/mp4">
-                    <source src="<%=contextRoot%>web/demo/customTrackDemo.webm" type="video/webm">
-                    <object data="<%=contextRoot%>web/demo/customTrackDemo.mp4" width="350" height="250">
+                       poster="downloads/Demos/customTrackDemo_350.png" preload="none">
+                    <source src="downloads/Demos/customTrackDemo.mp4" type="video/mp4">
+                    <source src="downloads/Demos/customTrackDemo.webm" type="video/webm">
+                    <object data="downloads/Demos/customTrackDemo.mp4" width="350" height="250">
                     </object>
                     Your browser is not likely to work with the Genome Browser if you are seeing this message. Please
                     see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
@@ -1192,11 +1192,11 @@ Hint: Try other synonyms if the first ID that you enter is not found.
             </TD>
             <TD style="text-align:center;">
                 <h2>PhenoGen Overview</h2><BR/>
-                <video width="350" height="250" controls="controls" poster="<%=contextRoot%>web/demo/slides2_350.png"
+                <video width="350" height="250" controls="controls" poster="downloads/Demos/slides2_350.png"
                        preload="none">
-                    <source src="<%=contextRoot%>web/demo/workshop.mp4" type="video/mp4">
-                    <source src="<%=contextRoot%>web/demo/workshop.webm" type="video/webm">
-                    <object data="<%=contextRoot%>web/demo/workshop.mp4" width="350" height="250">
+                    <source src="downloads/Demos/workshop.mp4" type="video/mp4">
+                    <source src="downloads/Demos/workshop.webm" type="video/webm">
+                    <object data="downloads/Demos/workshop.mp4" width="350" height="250">
                     </object>
                     Your browser is not likely to work with the Genome Browser if you are seeing this message. Please
                     see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
