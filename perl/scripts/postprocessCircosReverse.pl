@@ -193,16 +193,11 @@ sub writeTopLines{
 	print $FILEHANDLE '<?xml version="1.0" standalone="no"?>'."\n";
 	print $FILEHANDLE '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'."\n";
 	print $FILEHANDLE '<svg width="3000px" height="3000px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" onload="init(evt)">'."\n";
-	if($hostname eq 'compbio.ucdenver.edu'){
-		print $FILEHANDLE '<script xlink:href="/PhenoGenTEST/javascript/SVGPanCircos.js"/>'."\n";
-		print $FILEHANDLE '<script type="text/ecmascript" xlink:href="/PhenoGenTEST/javascript/helper_functions.js" />'."\n";
-        print $FILEHANDLE '<script type="text/ecmascript" xlink:href="/PhenoGenTEST/javascript/textFlow.js" />'."\n";
-	}
-	else{
-		print $FILEHANDLE '<script xlink:href="/PhenoGen/javascript/SVGPanCircos.js"/>'."\n";	
-		print $FILEHANDLE '<script type="text/ecmascript" xlink:href="/PhenoGen/javascript/helper_functions.js" />'."\n";
-        print $FILEHANDLE '<script type="text/ecmascript" xlink:href="/PhenoGen/javascript/textFlow.js" />'."\n";
-	}
+
+	print $FILEHANDLE '<script xlink:href="/javascript/SVGPanCircos.js"/>'."\n";
+	print $FILEHANDLE '<script type="text/ecmascript" xlink:href="/javascript/helper_functions.js" />'."\n";
+    print $FILEHANDLE '<script type="text/ecmascript" xlink:href="/javascript/textFlow.js" />'."\n";
+
  	print $FILEHANDLE '<style type="text/css"> '."\n";
 	print $FILEHANDLE '.Heart'."\n";
 	print $FILEHANDLE '{'."\n";

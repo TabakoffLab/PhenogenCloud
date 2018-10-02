@@ -15,19 +15,10 @@ sub prepCircosReverse
 	my $genericConfLocation2;
 	my $karyotypeLocation;
 
-	if($hostname eq 'phenogen'){
-		$genericConfLocation = '/usr/local/circos-0.69-4/etc/';
-		$genericConfLocation2 = '/usr/local/tomcat7/webapps/PhenoGen/tmpData/geneData/';
-		$karyotypeLocation = '/usr/local/circos-0.69-4/data/karyotype/';
-	}
-	elsif($hostname eq 'stan'){
-		$genericConfLocation = '/usr/local/circos-0.69-4/etc/';
-		$genericConfLocation2 = '/Library/Tomcat/webapps/PhenoGen/tmpData/geneData/';
-		$karyotypeLocation = '/usr/local/circos-0.69-4/data/karyotype/';
-	}
-	else{
-		die("Unrecognized Hostname:",$hostname,"\n");
-	}
+	$genericConfLocation = '/usr/share/circos/etc/';
+	$genericConfLocation2 = '/usr/share/tomcat/webapps/PhenoGen/web/';
+	$karyotypeLocation = '/usr/share/circos/data/karyotype/';
+
 
 	createCircosConfFile($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$chromosomeListRef);
 	createCircosIdeogramConfFiles($confDirectory,$organism,$chromosomeListRef);

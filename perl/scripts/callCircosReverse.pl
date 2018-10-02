@@ -107,20 +107,10 @@ sub callCircosReverse{
 	my $perlBinary;
 	my $inkscapeBinary;
 
-	if($hostname eq 'phenogen'){
-		$circosBinary = '/usr/local/circos-0.68/bin/circos';
-		$perlBinary = '/usr/bin/perl';
-		$inkscapeBinary = '/usr/bin/inkscape';
-	}
-	elsif($hostname eq 'stan.ucdenver.pvt'){
-		$circosBinary = '/usr/local/circos-0.69-4/bin/circos';
-		$perlBinary = '/usr/bin/perl';
-		$inkscapeBinary = '/Applications/Inkscape.app/Contents/Resources/bin/inkscape';
-	}
-	else{
-		die("Unrecognized Hostname:",$hostname,"\n");
-	}
-	
+	$circosBinary = '/usr/share/circos/bin/circos';
+	$perlBinary = '/usr/bin/perl';
+	$inkscapeBinary = '/usr/bin/inkscape';
+
     my @systemArgs = ($perlBinary,$circosBinary, "-conf", $confDirectory."circos.conf", "-noparanoid");
 
     print " System call with these arguments: @systemArgs \n";

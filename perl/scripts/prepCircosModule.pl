@@ -36,20 +36,9 @@ sub prepCircosMod
 		
 	}
 	
-	my $genericConfLocation2;
-	if($hostname eq 'phenogen' and index($dsn,"test")>0){
-		$genericConfLocation2 = '/usr/local/tomcat7/webapps/PhenoGenTEST/tmpData/geneData/';
-	}elsif($hostname eq 'phenogen' and index($dsn,"test")==-1){
-                $genericConfLocation2 = '/usr/local/tomcat7/webapps/PhenoGen/tmpData/geneData/';
-        }
-	elsif($hostname eq 'stan'){
-		$genericConfLocation2 = '/Library/Tomcat/webapps/PhenoGen/tmpData/geneData/';
-	}
-	else{
-		die("Unrecognized Hostname:",$hostname,"\n");
-	}
-    my $genericConfLocation = '/usr/local/circos-0.69-4/etc/';
-	my $karyotypeLocation = '/usr/local/circos-0.69-4/data/karyotype/';
+	my $genericConfLocation2 = '/usr/share/tomcat/webapps/PhenoGen/web/';
+    my $genericConfLocation = '/usr/share/circos/etc/';
+	my $karyotypeLocation = '/usr/share/circos/data/karyotype/';
 	createCircosConfFile($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$chromosomeListRef,$oneToCreateLinks,$oneToCreateLinks);
 	createCircosIdeogramConfFiles($confDirectory,$organism,$chromosomeListRef);
 	createCircosModGenesTextConfFile($dataDirectory,$confDirectory);

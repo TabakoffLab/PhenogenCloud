@@ -88,19 +88,11 @@ sub callCircos{
 	my $inkscapeBinary;
 	my $inkscapeDirectory;
 
-    if($hostname eq 'phenogen'){
-		$circosBinary = '/usr/local/circos-0.68/bin/circos';
-		$perlBinary = '/usr/bin/perl';
-		$inkscapeBinary = '/usr/bin/inkscape';
-	}
-	elsif($hostname eq 'stan'){
-		$circosBinary = '/usr/local/circos-0.69-4/bin/circos';
-		$perlBinary = '/usr/bin/perl';
-		$inkscapeBinary = '/Applications/Inkscape.app/Contents/Resources/bin/inkscape';
-	}
-	else{
-		die("Unrecognized Hostname:",$hostname,"\n");
-	}
+
+	$circosBinary = '/usr/share/circos/bin/circos';
+	$perlBinary = '/usr/bin/perl';
+	$inkscapeBinary = '/usr/bin/inkscape';
+
 
 
 	
