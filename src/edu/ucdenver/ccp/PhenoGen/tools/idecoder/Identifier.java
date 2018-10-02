@@ -285,14 +285,14 @@ public class Identifier implements Comparable {
 	*/
         public Identifier getIdentifierFromSet(String identifier, Set identifierSet) {
             if(identifierSet!=null){
-		if (identifierSet.contains(new Identifier(identifier))) {
-			for (Iterator itr = identifierSet.iterator(); itr.hasNext();) { 
-				Identifier thisIdentifier = (Identifier) itr.next();
-				if (thisIdentifier.getIdentifier().equals(identifier)) {
-					return thisIdentifier;
+				if (identifierSet.contains(new Identifier(identifier))) {
+					for (Iterator itr = identifierSet.iterator(); itr.hasNext();) {
+						Identifier thisIdentifier = (Identifier) itr.next();
+						if (thisIdentifier.getIdentifier().equals(identifier)) {
+							return thisIdentifier;
+						}
+					}
 				}
-			}
-		}
             }
             return null;
         }
@@ -305,14 +305,14 @@ public class Identifier implements Comparable {
 	*/
         public Identifier getIdentifierFromSetIgnoreCase(String identifier, Set identifierSet) {
             if(identifierSet!=null){
-		//if (identifierSet.contains(new Identifier(identifier))) {
-			for (Iterator itr = identifierSet.iterator(); itr.hasNext();) { 
-				Identifier thisIdentifier = (Identifier) itr.next();
-				if (thisIdentifier.getIdentifier().toLowerCase().equals(identifier.toLowerCase())) {
-					return thisIdentifier;
+				if (identifierSet.contains(new Identifier(identifier.toLowerCase()))) {
+					for (Iterator itr = identifierSet.iterator(); itr.hasNext();) {
+						Identifier thisIdentifier = (Identifier) itr.next();
+						if (thisIdentifier.getIdentifier().toLowerCase().equals(identifier.toLowerCase())) {
+							return thisIdentifier;
+						}
+					}
 				}
-			}
-		//}
             }
             return null;
         }
