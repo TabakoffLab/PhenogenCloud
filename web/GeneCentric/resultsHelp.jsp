@@ -187,7 +187,7 @@ The plot can be hidden using the +/- button.  The size of the plot can also be c
 <BR /><BR />
 When your mouse is inside the border below, you can zoom in/out on the plot.  When your mouse is outside the border you can scroll normally.  The controls inside the image can be used to zoom in and out and reset the image.  You can also click-and-drag to reposition the image.
 <BR /><BR />
-You can download a PDF of the image by clicking on the download icon(<img src="web/images/icons/download_g.png">).
+You can download a PDF of the image by clicking on the download icon(<img src="/web/images/icons/download_g.png">).
 </div></div>
 
 

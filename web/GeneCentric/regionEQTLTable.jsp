@@ -380,7 +380,7 @@ log.debug("loc:"+chromosome+":"+min+"-"+max+"::"+folderName);
             <div style="display:inline-block;text-align:center; width:100%;">
                 <!--<span id="circosMinMax" style="cursor:pointer;"><img src="web/images/icons/circos_min.jpg"></span>-->
                 <a href="<%=svgPdfFile%>" target="_blank">
-                <img src="web/images/icons/download_g.png" title:"Download Circos Image">
+                <img src="/web/images/icons/download_g.png" title:"Download Circos Image">
                 </a>
                 Inside of border below, the mouse wheel zooms.  Outside of the border, the mouse wheel scrolls. 
                 <span id="filterBtn1" class="filter button" >Filter eQTLs</span>
