@@ -53,7 +53,7 @@ public class WGCNATools{
     public ArrayList<String> getWGCNAModulesForGene(GeneDataTools gdt,String id,String panel,String tissue,String org,String genomeVer,String source){
         ArrayList<String> ret=new ArrayList<String>();
         int dsid=this.getWGCNADataset(panel,tissue,org,genomeVer,source);
-        String query="Select unique module from wgcna_module_info where wdsid="+dsid+" and gene_id='"+id+"'";
+        String query="Select distinct module from wgcna_module_info where wdsid="+dsid+" and gene_id='"+id+"'";
         log.debug("QUERY:"+query);
         Connection conn = null;
         try {
@@ -118,7 +118,7 @@ public class WGCNATools{
         //String query="Select unique module from wgcna_module_info where wdsid="+dsid+" and gene_id='"+id+"'";
         String query ="";
         if(source.equals("array")){
-            query="select unique module,gene_id from wgcna_module_info where probeset_id in " +
+            query="select distinct module,gene_id from wgcna_module_info where probeset_id in " +
                         "(select aep.probeset_id from affy_exon_probeset aep, chromosomes c " +
                         " where aep.array_type_id=" + arrayID+
                         " and aep.genome_id='"+genomeVer+"' "+
@@ -130,8 +130,8 @@ public class WGCNATools{
                         ")" +
                         "  and wdsid=" +dsid+" order by module";
         }else if(source.equals("seq")){
-            query="select unique module,gene_id from wgcna_module_info where transcript_clust_id in " +
-                        "(select unique rt.merge_gene_id from rna_transcripts rt, chromosomes c " +
+            query="select distinct module,gene_id from wgcna_module_info where transcript_clust_id in " +
+                        "(select distinct rt.merge_gene_id from rna_transcripts rt, chromosomes c " +
                         " where rt.rna_dataset_id=" + rnaDSID +" "+
                         " and wdsid = " + dsid  + " "+
                         " and c.name = '"+chr+"'"+
@@ -220,7 +220,7 @@ public class WGCNATools{
             Iterator ida=iDecoderAnswer.iterator();
             while(ida.hasNext()){
                 Identifier ident=(Identifier)ida.next();
-                //log.debug("FROM WGCNA GENE LIST:"+ident.getIdentifier());
+                log.debug("FROM WGCNA GENE LIST:"+ident.getIdentifier());
                 Set ens = myIDecoder.getIdentifiersForTargetForOneID(ident.getTargetHashMap(), new String[] {"Ensembl ID"});
                 Iterator ensItr=ens.iterator();
                 while(ensItr.hasNext()){
@@ -241,14 +241,12 @@ public class WGCNATools{
                 arrayID=22;
             }
             //String query="Select unique module from wgcna_module_info where wdsid="+dsid+" and gene_id='"+id+"'";
-            String query ="select unique module,gene_id from wgcna_module_info where gene_id in " +
+            String query ="select distinct module,gene_id from wgcna_module_info where gene_id in " +
                             "( "+ensIDs.toString()+")" +
                             "  and wdsid=" +dsid+" order by module";
 
             log.debug("QUERY:"+query);
-            Connection conn = null;
-            try {
-                conn = pool.getConnection();
+            try(Connection conn=pool.getConnection()) {
                 PreparedStatement ps = conn.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 while(rs.next()){
@@ -263,8 +261,6 @@ public class WGCNATools{
                    }
                 }
                 ps.close();
-                conn.close();
-                conn=null;     
             }catch(SQLException e){
                  e.printStackTrace(System.err);
                 log.error("Error getting WGCNA dataset id.",e);
@@ -281,14 +277,6 @@ public class WGCNATools{
                 } catch (Exception mailException) {
                         log.error("error sending message", mailException);
                         throw new RuntimeException();
-                }
-            }finally{
-                try{
-                        if(conn!=null&&!conn.isClosed()){
-                            conn.close();
-                            conn=null;
-                        }
-                }catch(SQLException er){
                 }
             }
             Set keys=geneCount.keySet();
@@ -307,11 +295,10 @@ public class WGCNATools{
     public ArrayList<WGCNAMetaModule> getWGCNAMetaModulesForModule(String modName,String panel,String tissue, String org, String genomeVer, String source){
         ArrayList<WGCNAMetaModule> ret=new ArrayList<WGCNAMetaModule>();
         int dsid=this.getWGCNADataset(panel,tissue,org,genomeVer,source);
-        String mmidQuery="select unique mmpid from WGCNA_META_MODULES where wdsid=? and module_name=?";
+        String mmidQuery="select distinct mmpid from WGCNA_META_MODULES where wdsid=? and module_name=?";
         WGCNAMetaModule getW=new WGCNAMetaModule();
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+
+        try(Connection conn=pool.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(mmidQuery);
             ps.setInt(1, dsid);
             ps.setString(2,modName);
@@ -322,8 +309,7 @@ public class WGCNATools{
                 ret.add(getW.getMetaModule(pool,mmpid));
             }
             ps.close();
-            conn.close();
-            conn=null;
+
         }catch(SQLException e){
              e.printStackTrace(System.err);
             log.error("Error getting WGCNA dataset id.",e);
@@ -340,14 +326,6 @@ public class WGCNATools{
             } catch (Exception mailException) {
                     log.error("error sending message", mailException);
                     throw new RuntimeException();
-            }
-        }finally{
-            try{
-                    if(conn!=null&&!conn.isClosed()){
-                        conn.close();
-                        conn=null;
-                    }
-            }catch(SQLException er){
             }
         }
         return ret;
