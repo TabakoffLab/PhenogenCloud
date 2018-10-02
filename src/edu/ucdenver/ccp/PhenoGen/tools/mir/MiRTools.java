@@ -74,9 +74,11 @@ public class MiRTools {
     private ArrayList<MiRWorker> threads=new ArrayList<MiRWorker>();
     private HashMap<String,String> singleGeneCache=new HashMap<String,String>();
     private HashMap<String,String> mirGeneCache=new HashMap<String,String>();
+    private Logger log = null;
     
     
     public MiRTools(){
+        log = Logger.getRootLogger();
     }
     
     public void setup(DataSource pool,HttpSession session){
@@ -117,10 +119,6 @@ public class MiRTools {
         if(this.user.getUser_name().equals("anon")){
             mirFilePath=this.user.getUserGeneListsDir() +"/" + anonU.getUUID()+"/"+gl.getGene_list_id()+"/multiMir/"+datePart+"/";
         }
-        
-        
-        
-        
         MiRWorker mw=new MiRWorker(gl,this.pool,this,this.session,mirFilePath,org,table,predType,cutoff,glaID);
         if(threads.size()>0){
                 MiRWorker prev=threads.get(threads.size()-1);

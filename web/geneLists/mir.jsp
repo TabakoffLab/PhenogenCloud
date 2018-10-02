@@ -19,7 +19,7 @@
 <%
 	extrasList.add("jquery.dataTables.1.10.9.min.js");
 
-        tall="53em";
+	tall="53em";
         
 	QTL.EQTL myEQTL = myQTL.new EQTL();
 	log.info("in mir.jsp. user = " + user);
@@ -167,7 +167,7 @@
 	<%@ include file="/web/geneLists/include/setupJS.jsp" %>
 	<script type="text/javascript">
 		var mirAutoRefreshHandle=0;
-		var analysisPath="<%=contextRoot%>/web/geneLists/include/getMultiMiRAnalyses.jsp";
+		var analysisPath="/web/geneLists/include/getMultiMiRAnalyses.jsp";
 		$(document).ready(function() {
 			//$( 'div#mirAccord' ).accordion({ heightStyle: "fill"  });
 			

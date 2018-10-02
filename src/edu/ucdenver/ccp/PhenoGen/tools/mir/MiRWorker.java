@@ -85,6 +85,7 @@ public class MiRWorker extends Thread {
     String [] predicted=new String[8];
     String[] total=new String[3];
     String[] all=new String[14];
+    private Logger log = null;
 	/*String [][] disease=new String[3][3];
 	disease[0][0]="mir2disease";
 	disease[0][1]="mir2disease";
@@ -99,6 +100,7 @@ public class MiRWorker extends Thread {
 
     
     public MiRWorker(GeneList gl,DataSource pool,MiRTools parent,HttpSession session,String path,String org,String table,String predType,int cutoff,int glaID){
+        log = Logger.getRootLogger();
         this.geneList=gl;
         this.pool=pool;
         this.parent=parent;
@@ -148,6 +150,7 @@ public class MiRWorker extends Thread {
     
     public void run() throws RuntimeException {
         done=false;
+        log.debug("mirWorker:running...");
         User userLoggedIn= (User) session.getAttribute("userLoggedIn");
         try{
             if(userLoggedIn.getUser_name().equals("anon")){
@@ -157,9 +160,9 @@ public class MiRWorker extends Thread {
             }
             gla.updatePath(pool,shortPath);
         }catch(SQLException e){
-            
+            log.error("Error opening GeneList for MirWorker",e);
         }
-        
+        log.debug("Setup Gene List\n");
         try{
             //
             // If this thread is interrupted, throw an Exception
@@ -177,16 +180,20 @@ public class MiRWorker extends Thread {
             //
             ThreadReturn.ifInterruptedStop();
         }catch(InterruptedException e){
-            
+            log.error("MirWorker Thread Interrupt Exception:",e);
         }
+        log.debug("Past Setup\n\n");
         //convert Genelist ID to Gene Symbol/Ensembl IDs fill 
         GeneList tmpGL=new GeneList();
         String[] myGeneArray=null;
         HashMap<String,String> identifiers=new HashMap<String,String>();
         StringBuilder sb=new StringBuilder();
         try{
-        myGeneArray = geneList.getGenesAsArray("Original",pool);
-        }catch(SQLException e){}
+            myGeneArray = geneList.getGenesAsArray("Original",pool);
+        }catch(SQLException e){
+            log.error("MirWorker: error getting genes\n",e);
+        }
+        log.debug("geneArray:"+myGeneArray.length);
         Identifier myIdentifier=new Identifier();
         String[] targets=new String[] {"Gene Symbol","Ensembl ID"};
         IDecoderClient myIDecoderClient=new IDecoderClient();
@@ -206,15 +213,17 @@ public class MiRWorker extends Thread {
         functionArgs[5] = "cutoffType = '" + predType +"'";
         functionArgs[6] = "cutoff = " + cutoff;
         File dirs=new File(fullPath);
-        if(!dirs.exists()&& dirs.mkdirs()){
+        if(!dirs.exists() && dirs.mkdirs()){
         }
         try{
+            myIDecoderClient.setNum_iterations(2);
             Set iDecoderSet = myIDecoderClient.getIdentifiersByInputIDAndTarget(geneList.getGene_list_id(), 
 							targets, pool);
             for (int i=0; i<myGeneArray.length; i++) {
-                Identifier thisIdentifier = myIdentifier.getIdentifierFromSet(myGeneArray[i], iDecoderSet); 			
+                Identifier thisIdentifier = myIdentifier.getIdentifierFromSetIgnoreCase(myGeneArray[i], iDecoderSet);
+
                 if (thisIdentifier != null) {
-                    myIDecoderClient.setNum_iterations(2);
+
                     Set geneSymbols = myIDecoderClient.getIdentifiersForTargetForOneID(thisIdentifier.getTargetHashMap(), targets);
                     String geneSym="";
                     String ens="";
@@ -259,10 +268,13 @@ public class MiRWorker extends Thread {
                         //update status
                     } else {
                     } 
-                }                       
+                } else{
+                    log.debug("thisIdentifier is null:"+myGeneArray[i]);
+                }
             }
             this.gla.updateStatus(pool,"Complete");
         }catch(SQLException er){
+            log.error("MirWorker SQLException:",er);
             try{
                 this.gla.updateStatus(pool,"Error");
             }catch(SQLException e){
