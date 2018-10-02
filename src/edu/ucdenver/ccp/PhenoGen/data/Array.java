@@ -2059,9 +2059,10 @@ public class Array {
             //
             Object[] dataRow;
 
-            while ((dataRow = myResults2.getNextRowWithClob()) != null) {
+            while ((dataRow = myResults2.getNextRow()) != null) {
                 //log.debug("protocol results were not null");
-                myArrays[i].setExperimentDescription(myResults2.getClobAsString(dataRow[0]));
+                //***************myArrays[i].setExperimentDescription(myResults2.getClobAsString(dataRow[0]));
+                myArrays[i].setExperimentDescription((String)dataRow[0]);
                 myArrays[i].setTextract_id((String) dataRow[1]);
                 myArrays[i].setTlabel_id((String) dataRow[2]);
                 myArrays[i].setCompound((String) dataRow[3]);
@@ -2104,17 +2105,23 @@ public class Array {
                 }
 
                 myArrays[i].setGrowthConditionsProtocol((String) dataRow[17]);
-                myArrays[i].setGrowthConditionsProtocolDescription(myResults2.getClobAsString(dataRow[18]));
+                //myArrays[i].setGrowthConditionsProtocolDescription(myResults2.getClobAsString(dataRow[18]));
+                myArrays[i].setGrowthConditionsProtocolDescription((String)dataRow[18]);
                 myArrays[i].setSampleTreatmentProtocol((String) dataRow[19]);
-                myArrays[i].setSampleTreatmentProtocolDescription(myResults2.getClobAsString(dataRow[20]));
+                //myArrays[i].setSampleTreatmentProtocolDescription(myResults2.getClobAsString(dataRow[20]));
+                myArrays[i].setSampleTreatmentProtocolDescription((String)dataRow[20]);
                 myArrays[i].setExtractProtocol((String) dataRow[21]);
-                myArrays[i].setExtractProtocolDescription(myResults2.getClobAsString(dataRow[22]));
+                //myArrays[i].setExtractProtocolDescription(myResults2.getClobAsString(dataRow[22]));
+                myArrays[i].setExtractProtocolDescription((String)dataRow[22]);
                 myArrays[i].setLabelExtractProtocol((String) dataRow[23]);
-                myArrays[i].setLabelExtractProtocolDescription(myResults2.getClobAsString(dataRow[24]));
+                //myArrays[i].setLabelExtractProtocolDescription(myResults2.getClobAsString(dataRow[24]));
+                myArrays[i].setLabelExtractProtocolDescription((String)dataRow[24]);
                 myArrays[i].setHybridizationProtocol((String) dataRow[25]);
-                myArrays[i].setHybridizationProtocolDescription(myResults2.getClobAsString(dataRow[26]));
+                //myArrays[i].setHybridizationProtocolDescription(myResults2.getClobAsString(dataRow[26]));
+                myArrays[i].setHybridizationProtocolDescription((String)dataRow[26]);
                 myArrays[i].setScanningProtocol((String) dataRow[27]);
-                myArrays[i].setScanningProtocolDescription(myResults2.getClobAsString(dataRow[28]));
+                //myArrays[i].setScanningProtocolDescription(myResults2.getClobAsString(dataRow[28]));
+                myArrays[i].setScanningProtocolDescription((String)dataRow[28]);
                 if (dataRow[29] != null) {
                     myArrays[i].setTsample_growth_protocolid(Integer.parseInt((String) dataRow[29]));
                 }
@@ -2441,12 +2448,13 @@ public class Array {
      */
     public Array[] setupAllArrayValues(Results myResults, DataSource pool) throws SQLException {
         Object[] dataRow;
+        log.debug("myResults:"+myResults.getNumRows());
         Array[] myArrays = new Array[myResults.getNumRows()];
 
         int i = 0;
-        //log.debug("in setupAllArrayValues.");
+        log.debug("in setupAllArrayValues.");
 
-        while ((dataRow = myResults.getNextRowWithClob()) != null) {
+        while ((dataRow = myResults.getNextRow()) != null) {
             String hybridID = (String) dataRow[4];
             int submissionID = Integer.parseInt((String) dataRow[5]);
             String submitter = (String) dataRow[26];
