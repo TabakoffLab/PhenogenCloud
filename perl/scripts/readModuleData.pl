@@ -25,7 +25,7 @@ sub readLocusSpecificPvaluesModule{
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# $hostname is used to determine the connection to the database.
-	my $hostname = hostname;
+	#my $hostname = hostname;
 
 	
 	if ($tissue eq "Brain") {
