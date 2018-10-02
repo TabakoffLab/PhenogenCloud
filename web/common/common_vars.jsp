@@ -13,8 +13,6 @@
 	//use to enable and disable loggin in.  All pages requiring a log in even anonymous login are disabled when false.
 	boolean loginEnabled=true;
 
-
-
 	String formName = "";
 	String actionForm = "";
 

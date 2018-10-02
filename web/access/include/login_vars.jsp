@@ -73,6 +73,8 @@
                      value="<%=application.getInitParameter(\"ucscDbPropertiesFile\") %>"/>
     <jsp:setProperty name="mySessionHandler" property="mongoDbPropertiesFile"
                      value="<%=application.getInitParameter(\"mongoDbPropertiesFile\") %>"/>
+    <jsp:setProperty name="mySessionHandler" property="mailPropertiesFile"
+                     value="<%=application.getInitParameter(\"mailPropertiesFile\") %>"/>
     <jsp:setProperty name="mySessionHandler" property="host"
                      value="<%=host%>"/>
     <jsp:setProperty name="mySessionHandler" property="perlEnvVar"
@@ -126,6 +128,7 @@
     String ucscDbPropertiesFile = mySessionHandler.getUCSCDbPropertiesFile();
     String mongoDbPropertiesFile = mySessionHandler.getMongoDbPropertiesFile();
     String captchaPropertiesFile = mySessionHandler.getCaptchaPropertiesFile();
+    String mailPropertiesFile = mySessionHandler.getMailPropertiesFile();
     String userFilesRoot = mySessionHandler.getUserFilesRoot() + "/";
     String mainURL = mySessionHandler.getMainURL();
     String downloadURL = mySessionHandler.getDownloadURL();

@@ -174,7 +174,7 @@
 						if(newUserID==-1){
 							log.debug("UserID=-1: Possible fake registration?");
 						}else{
-							myUser.createTSUBMTR(newUser, pool);
+							//myUser.createTSUBMTR(newUser, pool);
 				
 							User requestor = myUser.getUser(newUserID, pool);
 							//session.setAttribute("userID", "-1");
@@ -188,7 +188,7 @@
 				
 							String userDir = requestor.getUserMainDir(userFilesRoot); 
 				
-							if (!myFileHandler.createDir(userDir) ||
+							/*if (!myFileHandler.createDir(userDir) ||
 								!myFileHandler.createDir(userDir+"GeneLists") ||
 								!myFileHandler.createDir(userDir+"Arrays") ||
 								!myFileHandler.createDir(userDir+"Datasets") ||
@@ -200,14 +200,13 @@
 				
 								log.debug("error creating user directories in registration"); 
 									
-							} else {
-								log.debug("no problems creating user directories in registration"); 
-				
-								myUser.updateRegistrationApproval(requestor, true, mainURL, pool);
+							} else {*/
+							log.debug("no problems creating user directories in registration");
+							myUser.updateRegistrationApproval(requestor, true, mainURL, pool);
 								//Success - "Registration approval complete"
 								//	session.setAttribute("successMsg", "REG-005");
 								//	response.sendRedirect(commonDir + "successMsg.jsp");
-							}
+							/}
 							//int piUserID = Integer.parseInt((String) request.getParameter("pi_user_id"));
 							//User approver = new User();
 							//if (piUserID != -99) {					// if pi selected: send email to pi

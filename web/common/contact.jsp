@@ -23,9 +23,10 @@
 	String secret="";
 	pub=myProperties.getProperty("PUBLIC");
 	secret=myProperties.getProperty("SECRET");
-	
+
+
 	String msg = "";
-        String msgColor="#FF0000";
+	String msgColor="#FF0000";
 	String emailAddress="";
 	String subject="";
 	String feedback="";
@@ -41,25 +42,30 @@
             }
 
             if (re.checkResponse(secret,gResponse,remoteAddr)) {
-
-			myEmail.setSubject("PhenoGen "+subject);
-			myEmail.setContent("Feedback from "+ emailAddress + " :" + "\n\n" + feedback);
-                        try {
-                            myEmail.sendEmailToAdministrator(adminEmail);
-                            //mySessionHandler.createSessionActivity(session.getId(), "Sent an email from contact page", dbConn);
-                            msg="The following message has been successfully sent.";
-                            msgColor="#00CC00";
-                        } catch (Exception e) {
-                                            log.error("exception while trying to send feedback to administrator", e);
-                            msg="The message has NOT been sent.  Please try again.  If the form is not working you can email Spencer.Mahaffey@ucdenver.edu directly.";
-                        }
-			/*if(dbConn!=null){
-				String msgNum = "ADM-003";
-				session.setAttribute("successMsg", msgNum);
-				//response.sendRedirect(commonDir + "startPage.jsp");
-			}else{
-				//response.sendRedirect(commonDir + "startPage.jsp");
-			}*/
+                Properties myProp2 = new Properties();
+                File myPropFile = new File(mailPropertiesFile);
+                myProp2.load(new FileInputStream(myPropFile));
+                myEmail.setFrom("Spencer.Mahaffey@ucdenver.edu");
+                myEmail.setAuth(myProp2.getProperty("USER"),myProp2.getProperty("PASS"));
+                myEmail.setSMTPServer(myProp2.getProperty("HOST"));
+                myEmail.setSubject("PhenoGen "+subject);
+                myEmail.setContent("Feedback from "+ emailAddress + " :" + "\n\n" + feedback);
+                try {
+                                myEmail.sendEmailToAdministrator(myProp2.getProperty("ADMIN"));
+                                //mySessionHandler.createSessionActivity(session.getId(), "Sent an email from contact page", dbConn);
+                                msg="The following message has been successfully sent.";
+                                msgColor="#00CC00";
+                } catch (Exception e) {
+                    log.error("exception while trying to send feedback to administrator", e);
+                    msg="The message has NOT been sent.  Please try again.  If the form is not working you can email Spencer.Mahaffey@ucdenver.edu directly.";
+                }
+                /*if(dbConn!=null){
+                    String msgNum = "ADM-003";
+                    session.setAttribute("successMsg", msgNum);
+                    //response.sendRedirect(commonDir + "startPage.jsp");
+                }else{
+                    //response.sendRedirect(commonDir + "startPage.jsp");
+                }*/
             }else{
 			msg="Please make sure that there is a check mark by the \"I'm not a robot\" field below and try again.";
             }
