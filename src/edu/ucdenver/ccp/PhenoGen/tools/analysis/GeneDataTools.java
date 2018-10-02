@@ -96,7 +96,7 @@ public class GeneDataTools {
 
     private String insertUsage="insert into TRANS_DETAIL_USAGE (INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?)";
     String updateSQL="update TRANS_DETAIL_USAGE set TIME_TO_RETURN=? , RESULT=? where TRANS_DETAIL_ID=?";
-    //private HashMap eQTLRegions=null;
+    private HashMap eQTLRegions=new HashMap();
     //HashMap<String,HashMap> cacheHM=new HashMap<String,HashMap>();
     //ArrayList<String> cacheList=new ArrayList<String>();
     int maxCacheList=5;
@@ -2593,15 +2593,15 @@ public class GeneDataTools {
         }
         threadList=(ArrayList<Thread>)session.getServletContext().getAttribute("threadList");
     }
-    
+
     public ArrayList<Gene> mergeOverlapping(ArrayList<Gene> initialList){
         ArrayList<Gene> mainGenes=new ArrayList<Gene>();
         ArrayList<Gene> rnaGenes=new ArrayList<Gene>();
         ArrayList<Gene> singleExon=new ArrayList<Gene>();
-        for(int i=0;i<initialList.size();i++){
-            if(initialList.get(i).getSource().equals("Ensembl")){
+        for(int i=0;i<initialList.size();i++) {
+            if (initialList.get(i).getSource().equals("Ensembl")) {
                 mainGenes.add(initialList.get(i));
-            }else{
+            } else {
                 rnaGenes.add(initialList.get(i));
             }
         }
@@ -2846,7 +2846,11 @@ public class GeneDataTools {
         if(run){*/
             log.debug("\ngenerating new-controlled from\n");
             String qtlQuery="select aep.transcript_cluster_id,c1.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c2.name,s.snp_start,s.snp_end "+
-                                "from affy_exon_probeset aep, location_specific_eqtl lse, snps s, chromosomes c1,chromosomes c2 "+
+                                "from affy_exon_probeset aep " +
+                                "left outer join location_specific_eqtl lse on lse.probe_id=CAST(aep.probeset_id as char) " +
+                    "left outer join snps s on lse.snp_id = s.snp_id " +
+                    "left outer join chromosomes c1 on c1.chromosome_id = aep.chromosome_id " +
+                    "left outer join chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
                                 "where c1.name='"+chr.toUpperCase()+"' "+
                                 "and ((aep.psstart >="+min+" and aep.psstart <="+max+") or (aep.psstop>="+min+" and aep.psstop <="+max+")or (aep.psstop<="+min+" and aep.psstop >="+max+")) "+
                                 "and aep.psannotation = 'transcript' ";
@@ -2857,13 +2861,7 @@ public class GeneDataTools {
             }
             qtlQuery=qtlQuery+"and aep.array_type_id="+arrayTypeID+" "+
                                 "and aep.updatedlocation='Y' "+
-                                "and lse.probe_id=TO_CHAR(aep.probeset_id) "+
-                                "and s.snp_id=lse.snp_id "+
                                 "and lse.pvalue >= "+(-Math.log10(pvalue))+" "+
-                                "and aep.chromosome_id=c1.chromosome_id "+
-                                "and s.chromosome_id=c2.chromosome_id "+
-                                //"and TO_CHAR(aep.probeset_id)=eq.identifier (+) "+
-                                //"and (s.tissue=eq.tissue or eq.tissue is null) "+
                                 "order by aep.probeset_id,s.tissue,s.chromosome_id,s.snp_start";
             try(Connection conn=pool.getConnection()){
                 log.debug("SQL eQTL FROM QUERY\n"+qtlQuery);
@@ -3026,12 +3024,12 @@ public class GeneDataTools {
         if(run){*/
             HashMap tmpHM=new HashMap();
             String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end " +
-                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep " +
-                                "where s.snp_id=lse.snp_id " +
-                                "and s.genome_id='"+genomeVer+"'" +
-                                "and lse.probe_id=TO_CHAR(aep.probeset_id) " +
-                                "and c2.chromosome_id=aep.chromosome_id " +
-                                "and c.chromosome_id=s.chromosome_id " +
+                                "from location_specific_eqtl lse " +
+                                "left outer join snps s on s.snp_id=lse.snp_id " +
+                                "left outer join chromosomes c on c.chromosome_id=s.chromosome_id " +
+                                "left outer join affy_exon_probeset aep on cast(aep.probeset_id as char)=lse.probe_id " +
+                                "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
+                                "where s.genome_id='"+genomeVer+"'" +
                                 "and lse.pvalue>= "+(-Math.log10(pvalue))+" " +
                                 "and aep.updatedlocation='Y' " +
                                 "and aep.genome_id='"+genomeVer+"' ";
@@ -3091,12 +3089,12 @@ public class GeneDataTools {
 //                                "and aep.array_type_id="+arrayTypeID+") "+
 //                                "order by aep.transcript_cluster_id, s.tissue";
             String qtlQuery2="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end " +
-                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep " +
-                                "where s.snp_id=lse.snp_id " +
-                                "and s.genome_id='"+genomeVer+"'" +
-                                "and lse.probe_id=TO_CHAR(aep.probeset_id) " +
-                                "and c2.chromosome_id=aep.chromosome_id " +
-                                "and c.chromosome_id=s.chromosome_id " +
+                                "from location_specific_eqtl lse " +
+                                "left outer join affy_exon_probeset aep on cast(aep.probeset_id as char)=lse.probe_id " +
+                                "left outer join snps s on s.snp_id=lse.snp_id " +
+                                "left outer join chromosomes c on c.chromosome_id=s.chromosome_id " +
+                                "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
+                                "where  s.genome_id='"+genomeVer+"' " +
                                 "and lse.pvalue< "+(-Math.log10(pvalue))+" " +
                                 "and aep.updatedlocation='Y' " +
                                 "and aep.genome_id='"+genomeVer+"' ";
@@ -3770,7 +3768,7 @@ public class GeneDataTools {
         return smncRNA;
     }
     
-    /*public ArrayList<String> getEQTLRegions(){
+    public ArrayList<String> getEQTLRegions(){
         ArrayList<String> ret=new ArrayList<String>();
         Set tmp=this.eQTLRegions.keySet();
         Iterator itr=tmp.iterator();
@@ -3779,7 +3777,7 @@ public class GeneDataTools {
             ret.add(key);
         }
         return ret;
-    }*/
+    }
     
     public ArrayList<BQTL> getBQTLs(int min,int max,String chr,String organism,String genomeVer){
         if(chr.startsWith("chr")){

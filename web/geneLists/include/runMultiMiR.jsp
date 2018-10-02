@@ -96,8 +96,6 @@
 	
 	mySessionHandler.createGeneListActivity("Ran multiMiR on Gene List", pool);
 	
-	
-	
 	result=miRT.runMultiMiRGeneList(selectedGeneList,myOrganism,table,predType,cutoff,name,glaID);
 %>
 

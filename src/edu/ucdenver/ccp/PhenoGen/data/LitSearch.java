@@ -575,12 +575,12 @@ public class LitSearch {
         //
         String query =
                 "select lsr.gene_id, " +
-                        "ifnull(to_char(join(cursor(select ai.alternate_id " +
+                        "ifnull(cast(join(cursor(select ai.alternate_id " +
                         "from alternate_identifiers ai " +
                         "where ai.source_id = lsr.result_id " +
                         "and ai.gene_list_id = lsr.gene_list_id " +
                         "and ai.gene_id = lsr.gene_id " +
-                        "and ai.source = 'LitSearch' order by ai.alternate_id), ', ')), 'None') alternate_id, " +
+                        "and ai.source = 'LitSearch' order by ai.alternate_id), ', ') as char), 'None') alternate_id, " +
                         "cat.category, " +
                         "if(lsr.category=cat.category, count(distinct pmr.pubmed_id), 0) pubmed_count " +
                         "from categories cat, " +
@@ -596,12 +596,12 @@ public class LitSearch {
                         "lsr.result_id " +
                         "union " +
                         "(select lsr.gene_id, " +
-                        "ifnull(to_char(join(cursor(select ai.alternate_id " +
+                        "ifnull(cast(join(cursor(select ai.alternate_id " +
                         "from alternate_identifiers ai " +
                         "where ai.source_id = lsr.result_id " +
                         "and ai.gene_list_id = lsr.gene_list_id " +
                         "and ai.gene_id = lsr.gene_id " +
-                        "and ai.source = 'LitSearch' order by ai.alternate_id), ', ')), 'None') alternate_id, " +
+                        "and ai.source = 'LitSearch' order by ai.alternate_id), ', ')as char), 'None') alternate_id, " +
                         "cat.category, " +
                         "0 " +
                         "from categories cat, " +
@@ -610,12 +610,12 @@ public class LitSearch {
                         "and lsr.search_id = ? " +
                         "minus " +
                         "select lsr.gene_id, " +
-                        "ifnull(to_char(join(cursor(select ai.alternate_id " +
+                        "ifnull(cast(join(cursor(select ai.alternate_id " +
                         "from alternate_identifiers ai " +
                         "where ai.source_id = lsr.result_id " +
                         "and ai.gene_list_id = lsr.gene_list_id " +
                         "and ai.gene_id = lsr.gene_id " +
-                        "and ai.source = 'LitSearch' order by ai.alternate_id), ', ')), 'None') alternate_id, " +
+                        "and ai.source = 'LitSearch' order by ai.alternate_id), ', ') as char), 'None') alternate_id, " +
                         "cat.category, " +
                         "0 " +
                         "from categories cat, " +
