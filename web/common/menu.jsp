@@ -35,19 +35,18 @@
     </div>
     <div class="header_status">
         <div class="search" style="width:350px;float:right;position:relative;top:-14px;">
-                        <script>
-                        (function() {
-                          var cx = '002251072100941693273:nciuczz1ipg';
-                          var gcse = document.createElement('script');
-                          gcse.type = 'text/javascript';
-                          gcse.async = true;
-                          gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-                              '//cse.google.com/cse.js?cx=' + cx;
-                          var s = document.getElementsByTagName('script')[0];
-                          s.parentNode.insertBefore(gcse, s);
-                        })();
-                      </script>
-                      <gcse:search></gcse:search>
+            <script>
+                (function() {
+                    var cx = '002251072100941693273:v3xvo3chde4';
+                    var gcse = document.createElement('script');
+                    gcse.type = 'text/javascript';
+                    gcse.async = true;
+                    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+                    var s = document.getElementsByTagName('script')[0];
+                    s.parentNode.insertBefore(gcse, s);
+                })();
+            </script>
+            <gcse:search></gcse:search>
         </div>
     </div>
     	
