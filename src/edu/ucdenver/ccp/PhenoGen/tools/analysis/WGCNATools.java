@@ -130,10 +130,9 @@ public class WGCNATools{
                         ")" +
                         "  and wdsid=" +dsid+" order by module";
         }else if(source.equals("seq")){
-            query="select distinct module,gene_id from wgcna_module_info where transcript_clust_id in " +
+            query="select distinct module,gene_id from wgcna_module_info where wdsid = " + dsid  + " and transcript_clust_id in " +
                         "(select distinct rt.merge_gene_id from rna_transcripts rt, chromosomes c " +
                         " where rt.rna_dataset_id=" + rnaDSID +" "+
-                        " and wdsid = " + dsid  + " "+
                         " and c.name = '"+chr+"'"+
                         " and c.chromosome_id=rt.chromosome_id "+
                         " and ( ( rt.trstart <="+start+" and "+start+"<= rt.trstop )" +
