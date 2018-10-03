@@ -4,10 +4,10 @@
 		
 
     <div id="page_footer">
-        <p>&copy;2011-2017 Regents of the University of Colorado. All Rights Reserved.</p>
+        <p>&copy;2011-2018 Regents of the University of Colorado.</p>
         <div id="footer_link_container">
                 <div class="footer_nav">
-                    <a href="https://github.com/TabakoffLab/PhenoGen" target="CU Policy Window">Source Code (GitHub)</a> |
+                    <a href="https://github.com/TabakoffLab/PhenogenCloud" target="CU Policy Window">Source Code (GitHub)</a> |
                     <a href="http://www.ucdenver.edu/POLICY/Pages/LegalNotices.aspx" target="CU Policy Window">Legal Notices</a> |
                     <a href="http://www.ucdenver.edu/policy/Pages/PrivacyPolicy.aspx" target="CU Policy Window">Privacy Policy</a> |
                     <div class="fb-like" data-href="https://www.facebook.com/phenogen" data-width="50px" data-layout="button" data-action="like" data-size="small" data-show-faces="false" data-share="false"></div>
