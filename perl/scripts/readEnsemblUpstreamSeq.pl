@@ -140,7 +140,7 @@ sub extractUpstream
                         $seq="";
                         $seq=${$seq_adaptor->fetch_by_Slice_start_end_strand($ensTSlice)};
                         if(not($seq eq "")){
-                            my $name=$list[0]." | ".$transcript->stable_id();
+                            my $name=$transcript->stable_id()." | ".$list[0];
                             if(@list>1){
                                 $name=$name." | GeneListIDs ".$list[1];
                             }
