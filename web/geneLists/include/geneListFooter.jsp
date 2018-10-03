@@ -11,9 +11,11 @@
 if(userLoggedIn.getUser_name().equals("anon")){
 %>
 <script type="text/javascript">
-    var PhenogenAnonSession=SetupAnonSession();
-    PhenogenAnonSession.setupSession(setupGeneLists);
-    geneListjs.setupLinkEmail();
+    $(document).ready(function() {
+        var PhenogenAnonSession = SetupAnonSession();
+        PhenogenAnonSession.setupSession(setupGeneLists);
+        geneListjs.setupLinkEmail();
+    });
 </script>
 <%}%>
 
