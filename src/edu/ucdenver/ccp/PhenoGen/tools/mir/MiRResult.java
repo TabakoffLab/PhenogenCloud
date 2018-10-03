@@ -141,6 +141,7 @@ public class MiRResult {
     }
     
     public static  ArrayList<MiRResult> readResults(String path,String prefix){
+        System.out.println("begining of readResults");
         ArrayList<MiRResult> ret=new ArrayList<MiRResult>();
         HashMap<String,Integer> hm=new HashMap<String,Integer>();
         try{
@@ -149,37 +150,47 @@ public class MiRResult {
                 ArrayList<String> columnList=new ArrayList<String>();
                 while(in.ready()){
                     String line=in.readLine();
-                    if(count==0){
-                        String[] col=line.split("\t");
-                        for(int i=5;i<col.length;i++){
-                            columnList.add(col[i]);
+                    System.out.println(count+":line:"+line);
+                    if(!line.equals("")) {
+                        if (count == 0) {
+                            String[] col = line.split("\t");
+                            for (int i = 5; i < col.length; i++) {
+                                columnList.add(col[i]);
+                            }
+                        } else {
+                            String[] col = line.split("\t");
+                            if(col.length>0) {
+                                String acc = col[0];
+                                String id = col[1];
+                                String targetSym = col[2];
+                                String entrez = col[3];
+                                String ensembl = col[4];
+                                HashMap<String, String> sourceCount = new HashMap<String, String>();
+                                if (col.length > 5) {
+                                    for (int i = 5; i < col.length; i++) {
+                                        sourceCount.put(columnList.get(i - 5), col[i].trim());
+                                    }
+                                }
+
+                                MiRResult res = new MiRResult(acc, id, targetSym, entrez, ensembl, sourceCount);
+                                ret.add(res);
+                                hm.put(acc + ":" + targetSym + ":" + entrez + ":" + ensembl, count - 1);
+                            }
                         }
-                    }else{
-                        String[] col=line.split("\t");
-                        String acc=col[0];
-                        String id=col[1];
-                        String targetSym=col[2];
-                        String entrez=col[3];
-                        String ensembl=col[4];
-                        HashMap<String,String> sourceCount=new HashMap<String,String>();
-                        for(int i=5;i<col.length;i++){
-                            sourceCount.put(columnList.get(i-5) , col[i].trim());
-                        }
-                        
-                        MiRResult res=new MiRResult(acc,id,targetSym,entrez,ensembl,sourceCount);
-                        ret.add(res);
-                        hm.put(acc+":"+targetSym+":"+entrez+":"+ensembl, count-1);
+                        count++;
                     }
-                    count++;
                 }
                 in.close();
+            System.out.println("before validated");
                 readValidated(ret,hm,path,prefix);
+            System.out.println("after validated");
                 readPredicted(ret,hm,path,prefix);
+            System.out.println("after predicted");
         }catch(IOException e){
             
         }
-        
-        
+
+        System.out.println("end of readResults");
         return ret;
     }
     

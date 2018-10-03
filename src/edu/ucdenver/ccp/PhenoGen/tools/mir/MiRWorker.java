@@ -151,6 +151,7 @@ public class MiRWorker extends Thread {
     public void run() throws RuntimeException {
         done=false;
         log.debug("mirWorker:running...");
+
         User userLoggedIn= (User) session.getAttribute("userLoggedIn");
         try{
             if(userLoggedIn.getUser_name().equals("anon")){
@@ -216,14 +217,14 @@ public class MiRWorker extends Thread {
         if(!dirs.exists() && dirs.mkdirs()){
         }
         try{
-            myIDecoderClient.setNum_iterations(2);
+            myIDecoderClient.setNum_iterations(1);
             Set iDecoderSet = myIDecoderClient.getIdentifiersByInputIDAndTarget(geneList.getGene_list_id(), 
 							targets, pool);
+            boolean newfile=true;
             for (int i=0; i<myGeneArray.length; i++) {
+                log.debug("i:"+i+":"+myGeneArray[i]);
                 Identifier thisIdentifier = myIdentifier.getIdentifierFromSetIgnoreCase(myGeneArray[i], iDecoderSet);
-
                 if (thisIdentifier != null) {
-
                     Set geneSymbols = myIDecoderClient.getIdentifiersForTargetForOneID(thisIdentifier.getTargetHashMap(), targets);
                     String geneSym="";
                     String ens="";
@@ -248,21 +249,31 @@ public class MiRWorker extends Thread {
                                 
                                 //prep R call by updating to new geneID
                                 functionArgs[0] = "geneID= '"+tmpList[j]+"'";
+                                log.debug("call multimir with:\ngeneID="+tmpList[j]+"\n");
                                 try{
                                     String[] errorMsg=myR_session.callR(this.rFunctDir, "multiMiR.getMiRTargetingGene", functionArgs, fullPath+"/", -99);
                                     if(errorMsg==null){
+
                                     }else{
-
+                                        log.debug("R Session error:");
+                                        for(int z=0;z<errorMsg.length;z++){
+                                            log.debug(errorMsg[z]);
+                                        }
                                     }
-                                }catch(RException er){
 
+                                }catch(RException er){
+                                    log.error("multiMiR error:",er);
                                 }
+
                                 //append to summary files
-                                mergeFile(fullPath+"/"+prefix+".val.txt",fullPath+"/full.val.txt");
-                                mergeFile(fullPath+"/"+prefix+".pred.txt",fullPath+"/full.pred.txt");
-                                mergeSummaryFile(fullPath+"/"+prefix+".summary.txt",fullPath+"/full.summary.txt",all);
-                                
+
+                                mergeFile(fullPath+"/"+prefix+".val.txt",fullPath+"/full.val.txt", newfile);
+                                mergeFile(fullPath+"/"+prefix+".pred.txt",fullPath+"/full.pred.txt",newfile);
+                                newfile=mergeSummaryFile(fullPath+"/"+prefix+".summary.txt",fullPath+"/full.summary.txt",all,newfile);
+                                log.debug("after merge\n\n");
+
                             }
+
                         }
                         //rename summary files
                         //update status
@@ -293,15 +304,18 @@ public class MiRWorker extends Thread {
         return this.done;
     }
 
-    private void mergeFile(String source, String dest){
-        boolean newFile=true;
+    private void mergeFile(String source, String dest,boolean newFile){
+        //boolean newFile=true;
         File tmp=new File(dest);
-        if(tmp.exists()){
+        /*if(tmp.exists()){
             newFile=false;
-        }
+        }*/
+        log.debug("mergeFile after exists");
         try{
             BufferedWriter out=new BufferedWriter(new FileWriter(dest,true));
+            log.debug("after out");
             BufferedReader in=new BufferedReader(new FileReader(source));
+            log.debug("after in");
             int count=0;
             while(in.ready()){
                 if(count>0){
@@ -314,62 +328,75 @@ public class MiRWorker extends Thread {
                 }
                 count++;
             }
+            log.debug("after loop");
             out.flush();
             out.close();
             in.close();
             File toDel=new File(source);
             toDel.delete();
+            log.debug("end");
         }catch(IOException e){
+            log.error("MergeFile IOException:",e);
         }
     }
-    private void mergeSummaryFile(String source, String dest,String[] list){
-        boolean newFile=true;
-        File tmp=new File(dest);
-        if(tmp.exists()){
-            newFile=false;
-        }
+    private boolean mergeSummaryFile(String source, String dest,String[] list,boolean newFile){
+        log.debug("mergeFile after exists:"+newFile);
         try{
             HashMap<String,String> columns=new HashMap<String,String>();
             BufferedWriter out=new BufferedWriter(new FileWriter(dest,true));
             BufferedReader in=new BufferedReader(new FileReader(source));
+            log.debug("after open files");
             int count=0;
             while(in.ready()){
-                if(count>0){
-                    String newline="";
-                    String line=in.readLine();
-                    String[] cols=line.split("\t");
-                    newline=cols[0]+"\t"+cols[1]+"\t"+cols[2]+"\t"+cols[3]+"\t"+cols[4];
-                    for(int i=0;i<list.length;i++){
-                        if(columns.containsKey(list[i])){
-                            int tmpind=Integer.parseInt(columns.get(list[i]));
-                            newline=newline+"\t"+cols[tmpind];
-                        }else{
-                            newline=newline+"\t0";
+                log.debug("reading:");
+                String line=in.readLine();
+                if(!line.equals("")) {
+                    if (count > 0) {
+                        String newline = "";
+                        log.debug("count" + count + ":" + line);
+                        String[] cols = line.split("\t");
+                        newline = cols[0] + "\t" + cols[1] + "\t" + cols[2] + "\t" + cols[3] + "\t" + cols[4];
+                        for (int i = 0; i < list.length; i++) {
+                            if (columns.containsKey(list[i])) {
+                                int tmpind = Integer.parseInt(columns.get(list[i]));
+                                newline = newline + "\t" + cols[tmpind];
+                            } else {
+                                newline = newline + "\t0";
+                            }
                         }
-                    }
-                    out.write(newline+"\n");
-                }else{
-                    String header=in.readLine();
-                    String[] cols=header.split("\t");
-                    for(int i=5;i<cols.length;i++){
-                        columns.put(cols[i],Integer.toString(i));
-                    }
-                    if(newFile){
-                        out.write(cols[0]+"\t"+cols[1]+"\t"+cols[2]+"\t"+cols[3]+"\t"+cols[4]);
-                        for(int i=0;i<list.length;i++){
-                            out.write("\t"+list[i]);
+                        out.write(newline + "\n");
+                    } else {
+                        log.debug(" header count" + count + ":\n:" + line + ":");
+                        String[] cols = line.split("\t");
+                        for (int i = 5; i < cols.length; i++) {
+                            columns.put(cols[i], Integer.toString(i));
+                            log.debug("i" + i + ":" + cols[i]);
                         }
-                        out.write("\n");
+                        if (newFile) {
+                            log.debug("output header:" + cols[0] + "\t" + cols[1] + "\t" + cols[2] + "\t" + cols[3] + "\t" + cols[4]);
+                            out.write(cols[0] + "\t" + cols[1] + "\t" + cols[2] + "\t" + cols[3] + "\t" + cols[4]);
+                            for (int i = 0; i < list.length; i++) {
+                                out.write("\t" + list[i]);
+                                log.debug("\t" + list[i]);
+                            }
+                            out.write("\n");
+                            newFile=false;
+                        }
+                        count++;
                     }
                 }
-                count++;
+                log.debug("in ready:"+count);
             }
+            log.debug("after loop");
             out.flush();
             out.close();
             in.close();
-            File toDel=new File(source);
-            toDel.delete();
+            //File toDel=new File(source);
+            //toDel.delete();
+            log.debug("end");
         }catch(IOException e){
+            log.error("MergeSummary File IOException:",e);
         }
     }
+    return newFile;
 }

@@ -22,15 +22,17 @@
 	String id="";
 	
 	if(request.getParameter("geneListAnalysisID")!=null){
-		id=request.getParameter("geneListAnalysisID");
+		id=FilterInput.getFilteredInput(request.getParameter("geneListAnalysisID"));
+		log.debug("ID:"+id);
+		log.debug(Integer.parseInt(id));
 	}
 	
 	GeneListAnalysis result=null;
 	if(userLoggedIn.getUser_name().equals("anon")){
             result=myGeneListAnalysis.getAnonGeneListAnalysis(Integer.parseInt(id), pool);
-        }else{
+	}else{
             result=myGeneListAnalysis.getGeneListAnalysis(Integer.parseInt(id), pool);
-        }
+	}
 	/*TODO fix the full organism*/
 	String fullOrg="Mus_musculus";
 	String tables="";		

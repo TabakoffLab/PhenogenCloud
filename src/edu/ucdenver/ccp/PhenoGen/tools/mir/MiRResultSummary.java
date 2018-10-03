@@ -57,8 +57,14 @@ public class MiRResultSummary {
     }
 
     public void addResult(MiRResult res){
-        int valCount=Integer.parseInt(res.getCountForSource("validated.sum"));
-        int predCount=Integer.parseInt(res.getCountForSource("predicted.sum"));
+        int valCount=0;
+        if(res.getCountForSource("validated.sum")!=null && !res.getCountForSource("validated.sum").equals("")){
+            valCount=Integer.parseInt(res.getCountForSource("validated.sum"));
+        }
+        int predCount=0;
+        if(res.getCountForSource("predicted.sum")!=null && !res.getCountForSource("predicted.sum").equals("")){
+            predCount=Integer.parseInt(res.getCountForSource("predicted.sum"));
+        }
         if(valCount>0){
             if(!includedGenes.containsKey(res.getTargetSym()+":"+res.getTargetEntrez()+":"+res.getTargetEnsembl())){
                 validatedList.add(res.getTargetSym()+":"+res.getTargetEntrez()+":"+res.getTargetEnsembl());
