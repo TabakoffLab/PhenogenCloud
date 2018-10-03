@@ -325,7 +325,7 @@ console.log("urlprefix:"+urlprefix);
   	});
 	
 	<%@ include file="/javascript/chart.js" %>
-        <%@ include file="/web/GeneCentric/include/js_addExprSrcCtrl.jsp" %>
+    <%@ include file="/web/GeneCentric/include/js_addExprSrcCtrl.jsp" %>
         var gs;
         $( document ).ready(function() {
             setTimeout(function(){

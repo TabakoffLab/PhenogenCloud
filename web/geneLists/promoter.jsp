@@ -37,7 +37,9 @@
 	String displayNow = displayFormat.format(displayTime);
         String myOrganism=selectedGeneList.getOrganism();
 %>
-<%@ include file="/web/geneLists/include/geneListJS.jsp"  %>
+
+
+<%@ include file="/web/geneLists/include/geneListJS.jsp" %>
 <%@ include file="/web/common/header_adaptive_menu.jsp" %>
 
 
@@ -149,7 +151,7 @@
                                                             <img src="<%=imagesDir%>icons/info.gif" alt="Help">
                                                             </span>
                                                             <BR>
-                                                             <input id="description" type="text" size=50 name="description" value="<%=selectedGeneList.getGene_list_name()%> oPOSSUM Analysis on <%=displayNow%>">
+                                                             <input id="description_opossum" type="text" size=50 name="description" value="<%=selectedGeneList.getGene_list_name()%> oPOSSUM Analysis on <%=displayNow%>">
 
                                                     </td>
                                             </tr> 
@@ -175,7 +177,7 @@
                                                                     <strong>Genome Version:</strong>
                                                                     <BR>
                                                                     <%
-                                                                    selectName = "genomeVer";
+                                                                    selectName = "genomeVer_meme";
                                                                     selectedOption = "";
                                                                     //onChange = "checkSize()";
                                                                     style = "";
@@ -196,7 +198,7 @@
                                                                     <strong>Upstream sequence length:</strong>
                                                                     <BR>
                                                                     <%
-                                                                    selectName = "upstreamLength";
+                                                                    selectName = "upstreamLength_meme";
                                                                     selectedOption = "2";
                                                                     //onChange = "checkSize()";
                                                                     style = "";
@@ -226,7 +228,7 @@
                                                                     <strong>Upstream sequence from:</strong>
                                                                     <BR>
                                                                     <%
-                                                                    selectName = "upstreamSelect";
+                                                                    selectName = "upstreamSelect_meme";
                                                                     selectedOption = "gene";
                                                                     onChange = "";
                                                                     style = "";
@@ -274,7 +276,7 @@
                                                                 <td>
                                                                     <strong>Description:</strong>
                                                                     <BR>
-                                                                     <input type="text" size=30 name="description" id="description" value="<%=selectedGeneList.getGene_list_name()%> MEME Analysis on <%=displayNow%>">
+                                                                     <input type="text" size=30 name="description" id="description_meme" value="<%=selectedGeneList.getGene_list_name()%> MEME Analysis on <%=displayNow%>">
 
                                                             </td>
 
@@ -305,7 +307,7 @@
                                                                     <strong>Genome Version:</strong>
                                                                     <BR>
                                                                     <%
-                                                                    selectName = "genomeVer";
+                                                                    selectName = "genomeVer_up";
                                                                     selectedOption = "";
                                                                     //onChange = "checkSize()";
                                                                     style = "";
@@ -424,7 +426,10 @@
     var geneNumber=<%=selectedGeneList.getNumber_of_genes()%>;
     var id=<%=selectedGeneList.getGene_list_id()%>;
     var pathImage="<%=imagesDir%>";
-    var analysisPath="<%=contextRoot%>/web/geneLists/include/getPromoterAnalyses.jsp";
+    var analysisPath="/web/geneLists/include/getPromoterAnalyses.jsp";
+    function setupGeneLists(){
+
+    }
     $(document).ready(function() {
             setTimeout(function(){
                 setupPage();

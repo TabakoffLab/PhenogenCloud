@@ -105,18 +105,18 @@ function runPromoter(){
 		params.searchRegionLevel=jQuery("#oPOSSUMForm #searchRegionLevel").val();
 		params.conservationLevel=jQuery("#oPOSSUMForm #conservationLevel").val();
 		params.thresholdLevel=jQuery("#oPOSSUMForm #thresholdLevel").val();
-		params.description=jQuery("#oPOSSUMForm #description").val();
+		params.description=jQuery("#oPOSSUMForm #description_opossum").val();
 	}else if(type==='MEME'){
-		params.genomeVer=jQuery("#memeForm #genomeVer").val();
-		params.upstreamLength=jQuery("#memeForm #upstreamLength").val();
-		params.upstreamSelect=jQuery("#memeForm #upstreamSelect").val();
+		params.genomeVer=jQuery("#memeForm #genomeVer_meme").val();
+		params.upstreamLength=jQuery("#memeForm #upstreamLength_meme").val();
+		params.upstreamSelect=jQuery("#memeForm #upstreamSelect_meme").val();
 		params.distribution=jQuery("#memeForm #distribution").val();
 		params.minWidth=jQuery("#memeForm #minWidth").val();
 		params.maxWidth=jQuery("#memeForm #maxWidth").val();
 		params.maxMotifs=jQuery("#memeForm #maxMotifs").val();
-		params.description=jQuery("#memeForm #description").val();
+		params.description=jQuery("#memeForm #description_meme").val();
 	}else if(type==='Upstream'){
-		params.genomeVer=jQuery("#upstreamForm #genomeVer").val();
+		params.genomeVer=jQuery("#upstreamForm #genomeVer_up").val();
 		params.upstreamLength=jQuery("#upstreamForm #upstreamLength").val();
 		params.upstreamSelect=jQuery("#upstreamForm #upstreamSelect").val();
 	}

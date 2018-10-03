@@ -65,7 +65,7 @@
                 }
                 String upstreamFileName = selectedGeneList.getUpstreamFileName(upstreamDir, upstreamLength, now);
 
-                if (!myFileHandler.createDir(geneListAnalysisDir) || 
+                /*if (!myFileHandler.createDir(geneListAnalysisDir) ||
                         !myFileHandler.createDir(upstreamDir)) {
                         log.debug("error creating geneListAnalysisDir or upstreamDir directory in upstream.jsp"); 
 					
@@ -75,7 +75,7 @@
                                 pool);
                         result="Error setting up extraction.";
                         //response.sendRedirect(commonDir + "errorMsg.jsp");
-                } else {
+                } else {*/
                         log.debug("no problems creating geneListAnalysisDir or upstreamDir directory in upstream.jsp"); 
 
                         myGeneListAnalysis.setGene_list_id(selectedGeneList.getGene_list_id());
@@ -100,7 +100,7 @@
                         myGeneListAnalysis.setVisible(1);
 		
 
-			ParameterValue[] myParameterValues = new ParameterValue[3];
+			            ParameterValue[] myParameterValues = new ParameterValue[3];
                         for (int i=0; i<myParameterValues.length; i++) {
                             myParameterValues[i] = new ParameterValue();
                             myParameterValues[i].setCreate_date();
@@ -114,7 +114,7 @@
 
                         myParameterValues[2].setParameter("Genome Version");
                         myParameterValues[2].setValue(genomeVer);
-			myGeneListAnalysis.setParameterValues(myParameterValues);
+			            myGeneListAnalysis.setParameterValues(myParameterValues);
 
                         myGeneListAnalysis.createGeneListAnalysis(pool);
                         mySessionHandler.createGeneListActivity("Ran Upstream Sequence Extraction on Gene List", pool);
@@ -130,7 +130,7 @@
                         log.debug("Starting first thread "+ thread.getName());
                         thread.start();
                         result="Running...Upstream Extraction";
-                }
+                //}
         }else if(type.equals("MEME")){
                 log.debug("start MEME");
                 String upstreamLengthPassedIn = (String) request.getParameter("upstreamLength");
