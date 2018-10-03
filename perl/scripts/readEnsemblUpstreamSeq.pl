@@ -76,19 +76,20 @@ sub extractUpstream
 	open OUT,">",$output;
 
 	#print "connected\n";
-        my $geneAdaptor= $registry->get_adaptor( $species, 'core', 'gene' );
+    my $geneAdaptor= $registry->get_adaptor( $species, 'core', 'gene' );
 	my $slice_adaptor = $registry->get_adaptor( $species, 'core', 'Slice' );
-        my $seq_adaptor = $registry->get_adaptor( $species, 'core', 'Sequence' );
+    my $seq_adaptor = $registry->get_adaptor( $species, 'core', 'Sequence' );
 	my $seq="";
-        my $name=">";
+    my $name=">";
 	foreach my $gene(@genelist){
             if(length($gene)>0){
                 my $seq="";
                 
                 my @list=split(";",$gene);
-                #print $gene."\n";
+                print $gene."\n";
                 my $ensG=$geneAdaptor->fetch_by_stable_id($list[0]);
-                if($type eq 'gene'){
+                if($ensG == undef){
+                }elsif($type eq 'gene'){
                     my $name="";
                     $name=$list[0];
                     if(@list>1){
@@ -116,7 +117,7 @@ sub extractUpstream
                     my $transcripts=$ensG->get_all_Transcripts ();
                     #print "gene start:".$ensG->seq_region_start()."\tstop:".$ensG->seq_region_end()."\t strand:".$ensG->strand()."\n";
                     $cntTranscripts = 0;
-		    while ( my $transcript = shift @{$transcripts} ) {
+		            while ( my $transcript = shift @{$transcripts} ) {
                         my $initStart=$transcript->seq_region_start();
                         my $initStop=$transcript->seq_region_end();
                        
