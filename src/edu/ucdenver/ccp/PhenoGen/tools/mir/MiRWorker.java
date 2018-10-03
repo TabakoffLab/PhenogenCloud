@@ -397,6 +397,7 @@ public class MiRWorker extends Thread {
         }catch(IOException e){
             log.error("MergeSummary File IOException:",e);
         }
+        return newFile;
     }
-    return newFile;
+
 }
