@@ -85,14 +85,7 @@
           </ul>
        </li>        
                 
-       <li class='has-sub hideLogin <%if(mainMenuSelected.equals("microarray")){%>selected<%}%>'><span class="noLink"><span class="menu3line">View Previous Microarray Analysis</span></span>
-          <ul>
-          	 <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>listDatasets.jsp"><span>View previously compiled datasets</span></a>
-             <!--<li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=experimentsDir%>listExperiments.jsp"><span>Upload your own data</span></a></li>
-             <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>basicQuery.jsp"><span>Create a dataset from public and private arrays</span></a></li>-->
-             <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>geneData.jsp"><span>View expression values for a list of genes in a dataset</span></a></li>
-          </ul>
-       </li>
+
       <!-- <li class='has-sub hideLogin <%if(mainMenuSelected.equals("qtl")){%>selected<%}%>'><span class="noLink"><span class="menu1line">QTL Tools</span></span>
        			<ul>
                 	<li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=qtlsDir%>defineQTL.jsp?fromMain=Y&fromQTL=Y"><span>Enter phenotypic QTL information</span></a></li>
@@ -126,6 +119,14 @@
                     <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=commonDir%>contact.jsp"><span>Contact Us</span></a></li>
                 </ul>
        </li>
+            <li class='has-sub hideLogin <%if(mainMenuSelected.equals("microarray")){%>selected<%}%>'><span class="noLink"><span class="menu3line">View Previous Microarray Analysis</span></span>
+                <ul>
+                    <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>listDatasets.jsp"><span>View previously compiled datasets</span></a>
+                        <!--<li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=experimentsDir%>listExperiments.jsp"><span>Upload your own data</span></a></li>
+             <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>basicQuery.jsp"><span>Create a dataset from public and private arrays</span></a></li>-->
+                    <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>checkLogin.jsp?url=<%=datasetsDir%>geneData.jsp"><span>View expression values for a list of genes in a dataset</span></a></li>
+                </ul>
+            </li>
        
    <% if(!loggedIn||userLoggedIn.getUser_name().equals("anon")){%>
    		<li id="loginMenu"  class='has-sub <%if(mainMenuSelected.equals("login")){%>selected<%}%>'><a href='#' class="end login_btn" ><span class="menu2line">Login /<BR>Register</span></a></li>
@@ -146,7 +147,8 @@
 </div>
 
 <!-- Website status message or other important message-->
-<span style="color:#FF0000;font-size: large; text-align: center;" >Phenogen.org is still under construction.  Please continue to use <a href="https://phenogen.ucdenver.edu/PhenoGen">phenogen.ucdenver.edu</a></span>
+<div style="color:#FF0000;text-align: center;font-size:24px;" >Phenogen.org is still under construction.  Please continue to use <a href="https://phenogen.ucdenver.edu/PhenoGen">phenogen.ucdenver.edu</a> unless you are willing to help us test.<BR>Please confirm results you will use for research on the current site.</div>
+<span style="color:#FF0000;font-size: large; text-align: center;display:none;" ></span>
 
 <span id="noJS" style="color:#FF0000;display:inline-block;" >This site requires JavaScript and it is currently disabled.  Please visit <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Software Requirments</a>.</span>
 <script type="text/javascript">	
