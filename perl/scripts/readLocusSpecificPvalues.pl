@@ -34,7 +34,7 @@ sub readLocusSpecificPvalues{
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# $hostname is used to determine the connection to the database.
 	#my $hostname = hostname;
-
+    print "dsn: ".$dsn."\n";
 	my $debugLevel = 2;
 	if($debugLevel >= 1){
 		print "Probe ID: ".$probeID."\n";

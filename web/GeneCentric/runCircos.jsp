@@ -386,7 +386,8 @@
             Properties myProperties = new Properties();
             File myPropertiesFile = new File(dbPropertiesFile);
             myProperties.load(new FileInputStream(myPropertiesFile));
-            String dsn = "dbi:"+ myProperties.getProperty("PLATFORM")+ ":" + myProperties.getProperty("DATABASE");
+            String dsn = "dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
+            //String dsn = "dbi:"+ myProperties.getProperty("PLATFORM")+ ":" + myProperties.getProperty("DATABASE");
             String OracleUserName = myProperties.getProperty("USER");
             String password = myProperties.getProperty("PASSWORD");
             log.debug("\n******* Create Perl Arguments");

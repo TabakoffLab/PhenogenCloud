@@ -2567,9 +2567,9 @@ public class GeneDataTools {
         //log.debug("rFunction");
         
         //this.urlPrefix=(String)session.getAttribute("mainURL");
-        if(urlPrefix.endsWith(".jsp")){
-            urlPrefix="http://" + host + contextRoot;
-        }
+        //if(urlPrefix.endsWith(".jsp")){
+            urlPrefix="https://" + host + contextRoot;
+        //}
         //log.debug("mainURL");
         this.perlEnvVar=(String)session.getAttribute("perlEnvVar");
         //log.debug("PerlEnv");
@@ -3533,10 +3533,6 @@ public class GeneDataTools {
             perlArgs[4] = tmpOutputDir.substring(0,tmpOutputDir.length()-1);
             perlArgs[5] = circosTissue;
             perlArgs[6] = circosChr;
-
-
-
-
             //remove old circos directory
             double cutoff=pvalue;
             String circosDir=tmpOutputDir+"circos"+cutoff;

@@ -476,7 +476,7 @@
         },200);
         
         <%@ include file="/javascript/chart.js" %>
-        <%@ include file="include/js_addExprSrcCtrl.jsp" %>
+        <%@ include file="include/js_addExprSrcCtrl.js" %>
         var peSGR;
         //setTimeout(function(){
         //       var bChart=chart({"data":"<%=genURL+"/Brain_sm_expr.json"%>",
