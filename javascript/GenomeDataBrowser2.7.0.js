@@ -85,7 +85,7 @@ mouseOnly.probeMouse=1;
 
 var mmVer="Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer="Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer="PhenoGen v3.5.0(9/6/2018)";
+var siteVer="PhenoGen v3.5.0(11/12/2018)";
 
 var trackBinCutoff=10000;
 var customTrackLevel=-1;
@@ -6973,31 +6973,38 @@ function RefSeqTrack(gsvg,data,trackClass,label,additionalOptions){
 					var cat=new String(txList[m].getAttribute("category"));
 					var val=-1;
 					if(cat=="Reviewed"){
-						val=4;
+						val=5;
 					}else if(cat=="Validated"){
-						val=3;
+						val=4;
 					}else if(cat=="Provisional"){
-						val=2;
+						val=3;
 					}else if(cat=="Inferred"){
-						val=1;
+						val=2;
 					}else if(cat=="Predicted"){
-						val=0;
-					}
+						val=1;
+					}else if(cat=="Model"){
+                        val=1;
+                    }else if(cat=="Unknown"){
+                        val=0;
+                    }
 					if(mostValid<val){
 						mostValid=val;
 					}
 			}
-			if(mostValid==4){
+			if(mostValid===5){
 				color=d3.rgb("#18814F");
-			}if(mostValid==3){
+			}if(mostValid===4){
 				color=d3.rgb("#38A16F");
-			}else if(mostValid==2){
+			}else if(mostValid===3){
 				color=d3.rgb("#78E1AF");
-			}else if(mostValid==1){
+			}else if(mostValid===2){
 				color=d3.rgb("#A8FFDF");
-			}else if(mostValid==0){
+			}else if(mostValid===1){
 				color=d3.rgb("#A8DFFF");
-			}
+			}else if(mostValid===0){
+                color=d3.rgb("#C8FFFF");
+            }
+
 		}else if(that.drawnAs=="Trx"){
 			var cat=new String(d.getAttribute("category"));
 			if(cat=="Reviewed"){
@@ -7013,7 +7020,11 @@ function RefSeqTrack(gsvg,data,trackClass,label,additionalOptions){
 				//color=d3.rgb("#88F1BF");
 			}else if(cat=="Predicted"){
 				color=d3.rgb("#A8DFFF");
-			}
+			}else if(cat==="Model"){
+                color=d3.rgb("#A8DFFF");
+            }else if(cat==="Unknown"){
+                color=d3.rgb("#C8FFFF");
+            }
 		}
 		return color;
 	};
@@ -7032,6 +7043,12 @@ function RefSeqTrack(gsvg,data,trackClass,label,additionalOptions){
 		}else if(tmpName.indexOf("Predicted")>-1){
 				color=d3.rgb("#A8DFFF");
 		}
+        else if(tmpName.indexOf("Model")>-1){
+            color=d3.rgb("#A8DFFF");
+        }
+        else if(tmpName.indexOf("Unknown")>-1){
+            color=d3.rgb("#C8FFFF");
+        }
 		return color;
 	};
 
@@ -7053,31 +7070,35 @@ function RefSeqTrack(gsvg,data,trackClass,label,additionalOptions){
 						var cat=new String(txList[m].getAttribute("category"));
 						var val=-1;
 						if(cat=="Reviewed"){
-							val=4;
+							val=5;
 						}else if(cat=="Validated"){
-							val=3;
+							val=4;
 						}else if(cat=="Provisional"){
-							val=2;
+							val=3;
 						}else if(cat=="Inferred"){
-							val=1;
+							val=2;
 						}else if(cat=="Predicted"){
-							val=0;
-						}
+							val=1;
+						}else if(cat=="Model"){
+                            val=1;
+                        }else if(cat=="Unknown"){
+                            val=1;
+                        }
 						if(mostValid<val){
 							mostValid=val;
 						}
 					}
 					var name="Unknown";
-					if(mostValid==4){
+					if(mostValid==5){
 						name="Reviewed";
-					}else if(mostValid==3){
+					}else if(mostValid==4){
 						name="Validated";
-					}else if(mostValid==2){
+					}else if(mostValid==3){
 						name="Provisional";
-					}else if(mostValid==1){
+					}else if(mostValid==2){
 						name="Inferred";
-					}else if(mostValid==0){
-						name="Predicted";
+					}else if(mostValid==1){
+						name="Predicted/Model";
 					}
 					if(typeof that.counts[name]==='undefined'){
 						that.counts[name]=new Object();
@@ -7824,7 +7845,7 @@ function RefSeqTrack(gsvg,data,trackClass,label,additionalOptions){
 	that.redrawLegend=function (){
 		var legend=[];
 		var curPos=0;
-		legend=[{color:"#18814F",label:"Reviewed"},{color:"#38A16F",label:"Validated"},{color:"#78E1AF",label:"Provisional"},{color:"#A8FFDF",label:"Inferred"},{color:"#A8DFFF",label:"Predicted"}];
+		legend=[{color:"#18814F",label:"Reviewed"},{color:"#38A16F",label:"Validated"},{color:"#78E1AF",label:"Provisional"},{color:"#A8FFDF",label:"Inferred"},{color:"#A8DFFF",label:"Predicted/Model"},{color:"#C8FFFF",label:"Unknown"}];
 		that.drawLegend(legend);
 	};
 
