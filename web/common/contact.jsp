@@ -45,7 +45,7 @@
                 Properties myProp2 = new Properties();
                 File myPropFile = new File(mailPropertiesFile);
                 myProp2.load(new FileInputStream(myPropFile));
-                myEmail.setFrom("Spencer.Mahaffey@ucdenver.edu");
+                myEmail.setFrom("info@phenogen.org");
                 myEmail.setAuth(myProp2.getProperty("USER"),myProp2.getProperty("PASS"));
                 myEmail.setSMTPServer(myProp2.getProperty("HOST"));
                 myEmail.setSubject("PhenoGen "+subject);
