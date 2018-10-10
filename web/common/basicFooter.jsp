@@ -11,19 +11,11 @@
                     <a href="http://www.ucdenver.edu/POLICY/Pages/LegalNotices.aspx" target="CU Policy Window">Legal Notices</a> |
                     <a href="http://www.ucdenver.edu/policy/Pages/PrivacyPolicy.aspx" target="CU Policy Window">Privacy Policy</a> |
                     <div class="fb-like" data-href="https://www.facebook.com/phenogen" data-width="50px" data-layout="button" data-action="like" data-size="small" data-show-faces="false" data-share="false"></div>
-                    <div class="g-follow" data-annotation="none" data-height="20" data-href="https://plus.google.com/104166350576727657445" data-rel="publisher"></div>
                     <a href="https://twitter.com/phenogen" class="twitter-follow-button" data-show-count="false" data-show-screen-name="false" data-lang="en" style="margin-top:5px;"></a>
                 </div> <!-- footer_nav -->
         </div> <!-- footer_link_container -->
     </div> <!-- page_footer -->
 
-    <script type="text/javascript">
-		  (function() {
-			var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-			po.src = 'https://apis.google.com/js/platform.js';
-			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-		  })();
-    </script>
     <div id="fb-root"></div>
     <script>(function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
