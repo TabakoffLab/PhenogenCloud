@@ -310,12 +310,15 @@
 
 <% log.debug("before eQTL table constr");
 log.debug("loc:"+chromosome+":"+min+"-"+max+"::"+folderName);
-        ArrayList<TranscriptCluster> transOutQTLs=gdt.getTransControllingEQTLs(min,max,chromosome,arrayTypeID,rnaDatasetID,pValueCutoff,levelString,myOrganism,genomeVer,tissueString,chromosomeString);//this region controls what genes
+	log.debug("get EQTLs");
+	java.util.Date tmpStart=new java.util.Date();
+    ArrayList<TranscriptCluster> transOutQTLs=gdt.getTransControllingEQTLs(min,max,chromosome,arrayTypeID,rnaDatasetID,pValueCutoff,levelString,myOrganism,genomeVer,tissueString,chromosomeString);//this region controls what genes
 	time=new java.util.Date();
-	//log.debug("Setup after getcontrolling eqtls:"+(time.getTime()-startDate.getTime()));
+	log.debug("Setup after getcontrolling eqtls:\n"+(time.getTime()-tmpStart.getTime()));
+	tmpStart=new java.util.Date();
 	ArrayList<String> eQTLRegions=gdt.getEQTLRegions();
 	time=new java.util.Date();
-	//log.debug("Setup after get eqtls regions:"+(time.getTime()-startDate.getTime()));
+	log.debug("Setup after get eqtls regions:\n"+(time.getTime()-tmpStart.getTime()));
   if(session.getAttribute("getTransControllingEQTL")==null){
   	if(transOutQTLs!=null && transOutQTLs.size()>0){%>
             

@@ -128,9 +128,9 @@ public class AsyncGeneDataTools extends Thread {
                 //log.debug("Before outputProbesetID");
                 outputProbesetIDFiles(outputDir,chrom, minCoord, maxCoord,arrayTypeID,genomeVer);
                 //log.debug("before DEHeatMap");
-                callDEHeatMap(outputDir,chrom, minCoord, maxCoord,arrayTypeID,rnaDatasetID,genomeVer);
+                //callDEHeatMap(outputDir,chrom, minCoord, maxCoord,arrayTypeID,rnaDatasetID,genomeVer);
                 //log.debug("before Panel HErit");
-                callPanelHerit(outputDir,chrom, minCoord, maxCoord,arrayTypeID,rnaDatasetID,genomeVer);
+                //callPanelHerit(outputDir,chrom, minCoord, maxCoord,arrayTypeID,rnaDatasetID,genomeVer);
                 //log.debug("After Panel Herit");
                 done=true;
                 Date end=new Date();
@@ -217,22 +217,47 @@ public class AsyncGeneDataTools extends Thread {
                             "and s.psannotation <> 'transcript' " +
                             "and s.updatedlocation = 'Y' "+
                             "and s.Array_TYPE_ID = "+arrayTypeID;
-        
-        String probeTransQuery="select s.Probeset_ID,c.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
-                                "from Chromosomes c, Affy_Exon_ProbeSet s "+
-                                "left outer join location_specific_eqtl l on l.probe_id=s.Probeset_ID " +
+
+
+        String probeTransQuery="select distinct s.Probeset_ID,c2.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
+                "from location_specific_eqtl l "+
+                "left outer join snps sn on sn.snp_id=l.SNP_ID "+
+                "left outer join Affy_Exon_ProbeSet s on s.probeset_id = l.probe_id "+
+                "left outer join Chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
+                "where sn.genome_id='"+genomeVer+"' "+
+                "and c2.name = '"+chr.toUpperCase()+"' "+
+                "and s.genome_id='"+genomeVer+"' "+
+                "and ( "+
+                "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
+                "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
+                "(s.psstart <= "+min+" and s.psstop >="+min+") ) "+
+                "and s.psannotation = 'transcript' " +
+                "and s.updatedlocation = 'Y' "+
+                "and s.Array_TYPE_ID = " + arrayTypeID +" )";
+
+        // Original version
+        /*
+        String probeTransQuery="select distinct s.Probeset_ID,c2.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
+                                "from location_specific_eqtl l "+
                                 "left outer join snps sn on sn.snp_id=l.SNP_ID "+
-                                "where s.chromosome_id = c.chromosome_id "+
-                                "and c.name = '"+chr.toUpperCase()+"' "+
-                                "and s.genome_id='"+genomeVer+"' "+
-                                "and sn.genome_id='"+genomeVer+"' "+
-                            "and ( "+
-                            "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
-                            "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
-                            "(s.psstart <= "+min+" and s.psstop >="+min+") )"+
-                            "and s.psannotation = 'transcript' " +
-                            "and s.updatedlocation = 'Y' "+
-                            "and s.Array_TYPE_ID = " + arrayTypeID ;
+                                "left outer join Affy_Exon_ProbeSet s on s.probeset_id = l.probe_id "+
+                                "left outer join Chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
+                                "where sn.genome_id='"+genomeVer+"' "+
+                                "and l.probe_id in (select distinct ae.Probeset_ID " +
+                                "from Affy_Exon_ProbeSet ae "+
+                                "left outer join Chromosomes c on c.chromosome_id = ae.chromosome_id "+
+                                "where c.name = '"+chr.toUpperCase()+"' "+
+                                "and ae.genome_id='"+genomeVer+"' "+
+                                "and ( "+
+                                "(ae.psstart >= "+min+" and ae.psstart <="+max+") OR "+
+                                "(ae.psstop >= "+min+" and ae.psstop <= "+max+") OR "+
+                                "(ae.psstart <= "+min+" and ae.psstop >="+min+") )"+
+                                "and ae.psannotation = 'transcript' " +
+                                "and ae.updatedlocation = 'Y' "+
+                                "and ae.Array_TYPE_ID = " + arrayTypeID +" )";*/
+
+
+
                             //" and s.PROBESET_ID in (select l.probe_id from location_specific_eqtl l,snps sn where sn.genome_id='"+genomeVer+"' and l.snp_id=sn.snp_id)";
         
         log.debug("PSLEVEL SQL:"+probeQuery);
