@@ -2869,7 +2869,7 @@ public class GeneDataTools {
             log.debug("\ngenerating new-controlled from\n");
             String qtlQuery="select aep.transcript_cluster_id,c1.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c2.name,s.snp_start,s.snp_end "+
                                 "from affy_exon_probeset aep " +
-                                "left outer join location_specific_eqtl lse on lse.probe_id=CAST(aep.probeset_id as char) " +
+                                "left outer join location_specific_eqtl lse on lse.probe_id=aep.probeset_id " +
                     "left outer join snps s on lse.snp_id = s.snp_id " +
                     "left outer join chromosomes c1 on c1.chromosome_id = aep.chromosome_id " +
                     "left outer join chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
@@ -3044,17 +3044,24 @@ public class GeneDataTools {
             }
         }
         if(run){*/
-            HashMap tmpHM=new HashMap();
+            HashMap<String,TranscriptCluster> tmpHM=new HashMap<String,TranscriptCluster>();
             String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end " +
                                 "from location_specific_eqtl lse " +
                                 "left outer join snps s on s.snp_id=lse.snp_id " +
                                 "left outer join chromosomes c on c.chromosome_id=s.chromosome_id " +
-                                "left outer join affy_exon_probeset aep on cast(aep.probeset_id as char)=lse.probe_id " +
+                                "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
                                 "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
-                                "where s.genome_id='"+genomeVer+"'" +
-                                "and lse.pvalue>= "+(-Math.log10(pvalue))+" " +
-                                "and aep.updatedlocation='Y' " +
-                                "and aep.genome_id='"+genomeVer+"' ";
+                                "where s.genome_id='"+genomeVer+"' " +
+                                "and lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
+                    "and c.name='"+chr.toUpperCase()+"' " +
+                    "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
+                    " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
+                    "and aep.genome_id='"+genomeVer+"' " +
+                    "and aep.updatedlocation='Y' " +
+                    "and aep.psannotation='transcript' " +
+                    "and aep.array_type_id="+arrayTypeID;
+
+
                                 //"and ( aep.pslevel='core'  or aep.pslevel='extended'  or aep.pslevel='full' ) \n" +
             if(!level.equals("All")){
                 qtlQuery=qtlQuery+" and ( ";
@@ -3067,12 +3074,7 @@ public class GeneDataTools {
                 }
                 qtlQuery=qtlQuery+") ";
             }
-            qtlQuery=qtlQuery+"and aep.psannotation='transcript' " +
-                                "and aep.array_type_id="+arrayTypeID+" "+
-                                "and c.name='"+chr.toUpperCase()+"' " +
-                                "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
-                                " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
-                                "order by aep.transcript_cluster_id, s.tissue";
+
 //            String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end "+
 //                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep "+
 //                                "where s.snp_id=lse.snp_id "+
@@ -3112,15 +3114,20 @@ public class GeneDataTools {
 //                                "order by aep.transcript_cluster_id, s.tissue";
             String qtlQuery2="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end " +
                                 "from location_specific_eqtl lse " +
-                                "left outer join affy_exon_probeset aep on cast(aep.probeset_id as char)=lse.probe_id " +
                                 "left outer join snps s on s.snp_id=lse.snp_id " +
                                 "left outer join chromosomes c on c.chromosome_id=s.chromosome_id " +
+                                "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
                                 "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
                                 "where  s.genome_id='"+genomeVer+"' " +
-                                "and lse.pvalue< "+(-Math.log10(pvalue))+" " +
+                                "and lse.pvalue between 1.0 and "+(-Math.log10(pvalue))+" " +
+                                "and c.name='"+chr.toUpperCase()+"' " +
+                                "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
+                                " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
+                                "and aep.genome_id='"+genomeVer+"' "+
                                 "and aep.updatedlocation='Y' " +
-                                "and aep.genome_id='"+genomeVer+"' ";
-                                //"and ( aep.pslevel='core'  or aep.pslevel='extended'  or aep.pslevel='full' ) \n" +
+                                "and aep.psannotation='transcript' " +
+                                "and aep.array_type_id="+arrayTypeID+" ";
+
             if(!level.equals("All")){
                 qtlQuery2=qtlQuery2+" and ( ";
                 for(int k=0;k<levels.length;k++){
@@ -3132,12 +3139,7 @@ public class GeneDataTools {
                 }
                 qtlQuery2=qtlQuery2+") ";
             }
-            qtlQuery2=qtlQuery2+"and aep.psannotation='transcript' " +
-                                "and aep.array_type_id="+arrayTypeID+" "+
-                                "and c.name='"+chr.toUpperCase()+"' " +
-                                "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
-                                " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
-                                "order by aep.transcript_cluster_id,s.tissue,aep.chromosome_id,aep.psstart";
+            //qtlQuery2=qtlQuery2+"order by s.tissue";
 //            String qtlQuery2="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end "+//,eq.LOD_SCORE "+
 //                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep "+//, expression_qtls eq "+
 //                                "where s.snp_id=lse.snp_id "+
@@ -3169,7 +3171,7 @@ public class GeneDataTools {
                 log.debug("SQL eQTL FROM QUERY\n"+qtlQuery);
                 PreparedStatement ps = conn.prepareStatement(qtlQuery);
                 ResultSet rs = ps.executeQuery();
-                //eQTLRegions=new HashMap();
+                eQTLRegions=new HashMap();
                 TranscriptCluster curTC=null;
                 while(rs.next()){
                     String tcID=rs.getString(1);
@@ -3180,13 +3182,11 @@ public class GeneDataTools {
                     long tcStop=rs.getLong(5);
                     String tcLevel=rs.getString(6);
 
-                    if(curTC==null||!tcID.equals(curTC.getTranscriptClusterID())){
-                        if(curTC!=null){
-                            tmpHM.put(curTC.getTranscriptClusterID(),curTC);
-                            //transcriptClusters.add(curTC);
-                        }
+                    if(tmpHM.containsKey(tcID)){
+                        curTC=tmpHM.get(tcID);
+                    }else{
                         curTC=new TranscriptCluster(tcID,tcChr,Integer.toString(tcStrand),tcStart,tcStop,tcLevel);
-                        //log.debug("create transcript cluster:"+tcID);
+                        tmpHM.put(tcID,curTC);
                     }
                     String tissue=rs.getString(7);
                     //log.debug("tissue:"+tissue+":");
@@ -3200,18 +3200,15 @@ public class GeneDataTools {
                         curTC.addRegionEQTL(tissue,pval,marker_name,marker_chr,marker_start,marker_end,-1);
                         DecimalFormat df=new DecimalFormat("#,###");
                         String eqtl="chr"+marker_chr+":"+df.format(marker_start)+"-"+df.format(marker_end);
-                        /*if(!eQTLRegions.containsKey(eqtl)){
+                        if(!eQTLRegions.containsKey(eqtl)){
                             eQTLRegions.put(eqtl, 1);
-                        }*/
+                        }
                     }else{
                         curTC.addEQTL(tissue,pval,marker_name,marker_chr,marker_start,marker_end,-1);
                     }
                 }
-                if(curTC!=null){
-                    tmpHM.put(curTC.getTranscriptClusterID(),curTC);
-                    //transcriptClusters.add(curTC);
-                }
                 ps.close();
+                log.debug("done");
                 
                 if(tmpHM.size()==0){
                     String snpQ="select * from snps s,chromosomes c where "+
@@ -3233,7 +3230,7 @@ public class GeneDataTools {
                         session.setAttribute("getTransControllingEQTL","This region does not overlap with any markers used in the eQTL calculations.  You should expand the region to view eQTLs.");
                     }
                     
-                }/*else{
+                }else{
                     log.debug("Query2:"+qtlQuery2);
                     ps = conn.prepareStatement(qtlQuery2);
                     rs = ps.executeQuery();
@@ -3254,7 +3251,7 @@ public class GeneDataTools {
 
                     }
                     ps.close();
-                }*/
+                }
                 conn.close();
                 Set keys=tmpHM.keySet();
                 Iterator itr=keys.iterator();
@@ -3596,10 +3593,10 @@ public class GeneDataTools {
                 //this.controlledCircosRegionParams=curCircosParams;
             } catch (ExecException e) {
                 //error=true;
-                /*log.error("In Exception of run callCircosReverse.pl Exec_session", e);
+                log.error("In Exception of run callCircosReverse.pl Exec_session", e);
                 session.setAttribute("getTransControllingEQTLCircos","Error running Circos.  Unable to generate Circos image.  Please try again later.  The administrator has been notified of the problem.");
                 setError("Running Perl Script to match create circos plot.");
-                Email myAdminEmail = new Email();
+               /* Email myAdminEmail = new Email();
                 myAdminEmail.setSubject("Exception thrown in Exec_session");
                 myAdminEmail.setContent("There was an error while running "
                         + perlArgs[1] + " (" + perlArgs[2] +" , "+perlArgs[3]+" , "+perlArgs[4]+")\n\n"+myExec_session.getErrors());
