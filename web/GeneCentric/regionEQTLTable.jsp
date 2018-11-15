@@ -286,7 +286,6 @@
         margin-right: 5%;
         width: 51%;
     }
-
     @media screen and (max-width: 1600px) {
         #circosDiv {
             display: inline-block;

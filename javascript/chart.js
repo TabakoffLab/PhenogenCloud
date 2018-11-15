@@ -224,7 +224,7 @@ chart=function(params){
 					var content=that.imgDiv.html();
 					content=content+"\n";
 					$.ajax({
-							url: "/PhenoGen/web/GeneCentric/saveBrowserImage.jsp",
+							url: "/web/GeneCentric/saveBrowserImage.jsp",
 			   				type: 'POST',
 							contentType: 'text/html',
 							data: content,

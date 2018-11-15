@@ -33,7 +33,7 @@
 </div>
 <script type="text/javascript">
 <%@ include file="/javascript/chart.js" %>
-    testChart=chart({"data":"/PhenoGen/tmpData/browserCache/rn6/geneData/ENSRNOG000000000/GeneList.json",
+    testChart=chart({"data":"/tmpData/browserCache/rn6/geneData/ENSRNOG000000000/GeneList.json",
         "selector":"#chart","allowResize":true,"type":"heatmap","width":"100%","displayHerit":true,
     "title":"Gene/Transcript Expression"});
 </script>

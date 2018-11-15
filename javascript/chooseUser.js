@@ -28,7 +28,7 @@ function setupChooseUserPage(){
 		
 	$("#userDetails").click(function(){
 		$("#userDetails").html("");
-		$('#detailsDisplay').load( '/PhenoGen/web/experiments/grantArrayAccess.jsp', 
+		$('#detailsDisplay').load( '/web/experiments/grantArrayAccess.jsp',
 			{ userId: $("#userID").val(), 
                         experimentID: $("#experimentID").val(), 
                         experimentName : $("#experimentName").val()});

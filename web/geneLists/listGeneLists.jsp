@@ -77,7 +77,7 @@
         
 	<div class="brClear"></div>
         <BR><BR>
-	<div class="list_container">
+	<div class="list_container" style="min-height: 600px;">
 	<form name="chooseGeneList" action="chooseGeneList.jsp" method="get">
             <BR>
             

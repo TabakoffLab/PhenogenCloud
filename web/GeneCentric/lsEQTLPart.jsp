@@ -433,12 +433,12 @@
         	if(circosReturnStatus){
         		log.debug("Circos run completed successfully");       		
 				String shortGeneCentricPath;
-				if(geneCentricPath.indexOf("/PhenoGen/") > 0){
-					shortGeneCentricPath = geneCentricPath.substring(geneCentricPath.indexOf("/PhenoGen/"));
-				}
+				//if(geneCentricPath.indexOf("/PhenoGen/") > 0){
+					shortGeneCentricPath = geneCentricPath.substring(geneCentricPath.indexOf("/tmpData/"));
+				/*}
 				else{
 					shortGeneCentricPath = geneCentricPath.substring(geneCentricPath.indexOf("/PhenoGenTEST/"));
-				}
+				}*/
 				String svgFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos_new.svg";
 				svgPdfFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos_new.pdf";
 				iframeURL = svgFile;

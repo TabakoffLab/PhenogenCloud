@@ -10,6 +10,8 @@
 
 <%@ include file="/web/common/anon_session_vars.jsp" %>
 
+
+
 <jsp:useBean id="myGeneList" class="edu.ucdenver.ccp.PhenoGen.data.GeneList"/>
 <jsp:useBean id="myAnonGeneList" class="edu.ucdenver.ccp.PhenoGen.data.AnonGeneList"/>
 <jsp:useBean id="myGeneListAnalysis" class="edu.ucdenver.ccp.PhenoGen.data.GeneListAnalysis"/>
@@ -44,4 +46,5 @@
         String rExceptionErrorMsg = "";
 
         String tall="100em";
+        log.debug("end GeneListHeader.jsp");
 %>
