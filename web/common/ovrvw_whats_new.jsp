@@ -11,12 +11,14 @@
 <%@ include file="/web/access/include/login_vars.jsp" %>
 
 <% 	
-	extrasList.add("fancyBox/jquery.fancybox.js");
+
 	extrasList.add("fancyBox/helpers/jquery.fancybox-thumbs.js");
-	extrasList.add("jquery.fancybox.css");
-	extrasList.add("jquery.fancybox-thumbs.css");
-	extrasList.add("normalize.css");
-	extrasList.add("index.css"); %>
+    extrasList.add("fancyBox/jquery.fancybox.js");
+    extrasList.add("index.css");
+    extrasList.add("normalize.css");
+    extrasList.add("jquery.fancybox-thumbs.css");
+    extrasList.add("jquery.fancybox.css");
+    %>
 
 <%	pageTitle="Overview What's New";
 	pageDescription="Description of new features on PhenoGen";

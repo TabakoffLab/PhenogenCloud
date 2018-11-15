@@ -1,11 +1,11 @@
 
 <%
-    extrasList.add("jquery-1.12.2.min.js");
-    extrasList.add("jquery-migrate-1.2.1.min.js");
-    extrasList.add("jquery-ui-1.11.4.min.js");
-    extrasList.add("jquery.tooltipster.min.js");
-    extrasList.add("jquery.tablesorter.js");
     extrasList.add("main1.0.2.js");
+    extrasList.add("jquery.tablesorter.js");
+    extrasList.add("jquery.tooltipster.min.js");
+    extrasList.add("jquery-ui-1.11.4.min.js");
+    extrasList.add("jquery-migrate-1.2.1.min.js");
+    extrasList.add("jquery-1.12.2.min.js");
 %>
 
 

@@ -2,12 +2,13 @@
 
 <%
     log.debug("before extras");
-    extrasList.add("d3.v4.8.0.min.js");
-    extrasList.add("detailedTranscriptInfo.js");
+
+
     extrasList.add("jquery.dataTables.1.10.9.min.js");
     extrasList.add("jquery.cookie.js");
-    extrasList.add("fancyBox/jquery.fancybox.js");
     extrasList.add("fancyBox/helpers/jquery.fancybox-thumbs.js");
+    extrasList.add("fancyBox/jquery.fancybox.js");
+
     extrasList.add("spectrum.js");
     extrasList.add("svg-pan-zoom.3.5.1.min.js");
     extrasList.add("jquery.twosidedmultiselect.js");
@@ -20,6 +21,8 @@
     extrasList.add("jquery.fancybox.css");
     extrasList.add("jquery.fancybox-thumbs.css");
     extrasList.add("spectrum.css");
+    extrasList.add("detailedTranscriptInfo.js");
+    extrasList.add("d3.v4.8.0.min.js");
     //extrasList.add("jquery.dataTables.min.css");
     log.debug("after extras");
 %>
