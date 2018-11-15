@@ -4,12 +4,19 @@
 	if ( extrasAttributes != null ) {
 		for ( int i = 0; i < extrasAttributes.size(); i++ ) {
 			String extra = (String) extrasAttributes.get(i);
+			if ( extra.indexOf( ".css" ) > 0 ) {
+				extra="/css/"+extra;%>
+				<style>
+					<jsp:include page="<%=extra%>" flush="true" />
+				</style>
+			<%} else if ( extra.indexOf( ".js" ) > 0 ) {
+				extra = "/javascript/" + extra;%>
 
-			if ( extra.indexOf( ".css" ) > 0 ) { %> 
-				<link rel="stylesheet" href="/css/<%= extra %>" type="text/css" media="screen"> <%
-			} else if ( extra.indexOf( ".js" ) > 0 ) { %> 
-				<script type="text/javascript" src="/javascript/<%= extra %>"></script> <%
-			}
-		}
+				<script>
+					<jsp:include page="<%=extra%>" flush="true" />
+				</script>
+			<%}%>
+
+		<%}
 	}
 %>

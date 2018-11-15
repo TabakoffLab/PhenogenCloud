@@ -1,10 +1,20 @@
 
-    <script type = "text/javascript" src = "/javascript/jquery-1.12.2.min.js"></script>
+<%
+    extrasList.add("jquery-1.12.2.min.js");
+    extrasList.add("jquery-migrate-1.2.1.min.js");
+    extrasList.add("jquery-ui-1.11.4.min.js");
+    extrasList.add("jquery.tooltipster.min.js");
+    extrasList.add("jquery.tablesorter.js");
+    extrasList.add("main1.0.2.js");
+%>
+
+
+    <!--<script type = "text/javascript" src = "/javascript/jquery-1.12.2.min.js"></script>
     <script type = "text/javascript" src = "/javascript/jquery-migrate-1.2.1.min.js"></script>
     <script type = "text/javascript" src = "/javascript/jquery-ui-1.11.4.min.js"></script>
     <script type = "text/javascript" src = "/javascript/jquery.tooltipster.adaptive.js"></script>
     <script  type = "text/javascript" src = "/javascript/jquery.tablesorter.js"></script>
-    <script type = "text/javascript" src = "/javascript/main1.0.2.js"></script>
+    <script type = "text/javascript" src = "/javascript/main1.0.2.js"></script>-->
 
 
 	<%@ include file="/web/common/includeExtras.jsp" %>
