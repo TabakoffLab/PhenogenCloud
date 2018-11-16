@@ -206,7 +206,7 @@
 								//Success - "Registration approval complete"
 								//	session.setAttribute("successMsg", "REG-005");
 								//	response.sendRedirect(commonDir + "successMsg.jsp");
-							/}
+							//}
 							//int piUserID = Integer.parseInt((String) request.getParameter("pi_user_id"));
 							//User approver = new User();
 							//if (piUserID != -99) {					// if pi selected: send email to pi
