@@ -42,9 +42,9 @@
 		<h2>Tools Used on This Website</h2>
 		<p><a href="http://www.cisreg.ca/cgi-bin/oPOSSUM/opossum" target="POSSUM Master">Promoter (oPOSSUM)</a>:&nbsp;&nbsp; version 2.0</p>
 		<p><a href="http://meme.nbcr.net/meme" target="MEME Master">Promoter (MEME)</a>:&nbsp;&nbsp; version 4.10 patch 4</p>
-		<p><a href="http://www.r-project.org/" target="R Master">R</a>:&nbsp;&nbsp;version 3.2.1</p>
+		<p><a href="http://www.r-project.org/" target="R Master">R</a>:&nbsp;&nbsp;version 3.4.1</p>
 		<p><a href="http://www.bioconductor.org/" target="R Master">BioConductor</a>:&nbsp;&nbsp;version 3.0</p>
-                <p><a href="http://multimir.ucdenver.edu/" target="_blank">multiMiR</a>:&nbsp;&nbsp;version 2.2</p>
+                <p><a href="http://multimir.ucdenver.edu/" target="_blank">multiMiR</a>:&nbsp;&nbsp;version 1.0</p>
                 <p><a href="http://circos.ca/" target="_blank">CIRCOS</a>:&nbsp;&nbsp;version 0.69-4</p>
                 <p><a href="http://d3js.org/" target="_blank">D3js</a>:&nbsp;&nbsp;version 4.8</p>
                 <p><a href="http://jquery.com/" target="_blank">jQuery & jQuery UI</a>:&nbsp;&nbsp;version 1.11.2 and 1.11.3</p>
@@ -53,8 +53,8 @@
                 <BR><BR>
                 <h2>Genome Data Browser Annotations</h2>        
                 <ul>
-                    <li>Ensembl v91, except Rn5-v79</li>
-                    <li>RefSeq(source:UCSC Genome Browser): Downloaded 9/2017</li>
+                    <li>Ensembl v93, except Rn5-v79</li>
+                    <li>RefSeq(source:UCSC Genome Browser): Downloaded 9/2018 except rn5 - 7/2015</li>
                     <!--<li>RGD QTL information: Downloaded </li>-->
                 </ul>
                 <BR><BR>
@@ -82,7 +82,7 @@
                 <li>Annotation file for Codelink Rat Whole Genome </li>
                 <li>Annotation file for Codelink Mouse Whole Genome </li>
     
-                <li>Location data from Ensembl for Mouse, Human, and Rat from Ensembl Genes v91 </li>
+                <li>Location data from Ensembl for Mouse, Human, and Rat from Ensembl Genes v93 </li>
                 <li>FlyBase gene_map_table_fb_2017_06.tsv file and fbgn_NAseq_Uniprot_fb_2017_06.tsv </li>
                 <li>MGI database links file generated from the ACC_Accession table on 1/29/2018</li>
                 <li>MGI_Coordinate.rpt links file, downloaded 1/29/2018</li>
@@ -92,7 +92,7 @@
                 <li>NCBI homologene.data file, downloaded 1/29/2018</li>
                 <li>RGD GENES file, last updated on 1/29/2018</li>
                 <li>SwissProt uniprot_sprot.dat file, last updated on 1/29/2018</li>
-                <li>PhenoGen Merged Transcriptome v1 with known gene/transcript annotation from Ensembl v91.</li>
+                <li>PhenoGen Merged Transcriptome v1 with known gene/transcript annotation from Ensembl v93.</li>
             </ul>
         </div>
 

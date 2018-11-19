@@ -5921,7 +5921,9 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
 					
 				}
 			}
-			that.gsvg.selectSvg.changeSelection(newMin,newMax);
+			if(that.gsvg && that.gsvg.selectSvg) {
+                that.gsvg.selectSvg.changeSelection(newMin, newMax);
+            }
 			$('html, body').animate({
 				scrollTop: $( '#selectedDetail' ).offset().top
 			}, 200);
@@ -6048,7 +6050,7 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
 					}
 					var file=that.trackClass;
 					var curPanel=panel;
-					if( (track.indexOf("liverTotal")===0 || track.indexOf("brainTotal")===0) && track.indexOf("_")>0 ){
+					if( (that.trackClass.indexOf("liverTotal")===0 || that.trackClass.indexOf("brainTotal")===0) && that.trackClass.indexOf("_")>0 ){
 						curPanel=track.substr(track.indexOf("_")+1);
 						if(curPanel==="LEStm"){
 							curPanel="LE-Stm";
