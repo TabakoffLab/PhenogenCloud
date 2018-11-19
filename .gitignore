@@ -16,6 +16,8 @@ bigWigToBedGraph
 sitemap*.xml
 GeneCentricViewer.jar
 ExonCorrelationViewer2.jar
+*.pdf
+pom.xml
 
 # Users need to download platform specific tools from	#
 # Affymetrix and then current probeset files from 	#
@@ -39,6 +41,7 @@ web/GeneCentric/lib/
 web/exons/lib/
 WEB-INF/lib/
 nbproject/
+out/
 .idea
 
 
