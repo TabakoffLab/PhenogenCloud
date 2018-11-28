@@ -1042,13 +1042,14 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 		if(track=="genomeSeq"){
 			var newTrack=SequenceTrack(that,track,"Reference Genomic Sequence",additionalOptions);
 			that.addTrackList(newTrack);
-		}else if(track.indexOf("noncoding")>-1){
+		}
+		else if(track.indexOf("noncoding")>-1){
 				d3.xml(dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/"+track+".xml",function (error,d){
 					if(error){
-						if(retry<20){//wait before trying again
-							var time=2500;
+						if(retry<60){//wait before trying again
+							var time=1500;
 							if(retry==1){
-								time=5000;
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1093,10 +1094,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 		}else if(track.indexOf("coding")>-1){
 				d3.xml(dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/"+track+".xml",function (error,d){
 					if(error){
-						if(retry<30){//wait before trying again
-							var time=2500;
+						if(retry<60){//wait before trying again
+							var time=1500;
 							if(retry==1){
-								time=5000;
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1164,10 +1165,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				    			}
 							});
 						}
-						if(retry<30){//wait before trying again
-							var time=2500;
+						if(retry<60){//wait before trying again
+							var time=1500;
 							if(retry==1){
-								time=5000;
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1263,10 +1264,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				    			}
 							});
 						}
-						if(retry<30){//wait before trying again
-							var time=2500;
+						if(retry<60){//wait before trying again
+							var time=1500;
 							if(retry==1){
-								time=5000;
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1335,10 +1336,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				    			}
 							});
 						}
-						if(retry<30){//wait before trying again
-							var time=2500;
+						if(retry<60){//wait before trying again
+							var time=1500;
 							if(retry===1){
-								time=5000;
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1401,10 +1402,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				    			}
 							});
 						}
-						if(retry<30){//wait before trying again
-							var time=2500;
-							if(retry==1){
-								time=7500;
+						if(retry<60){//wait before trying again
+							var time=1500;
+							if(retry===1){
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1437,10 +1438,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 		}else if(track==="qtl"){
 				d3.xml(dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/qtl.xml",function (error,d){
 					if(error){
-						if(retry<10){//wait before trying again
-							var time=2500;
-							if(retry==1){
-								time=5000;
+						if(retry<60){//wait before trying again
+							var time=1500;
+							if(retry===1){
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1481,10 +1482,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 		}else if(track==="probe"||track=="probeMouse"){
 				d3.xml(dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/probe.xml",function (error,d){
 					if(error){
-						if(retry<20){//wait before trying again
-							var time=2500;
-							if(retry==1){
-								time=5000;
+						if(retry<60){//wait before trying again
+							var time=1500;
+							if(retry===1){
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1515,7 +1516,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 						}
 					}
 				});
-		}else if(track=="helicos"||track.indexOf("illuminaTotal")>-1||track.indexOf("illuminaSmall")>-1||track=="illuminaPolyA"){
+		}else if(track==="helicos"||track.indexOf("illuminaTotal")>-1||track.indexOf("illuminaSmall")>-1||track==="illuminaPolyA"){
 				var tmpMin=that.xScale.domain()[0];
 				var tmpMax=that.xScale.domain()[1];
 				var len=tmpMax-tmpMin;
@@ -1529,7 +1530,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				}
 				d3.xml(file,function (error,d){
 					if(error){
-						if(retry==0 || retry==3){
+						if(retry===0 || retry===3){
 							var tmpContext="/"+ pathPrefix;
 							if(!pathPrefix){
 								tmpContext="";
@@ -1555,10 +1556,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 							});
 							time=10000;
 						}
-						if(retry<30){//wait before trying again
-							var time=10000;
+						if(retry<60){//wait before trying again
+							var time=1000;
 							if(retry===0){
-								time=5000;
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1678,10 +1679,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				    			}
 							});
 						}
-						if(retry<10){//wait before trying again
-							var time=2500;
-							if(retry==1){
-								time=10000;
+						if(retry<60){//wait before trying again
+							var time=1500;
+							if(retry===1){
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1715,10 +1716,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 		}else if(track=="polyASite"){
 				d3.xml(dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/polyASite.xml",function (error,d){
 					if(error){
-						if(retry<3){//wait before trying again
-							var time=10000;
-							if(retry==1){
-								time=15000;
+						if(retry<60){//wait before trying again
+							var time=1000;
+							if(retry===1){
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1777,10 +1778,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				    			}
 							});
 						}
-						if(retry<10){//wait before trying again
-							var time=2500;
+						if(retry<60){//wait before trying again
+							var time=1500;
 							if(retry===1){
-								time=10000;
+								time=2500;
 							}
 							setTimeout(function (){
 								that.addTrack(track,density,additionalOptions,retry+1);
@@ -1844,7 +1845,6 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				setTimeout(function(){DisplayRegionReport();},300);
 		}
 	};
-
 	that.updateLinks=function(){
 		if(that.levelNumber===1){
 			d3.select("#probeSetDetailLink1").each(function(){
@@ -3794,7 +3794,7 @@ function Track(gsvgP,dataP,trackClassP,labelP){
 		if(tmpDiff>20){
 			topPos=topPos+(tmpDiff/2);
 		}
-		return topPos;
+		return topPos+"px";
 	};
 
 	that.drawLegend = function (legendList){
@@ -5702,7 +5702,7 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
 											if(xpos<($(window).width()/2)){
 												xpos=that.xScale(dThis.getAttribute("stop"))-that.xScale(dThis.getAttribute("start"))+5;
 											}else{
-												xpos=-1*curLbl.length*9;;
+												xpos=-1*curLbl.length*9;
 											}
 											return xpos;
 										});
@@ -6560,12 +6560,12 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
 					        	//that.gsvg.get('tt').transition()
 					        	tt.transition()
 					                .duration(200)
-					                .style("opacity", 1);
+					                .style("opacity", 1)
+									.style("top", function(){return that.positionTTTop(d3.event.pageY);})
+                                    .style("left", function(){return that.positionTTLeft(d3.event.pageX);});
 					        	//that.gsvg.get('tt').html(that.createToolTip(d))
 					        	//console.log(d);
-					        	tt.html(that.createToolTip(d))
-					                .style("left", function(){return that.positionTTLeft(d3.event.pageX);})
-									.style("top", function(){return that.positionTTTop(d3.event.pageY);});
+					        	tt.html(that.createToolTip(d));
 					            if(d){
 						            that.triggerTableFilter(d);
 						            if(that.trackClass.indexOf("smallnc")===-1){

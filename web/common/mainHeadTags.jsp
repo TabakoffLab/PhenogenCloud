@@ -1,8 +1,7 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta charset="UTF-8">
+  <head><meta name="viewport" content="width=device-width, initial-scale=1"><meta charset="UTF-8">
     <title>PhenoGen <%if(pageTitle!=null && !pageTitle.equals("")){%>- <%=pageTitle%> <%}%></title>
     <meta http-equiv="content-language" content="en-us">
     <meta http-equiv="expires" content="<%= new java.util.Date()%>">
@@ -10,8 +9,5 @@
     <%if(pageDescription!=null && !pageDescription.equals("")){%> 
     	<meta name="description" content="<%=pageDescription%>"> 
     <%}%>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--<script type = "text/javascript" >
-        var contextPath = "<%=contextPath%>";
-    </script>-->
+
 

@@ -1,5 +1,4 @@
 <%@ include file="/web/common/anon_session_vars.jsp" %>
-
 <%
     log.debug("before extras");
 
@@ -26,8 +25,6 @@
     //extrasList.add("jquery.dataTables.min.css");
     log.debug("after extras");
 %>
-
-
 <%
     log.debug("top of page");
     String myGene = "";
@@ -69,20 +66,10 @@
     pageDescription = "Genome/Transcriptome Browser provides a vizualization of Microarray and RNA-Seq data along the genome as well as summarize eQTL/WGCNA data for genes and/or regions.";
     log.debug("end of top");
 %>
-
-
 <%if (popup) {%>
-<div id="wait1" style="background:#FFFFFF;position:absolute; top:175px;height:50px;"><img src="<%=imagesDir%>wait.gif"
-                                                                                          alt="Working..."/><BR/>Working...Genes
-    should load within 10-20 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).
-</div>
-<%@ include file="/web/common/header_adaptive_noMenu.jsp" %>
+    <%@ include file="/web/common/header_adaptive_noMenu.jsp" %>
 <%} else {%>
-<div id="wait1" style="background:#FFFFFF;position:absolute; top:175px;height:50px;"><img src="<%=imagesDir%>wait.gif"
-                                                                                          alt="Working..."/><BR/>Working...Genes
-    should load within 10-20 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).
-</div>
-<%@ include file="/web/common/header_adaptive_menu.jsp" %>
+    <%@ include file="/web/common/header_adaptive_menu.jsp" %>
 <%}%>
 <%@ include file="/web/GeneCentric/browserCSS.jsp" %>
 

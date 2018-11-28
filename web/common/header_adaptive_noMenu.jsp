@@ -1,8 +1,9 @@
 	<%@ include file="adaptive_headTags.jsp" %>
     
 	<body>
-       	<div id="wait1"  style="background:#FFFFFF;position:absolute; top:175px;height:50px;"><img src="<%=imagesDir%>wait.gif" alt="Working..." /><BR />Working...It may take  1-3 minutes the first time you run a summary for a gene or region depending on the size of the gene/region.</div>
-		
+    <div id="wait1" style="background:#FFFFFF;position:absolute; top:175px;height:50px;"><img src="<%=imagesDir%>wait.gif" alt="Working..."/><BR/>Working...Genes
+        should load within 5-10 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).
+    </div>
        
 		<div id="page_header_wide">
                     <div id="header_title" style="width:100%;">
