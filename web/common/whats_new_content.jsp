@@ -28,7 +28,7 @@ span.control{
 		background:#989898;
 	}
 </style>
-<div class="whats_new version">
+<div>
     <div class="whats_new version"><p><h3>Version: v3.5</h3><BR /> To be available on 11/12/2018</p></div>
     <ul>
                 <li><span class="highlight-dark">Beta Testing cloud version now</span></li>
