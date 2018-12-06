@@ -1227,6 +1227,7 @@ Hint: Try other synonyms if the first ID that you enter is not found.
 <%}%>
 
 <script type="text/javascript">
+    $("div#wait1").hide();
     $('.fancybox').fancybox({
         helpers: {
             title: {
@@ -1242,6 +1243,7 @@ Hint: Try other synonyms if the first ID that you enter is not found.
         prevEffect: 'fade'
     });
     $(window).ready(function () {
+
         getMainViewData(1);
         $(".tooltipster").tooltipster({
             position: 'top-right',

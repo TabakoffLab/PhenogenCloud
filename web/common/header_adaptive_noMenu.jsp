@@ -1,7 +1,7 @@
 	<%@ include file="adaptive_headTags.jsp" %>
     
 	<body>
-    <div id="wait1" style="background:#FFFFFF;position:absolute; top:175px;height:50px;"><img src="<%=imagesDir%>wait.gif" alt="Working..."/><BR/>Working...Genes
+    <div id="wait1" style="background:#FFFFFF;position:absolute; top:155px;height:150px;"><img src="<%=imagesDir%>wait.gif" alt="Working..."/><BR/>Working...Genes
         should load within 5-10 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).
     </div>
        
