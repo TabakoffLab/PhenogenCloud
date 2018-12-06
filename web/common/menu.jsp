@@ -102,7 +102,7 @@
                     <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=commonDir%>citation.jsp"><span>Citations</span></a></li>
                     <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=commonDir%>acknowledgements.jsp"><span>Acknowledgements</span></a></li>
                     <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=commonDir%>usefulLinks.jsp"><span>Useful Links</span></a></li>
-                    <li><a href="<%=commonDir%>selectMenu.jsp?menuURL=https://github.com/TabakoffLab/PhenogenCloud" target="Phenogen Source Code">Source Code (GitHub)</a></li>
+                    <li><a href="https://github.com/TabakoffLab/PhenogenCloud" target="Phenogen Source Code">Source Code (GitHub)</a></li>
                 </ul>
        </li>
        <%@ include file="/web/common/helpFileURL.jsp"%>
