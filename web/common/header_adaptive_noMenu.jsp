@@ -1,9 +1,7 @@
 	<%@ include file="adaptive_headTags.jsp" %>
     
 	<body>
-    <div id="wait1" style="background:#FFFFFF;position:absolute; top:155px;height:150px;"><img src="<%=imagesDir%>wait.gif" alt="Working..."/><BR/>Working...Genes
-        should load within 5-10 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).
-    </div>
+
        
 		<div id="page_header_wide">
                     <div id="header_title" style="width:100%;">
@@ -30,7 +28,9 @@
 	  	</div> <!-- page_header -->
 		
 		<div id="body_wrapper_plain">
-       
+            <div id="wait1" style="background:#FFFFFF;position:absolute; top:155px;height:150px;"><img src="<%=imagesDir%>wait.gif" alt="Working..."/><BR/>Working...Genes
+                should load within 5-10 seconds. Regions depend on the size(ex. 5 Megabases may take ~1 minute).
+            </div>
 
 	<%@ include file="/web/common/alertMsgDisplay.jsp"  %>
 	<%@ include file="/web/common/toolbarStuff.jsp" %>
