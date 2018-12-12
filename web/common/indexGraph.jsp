@@ -485,6 +485,9 @@ div#announcement a:hover, div#announcementSmall a:hover {
                             });
                             link.each(function (d) {
                                 d3.select(this).attr("x1", function (d) {
+                                    console.log(d);
+                                    console.log(d.source);
+                                    console.log(graph.nodes);
                                     return graph.nodes[d.source].x;
                                 })
                                     .attr("y1", function (d) {
@@ -716,13 +719,13 @@ div#announcement a:hover, div#announcementSmall a:hover {
 
                         function setupDisplay() {
                             console.log("setupDisplay");
-                            var mn = svg.selectAll('g#d28')[0];
+                            var mn = svg.selectAll('g#d22')[0];
                             if (mn[0] != undefined && mn[0].__data__ != undefined) {
                                 displayOverride = 1;
                                 //set selected node to announcements
                                 var d = mn[0].__data__;
                                 hoverClickNode(d);
-                                var dn = svg.selectAll('g#d31')[0];
+                                var dn = svg.selectAll('g#d25')[0];
                                 //console.log(dn);
                                 var d2 = dn[0].__data__;
                                 hoverClickNode(d2);
