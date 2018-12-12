@@ -47,7 +47,7 @@
                         </div>
                         <BR /><BR />
                         <div style="text-align:center;width:100%;">
-                        	<a href="<%=accessDir%>checkLogin.jsp?url=<%=geneListsDir%>listGeneLists.jsp" class="button" style="width:170px;color:#666666;">Login to View Gene Lists</a><BR />or<BR /><a href="<%=accessDir%>registration.jsp" class="button" style="width:140px;color:#666666;">Register Here</a>
+                            <a href="<%=geneListsDir%>listGeneLists.jsp" class="button" style="width:170px;color:#666666;">View Gene Lists</a>
                         </div>
                         
                     </div>

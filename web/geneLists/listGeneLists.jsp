@@ -152,6 +152,7 @@
 	<div class="load">Loading...</div>
         <div id="recoverSession"></div>
 	<script type="text/javascript">
+		$("div#wait1").hide();
                 <%if(!tmpUuid.equals("")){%>
                     var tmpUUID="<%=tmpUuid%>";
                 <%}%>

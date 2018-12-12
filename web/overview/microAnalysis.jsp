@@ -10,7 +10,7 @@
 --%>
 
     
-	<H2>Normalize->Statistics->Gene List</H2>
+	<H2>View datasets previously analized</H2>
                    <div  style="overflow:auto;height:92%;">
                     	<H3>Demo/Screen Shots</H3>
                         <div style="overflow:auto;display:inline-block;height:27%;width:100%;">
