@@ -338,8 +338,6 @@ public class GeneDataTools {
         String result="";
         returnGenURL="";
         HashMap<String,String> source=this.getGenomeVersionSource(genomeVer);
-        
-
         try(Connection conn=pool.getConnection()){
             PreparedStatement ps=conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
             //ps.setInt(1, usageID);
@@ -382,7 +380,6 @@ public class GeneDataTools {
                         }
                         error=generateFiles(organism,genomeVer,source.get("ensembl"),rOutputPath,ensemblIDList,folderName,ensemblID1,RNADatasetID,arrayTypeID,panel);
                         result="old files, regenerated all files";
-
                     }else{
                         //do nothing just need to set session var
                         String errors;
@@ -1029,7 +1026,7 @@ public class GeneDataTools {
                 "(s.psstart <= "+min+" and s.psstop >="+min+") ) "+
                 "and s.psannotation = 'transcript' " +
                 "and s.updatedlocation = 'Y' "+
-                "and s.Array_TYPE_ID = " + arrayTypeID +" )";
+                "and s.Array_TYPE_ID = " + arrayTypeID ;
 
 
         /*String probeTransQuery="select distinct s.Probeset_ID,c2.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+

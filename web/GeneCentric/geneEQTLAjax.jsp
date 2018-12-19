@@ -46,7 +46,7 @@
                     fullOrg="Mus_musculus";
 		}
 	}
-	if(request.getParameter("chromosome")!=null){
+	if(request.getParameter("chromosome")!=null || request.getParameter("chromosome")!=""){
 		chromosome=FilterInput.getFilteredInput(request.getParameter("chromosome"));
 	}
 	
