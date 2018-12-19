@@ -338,8 +338,6 @@ public class GeneDataTools {
         String result="";
         returnGenURL="";
         HashMap<String,String> source=this.getGenomeVersionSource(genomeVer);
-        
-
         try(Connection conn=pool.getConnection()){
             PreparedStatement ps=conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
             //ps.setInt(1, usageID);
