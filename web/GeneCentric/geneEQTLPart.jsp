@@ -56,7 +56,6 @@
 			var path="<%=gcPath%>";
                         
 			var geneSymbol="<%=geneSymbol.get(selectedGene)%>";
-                        console.log("before AJAX");
 			$.ajax({
 				url: "/web/GeneCentric/runCircos.jsp",
    				type: 'GET',
@@ -81,7 +80,6 @@
                                         $('#forIframe').html("<div>An error occurred generating this image.  Please try back later.</div>");
                                 }
 			});
-                        console.log("after AJAX");
 			//$('.allowChromSelection').show();
 		}
                 function changeSource(){
@@ -577,7 +575,7 @@ The chromosome where the gene is physically located MUST be included in the Circ
                     runCircos();
 		}else if(source==="seq"){
                     runCircos();
-                }
+		}
 		$('#circosIFrame').attr('width',$(window).width()-50);
 		$(window).resize(function (){
 			$('#circosIFrame').attr('width',$(window).width()-50);

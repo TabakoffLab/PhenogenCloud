@@ -12,7 +12,7 @@
 	//SET Selected Menu and Selected Function based on menu choice.
 	
 	if(url.equals(contextRoot+"index.jsp")||
-		url.equals(commonDir+"ovrvw_transcript_details.jsp") ||
+		url.equals(commonDir+"ovrvw_transcript_detail.jsp") ||
 		url.equals(commonDir+"ovrvw_whats_new.jsp") ||
 		url.equals(commonDir+"ovrvw_downloads.jsp") ||
 		url.equals(commonDir+"ovrvw_microarray_tools.jsp") ||
@@ -85,7 +85,7 @@
 		url.equals(commonDir+"siteVersion.jsp") ||
 		url.equals(commonDir+"citation.jsp") ||
 		url.equals(commonDir+"usefulLinks.jsp") ||
-		url.equals("https://github.com/TabakoffLab/PhenoGen")
+		url.equals("https://github.com/TabakoffLab/PhenogenCloud")
 	){
 		mainMenu="about";
 		if(specMenuOpt.equals("CurrentDataSets.jsp")){
@@ -132,11 +132,10 @@
 	}
    //Github is the only link referenced with a full URL.  There should be nothing else we link to from the menu with a full URL if there is redirect to the homepage.
     if(url.startsWith("http")){
-        if(!url.equals("https://github.com/TabakoffLab/PhenoGen")){
+        if(!url.equals("https://github.com/TabakoffLab/PhenogenCloud")){
             url=contextRoot+"index.jsp";
         }
     }
-    response.sendRedirect(url);           
-	
+    response.sendRedirect(url);
 %>
 
