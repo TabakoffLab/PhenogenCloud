@@ -10,16 +10,21 @@
 
 <%@ include file="/web/access/include/login_vars.jsp" %>
 
-<% 	extrasList.add("normalize.css");
-	extrasList.add("index.css");
-	extrasList.add("overview.js"); %>
+<%
 
-<%pageTitle="Overview Genome/Transcriptome Data Browser";
-pageDescription="Overview of features and data available in the new Genome/Transcriptome Browser";%>
+    extrasList.add("fancyBox/helpers/jquery.fancybox-thumbs.js");
+    extrasList.add("fancyBox/jquery.fancybox.js");
+    extrasList.add("index.css");
+    extrasList.add("normalize.css");
+    extrasList.add("jquery.fancybox-thumbs.css");
+    extrasList.add("jquery.fancybox.css");
+    pageTitle="Overview Genome/Transcriptome Data Browser";
+    pageDescription="Overview of features and data available in the new Genome/Transcriptome Browser";
+%>
 
 <%@ include file="/web/common/basicHeader.jsp" %>
 
-        <div id="welcome" style="height:575px; width:980px; overflow:auto;">
+<div id="welcome" style="height:575px; width:980px; overflow:auto;">
             <h2>Genome/Transcriptome Data Browser</h2>
             <div id="overview-wrap" >
                 	<div id="overview-content-wide">
@@ -27,7 +32,7 @@ pageDescription="Overview of features and data available in the new Genome/Trans
                         You may use the Genome/Transcriptome Data Browser to:
                         <ul>
                         	<li>View a region of the mouse or rat genomes that includes information on array expression data and for rats transcripts expressed in brain identified in PhenoGen RNA-Seq data:
-<BR />
+                                <BR />
                             	Data Availalbe:<BR />
                                 	<ul >
                                         <li><div class="clicker" name="branch1">View an image of region  &nbsp;&nbsp;&nbsp;<img src="<%=imagesDir%>icons/next.png" alt="more"></li>
@@ -43,7 +48,7 @@ pageDescription="Overview of features and data available in the new Genome/Trans
                                         	We have exon array data for 2 recombinant inbred panels and various tissues (ILSXISS Mice(Whole Brain) and HXB/BXH Rats(Whole Brain, Heart, Liver, Brown Adipose).  These data are summarized for each region to include the # and average heritability of probesets with a significant heritability and # and average percentage of samples where probesets were detected above background.  These are summarized for each gene in each tissue.                                         </span>
                                         <li><div  class="clicker" name="branch4">View eQTLs for genes in the region&nbsp;&nbsp;&nbsp;<img src="<%=imagesDir%>icons/next.png" alt="more"></li>
                                         <span class="branch" id="branch4">
-                                        	For genes in this region, the location of the gene’s eQTL with the smallest p-value is reported.  All possible eQTL across multiple tissues are visualized in a Circos plot.
+                                        	For genes in this region, the location of the gene's eQTL with the smallest p-value is reported.  All possible eQTL across multiple tissues are visualized in a Circos plot.
 
                                         </span>
                                         <li><div  class="clicker" name="branch5">View bQTLs overlapping the region&nbsp;&nbsp;&nbsp;<img src="<%=imagesDir%>icons/next.png" alt="more"></li>
@@ -103,32 +108,32 @@ pageDescription="Overview of features and data available in the new Genome/Trans
                 
                 <div class="demoVideo" style="display:inline-block;float:right;position:relative;top:-600px; padding-right:10px;">
                 			<span style="text-align:center;"><h3>New! Browser Navigation Demo</h3></span>
-                        	<video id="demoVid1" width="375"  controls="controls" poster="<%=contextRoot%>web/demo/BrowserNavDemo_350.png" preload="none">
-                                <source src="<%=contextRoot%>web/demo/BrowserNavDemo.mp4" type="video/mp4">
-                                <source src="<%=contextRoot%>web/demo/BrowserNavDemo.webm" type="video/webm">
+                        	<video id="demoVid1" width="375"  controls="controls" poster="/web/demo/BrowserNavDemo_350.png" preload="none">
+                                <source src="/web/demo/BrowserNavDemo.mp4" type="video/mp4">
+                                <source src="/web/demo/BrowserNavDemo.webm" type="video/webm">
                             
-                              	<object data="<%=contextRoot%>web/demo/BrowserNavDemo.mp4" width="375" >
+                              	<object data="/web/demo/BrowserNavDemo.mp4" width="375" >
                               	</object>
                         	</video><BR />
-                            <div id="showOpenLargeVideo" style="display:none;text-align:center; width:100%;"><a href="<%=contextRoot%>web/demo/largerDemo.jsp?demoPath=web/demo/BrowserNavDemo" class="button" style="width:180px;" target="_blank" >View larger version</a></div>
+                            <div id="showOpenLargeVideo" style="display:none;text-align:center; width:100%;"><a href="/web/demo/largerDemo.jsp?demoPath=web/demo/BrowserNavDemo" class="button" style="width:180px;" target="_blank" >View larger version</a></div>
                             <span style="text-align:center;"><h3>New! Custom Track/View Demo</h3></span>
-                        	<video id="demoVid1" width="375"  controls="controls" poster="<%=contextRoot%>web/demo/customTrackDemo_350.png" preload="none">
-                                <source src="<%=contextRoot%>web/demo/customTrackDemo.mp4" type="video/mp4">
-                                <source src="<%=contextRoot%>web/demo/customTrackDemo.webm" type="video/webm">
+                        	<video id="demoVid1" width="375"  controls="controls" poster="/web/demo/customTrackDemo_350.png" preload="none">
+                                <source src="/web/demo/customTrackDemo.mp4" type="video/mp4">
+                                <source src="/web/demo/customTrackDemo.webm" type="video/webm">
                             
-                              	<object data="<%=contextRoot%>web/demo/customTrackDemo.mp4" width="375" >
+                              	<object data="/web/demo/customTrackDemo.mp4" width="375" >
                               	</object>
                         	</video><BR />
-                            <div id="showOpenLargeVideo" style="display:none;text-align:center; width:100%;"><a href="<%=contextRoot%>web/demo/largerDemo.jsp?demoPath=web/demo/customTrackDemo" class="button" style="width:180px;" target="_blank" >View larger version</a></div>
+                            <div id="showOpenLargeVideo" style="display:none;text-align:center; width:100%;"><a href="/web/demo/largerDemo.jsp?demoPath=web/demo/customTrackDemo" class="button" style="width:180px;" target="_blank" >View larger version</a></div>
                         	<span style="text-align:center;"><h3>Previous overview of tools available<BR />(all the tools are available navigation to them has changed,<BR /> an update will be available soon)</h3></span>
-                        	<video id="demoVid" width="375"  controls="controls" poster="<%=contextRoot%>web/demo/detailed_transcript_fullv3_350.png" preload="none">
-                                <source src="<%=contextRoot%>web/demo/detailed_transcript_fullv3.mp4" type="video/mp4">
-                                <source src="<%=contextRoot%>web/demo/detailed_transcript_fullv3.webm" type="video/webm">
+                        	<video id="demoVid" width="375"  controls="controls" poster="/web/demo/detailed_transcript_fullv3_350.png" preload="none">
+                                <source src="/web/demo/detailed_transcript_fullv3.mp4" type="video/mp4">
+                                <source src="/web/demo/detailed_transcript_fullv3.webm" type="video/webm">
                             
-                              	<object data="<%=contextRoot%>web/demo/detailed_transcript_fullv3.mp4" width="375">
+                              	<object data="/web/demo/detailed_transcript_fullv3.mp4" width="375">
                               	</object>
                         	</video><BR />
-                            <div id="showOpenLargeVideo" style="display:none;text-align:center; width:100%;"><a href="<%=contextRoot%>web/demo/largerDemo.jsp?demoPath=web/demo/detailed_transcript_fullv3" class="button" style="width:180px;" target="_blank" >View larger version</a></div>
+                            <div id="showOpenLargeVideo" style="display:none;text-align:center; width:100%;"><a href="/web/demo/largerDemo.jsp?demoPath=web/demo/detailed_transcript_fullv3" class="button" style="width:180px;" target="_blank" >View larger version</a></div>
                             <!--<H3><a href="<%=contextRoot%>web/demo/mainDemo.jsp?file=<%=contextRoot%>web/demo/test." target="_blank">Open in a new Window</a></H3><BR />
                             <H3><a href="<%=contextRoot%>web/demo/mainDemo.jsp" target="_blank">View other demo videos</a></H3> -->
                         </div>

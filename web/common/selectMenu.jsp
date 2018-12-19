@@ -12,7 +12,7 @@
 	//SET Selected Menu and Selected Function based on menu choice.
 	
 	if(url.equals(contextRoot+"index.jsp")||
-		url.equals(commonDir+"ovrvw_transcript_details.jsp") ||
+		url.equals(commonDir+"ovrvw_transcript_detail.jsp") ||
 		url.equals(commonDir+"ovrvw_whats_new.jsp") ||
 		url.equals(commonDir+"ovrvw_downloads.jsp") ||
 		url.equals(commonDir+"ovrvw_microarray_tools.jsp") ||
