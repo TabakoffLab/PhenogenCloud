@@ -233,7 +233,7 @@ public class AsyncGeneDataTools extends Thread {
                 "(s.psstart <= "+min+" and s.psstop >="+min+") ) "+
                 "and s.psannotation = 'transcript' " +
                 "and s.updatedlocation = 'Y' "+
-                "and s.Array_TYPE_ID = " + arrayTypeID +" )";
+                "and s.Array_TYPE_ID = " + arrayTypeID;
 
         // Original version
         /*
