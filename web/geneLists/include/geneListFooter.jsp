@@ -11,6 +11,7 @@
 if(userLoggedIn.getUser_name().equals("anon")){
 %>
 <script type="text/javascript">
+    $("div#wait1").hide();
     $(document).ready(function() {
         var PhenogenAnonSession = SetupAnonSession();
         PhenogenAnonSession.setupSession(setupGeneLists);
