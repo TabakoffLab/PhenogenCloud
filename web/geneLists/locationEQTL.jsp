@@ -609,6 +609,7 @@ log.debug("after call");
       </div> <!-- end div#eQTLRegionConfiguration -->
 
         <script type="text/javascript">
+            $("div#wait1").hide();
             $(document).ready(function(){
                 setupPage();
             }); // document ready

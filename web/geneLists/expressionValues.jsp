@@ -403,6 +403,7 @@
   <div class="load">Loading...</div>
 
   <script type="text/javascript">
+      $("div#wait1").hide();
  	 var arrayVAdjust=0;
 	 var arrayV;
 	 var groupM;

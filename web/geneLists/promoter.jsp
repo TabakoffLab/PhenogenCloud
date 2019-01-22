@@ -427,6 +427,7 @@
     var id=<%=selectedGeneList.getGene_list_id()%>;
     var pathImage="<%=imagesDir%>";
     var analysisPath="/web/geneLists/include/getPromoterAnalyses.jsp";
+    $("div#wait1").hide();
     function setupGeneLists(){
 
     }

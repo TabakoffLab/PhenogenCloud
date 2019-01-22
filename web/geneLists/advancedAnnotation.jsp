@@ -186,4 +186,8 @@
 	</div>
 		  <div class="itemDetails"></div>
 
+	<script type="javascript">
+        $("div#wait1").hide();
+	</script>
+
 <%@ include file="/web/common/footer_adaptive.jsp" %>
