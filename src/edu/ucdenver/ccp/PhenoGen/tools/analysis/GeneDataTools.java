@@ -645,7 +645,7 @@ public class GeneDataTools {
         boolean error=false;
 
             //Define output directory
-            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/" +organism+ chromosome+"_"+minCoord+"_"+maxCoord;
+            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/" +organism+ chromosome+"_"+minCoord+"_"+maxCoord+"/";
             //+"_"+datePart + "/";
             //session.setAttribute("geneCentricPath", outputDir);
             log.debug("checking for path:"+outputDir);
