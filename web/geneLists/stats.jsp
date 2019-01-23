@@ -208,6 +208,7 @@
 	</div>
 	<div class="brClear"> </div>
 	<script type="text/javascript">
+        $("div#wait1").hide();
 		$(document).ready(function() {
 			setupPage();
                         $("span#exportBtn").on("click",function(){

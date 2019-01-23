@@ -117,6 +117,7 @@
  
 	<%@ include file="/web/geneLists/include/setupJS.jsp" %>
 	<script type="text/javascript">
+        $("div#wait1").hide();
                 var goBrwsr=0;
                 var idToDelete=-99;
                 var analysisPath="include/getGOAnalyses.jsp";

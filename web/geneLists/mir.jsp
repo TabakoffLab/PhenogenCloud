@@ -167,6 +167,7 @@
 	<%@ include file="/web/geneLists/include/setupJS.jsp" %>
 	<script type="text/javascript">
 		var mirAutoRefreshHandle=0;
+        $("div#wait1").hide();
 		var analysisPath="/web/geneLists/include/getMultiMiRAnalyses.jsp";
 		$(document).ready(function() {
 			//$( 'div#mirAccord' ).accordion({ heightStyle: "fill"  });
