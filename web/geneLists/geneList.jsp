@@ -160,6 +160,7 @@
 	</div>
 	<div class="brClear"> </div>
 	<script type="text/javascript">
+        $("div#wait1").hide();
 		var geneListLen=<%=myGeneArray.length%>;
 		var defaultLen=100;
 		var geneListdt;

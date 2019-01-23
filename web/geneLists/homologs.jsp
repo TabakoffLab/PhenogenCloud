@@ -185,6 +185,7 @@
 -->
 
 	<script type="text/javascript">
+        $("div#wait1").hide();
 		$(document).ready(function() {
 			setupPage();
 		});

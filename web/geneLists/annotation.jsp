@@ -359,6 +359,7 @@
 	%>
 	
 	<script type="text/javascript">
+        $("div#wait1").hide();
 		$(document).ready(function() {
 			setupPage();
 			setTimeout("setupMain()", 100); 

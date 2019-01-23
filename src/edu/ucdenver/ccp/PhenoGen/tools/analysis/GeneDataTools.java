@@ -356,6 +356,7 @@ public class GeneDataTools {
             log.error("Error saving Transcription Detail Usage",e);
         }
         Date endDBSetup=new Date();
+        log.debug("Insert usage:"+(endDBSetup.getTime()-start.getTime())+"ms");
         //EnsemblIDList can be a comma separated list break up the list
         String[] ensemblList = ensemblIDList.split(",");
         String ensemblID1 = ensemblList[0];
@@ -434,6 +435,7 @@ public class GeneDataTools {
             setError("No Ensembl IDs");
         }
         Date endFindGen=new Date();
+        log.debug("\nFindGene:"+(endFindGen.getTime()-endDBSetup.getTime())+"ms");
         if(error){
             result=(String)session.getAttribute("genURL");
         }
@@ -468,6 +470,7 @@ public class GeneDataTools {
             }
             endRegion=new Date();
         }
+        log.debug("\ngetRegion:"+(endRegion.getTime()-endFindGen.getTime())+"ms");
         try(Connection conn=pool.getConnection()){
             PreparedStatement ps=conn.prepareStatement(updateSQL, 
 						ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -605,12 +608,12 @@ public class GeneDataTools {
         Date start = new Date();
         GregorianCalendar gc = new GregorianCalendar();
         gc.setTime(start);
-        String datePart=Integer.toString(gc.get(gc.MONTH)+1)+
+        /*String datePart=Integer.toString(gc.get(gc.MONTH)+1)+
                 Integer.toString(gc.get(gc.DAY_OF_MONTH))+
                 Integer.toString(gc.get(gc.YEAR))+"_"+
                 Integer.toString(gc.get(gc.HOUR_OF_DAY))+
                 Integer.toString(gc.get(gc.MINUTE))+
-                Integer.toString(gc.get(gc.SECOND));
+                Integer.toString(gc.get(gc.SECOND));*/
         String rOutputPath = "";
         outputDir="";
         String result="";
@@ -642,15 +645,15 @@ public class GeneDataTools {
         boolean error=false;
 
             //Define output directory
-            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/" +organism+ chromosome+"_"+minCoord+"_"+maxCoord+"_"+datePart + "/";
+            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/" +organism+ chromosome+"_"+minCoord+"_"+maxCoord;
+            //+"_"+datePart + "/";
             //session.setAttribute("geneCentricPath", outputDir);
             log.debug("checking for path:"+outputDir);
-            String folderName = organism+chromosome+"_"+minCoord+"_"+maxCoord+"_"+datePart;
+            String folderName = organism+chromosome+"_"+minCoord+"_"+maxCoord;
+            // +"_"+datePart;
             //String publicPath = H5File.substring(H5File.indexOf("/Datasets/") + 10);
             //publicPath = publicPath.substring(0, publicPath.indexOf("/Affy.NormVer.h5"));
-            RegionDirFilter rdf=new RegionDirFilter(organism+ chromosome+"_"+minCoord+"_"+maxCoord+"_");
-            File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/");
-            File[] list=mainDir.listFiles(rdf);
+
             try {
                 File geneDir=new File(outputDir);
                 File errorFile=new File(outputDir+"errMsg.txt");
@@ -671,6 +674,9 @@ public class GeneDataTools {
                             //this.setError(errors);
                         }
                 }else{
+                    /*RegionDirFilter rdf=new RegionDirFilter(organism+ chromosome+"_"+minCoord+"_"+maxCoord+"_");
+                    File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/");
+                    File[] list=mainDir.listFiles(rdf);
                     if(list.length>0){
                         outputDir=list[0].getAbsolutePath()+"/";
                         int second=outputDir.lastIndexOf("/",outputDir.length()-2);
@@ -688,10 +694,10 @@ public class GeneDataTools {
                             //error=true;
                             //this.setError(errors);
                         }
-                    }else{
+                    }else{*/
                         generateRegionFiles(organism,genomeVer,source.get("ensembl"),folderName,RNADatasetID,arrayTypeID,source.get("ucsc"));
                         result="New Region generated successfully";
-                    }
+                    //}
                 }
                 
                 
@@ -775,12 +781,12 @@ public class GeneDataTools {
         Date start = new Date();
         GregorianCalendar gc = new GregorianCalendar();
         gc.setTime(start);
-        String datePart=Integer.toString(gc.get(gc.MONTH)+1)+
+        /*String datePart=Integer.toString(gc.get(gc.MONTH)+1)+
                 Integer.toString(gc.get(gc.DAY_OF_MONTH))+
                 Integer.toString(gc.get(gc.YEAR))+"_"+
                 Integer.toString(gc.get(gc.HOUR_OF_DAY))+
                 Integer.toString(gc.get(gc.MINUTE))+
-                Integer.toString(gc.get(gc.SECOND));
+                Integer.toString(gc.get(gc.SECOND));*/
         String rOutputPath = "";
         outputDir="";
         String result="";
@@ -797,15 +803,16 @@ public class GeneDataTools {
         boolean error=false;
 
             //Define output directory
-            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+imgStr +organism+ chromosome+"_"+minCoord+"_"+maxCoord+"_"+datePart + "/";
+            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+imgStr +organism+ chromosome+"_"+minCoord+"_"+maxCoord+ "/";
             //session.setAttribute("geneCentricPath", outputDir);
             log.debug("checking for path:"+outputDir);
-            String folderName = imgStr +organism+chromosome+"_"+minCoord+"_"+maxCoord+"_"+datePart;
+            String folderName = imgStr +organism+chromosome+"_"+minCoord+"_"+maxCoord;
+            //+"_"+datePart;
             //String publicPath = H5File.substring(H5File.indexOf("/Datasets/") + 10);
             //publicPath = publicPath.substring(0, publicPath.indexOf("/Affy.NormVer.h5"));
-            RegionDirFilter rdf=new RegionDirFilter(imgStr+organism+ chromosome+"_"+minCoord+"_"+maxCoord+"_");
+            /*RegionDirFilter rdf=new RegionDirFilter(imgStr+organism+ chromosome+"_"+minCoord+"_"+maxCoord+"_");
             File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/");
-            File[] list=mainDir.listFiles(rdf);
+            File[] list=mainDir.listFiles(rdf);*/
             try {
                 File geneDir=new File(outputDir);
                 File errorFile=new File(outputDir+"errMsg.txt");
@@ -821,7 +828,7 @@ public class GeneDataTools {
                             generateRegionFiles(organism,genomeVer,source.get("ensembl"),folderName,RNADatasetID,arrayTypeID,source.get("ucsc"));
                         }
                 }else{
-                    if(list.length>0){
+                    /*if(list.length>0){
                         
                         outputDir=list[0].getAbsolutePath()+"/";
                         int second=outputDir.lastIndexOf("/",outputDir.length()-2);
@@ -836,10 +843,10 @@ public class GeneDataTools {
                             result="Previous Result had errors. Trying again.";
                             generateRegionFiles(organism,genomeVer,source.get("ensembl"),folderName,RNADatasetID,arrayTypeID,source.get("ucsc"));
                         }
-                    }else{
+                    }else{*/
                         generateRegionFiles(organism,genomeVer,source.get("ensembl"),folderName,RNADatasetID,arrayTypeID,source.get("ucsc"));
                         result="New Region generated successfully";
-                    }
+                    //}
                 }
                 
                 
@@ -2945,7 +2952,7 @@ public class GeneDataTools {
             chr=chr.substring(3);
         }
         log.debug("getFolderName:"+organism+"chr"+chr+"_"+min+"_"+max+"_");
-        RegionDirFilter rdf=new RegionDirFilter(organism+"chr"+chr+"_"+min+"_"+max+"_");
+        /*RegionDirFilter rdf=new RegionDirFilter(organism+"chr"+chr+"_"+min+"_"+max+"_");
         log.debug(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData");
         File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData");
         File[] list=mainDir.listFiles(rdf);    
@@ -2956,7 +2963,8 @@ public class GeneDataTools {
             folder=tmpOutputDir.substring(second+1,tmpOutputDir.length()-1);
                         
         }
-        log.debug(folder);
+        log.debug(folder);*/
+        folder=organism+"chr"+chr+"_"+min+"_"+max;
         return folder;
     }
     

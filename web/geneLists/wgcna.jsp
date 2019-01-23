@@ -83,6 +83,7 @@
     
 <%@ include file="/web/GeneCentric/resultsHelp.jsp" %>
 <script type="text/javascript">
+    $("div#wait1").hide();
     $('.helpImage').on('click', function(event){
 			var id=$(this).attr('id');
 			$('#'+id+'Content').dialog( "option", "position",{ my: "right top", at: "left bottom", of: $(this) });

@@ -47,6 +47,7 @@
 			<input type="hidden" name="geneListID" value="<%=selectedGeneList.getGene_list_id()%>" >
         	</form>
 <script type="text/javascript">
+    $("div#wait1").hide();
 	$(document).ready(function() {
 		setTimeout("setupMain()", 100); 
 	});
