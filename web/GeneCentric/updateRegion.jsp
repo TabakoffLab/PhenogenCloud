@@ -105,7 +105,7 @@ if(request.getParameter("forwardPValueCutoff")!=null){
 		elapsed=cur.getTime()-start.getTime();
 	}
 	String tmpOutput=agdt.getPath();
-	int startInd=tmpOutput.lastIndexOf("/",tmpOutput.length()-2);
+	int startInd=tmpOutput.indexOf("regionData/")+11;
 	String foldername=tmpOutput.substring(startInd,tmpOutput.length()-1);
 	
 	

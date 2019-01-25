@@ -294,26 +294,21 @@ public class GeneDataTools {
         if(ensemblID1!=null && !ensemblID1.equals("")){
             //Define output directory
             String tmpoutputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/geneData/" + ensemblID1 + "/";
-            //session.setAttribute("geneCentricPath", outputDir);
             log.debug("checking for path:"+tmpoutputDir);
             String folderName = ensemblID1;
-            //String publicPath = H5File.substring(H5File.indexOf("/Datasets/") + 10);
-            //publicPath = publicPath.substring(0, publicPath.indexOf("/Affy.NormVer.h5"));
-            
-           
-        String[] loc=null;
-        try{
-                loc=myFH.getFileContents(new File(tmpoutputDir+"location.txt"));
-        }catch(IOException e){
-                log.error("Couldn't load location for gene.",e);
-        }
-        if(loc!=null){
-                chrom=loc[0];
-                minCoord=Integer.parseInt(loc[1]);
-                maxCoord=Integer.parseInt(loc[2]);
-        }
-        //log.debug("getGeneCentricData->getRegionData");
-        ret=this.getImageRegionData(chrom, minCoord, maxCoord, panel, organism,genomeVer, RNADatasetID, arrayTypeID, 0.001,false);
+            String[] loc=null;
+            try{
+                    loc=myFH.getFileContents(new File(tmpoutputDir+"location.txt"));
+            }catch(IOException e){
+                    log.error("Couldn't load location for gene.",e);
+            }
+            if(loc!=null){
+                    chrom=loc[0];
+                    minCoord=Integer.parseInt(loc[1]);
+                    maxCoord=Integer.parseInt(loc[2]);
+            }
+            //log.debug("getGeneCentricData->getRegionData");
+            ret=this.getImageRegionData(chrom, minCoord, maxCoord, panel, organism,genomeVer, RNADatasetID, arrayTypeID, 0.001,false);
         }else{
             ret="";
         }
@@ -497,7 +492,7 @@ public class GeneDataTools {
         return ret;
     }
     
-    public HashMap<String,Integer> getRegionTrackList(String chromosome,int min,int max,String panel,String myOrganism,String genomeVer,int rnaDatasetID,int arrayTypeID,String track){
+    /*public HashMap<String,Integer> getRegionTrackList(String chromosome,int min,int max,String panel,String myOrganism,String genomeVer,int rnaDatasetID,int arrayTypeID,String track){
         HashMap<String,Integer> ret=new HashMap<String,Integer>();
         chromosome=chromosome.toLowerCase();
         if(!chromosome.startsWith("chr")){
@@ -508,12 +503,12 @@ public class GeneDataTools {
         Date start = new Date();
         GregorianCalendar gc = new GregorianCalendar();
         gc.setTime(start);
-        String datePart=Integer.toString(gc.get(gc.MONTH)+1)+
-                Integer.toString(gc.get(gc.DAY_OF_MONTH))+
-                Integer.toString(gc.get(gc.YEAR))+"_"+
-                Integer.toString(gc.get(gc.HOUR_OF_DAY))+
-                Integer.toString(gc.get(gc.MINUTE))+
-                Integer.toString(gc.get(gc.SECOND));
+        //String datePart=Integer.toString(gc.get(gc.MONTH)+1)+
+        //        Integer.toString(gc.get(gc.DAY_OF_MONTH))+
+        //        Integer.toString(gc.get(gc.YEAR))+"_"+
+        //        Integer.toString(gc.get(gc.HOUR_OF_DAY))+
+        //        Integer.toString(gc.get(gc.MINUTE))+
+        //        Integer.toString(gc.get(gc.SECOND));
         
         HashMap<String,String> source=this.getGenomeVersionSource(genomeVer);
         
@@ -522,15 +517,13 @@ public class GeneDataTools {
         boolean error=false;
 
             //Define output directory
-            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/" +myOrganism+ chromosome+"_"+minCoord+"_"+maxCoord+"_"+datePart + "/";
+            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+chromosome+"/"+minCoord+"_"+maxCoord+"/";
             //session.setAttribute("geneCentricPath", outputDir);
             log.debug("checking for path:"+outputDir);
-            String folderName = myOrganism+chromosome+"_"+minCoord+"_"+maxCoord+"_"+datePart;
-            //String publicPath = H5File.substring(H5File.indexOf("/Datasets/") + 10);
-            //publicPath = publicPath.substring(0, publicPath.indexOf("/Affy.NormVer.h5"));
-            RegionDirFilter rdf=new RegionDirFilter(myOrganism+ chromosome+"_"+minCoord+"_"+maxCoord+"_");
-            File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/");
-            File[] list=mainDir.listFiles(rdf);
+            String folderName = myOrganism+chromosome+"_"+minCoord+"_"+maxCoord;
+            //RegionDirFilter rdf=new RegionDirFilter(myOrganism+ chromosome+"_"+minCoord+"_"+maxCoord+"_");
+            //File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/");
+            //File[] list=mainDir.listFiles(rdf);
             try {
                 File geneDir=new File(outputDir);
                 File errorFile=new File(outputDir+"errMsg.txt");
@@ -580,7 +573,7 @@ public class GeneDataTools {
         ret=Gene.readGeneIDList(outputDir+track+".xml");
         log.debug("getRegionData() returning gene list of size:"+ret.size());
         return ret;
-    }
+    }*/
     
     public ArrayList<Gene> getMergedRegionData(String chromosome,int minCoord,int maxCoord,
             String panel,
@@ -645,11 +638,11 @@ public class GeneDataTools {
         boolean error=false;
 
             //Define output directory
-            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/" +organism+ chromosome+"_"+minCoord+"_"+maxCoord+"/";
+            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+chromosome+"/"+minCoord+"_"+maxCoord+"/";
             //+"_"+datePart + "/";
             //session.setAttribute("geneCentricPath", outputDir);
             log.debug("checking for path:"+outputDir);
-            String folderName = organism+chromosome+"_"+minCoord+"_"+maxCoord;
+            String folderName = "/"+chromosome+"/"+minCoord+"_"+maxCoord;
             // +"_"+datePart;
             //String publicPath = H5File.substring(H5File.indexOf("/Datasets/") + 10);
             //publicPath = publicPath.substring(0, publicPath.indexOf("/Affy.NormVer.h5"));
@@ -794,7 +787,7 @@ public class GeneDataTools {
         this.maxCoord=maxCoord;
         this.chrom=chromosome;
         String inputID=organism+":"+chromosome+":"+minCoord+"-"+maxCoord;
-        String imgStr="img";
+        String imgStr="img_";
         if(!img){
             imgStr="";
         }
@@ -803,10 +796,10 @@ public class GeneDataTools {
         boolean error=false;
 
             //Define output directory
-            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+imgStr +organism+ chromosome+"_"+minCoord+"_"+maxCoord+ "/";
+            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+chromosome+"/"+imgStr+minCoord+"_"+maxCoord+ "/";
             //session.setAttribute("geneCentricPath", outputDir);
             log.debug("checking for path:"+outputDir);
-            String folderName = imgStr +organism+chromosome+"_"+minCoord+"_"+maxCoord;
+            String folderName = "/"+chromosome+"/"+imgStr+minCoord+"_"+maxCoord;
             //+"_"+datePart;
             //String publicPath = H5File.substring(H5File.indexOf("/Datasets/") + 10);
             //publicPath = publicPath.substring(0, publicPath.indexOf("/Affy.NormVer.h5"));

@@ -377,7 +377,7 @@ public class AsyncGeneDataTools extends Thread {
             
     }
     
-    public boolean callDEHeatMap(String outputDir,String chr, int min, int max,int arrayTypeID,int rnaDS_ID,String genomeVer){
+    /*public boolean callDEHeatMap(String outputDir,String chr, int min, int max,int arrayTypeID,int rnaDS_ID,String genomeVer){
         boolean error=false;
         if(chr.startsWith("chr")){
             chr=chr.substring(3);
@@ -772,7 +772,7 @@ public class AsyncGeneDataTools extends Thread {
             }
         }
         return error;
-    }
+    }*/
     
     public boolean outputRNASeqExprFiles(String outputDir,String chr, int min, int max,String genomeVer){
         boolean success=true;

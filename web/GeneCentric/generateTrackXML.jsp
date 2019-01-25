@@ -107,29 +107,36 @@ if(request.getParameter("genomeVer")!=null){
 
 <% 
 	String status="";
-	if(!track.startsWith("custom")&&bedFile.equals("") && outputFile.equals("") ){
-		status=gdt.generateXMLTrack(chromosome,min,max,panel,track,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,folderName,binSize);
-	}else if(track.startsWith("custom")){
-		log.debug("Generating custom xml track");
-		if(web.startsWith("http")){
-			if(type.equals("bb")||type.equals("bw")){
-				status=gdt.generateCustomRemoteXMLTrack(chromosome,min,max,track,myOrganism,folderName,bedFile,outputFile,type,web,binSize);
-			}
-		}else{
-			if(type.equals("bed")){
-				File tmp=new File(applicationRoot+contextRoot+outputFile);
-				if(tmp.exists()){
-					tmp.delete();
+	try {
+		AsyncGenerateTrack agt = new AsyncGenerateTrack(gdt, session, pool);
+		if (!track.startsWith("custom") && bedFile.equals("") && outputFile.equals("")) {
+			agt.setupGenerateTrackXML(chromosome, min, max, panel, track, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, folderName, binSize);
+		} else if (track.startsWith("custom")) {
+			log.debug("Generating custom xml track");
+			if (web.startsWith("http")) {
+				if (type.equals("bb") || type.equals("bw")) {
+					agt.setupGenerateCustomRemoteTrackXML(chromosome, min, max, track, myOrganism, folderName, bedFile, outputFile, type, web, binSize);
 				}
-				status=gdt.generateCustomBedXMLTrack(chromosome,min,max,track,myOrganism,folderName,bedFile,outputFile);
-			}else if(type.equals("bg")){
-				File tmp=new File(applicationRoot+contextRoot+outputFile);
-				if(tmp.exists()){
-					tmp.delete();
+			} else {
+				if (type.equals("bed")) {
+					File tmp = new File(applicationRoot + contextRoot + outputFile);
+					if (tmp.exists()) {
+						tmp.delete();
+					}
+					agt.setupGenerateCustomBedTrackXML(chromosome, min, max, track, myOrganism, folderName, bedFile, outputFile);
+				} else if (type.equals("bg")) {
+					File tmp = new File(applicationRoot + contextRoot + outputFile);
+					if (tmp.exists()) {
+						tmp.delete();
+					}
+					agt.setupGenerateCustomBedGraphTrackXML(chromosome, min, max, track, myOrganism, folderName, bedFile, outputFile, binSize);
 				}
-				status=gdt.generateCustomBedGraphXMLTrack(chromosome,min,max,track,myOrganism,folderName,bedFile,outputFile,binSize);
 			}
 		}
+		agt.start();
+		status="success";
+	}catch(Exception e){
+	    status="failed:"+e.toString();
 	}
 	JSONObject genejson;
 	genejson = new JSONObject();
