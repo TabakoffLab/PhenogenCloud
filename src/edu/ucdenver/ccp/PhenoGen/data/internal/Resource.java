@@ -903,7 +903,7 @@ public class Resource {
 	 */
 	public Resource[] getRNASeqResources() {
 		log.debug("in getRNASeqResources");
-                String seqFilePath="/userFiles/public/RNASeq/";
+		String seqFilePath="/downloads/RNASeq/";
 		List<Resource> resourceList = new ArrayList<Resource>();
                 
                 SAMDataFile[] bnlxFileList = new SAMDataFile[4];
@@ -1017,19 +1017,24 @@ public class Resource {
 	 */
 	public Resource[] getGTFResources() {
 		log.debug("in getRNASeqResources");
-                String seqFilePath="/userFiles/public/RNASeq/";
+                String seqFilePath="/downloads/RNASeq/";
 		List<Resource> resourceList = new ArrayList<Resource>();
                 
-                SAMDataFile[] brainGTFList = new SAMDataFile[1];
+                SAMDataFile[] brainGTFList = new SAMDataFile[2];
                 brainGTFList[0]=new SAMDataFile("HXB Brain Rn6 GTF v1 (5/31/2016)",seqFilePath+"HXB.Brain.rn6.gtf.zip","Rn6");
+                brainGTFList[1]=new SAMDataFile("HXB Brain Rn6 GTF with Merged IDs v1 (5/31/2016)",seqFilePath+"HXB.Brain.rn6.Merged.v1.gtf.zip","Rn6");
                 resourceList.add(new Resource(120, "Rat", "BN-Lx/CubPrin,SHR/OlaIpcvPrin","Whole Brain", brainGTFList, "Cufflinks" ));
-                SAMDataFile[] heartGTFList = new SAMDataFile[1];
+                SAMDataFile[] heartGTFList = new SAMDataFile[2];
                 heartGTFList[0]=new SAMDataFile("HXB Heart Rn6 GTF v1 (4/6/2016)",seqFilePath+"HXB.Heart.rn6.gtf.zip","Rn6");
+                heartGTFList[1]=new SAMDataFile("HXB Heart Rn6 GTF with Merged IDs v1 (4/6/2016)",seqFilePath+"HXB.Heart.rn6.Merged.v1.gtf.zip","Rn6");
                 resourceList.add(new Resource(121, "Rat", "BN-Lx/CubPrin,SHR/OlaIpcvPrin","Heart", heartGTFList, "Cufflinks" ));
-                SAMDataFile[] liverGTFList = new SAMDataFile[1];
+                SAMDataFile[] liverGTFList = new SAMDataFile[2];
                 liverGTFList[0]=new SAMDataFile("HXB Liver Rn6 GTF v1 (4/6/2016)",seqFilePath+"HXB.Liver.rn6.gtf.zip","Rn6");
+                liverGTFList[1]=new SAMDataFile("HXB Liver Rn6 GTF with Merged IDs v1 (4/6/2016)",seqFilePath+"HXB.Liver.rn6.Merged.v1.gtf.zip","Rn6");
                 resourceList.add(new Resource(122, "Rat", "BN-Lx/CubPrin,SHR/OlaIpcvPrin","Liver", liverGTFList, "Cufflinks" ));
-                
+                SAMDataFile[] mergedGTFList = new SAMDataFile[1];
+                mergedGTFList[0]=new SAMDataFile("HXB Merged Tissue Rn6 GTF v1 (5/31/2016)",seqFilePath+"HXB.Merged.rn6.v1.gtf.zip","Rn6");
+                resourceList.add(new Resource(123, "Rat", "BN-Lx/CubPrin,SHR/OlaIpcvPrin","Whole Brain", mergedGTFList, "Cufflinks" ));
                 Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
 		return resourceArray;
 
