@@ -85,7 +85,7 @@ mouseOnly.probeMouse=1;
 
 var mmVer="Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer="Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer="PhenoGen v3.5.1(1/24/2019)";
+var siteVer="PhenoGen v3.5.2(2/4/2019)";
 
 var trackBinCutoff=10000;
 var customTrackLevel=-1;
@@ -193,32 +193,34 @@ function updatePage(topSVG){
 
 function back(level){
 	var tmp={};
-	if(history[level].length>1){
-		tmp=history[level].pop();
-	}else{
-		tmp=history[level][0];
-	}
-	if(chr==tmp.chr){
-		if(tmp.start==svgList[level].xScale.domain()[0]  && tmp.stop==svgList[level].xScale.domain()[1]){
-			if(history[level].length>1){
-				tmp=history[level].pop();
-			}else{
-				tmp=history[level][0];
-			}
-		}
-		if(level==0){
-			$('#geneTxt').val(tmp.chr+":"+tmp.start+"-"+tmp.stop);
-		}
-		svgList[level].xScale.domain([tmp.start,tmp.stop]);
-		svgList[level].scaleSVG.select(".x.axis").call(svgList[level].xAxis);
-		svgList[level].redraw();
-		if(level===0){
-			updatePage(svgList[level]);
-		}
-		svgList[level].updateFullData();
-	}else{//reload
+	if(history && history[level]) {
+        if (history[level].length > 1) {
+            tmp = history[level].pop();
+        } else {
+            tmp = history[level][0];
+        }
+        if (chr == tmp.chr) {
+            if (tmp.start == svgList[level].xScale.domain()[0] && tmp.stop == svgList[level].xScale.domain()[1]) {
+                if (history[level].length > 1) {
+                    tmp = history[level].pop();
+                } else {
+                    tmp = history[level][0];
+                }
+            }
+            if (level == 0) {
+                $('#geneTxt').val(tmp.chr + ":" + tmp.start + "-" + tmp.stop);
+            }
+            svgList[level].xScale.domain([tmp.start, tmp.stop]);
+            svgList[level].scaleSVG.select(".x.axis").call(svgList[level].xAxis);
+            svgList[level].redraw();
+            if (level === 0) {
+                updatePage(svgList[level]);
+            }
+            svgList[level].updateFullData();
+        } else {//reload
 
-	}
+        }
+    }
 	if(ga){
 		ga('send','event','stepBackSVGNaviation','navigateBack');
 	}
@@ -242,6 +244,9 @@ function zoomIn(level,zoomScale){
 		tmp.stop=tmp.stop+contractBy;
 	}
 	svgList[level].xScale.domain([tmp.start,tmp.stop]);
+	if(!history[level]){
+		history[level]=[];
+	}
 	history[level].push(tmp);
 	svgList[level].scaleSVG.select(".x.axis").call(svgList[level].xAxis);
 	svgList[level].redraw();
@@ -282,6 +287,9 @@ function zoomOut(level,zoomScale){
 	tmp.start=tmp.start-expandBy;
 	tmp.stop=tmp.stop+expandBy;
 	svgList[level].xScale.domain([tmp.start,tmp.stop]);
+    if(!history[level]){
+        history[level]=[];
+    }
 	history[level].push(tmp);
 	svgList[level].scaleSVG.select(".x.axis").call(svgList[level].xAxis);
 	svgList[level].redraw();
@@ -313,6 +321,9 @@ function mup() {
 	var i=0,p,start,width,minx,maxx;
 	for (i=0; i<svgList.length; i++){
 		if(svgList[i] && typeof svgList[i] !=='undefined'){
+            if(!history[i] && (i==0||i==1)){
+                history[i]=[];
+            }
 			if( (!svgList[i].overSettings || svgList[i].overSettings==0) && (!isNaN(svgList[i].downx) || !isNaN(svgList[i].downPanx)) ){
 				if(i===0){
 					updatePage(svgList[i]);
@@ -784,6 +795,9 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
         that.allowSelectGenomeVer=allowSelectGenomeVer;
     }
     if(levelNumber<20){
+        if(!history[levelNumber] ){
+            history[levelNumber]=[];
+        }
 	    try{
 			history[levelNumber].push(tmp);
 		}catch(err){
@@ -3647,6 +3661,7 @@ function Track(gsvgP,dataP,trackClassP,labelP){
 							tmp.chr=chr;
 							tmp.start=minx;
 							tmp.stop=maxx;
+                            if(!history[that.gsvg.levelNumber]){history[that.gsvg.levelNumber]=[];}
 							history[that.gsvg.levelNumber].push(tmp);
 						}
 					}
