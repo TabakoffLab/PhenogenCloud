@@ -80,10 +80,10 @@ public class JacksonLab{
   public void run() {
 
 	try {
-		String accFileName = "/data/iDecoder/InputFiles/MGI/MGIFile.txt";
-		String logDBFileName = "/data/iDecoder/InputFiles/MGI/LogDBFile.txt";
+		String accFileName = "/s3/iDecoder/InputFiles/MGI/MGIFile.txt";
+		String logDBFileName = "/s3/iDecoder/InputFiles/MGI/LogDBFile.txt";
 
-        	Connection jacksonConn = new PropertiesConnection().getConnection("/Library/Tomcat/webapps/PhenoGen/web/common/dbProperties/jacksonMgd.properties");
+        	Connection jacksonConn = new PropertiesConnection().getConnection("/usr/share/tomcat/webapps/PhenoGen/web/common/dbProperties/jacksonMgd.properties");
 
 		JacksonLab myJacksonLab = new JacksonLab();
 
@@ -104,8 +104,8 @@ public class JacksonLab{
 
 
 	try {
-		String accFileName = "/Users/smahaffey/iDecoder/InputFiles/MGI/MGIFile.txt";
-		String logDBFileName = "/Users/smahaffey/iDecoder/InputFiles/MGI/LogDBFile.txt";
+		String accFileName = "/s3/iDecoder/InputFiles/MGI/MGIFile.txt";
+		String logDBFileName = "/s3/iDecoder/iDecoder/InputFiles/MGI/LogDBFile.txt";
 
         	Connection jacksonConn = new PropertiesConnection().getConnection("/usr/share/tomcat/webapps/PhenoGen/web/common/dbProperties/jacksonMgd.properties");
 

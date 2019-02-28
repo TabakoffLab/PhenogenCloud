@@ -21,10 +21,12 @@ public class AffymetrixExonParser extends InputFileParser {
     private static final String AFFY_INPUT_DIRECTORY_PROP_NM = "affyInputDirectory";
     private static final String AFFY_PROBESET_FILENAMES= "affyExonProbesetFilenameList";
     private static final String AFFY_TRANSCRIPT_FILENAMES= "affyExonTranscriptFilenameList";
+	private static final String AFFY_GENE_FILENAMES= "affyGeneFilenameList";
 
     // Columns are comma-separated, but values are surrounded by quotes; so the
     // real delimiter is: ","
     private static final String INPUT_COLUMN_DELIM = "\",\"";
+	private static final String INPUT_GENE_COLUMN_DELIM = "\t";
 
     // Some columns pertain to more than one value (e.g., gene ID), and are
     // separated by a space followed by three slashes followed by a space
@@ -45,7 +47,42 @@ public class AffymetrixExonParser extends InputFileParser {
     public String getInputSource() {
         return INPUT_SOURCE;
     }
+	// javadoc in superclass
+	public void processAllGeneInputFiles() throws IOException {
+		final Map fileMap = PropertiesHelper.getFileMap();
 
+		String inputDirectory = createFileSpec((String) fileMap.get(INPUT_DIRECTORY),
+				(String) fileMap.get(AFFY_INPUT_DIRECTORY_PROP_NM));
+
+		// There are multiple Affy exon input files of each type -- probeset and transcript
+		// Each type has a separate format.  Filenames are separated by a comma.
+		String[] geneFilenames = ((String) fileMap.get(AFFY_GENE_FILENAMES)).split(",");
+
+
+
+		long startTime;
+
+		String organismShort = "";
+		for (int i = 0; i < geneFilenames.length; i++) {
+			organismShort = geneFilenames[i].substring(0,2);
+			String chipName = (organismShort.equals("Ra") ? "Affymetrix Rat Gene 2.1 ST Array" : "Unknown");
+			String organism = (String) PropertiesHelper.getExonPrefixToOrganismMap().get(organismShort);
+			String taxonID = (String) PropertiesHelper.getOrganismToTaxonIDMap().get(organism);
+
+			startTime = System.currentTimeMillis();
+			String fileSpec = createFileSpec(inputDirectory,geneFilenames[i].trim());
+			if(fileSpec.endsWith("_publicDB.tsv")){
+				processGenePublicDBFile(fileSpec, taxonID, chipName);
+			}else if(fileSpec.endsWith("_annotation.tsv")){
+				processGeneAnnotationFile(fileSpec, taxonID, chipName);
+			}else{
+				System.out.println("Unknown File type: "+fileSpec);
+			}
+			System.out.println("processed " + fileSpec + "\t"
+					+ (System.currentTimeMillis() - startTime) / 1000 + " seconds");
+		}
+
+	}
     // javadoc in superclass
     public void processAllInputFiles() throws IOException {
         final Map fileMap = PropertiesHelper.getFileMap();
@@ -58,7 +95,7 @@ public class AffymetrixExonParser extends InputFileParser {
         String[] probesetFilenames = ((String) fileMap.get(AFFY_PROBESET_FILENAMES)).split(",");
         String[] transcriptFilenames = ((String) fileMap.get(AFFY_TRANSCRIPT_FILENAMES)).split(",");
         
-        initializeOutputFiles();
+
         
         long startTime; 
 
@@ -91,8 +128,171 @@ public class AffymetrixExonParser extends InputFileParser {
 			+ (System.currentTimeMillis() - startTime) / 1000 + " seconds");
 	}
         
-        finalizeOutputFiles();
+
     }
+
+
+	/*
+	 * The Affymetrix exon probeset file contains one entry type per
+	 * column, as specified in the first row in the file.
+	 *
+	 * A column may contain more than one entry. For instance, a probe set ID
+	 * may pertain to more than one gene, so the column for gene_assignment will
+	 * contain more than one ID, each separated by 3 slashes "///". Empty cells
+	 * contains three hyphens "---".
+	 *
+	 * The only primary ID derived from this file is the Probe Set IDs (a.k.a., Affymetrix
+	 * ID). All other relevant columns contain link IDs to other databases.
+	 *
+	 */
+	private void processGeneAnnotationFile(String inputFilename, String taxonID, String chipName)
+			throws IOException {
+		BufferedReader reader = createInputFileReader(inputFilename);
+		String line;
+		String[] columns;
+
+		while (reader.ready()) {
+			line = reader.readLine();
+			//System.out.println(line);
+			if (line.substring(0,1).equals("#")) {
+				writeToErrorFile(line, "Comment");
+				continue;
+			}
+			columns = line.split(INPUT_GENE_COLUMN_DELIM);
+
+			// TEMP: There are some spurious carriage-returns in the middle of
+			// cells in the input data, which look to the parser like a new row;
+			// for now, dump the line to stderr and ignore the row
+			/*if (columns.length < 39) {
+				writeToErrorFile(line, "Too few columns");
+				continue;
+			}*/
+			String chr = columns[1];
+
+			// column[38] describes the design category of the probe set.
+			// Only use the 'main' probesets
+			// this column will have residual quotes at the end (from the
+			// split()), so use substring() to ignore them
+			String probeset_type = "main";
+			//System.out.println("Type:"+probeset_type);
+			// If the probeset_type does not equal 'main', ignore it because it is a
+			// control probeset
+			if (chr.equals("---") || chr.equals("Chromosome")) {
+				probeset_type="control";
+				writeToErrorFile(line, "Affy control probe:");
+				continue;
+			}
+
+			// column[0] will have residual quotes at the beginning (from the
+			// split()), so use substring() to ignore them
+			String affyID = columns[0].trim().replaceAll("\"","");
+
+			// The chromosome column starts with 'chr'
+			if(chr.startsWith("chr")){
+				chr=chr.substring(3);
+			}
+			String strand = "";
+			String start = columns[3];
+			int iStr=Integer.parseInt(columns[3]);
+			int endI=iStr+Integer.parseInt(columns[4]);
+			String end = Integer.toString(endI);
+
+			String mapLocation = getMapLocation(start, end, strand);
+
+
+			writeToInfoFile(taxonID, AFFY_ID_TYPE, affyID, chr, mapLocation, chipName);
+		}
+
+		reader.close();
+	}
+
+	private void processGenePublicDBFile(String inputFilename, String taxonID, String chipName)
+			throws IOException {
+		BufferedReader reader = createInputFileReader(inputFilename);
+		String line;
+		String[] columns;
+
+		while (reader.ready()) {
+			line = reader.readLine();
+			//System.out.println(line);
+			if (line.substring(0,1).equals("#")) {
+				writeToErrorFile(line, "Comment");
+				continue;
+			}
+			columns = line.split(INPUT_GENE_COLUMN_DELIM);
+
+			// TEMP: There are some spurious carriage-returns in the middle of
+			// cells in the input data, which look to the parser like a new row;
+			// for now, dump the line to stderr and ignore the row
+			/*if (columns.length < 39) {
+				writeToErrorFile(line, "Too few columns");
+				continue;
+			}*/
+			String trxList = columns[1];
+
+			// column[38] describes the design category of the probe set.
+			// Only use the 'main' probesets
+			// this column will have residual quotes at the end (from the
+			// split()), so use substring() to ignore them
+			String probeset_type = "main";
+			//System.out.println("Type:"+probeset_type);
+			// If the probeset_type does not equal 'main', ignore it because it is a
+			// control probeset
+			if (trxList.equals("---") || trxList.equals("Transcript ID")) {
+				probeset_type="control";
+				writeToErrorFile(line, "Affy control probe:");
+				continue;
+			}
+
+			// column[0] will have residual quotes at the beginning (from the
+			// split()), so use substring() to ignore them
+			String affyID = columns[0].trim().replaceAll("\"","");
+
+			String[] transcriptAssignments = splitListColumns(columns[1]);
+			String[] geneAssignments = splitListColumns(columns[2]);
+			String[] sourceDB = splitListColumns(columns[3]);
+			String[] entrez = splitListColumns(columns[4]);
+			if(geneAssignments != null && geneAssignments.length > 0) {
+				Set<String> geneSymbolIDs = new TreeSet<String>();
+				for(int i=0;i<geneAssignments.length;i++){
+					if(geneAssignments[i]!=null && geneAssignments[i].length()>0) {
+						geneSymbolIDs.add(geneAssignments[i]);
+					}
+				}
+				writeCollectionToLinksFile(AFFY_ID_TYPE, affyID, GENE_SYMBOL_TYPE, geneSymbolIDs);
+			}
+			if(entrez.length>0){
+				Set<String> genbankIDs = new TreeSet<String>();
+				for(int i=0;i<entrez.length;i++){
+					if(entrez[i]!=null && entrez[i].length()>0) {
+						genbankIDs.add(entrez[i]);
+					}
+				}
+				writeCollectionToLinksFile(AFFY_ID_TYPE, affyID, ENTREZ_GENE_ID_TYPE, genbankIDs);
+			}
+			if (transcriptAssignments != null && transcriptAssignments.length > 0) {
+				Set<String> refSeqIDs = new TreeSet<String>();
+				Set<String> ensemblIDs = new TreeSet<String>();
+				Set<String> genbankIDs = new TreeSet<String>();
+				for (int i = 0; i < transcriptAssignments.length; i++) {
+					String id = transcriptAssignments[i];
+					String source=sourceDB[i];
+					//String idType = (isRefSeq(id) ? REF_SEQ_RNA_ID_TYPE : (isEnsembl(id) ? ENSEMBL_ID_TYPE : NCBI_RNA_ID_TYPE));
+					if (source.equals("RefSeq")) {
+						refSeqIDs.add(id);
+					} else if (source.equals("ENSEMBL")) {
+						ensemblIDs.add(id);
+					} else if (source.equals("GenBank")) {
+						genbankIDs.add(id);
+					}
+				}
+				writeCollectionToLinksFile(AFFY_ID_TYPE, affyID, REF_SEQ_RNA_ID_TYPE, refSeqIDs);
+				writeCollectionToLinksFile(AFFY_ID_TYPE, affyID, NCBI_RNA_ID_TYPE, genbankIDs);
+				writeCollectionToLinksFile(AFFY_ID_TYPE, affyID, ENSEMBL_ID_TYPE, ensemblIDs);
+			}
+		}
+		reader.close();
+	}
 
     /*
      * The Affymetrix exon probeset file contains one entry type per
