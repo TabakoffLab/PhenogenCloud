@@ -45,12 +45,12 @@ public class FileGetter extends HttpServlet {
   	System.out.println("In FileGetter");
 	
 	FileGetter myFileGetter = new FileGetter();
-	File devPropertiesFile = new File("/Library/Tomcat/webapps/PhenoGen/web/common/dbProperties/Dev.properties");
+	File devPropertiesFile = new File("/usr/share/tomcat/webapps/PhenoGen/web/common/dbProperties/Dev.properties");
 	Connection dbConn = myFileGetter.getConnection(devPropertiesFile);
 	ObjectHandler myObjectHandler = new ObjectHandler();
 	List<String[]> files = new ArrayList<String[]>();
 
-	String mainDir = "/data/iDecoder/InputFiles/";
+	String mainDir = "/s3/iDecoder/InputFiles/";
 	String flybaseMain = "ftp://ftp.flybase.net/releases/current/precomputed_files/genes/";
 	String ncbiMain = "ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/";
         //JAX site changed
@@ -79,10 +79,10 @@ public class FileGetter extends HttpServlet {
 	files.add(new String[] {affyExonMain, mainDir + "Affymetrix/", "RaEx-1_0-st-v1.na31.rn4.probeset.csv.zip"});
 	files.add(new String[] {affyExonMain, mainDir + "Affymetrix/", "RaEx-1_0-st-v1.na31.rn4.probeset.csv.zip"});
 */
-	files.add(new String[] {flybaseMain, mainDir + "FlyBase/", "fbgn_NAseq_Uniprot_fb_2017_06.tsv.gz"});
-	files.add(new String[] {flybaseMain, mainDir + "FlyBase/", "gene_map_table_fb_2017_06.tsv.gz"}); 
+	files.add(new String[] {flybaseMain, mainDir + "FlyBase/", "fbgn_NAseq_Uniprot_fb_2018_06.tsv.gz"});
+	files.add(new String[] {flybaseMain, mainDir + "FlyBase/", "gene_map_table_fb_2018_06.tsv.gz"});
         
-/*        //OLD Report - as of 4/13/2017 this no longer is available.
+        //OLD Report - as of 4/13/2017 this no longer is available.
 	//files.add(new String[] {mgiMain, mainDir + "MGI/", "MGI_Coordinate_build37.rpt"});
         files.add(new String[] {mgiMain, mainDir + "MGI/", "MGI_Gene_Model_Coord.rpt"});
         files.add(new String[] {ncbiMain, mainDir + "NCBI/", "gene2accession.gz"}); 
@@ -104,7 +104,7 @@ public class FileGetter extends HttpServlet {
 	System.out.println("getting MGIFile.txt");
 	new JacksonLab().run();
 	System.out.println("done getting MGIFile.txt");
-*/
+
 	System.out.println("getting PhenoGen_MergedIDs_rn6.txt");
 	new PhenoGenIDs(phenogenMergedDatasetID,phenogenFilename,dbConn).run();
 	System.out.println("done getting PhenoGen_MergedIDs_rn6.txt");
