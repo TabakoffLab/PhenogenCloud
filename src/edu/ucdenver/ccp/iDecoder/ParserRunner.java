@@ -38,9 +38,20 @@ public class ParserRunner {
 
     private void runAffyExonParser() throws IOException {
         long startTime = System.currentTimeMillis();
-        new AffymetrixExonParser(outputDirectory).processAllInputFiles();
+        AffymetrixExonParser aep=new AffymetrixExonParser(outputDirectory);
+        aep.initializeOutputFiles();
+        aep.processAllGeneInputFiles();
+        System.out.println("Affymetrix Gene total\t"
+                + (System.currentTimeMillis() - startTime) / 1000 + " seconds");
+        startTime = System.currentTimeMillis();
+        aep.processAllInputFiles();
+        aep.finalizeOutputFiles();
         System.out.println("Affymetrix Exon total\t"
                 + (System.currentTimeMillis() - startTime) / 1000 + " seconds");
+    }
+
+    private void runAffyGeneParser() throws IOException {
+
     }
 
     private void runCodeLinkParser() throws IOException {
