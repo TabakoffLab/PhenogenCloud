@@ -14,7 +14,6 @@ public class ParserRunner {
     }
 
     public static void main(String[] args) throws IOException {
-
         ParserRunner runner = new ParserRunner();
         runner.runAffyExonParser();
         runner.runAffyParser();
