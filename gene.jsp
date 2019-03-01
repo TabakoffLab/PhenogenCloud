@@ -684,7 +684,7 @@
     <form method="post"
           action="gene.jsp"
           enctype="application/x-www-form-urlencoded"
-          name="geneCentricForm" id="geneCentricForm">
+          name="geneCentricForm" id="geneCentricForm" style="display:inline-block;">
         <%if (!regionError.equals("")) {%>
         <div style=" color:#FF0000;"><%=regionError%>
         </div>
@@ -746,10 +746,11 @@
         <input type="hidden" name="geneSelect" id="geneSelect" value="<%=selectedGene%>"/>
         <input type="hidden" name="genomeVer" id="genomeVer" value="<%=genomeVer%>"/>
     </form>
-    <BR/>
-    Or
-    <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
-           onClick="openTranslateRegion()">
+
+    <span style="display:inline-block;">
+    Or <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
+              onClick="openTranslateRegion()">
+    </span>
 </div>
 
 <div class="translate">
