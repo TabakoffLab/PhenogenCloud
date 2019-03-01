@@ -72,7 +72,7 @@ public class AffymetrixExonParser extends InputFileParser {
 			startTime = System.currentTimeMillis();
 			String fileSpec = createFileSpec(inputDirectory,geneFilenames[i].trim());
 			if(fileSpec.endsWith("_publicDB.tsv")){
-				processGenePublicDBFile(fileSpec, taxonID, chipName);
+				//processGenePublicDBFile(fileSpec, taxonID, chipName);
 			}else if(fileSpec.endsWith("_annotation.tsv")){
 				processGeneAnnotationFile(fileSpec, taxonID, chipName);
 			}else{
@@ -198,8 +198,6 @@ public class AffymetrixExonParser extends InputFileParser {
 			String end = Integer.toString(endI);
 
 			String mapLocation = getMapLocation(start, end, strand);
-
-
 			writeToInfoFile(taxonID, AFFY_ID_TYPE, affyID, chr, mapLocation, chipName);
 		}
 

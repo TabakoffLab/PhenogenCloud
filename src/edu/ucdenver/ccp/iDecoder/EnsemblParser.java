@@ -88,7 +88,6 @@ public class EnsemblParser extends InputFileParser {
 		columns = line.split(INPUT_COLUMN_DELIM);
             
 		String chromosome = columns[1].trim();
-		//
 		// For some reason, there are chromosome values like 'NT_999...'.  Ignore records containing these
 		if (chromosome.length() > 2) {
 			continue;
