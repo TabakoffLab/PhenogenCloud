@@ -114,6 +114,7 @@ public abstract class InputFileParser {
      * @throws IOException
      *             if there is a problem creating the files or the Writers
      */
+
     protected void initializeOutputFiles() throws IOException {
         infoWriter = createOutputFileWriter(createOutputFileSpec(this.outputDirectory,INFO_FILE_SUFFIX));
         linkWriter = createOutputFileWriter(createOutputFileSpec(this.outputDirectory,LINKS_FILE_SUFFIX));
