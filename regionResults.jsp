@@ -124,6 +124,22 @@ console.log("urlprefix:"+urlprefix);
 		});
     </script>
 <div id="page" style="min-height:1050px;text-align:center;">
+    <BR>
+    <div style="width:100%;text-align:left;"><span class="trigger less" name="shortcutButtons" style="font-weight: bold;font-size:16px;">Shortcuts:</span>
+        <div id="shortcutButtons">
+        <span id="shortcut_buttons">
+            <a class="shrt-button region" href="">Region Gene Expression</a>
+            <a class="shrt-button region" href="">Region Gene eQTLs</a>
+            <a class="shrt-button region" href="">Region WGCNA</a>
+            <a class="shrt-button gene" href="">Gene Summary</a>
+            <a class="shrt-button gene" href="">Gene eQTLs</a>
+            <a class="shrt-button gene" href="">Gene Tissue Expression</a>
+            <a class="shrt-button gene" href="">Gene WGCNA</a>
+            <a class="shrt-button gene" href="">Gene miRNA targeting</a>
+            <a class="shrt-button gene" href="">Gene GO Summary</a>
+        </span>
+        </div>
+    </div>
 	<div style="width:100%;text-align:left;">
 	Not sure where to start: <a href="web/demo/largerDemo.jsp?demoPath=web/demo/BrowserNavDemo" target="_blank">watch a quick navigation demonstration</a> or <a id="fbhelp1" class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help1.1.jpg" title="Navigation Help<BR>Basic Controls on the main image."> view the help images again</a><a id="fbhelp2" class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help2.jpg" title="Controls to select and edit views."></a><a id="fbhelp3" class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help3.jpg" title="Controls to select and edit views."></a>
     </div>
