@@ -1077,15 +1077,15 @@ public class ParameterValue implements Comparable {
                         "CASE when pv.category='AbsoluteCallFilter' then 'Absolute Call Filter' " +
                         " when pv.category= 'MAS5AbsoluteCallFilter' then 'MAS5 Absolute Call Filter' " +
                         " when pv.category= 'DABGPValueFilter' then 'DABG P-Value Filter' " +
-                        " when pv.category='AffyControlGenesFilter' then 'Affy Control Genes Filter', " +
-                        " when pv.category='CodeLinkCallFilter' then 'Codelink Call Filter', " +
-                        " when pv.category='CodeLinkControlGenesFilter' then 'Codelink Control Genes Filter', " +
-                        " when pv.category= 'CoefficientVariationFilter' then 'Coefficient Variation Filter', " +
-                        " when pv.category='GeneSpringCallFilter' then 'Gene Spring Call Filter', " +
-                        " when pv.category='MedianFilter' then 'Median Filter', " +
-                        " when pv.category='GeneListFilter' then 'Gene List Filter', " +
-                        " when pv.category='VariationFilter' then 'Variation Filter', " +
-                        " when pv.category='FoldChangeFilter' then 'Fold Change Filter', " +
+                        " when pv.category='AffyControlGenesFilter' then 'Affy Control Genes Filter' " +
+                        " when pv.category='CodeLinkCallFilter' then 'Codelink Call Filter' " +
+                        " when pv.category='CodeLinkControlGenesFilter' then 'Codelink Control Genes Filter' " +
+                        " when pv.category= 'CoefficientVariationFilter' then 'Coefficient Variation Filter' " +
+                        " when pv.category='GeneSpringCallFilter' then 'Gene Spring Call Filter' " +
+                        " when pv.category='MedianFilter' then 'Median Filter' " +
+                        " when pv.category='GeneListFilter' then 'Gene List Filter' " +
+                        " when pv.category='VariationFilter' then 'Variation Filter' " +
+                        " when pv.category='FoldChangeFilter' then 'Fold Change Filter' " +
                         " else pv.category" +
                         " END " +
                         ",CASE when pv.parameter = 'Parameter 1 is Null' then ' ' " +
@@ -1093,13 +1093,13 @@ public class ParameterValue implements Comparable {
                         "else pv.parameter " +
                         "END ," +
                         "if(pv.value='Null', ' ',pv.value), " +
-                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
+                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p' ), " +
                         "pg.dataset_id, " +
                         "pg.version, " +
                         "pv.value " +
                         "from parameter_values pv, " +
                         "parameter_groups pg " +
-                        "where pv.parameter_group_id = ? " +
+                        "where pv.parameter_group_id = "+parameterGroupID+" "+
                         "and pv.parameter_group_id = pg.parameter_group_id " +
                         "and pv.category != 'Data Normalization' " +
                         "and pv.parameter != 'User ID' " +
@@ -1119,7 +1119,7 @@ public class ParameterValue implements Comparable {
                         "parameter_groups pg " +
                         "where pv.parameter_group_id = pv2.value " +
                         "and pv.parameter_group_id = pg.parameter_group_id " +
-                        "and pv2.parameter_group_id = ? " +
+                        "and pv2.parameter_group_id = "+parameterGroupID+ " "+
                         "and pv2.parameter = 'Parameter Group ID' " +
                         "and pv.category = 'Phenotype Data' " +
                         "and pv.parameter != 'User ID' " +
@@ -1129,7 +1129,7 @@ public class ParameterValue implements Comparable {
                         "pv.category, " +
                         "grps.group_name parameter, " +
                         "pv.value, " +
-                        "date_format(pv.create_date, %m/%d/%Y %h:%i %p'), " +
+                        "date_format(pv.create_date, '%m/%d/%Y %h:%i %p'), " +
                         "pg.dataset_id, " +
                         "pg.version, " +
                         "pv.value " +
@@ -1143,7 +1143,7 @@ public class ParameterValue implements Comparable {
                         "and gl.dataset_id = dv.dataset_id " +
                         "and gl.version = dv.version " +
                         "and dv.grouping_id = grps.grouping_id " +
-                        "and pv2.parameter_group_id = ? " +
+                        "and pv2.parameter_group_id = " +  parameterGroupID + " "+
                         "and pv.parameter = convert(grps.group_number,char) " +
                         "and pv2.category = 'Phenotype Data' " +
                         "and pv2.parameter = 'Parameter Group ID' " +
@@ -1158,7 +1158,7 @@ public class ParameterValue implements Comparable {
 
         //log.debug("query = "+ query);
         try(Connection conn =pool.getConnection()) {
-            Results myResults = new Results(query, new Object[]{parameterGroupID, parameterGroupID, parameterGroupID}, conn);
+            Results myResults = new Results(query, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
                 ParameterValue newParameterValue = setupParameterValue(dataRow);
