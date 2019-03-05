@@ -8,7 +8,7 @@
 	String myOrganism="Rn";
 	String id="";
 	String chromosome="";
-        String genomeVer="";
+	String genomeVer="";
 	
 	String[] selectedLevels=null;
 	String levelString="core;extended;full";

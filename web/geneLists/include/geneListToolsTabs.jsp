@@ -11,7 +11,7 @@
 <div class="action_tabs">
     <div id="list" class="single" data-landingPage="geneList"><span>List</span></div>
     <div id="annotation" class="single" data-landingPage="annotation"><span>Annotation</span></div>
-    <div id="loc_eQTL" data-landingPage="locationEQTL"><span>Location<BR/>(eQTL)</span></div>
+    <div id="loc_eQTL" data-landingPage="locationEQTL2"><span>Location<BR/>(eQTL)</span></div>
     <%if (!userLoggedIn.getUser_name().equals("anon")) {%>
     <div id="literature" class="single" data-landingPage="litSearch"><span>Literature </span></div>
     <%}%>
