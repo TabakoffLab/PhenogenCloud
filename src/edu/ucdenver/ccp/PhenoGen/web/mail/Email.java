@@ -33,23 +33,19 @@ public class Email {
     private String content;
     private String subject;
     private String smtpHost;
-    private String adminEmail = "";
+    private String adminEmail = "Spencer.Mahaffey@ucdenver.edu";
     private String SMTP_AUTH_USER = "";
     private String SMTP_AUTH_PWD = "";
 
     public Email() {
-        log = Logger.getRootLogger();
-        SMTP_AUTH_USER = "";
-        SMTP_AUTH_PWD = "";
-        DEFAULT_SERVER = "";
-        from = DEFAULT_FROM;
+        this("/usr/share/tomcat/webapps/PhenoGen/web/common/dbProperties/mail.properties");
     }
 
     public Email(String user, String password, String server, String from) {
         log = Logger.getRootLogger();
         SMTP_AUTH_USER = user;
         SMTP_AUTH_PWD = password;
-        DEFAULT_SERVER = server;
+        smtpHost = server;
         this.from = from;
     }
 
@@ -77,10 +73,12 @@ public class Email {
     }
 
     public void sendEmail() throws MessagingException, SendFailedException {
+        from=DEFAULT_FROM;
         log.info("in Email.sendEmail to:" + to);
         log.info(content);
         content = content + "\n\n\nPlease do not reply to this message.  This message is sent from an unmonitored account.  We welcome any feedback and questions. Please use the form here(http://phenogen.org/web/common/contact.jsp) to submit questions or feedback.";
-
+        log.debug("from:"+from);
+        log.debug("to:"+to);
         Properties props = new Properties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.host", smtpHost);
