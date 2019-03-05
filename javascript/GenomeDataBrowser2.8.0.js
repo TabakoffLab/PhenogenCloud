@@ -2190,6 +2190,31 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 	};
 
 	that.setupFunctionBar=function(){
+		d3.selectAll("span.shrt-button")
+			.on("click",function(){
+				nameSpan=d3.select(this).attr("name");
+				if(nameSpan.toLowerCase().indexOf("gene")>-1) {
+					console.log(":"+selectedID+":");
+					if(selectedID!=="") {
+						if(! $('div#selectedDetail').is(":visible") && selectedID.indexOf("ENS")===0 ) {
+							that.getTrack("ensemblcoding").setSelected(selectedID);
+						}
+						$("span[name='" + nameSpan + "']").click();
+						$('html, body').animate({
+							scrollTop: $("#selectedReport").offset().top
+						}, 1000);
+					}else{
+						alert("You must select a gene from an Ensembl Track before clicking on the gene shortcut.");
+					}
+				}else{
+					$("span.closeDetail").click();
+					$("span#" + nameSpan).click();
+					$('html, body').animate({
+						scrollTop: $("#regionDiv").offset().top
+					}, 1000);
+				}
+			});
+
 		d3.select(div).select("#functLevel"+that.levelNumber).remove();
 		//Setup Function Bar
 		that.functionBar=that.vis.append("div").attr("class","functionBar")
@@ -5799,7 +5824,7 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
 					}else{
 						console.log("tmp[0]");
 						console.log(tmp);
-						Rollbar.debug("tmp[0] is undefined.  tmp.length is "+tmp.length+":"+geneID+":"+that.gsvg.levelNumber+":"+that.trackClass);
+						//Rollbar.debug("tmp[0] is undefined.  tmp.length is "+tmp.length+":"+geneID+":"+that.gsvg.levelNumber+":"+that.trackClass);
 					}
 				}
 

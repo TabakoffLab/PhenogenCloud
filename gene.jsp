@@ -746,7 +746,7 @@
         <input type="hidden" name="geneSelect" id="geneSelect" value="<%=selectedGene%>"/>
         <input type="hidden" name="genomeVer" id="genomeVer" value="<%=genomeVer%>"/>
     </form>
-
+    <BR>
     <span style="display:inline-block;">
     Or <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
               onClick="openTranslateRegion()">

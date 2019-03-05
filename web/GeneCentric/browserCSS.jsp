@@ -266,7 +266,7 @@ table.tooltipTable TD{
         }
         
         .triggerEC {
-            padding-left: 8px;
+            padding-right: 8px;
         }
         
         table tr.col_title th {
@@ -305,7 +305,8 @@ table.tooltipTable TD{
                 float:left;
             }
         }
-a.shrt-button{
+span.shrt-button{
+    cursor: pointer;
     display:inline-block;
     padding:0.3em 1.2em;
     margin:0 0.3em 0.3em 0;
@@ -319,17 +320,17 @@ a.shrt-button{
     text-align:center;
     transition: all 0.2s;
 }
-a.shrt-button.gene{
+span.shrt-button.gene{
     background-color:#00992D;
 }
-a.shrt-button:hover{
+span.shrt-button:hover{
     background-color:#1f72b2;
 }
-a.shrt-button.gene:hover{
+span.shrt-button.gene:hover{
     background-color:#00790D;
 }
 @media all and (max-width:30em){
-    a.shrt-button{display:block;margin:0.2em auto;}
+    span.shrt-button{display:block;margin:0.2em auto;}
 }
 
 </style>
