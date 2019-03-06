@@ -8,14 +8,13 @@
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setDateHeader("Expires", 0);
-
+    extrasList.add("jquery.twosidedmultiselect.js");
+    extrasList.add("tsmsselect.css");
     optionsList.add("geneListDetails");
     optionsList.add("chooseNewGeneList");
     if(userLoggedIn.getUser_name().equals("anon")){
         optionsListModal.add("linkEmail");
     }
-
-
     LinkedHashSet iDecoderSetForGenes = (session.getAttribute("iDecoderSet") != null ?
             new LinkedHashSet((Set) session.getAttribute("iDecoderSet")) : null);
 
@@ -32,8 +31,10 @@
 <% } %>
 
 <%
+    gdt.setSession(session);
+    String uuid="";
 
-    String org="Rn";
+    String org=selectedGeneList.getOrganism();
     String id="";
     String chromosome="";
     String genomeVer="";
@@ -48,7 +49,9 @@
     ArrayList<String>geneSymbol=new ArrayList<String>();
 
 
-
+    if(request.getParameter("uuid") !=null){
+        uuid=FilterInput.getFilteredInput(request.getParameter("uuid"));
+    }
     if(request.getParameter("levels")!=null && !request.getParameter("levels").equals("") && !request.getParameter("levels").equals("null")){
         String tmpSelectedLevels = FilterInput.getFilteredInput(request.getParameter("levels"));
         selectedLevels=tmpSelectedLevels.split(";");
@@ -63,29 +66,34 @@
         log.debug("Getting selected levels: NULL Using defaults.");
         selectedLevels=levelString.split(";");
     }
-
+    log.debug("Getting species:"+request.getParameter("species"));
     if(request.getParameter("species")!=null && !request.getParameter("species").equals("null") ){
         org=FilterInput.getFilteredInput(request.getParameter("species").trim());
         if(org.equals("Rn")){
             panel="BNLX/SHRH";
             fullOrg="Rattus_norvegicus";
+            genomeVer="rn6";
         }else{
             panel="ILS/ISS";
             fullOrg="Mus_musculus";
+            genomeVer="mm10";
         }
     }else{
-
+        if(org.equals("Rn")){
+            panel="BNLX/SHRH";
+            fullOrg="Rattus_norvegicus";
+            genomeVer="rn6";
+        }else{
+            panel="ILS/ISS";
+            fullOrg="Mus_musculus";
+            genomeVer="mm10";
+        }
     }
-    if(request.getParameter("chromosome")!=null && !request.getParameter("chromosome").equals("")){
+    log.debug("Getting chromosomes:"+request.getParameter("chromosome"));
+    if(request.getParameter("chromosome")!=null && !request.getParameter("chromosome").equals("null")){
         chromosome=FilterInput.getFilteredInput(request.getParameter("chromosome"));
     }
 
-
-    if(request.getParameter("geneSymbol")!=null){
-        geneSymbol.add(FilterInput.getFilteredInput(request.getParameter("geneSymbol")));
-    }else{
-        geneSymbol.add("None");
-    }
     if(request.getParameter("id")!=null){
         id=FilterInput.getFilteredInput(request.getParameter("id"));
     }
@@ -96,7 +104,10 @@
         genomeVer=request.getParameter("genomeVer");
     }
 
-    gcPath=applicationRoot + contextRoot+"tmpData/browserCache/"+genomeVer+"/geneData/" +id+"/";
+    gcPath=applicationRoot + contextRoot+"tmpData/"+userLoggedIn.getUser_name()+"/GeneLists/";
+    if(userLoggedIn.getUser_name().equals("anon")){
+        gcPath=gcPath+uuid+"/"+selectedGeneList.getGene_list_id()+"/";
+    }
 
     String[] tissuesList1=new String[1];
     String[] tissuesList2=new String[1];
@@ -125,21 +136,6 @@
         tissuesList1[0]="Brain";
         tissuesList2[0]="Whole Brain";
     }
-    int rnaDatasetID=0;
-    int arrayTypeID=0;
-
-
-    int[] tmp=gdt.getOrganismSpecificIdentifiers(org,genomeVer);
-    if(tmp!=null&&tmp.length==2){
-        rnaDatasetID=tmp[1];
-        arrayTypeID=tmp[0];
-    }
-    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList=gdt.getGeneCentricData(id,id,panel,org,genomeVer,rnaDatasetID,arrayTypeID,true);
-
-    log.debug("OPENED GENE:"+id);
-
-    //response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-    //response.setDateHeader("Expires", 0);
 
 %>
 <BR />
@@ -152,12 +148,12 @@
 
 <style type="text/css">
     /* Recommended styles for two sided multi-select*/
-    .tsmsselect {
+    .genemultiselect {
         width: 40%;
         float: left;
     }
 
-    .tsmsselect select {
+    .genemultiselect select {
         width: 100%;
     }
 
@@ -207,12 +203,11 @@
         }
         var path="<%=gcPath%>";
 
-        var geneSymbol="<%=geneSymbol.get(selectedGene)%>";
         $.ajax({
-            url: "/web/GeneCentric/runCircos.jsp",
+            url: "/web/geneLists/runCircosGeneList.jsp",
             type: 'GET',
             cache: false,
-            data: {cutoffValue:pval,transcriptClusterID:tcID,tissues:tisList,chromosomes:chrList,geneCentricPath:path,hiddenGeneSymbol:geneSymbol,genomeVer:genomeVer,source:source},
+            data: {cutoffValue:pval,transcriptClusterID:tcID,tissues:tisList,chromosomes:chrList,geneCentricPath:path,genomeVer:genomeVer,source:source},
             dataType: 'html',
             beforeSend: function(){
             },
@@ -255,7 +250,6 @@
 <%
     String selectedCutoffValue = null;
     String transcriptClusterFileName = null;
-    String geneSymbolinternal= geneSymbol.get(selectedGene);
     String geneCentricPath = gcPath;
     String[] selectedChromosomes = null;
     String[] selectedTissues = null;
@@ -277,87 +271,8 @@
         log.debug(" Selected Cutoff Value " + selectedCutoffValue);
 
     }
-    transcriptClusterFileName = geneCentricPath.concat("tmp_psList_transcript.txt");
-    //
-    // Read in transcriptClusterID information from file
-    // Also get the chromosome that corresponds to the gene symbol
-    //
-    boolean fileError=false;
-    try{
-        log.debug("readFile:"+transcriptClusterFileName);
-        transcriptClusterArray = myFileHandler.getFileContents(new File(transcriptClusterFileName));
-        log.debug("TranscriptClusterArray:\n"+transcriptClusterArray.length);
-    }catch(IOException e){
-        fileError=true;
-    }
-    String[] columns;
-    log.debug("transcriptClusterArray length = "+transcriptClusterArray.length);
-    // If the length of the transcript Cluster Array is 0, return an error.
-    if(transcriptClusterArray==null || transcriptClusterArray.length == 0){
-        log.debug(" the transcript cluster file is empty ");
-        transcriptClusterArray = new String[1];
-        transcriptClusterArray[0]="No Available	xx	xxxxxxxx	xxxxxxxx	Transcripts";
-        log.debug(transcriptClusterArray[0]);
-        transcriptError = true;
-    }
-    else{
-        transcriptError = false;
-        // Need to change the transcript Cluster Array
-        // Only include ambiguous if there are no other transcript clusters
-        // Order the transcript cluster array so core is first, full is next, then extended, then ambiguous
-        transcriptClusterArrayOrder = new int[transcriptClusterArray.length];
-        for(int i=0; i < transcriptClusterArray.length; i++){
-            transcriptClusterArrayOrder[i] = -1;
-        }
-        int numberOfTranscriptClusters = 0;
-        for(int i=0; i < transcriptClusterArray.length; i++){
-            columns = transcriptClusterArray[i].split("\t");
-            if(columns[4].equals("core")){
-                transcriptClusterArrayOrder[numberOfTranscriptClusters]=i;
-                numberOfTranscriptClusters++;
-            }
-        }
-        for(int i=0; i < transcriptClusterArray.length; i++){
-            columns = transcriptClusterArray[i].split("\t");
-            if(columns[4].equals("extended")){
-                transcriptClusterArrayOrder[numberOfTranscriptClusters]=i;
-                numberOfTranscriptClusters++;
-            }
-        }
-        for(int i=0; i < transcriptClusterArray.length; i++){
-            columns = transcriptClusterArray[i].split("\t");
-            if(columns[4].equals("full")){
-                transcriptClusterArrayOrder[numberOfTranscriptClusters]=i;
-                numberOfTranscriptClusters++;
-            }
-        }
-        if(numberOfTranscriptClusters < 1){
-            for(int i=0; i < transcriptClusterArray.length; i++){
-                columns = transcriptClusterArray[i].split("\t");
-                if(columns[4].equals("ambiguous")){
-                    transcriptClusterArrayOrder[numberOfTranscriptClusters]=i;
-                    numberOfTranscriptClusters++;
-                }
-            }
-            for(int i=0; i < transcriptClusterArray.length; i++){
-                columns = transcriptClusterArray[i].split("\t");
-                if(columns[4].equals("free")){
-                    transcriptClusterArrayOrder[numberOfTranscriptClusters]=i;
-                    numberOfTranscriptClusters++;
-                }
-            }
-        }
-    }
-    // Populate the variable geneChromosome with the chromosome in the first line
-    // The chromosome should always be the same for every line in this file
-    String geneChromosome = "Y";
-    columns = transcriptClusterArray[0].split("\t");
-    geneChromosome = columns[1];
-    if(geneChromosome.toLowerCase().startsWith("chr")){
-        geneChromosome.substring(3);
-    }
-    log.debug(" geneChromosome "+geneChromosome);
-    String speciesGeneChromosome = species.toLowerCase() + geneChromosome;
+
+
 
     //
     // Create chromosomeNameArray and chromosomeSelectedArray
@@ -437,251 +352,172 @@
 
 
 <div style="text-align:center;">
-    <%if(fileError){%>
 
-    </tbody>
-    </table>
-    <div style="display:block; color:#FF0000;">There was an error retrieving transcripts for <%=geneSymbolinternal%>.  Try refreshing the page.  The website administrator has been informed of the error. </div>
-    <%}else if(transcriptError==null){ // check before adding the transcript cluster id to the form.  If there is an error, end the form here.%>
-    </tbody>
-    </table>
-    <div style="display:block; color:#FF0000;">There was an error retrieving transcripts for <%=geneSymbolinternal%>.  The website administrator has been informed.</div>
-    <%}else if(transcriptError){ // check before adding the transcript cluster id to the form.  If there is an error, end the form here.%>
-    </tbody>
-    </table>
-    <div style="display:block; color:#FF0000;">There are no available transcript cluster IDs for <%=geneSymbolinternal%>.  Please choose a different gene to view eQTL.</div>
-    <%} else{ // go ahead and make the rest of the form for entering options%>
     <div style="font-size:18px; font-weight:bold; background-color:#47c647; color:#FFFFFF;width:100%;text-align:left;">
         <span class="trigger less triggerEC" id="circosOption1" name="circosOption" >eQTL Image Options</span>
         <span class="eQTLtooltip" title="The controls in this section allow you to change the chromosomes and tissues included in the image as well as the P-value threshold.  If you can't see them click on the + icon.  Once you make changes click on the Click to Run Circos button."><img src="<%=imagesDir%>icons/info.gif"></span>
     </div>
-    <table id="circosOptTbl" name="items" class="list_base" cellpadding="0" cellspacing="3" style="width:100%;text-align:left;" >
-        <tbody id="circosOption">
+    <div id="circosOption">
+        <div style="text-align: center;">
+            <strong>Data Source:</strong>
+            <span class="eQTLtooltip" title="RNA-Seq eQTLs and Microarray eQTLs are available at the gene/transcript cluster level.  Please note the label at the top of the image will indicate the data source for the image displayed."><img src="<%=imagesDir%>icons/info.gif"></span>
+            <%
+                selectName = "sourceCB";
 
-        <tr>
-            <TD>
-                <strong>Data Source:</strong>
-                <span class="eQTLtooltip" title="RNA-Seq eQTLs and Microarray eQTLs are available at the gene/transcript cluster level.  Please note the label at the top of the image will indicate the data source for the image displayed."><img src="<%=imagesDir%>icons/info.gif"></span>
-                <%
-                    selectName = "sourceCB";
+                selectedOption =source;
+                onChange = "changeSource()";
+                style = "";
+                optionHash = new LinkedHashMap();
+                optionHash.put("seq", "RNA-Seq");
+                optionHash.put("array", "Microarrays");
+            %><%@ include file="/web/common/selectBox.jsp" %>
+            <span style="padding-left:20px;"><strong>P-value Threshold for Highlighting:</strong></span>
+            <span class="eQTLtooltip" title="Loci with p-values below the chosen threshold are highlighted on the Circos plot in yellow; a line connects the significant loci with the physical location of the gene. All p-values are displayed on the Circos graphic as the negative log base 10 of the p-value."><img src="<%=imagesDir%>icons/info.gif"></span>
 
-                    selectedOption =source;
-                    onChange = "changeSource()";
-                    style = "";
-                    optionHash = new LinkedHashMap();
-                    optionHash.put("seq", "RNA-Seq");
-                    optionHash.put("array", "Microarrays");
-                %><%@ include file="/web/common/selectBox.jsp" %>
+            <%
+                selectName = "cutoffValue";
+                if(selectedCutoffValue!=null){
+                    selectedOption = selectedCutoffValue;
+                }
+                else{
+                    selectedOption = "2.0";
+                }
+                onChange = "";
+                style = "";
+                optionHash = new LinkedHashMap();
+                optionHash.put("1.0", "0.10");
+                optionHash.put("2.0", "0.01");
+                optionHash.put("3.0", "0.001");
+                optionHash.put("4.0", "0.0001");
+                optionHash.put("5.0", "0.00001");
+            %>
+            <%@ include file="/web/common/selectBox.jsp" %>
+        </div>
+        <table id="circosOptTbl" name="items" class="list_base" cellpadding="0" cellspacing="3" style="width:100%;text-align:left;" >
+            <tbody >
+            <TR class="allowChromSelection" >
+                <%if(org.equals("Rn")){%>
+                <TD colspan="2" style="text-align:left; width:50%;">
+                    <table style="width:100%;">
+                        <tbody>
+                        <tr>
+                            <td style="text-align:center;">
+                                <strong>Tissues: Include at least one tissue.</strong>
+                                <span class="eQTLtooltip" title="Select tissues to be displayed in Circos plot by using arrows to move tissues to the box on the right.
+    Moving tissues to the box on the left will eliminate them from the Circos plot.
+    At least one tissue MUST be included in the Circos plot."><img src="<%=imagesDir%>icons/info.gif"></span>
+                            </td>
+                        </tr>
+                        <TR>
+                            <td style="text-align:center;">
+                                <strong>Excluded</strong><%=tenSpaces%><%=twentyFiveSpaces%><%=twentySpaces%><strong>Included</strong>
+                            </td>
+                        </TR>
+                        <tr>
+                            <td>
 
-            </td>
-            <td style="text-align:center;">
-                <strong>P-value Threshold for Highlighting:</strong>
-                <span class="eQTLtooltip" title="Loci with p-values below the chosen threshold are highlighted on the Circos plot in yellow; a line connects the significant loci with the physical location of the gene. All p-values are displayed on the Circos graphic as the negative log base 10 of the p-value."><img src="<%=imagesDir%>icons/info.gif"></span>
+                                <select name="tissuesMS" id="tissuesMS" class="genemultiselect" size="6" multiple="true">
 
-                <%
-                    selectName = "cutoffValue";
-                    if(selectedCutoffValue!=null){
-                        selectedOption = selectedCutoffValue;
-                    }
-                    else{
-                        selectedOption = "2.0";
-                    }
-                    onChange = "";
-                    style = "";
-                    optionHash = new LinkedHashMap();
-                    optionHash.put("1.0", "0.10");
-                    optionHash.put("2.0", "0.01");
-                    optionHash.put("3.0", "0.001");
-                    optionHash.put("4.0", "0.0001");
-                    optionHash.put("5.0", "0.00001");
-                %>
-                <%@ include file="/web/common/selectBox.jsp" %>
-            </td>
+                                    <%
 
-
-            <td id="trxClusterCB" style="text-align:center;<%if(source.equals("seq")){%>display:none;<%}%>">
-                <strong>Transcript Cluster ID:</strong>
-                <span class="eQTLtooltip" title="On the Affymetrix Exon Array, gene level expression summaries are labeled as transcript clusters.
-    Each gene may have more than one transcript cluster associated with it, due to differences in annotation among databases and therefore, differences in which individual exons (probe sets) are included in the transcript cluster.  <BR><BR>
-    Transcript clusters given the designation of &ldquo;core&rdquo; are based on well-curated annotation on the gene.
-    &ldquo;Extended&rdquo; and &ldquo;full&rdquo; transcript clusters are based on gene properties that are less thoroughly curated and more putative, respectively.
-    Transcript clusters labeled as &ldquo;free&rdquo; or &ldquo;ambiguous&rdquo; have are highly putative for several reasons and therefore are only included in the drop-down menu if no other transcript clusters are available."><img src="<%=imagesDir%>icons/info.gif"></span>
-                <!--<div class="inpageHelp" style="display:inline-block;">
-                <img id="Help9b" src="/web/images/icons/help.png"/>
-                </div>-->
-
-                <%
-                    // Set up the select box:
-                    selectName = "transcriptClusterID";
-                    if(selectedTranscriptValue!=null){
-                        log.debug(" selected Transcript Value "+selectedTranscriptValue);
-                        selectedOption = selectedTranscriptValue;
-                    }
-                    onChange = "";
-                    style = "";
-                    optionHash = new LinkedHashMap();
-                    String transcriptClusterString = null;
-                    for (int i=0; i<transcriptClusterArray.length; i++) {
-
-                        if(transcriptClusterArrayOrder[i] >-1){
-
-
-                            columns = transcriptClusterArray[transcriptClusterArrayOrder[i]].split("\t");
-                            transcriptClusterString = transcriptClusterArray[transcriptClusterArrayOrder[i]];
-                            String tmpGeneSym="";
-                            if(columns.length>5){
-                                tmpGeneSym=" ("+columns[5]+")";
-                            }
-                            optionHash.put(transcriptClusterString,columns[0]+ " " + columns[4] +tmpGeneSym );
-                        }
-                    }
-                    //log.debug(" optionHash for Transcript Cluster ID: "+optionHash);
-
-                %>
-                <%@ include file="/web/common/selectBox.jsp" %>
-            </td>
-
-        </tr>
-
-        <input type="hidden" id="hiddenGeneCentricPath" name="hiddenGeneCentricPath" value=<%=geneCentricPath%> />
-        <input type="hidden" id="hiddenGeneSymbol" name="hiddenGeneSymbol" value=<%=geneSymbolinternal%> />
-
-
-
-
-
-
-        <TR class="allowChromSelection" >
-            <%if(org.equals("Rn")){%>
-            <TD colspan="2" style="text-align:left; width:50%;">
-                <table style="width:100%;">
-                    <tbody>
-                    <tr>
-                        <td style="text-align:center;">
-                            <strong>Tissues: Include at least one tissue.</strong>
-                            <span class="eQTLtooltip" title="Select tissues to be displayed in Circos plot by using arrows to move tissues to the box on the right.
-Moving tissues to the box on the left will eliminate them from the Circos plot.
-At least one tissue MUST be included in the Circos plot."><img src="<%=imagesDir%>icons/info.gif"></span>
-                        </td>
-                    </tr>
-                    <TR>
-                        <td style="text-align:center;">
-                            <strong>Excluded</strong><%=tenSpaces%><%=twentyFiveSpaces%><%=twentySpaces%><strong>Included</strong>
-                        </td>
-                    </TR>
-                    <tr>
-                        <td>
-
-                            <select name="tissuesMS" id="tissuesMS" class="genemultiselect" size="6" multiple="true">
-
-                                <%
-
-                                    for(int i = 0; i < numberOfTissues; i ++){
-                                        tissueSelected=isNotSelectedText;
-                                        if(selectedTissues != null){
-                                            for(int j=0; j< selectedTissues.length ;j++){
-                                                if(selectedTissues[j].equals(tissueNameArray[i])){
-                                                    tissueSelected=isSelectedText;
-                                                }
-                                            }
-                                        }
-
-
-                                %>
-
-                                <option value="<%=tissueNameArray[i]%>" selected><%=tissuesList1[i]%></option>
-
-                                <%} // end of for loop
-                                %>
-
-                            </select>
-
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </TD>
-            <%} // end of checking species is Rn %>
-            <TD style="text-align:left; width:50%;">
-                <table style="width:100%;">
-                    <tbody>
-                    <tr>
-                        <td style="text-align:center;">
-                            <strong>Chromosomes: (<%=chromosome%> must be included)</strong>
-                            <span class="eQTLtooltip" title="Select chromosomes to be displayed in Circos plot by using arrows to move chromosomes to the box on the right.
-Moving chromosomes to the box on the left will eliminate them from the Circos plot.
-The chromosome where the gene is physically located MUST be included in the Circos plot."><img src="<%=imagesDir%>icons/info.gif"></span>
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td style="text-align:center;">
-                            <strong>Excluded</strong><%=tenSpaces%><%=twentyFiveSpaces%><%=twentySpaces%><strong>Included</strong>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-
-                            <select name="chromosomesMS" id="chromosomesMS" class="genemultiselect" size="6" multiple="true">
-
-                                <%
-
-                                    for(int i = 0; i < numberOfChromosomes; i ++){
-                                        chromosomeSelected=isNotSelectedText;
-                                        if(chromosomeDisplayArray[i].substring(4).equals(chromosome)){
-                                            chromosomeSelected=isSelectedText;
-                                        }
-                                        else {
-                                            if(selectedChromosomes != null){
-                                                for(int j=0; j< selectedChromosomes.length ;j++){
-                                                    //log.debug(" selectedChromosomes element "+selectedChromosomes[j]+" "+chromosomeNameArray[i]);
-                                                    if(selectedChromosomes[j].equals(chromosomeNameArray[i])){
-                                                        chromosomeSelected=isSelectedText;
+                                        for(int i = 0; i < numberOfTissues; i ++){
+                                            tissueSelected=isNotSelectedText;
+                                            if(selectedTissues != null){
+                                                for(int j=0; j< selectedTissues.length ;j++){
+                                                    if(selectedTissues[j].equals(tissueNameArray[i])){
+                                                        tissueSelected=isSelectedText;
                                                     }
                                                 }
                                             }
-                                        }
 
 
-                                %>
+                                    %>
 
-                                <option value="<%=chromosomeNameArray[i]%>" selected><%=chromosomeDisplayArray[i]%></option>
+                                    <option value="<%=tissueNameArray[i]%>" selected><%=tissuesList1[i]%></option>
 
-                                <%} // end of for loop
-                                %>
+                                    <%} // end of for loop
+                                    %>
 
-                            </select>
+                                </select>
 
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </TD>
-        </TR>
-        <tr>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </TD>
+                <%} // end of checking species is Rn %>
+                <TD style="text-align:left; width:50%;">
+                    <table style="width:100%;">
+                        <tbody>
+                        <tr>
+                            <td style="text-align:center;">
+                                <strong>Chromosomes: (<%=chromosome%> must be included)</strong>
+                                <span class="eQTLtooltip" title="Select chromosomes to be displayed in Circos plot by using arrows to move chromosomes to the box on the right.
+    Moving chromosomes to the box on the left will eliminate them from the Circos plot.
+    The chromosome where the gene is physically located MUST be included in the Circos plot."><img src="<%=imagesDir%>icons/info.gif"></span>
+                            </td>
 
-            <td colspan="3" style="text-align:center;">
-                <INPUT TYPE="submit" NAME="action" id="clickToRunCircos" Value="Click to run Circos" onClick="return runCircos()" style="display:inline-block;">
-                <div style="float: right;display:inline-block"><a href="http://genome.cshlp.org/content/early/2009/06/15/gr.092759.109.abstract" target="_blank" style="text-decoration: none">Circos: an Information Aesthetic for Comparative Genomics.</a></div>
-            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <strong>Excluded</strong><%=tenSpaces%><%=twentyFiveSpaces%><%=twentySpaces%><strong>Included</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+
+                                <select name="chromosomesMS" id="chromosomesMS" class="genemultiselect" size="6" multiple="true">
+
+                                    <%
+
+                                        for(int i = 0; i < numberOfChromosomes; i ++){
+                                            chromosomeSelected=isNotSelectedText;
+                                            if(chromosomeDisplayArray[i].substring(4).equals(chromosome)){
+                                                chromosomeSelected=isSelectedText;
+                                            }
+                                            else {
+                                                if(selectedChromosomes != null){
+                                                    for(int j=0; j< selectedChromosomes.length ;j++){
+                                                        //log.debug(" selectedChromosomes element "+selectedChromosomes[j]+" "+chromosomeNameArray[i]);
+                                                        if(selectedChromosomes[j].equals(chromosomeNameArray[i])){
+                                                            chromosomeSelected=isSelectedText;
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+
+                                    %>
+
+                                    <option value="<%=chromosomeNameArray[i]%>" selected><%=chromosomeDisplayArray[i]%></option>
+
+                                    <%} // end of for loop
+                                    %>
+
+                                </select>
+
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </TD>
+            </TR>
+            <tr>
+
+                <td colspan="3" style="text-align:center;">
+                    <input type="hidden" id="hiddenGeneCentricPath" name="hiddenGeneCentricPath" value=<%=geneCentricPath%> />
+                    <INPUT TYPE="submit" NAME="action" id="clickToRunCircos" Value="Click to run Circos" onClick="return runCircos()" style="display:inline-block;">
+                    <div style="float: right;display:inline-block"><a href="http://genome.cshlp.org/content/early/2009/06/15/gr.092759.109.abstract" target="_blank" style="text-decoration: none">Circos: an Information Aesthetic for Comparative Genomics.</a></div>
+                </td>
 
 
 
-        </tr>
-        </tbody>
-    </table>
-
-
+            </tr>
+            </tbody>
+        </table>
+    </div>
     <BR>
     <BR /><BR /><BR />
-
-
-
-    <%
-        } // end of if(transcriptError)
-    %>
-
-
     <div id="wait2" align="center" style="position:relative;top:-50px;"><img src="<%=imagesDir%>wait.gif" alt="Working..." text-align="center" >
         <BR />Preparing to run Circos...</div>
 
@@ -723,11 +559,8 @@ The chromosome where the gene is physically located MUST be included in the Circ
             interactiveTolerance: 350
         });
 
-        if($('#transcriptClusterID').length===1){
-            runCircos();
-        }else if(source==="seq"){
-            runCircos();
-        }
+        runCircos();
+
         $('#circosIFrame').attr('width',$(window).width()-50);
         $(window).resize(function (){
             $('#circosIFrame').attr('width',$(window).width()-50);
