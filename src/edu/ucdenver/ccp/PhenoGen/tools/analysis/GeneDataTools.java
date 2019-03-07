@@ -1000,7 +1000,7 @@ public class GeneDataTools {
             chr=chr.substring(3);
         }
         String organism="Rn";
-        if(genomeVer.startsWith("Mm")){
+        if(genomeVer.toLowerCase().startsWith("mm")){
             organism="Mm";
         }
         String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+organism+"'";
@@ -1039,7 +1039,9 @@ public class GeneDataTools {
                     PreparedStatement psC = conn.prepareStatement(chrQ);
                     ResultSet rsC = psC.executeQuery();
                     if(rsC.next()){
-                        chrID=rsC.getInt(0);
+                        chrID=rsC.getInt(1);
+                    }else{
+                        log.debug("No Rows for CHR:"+chrQ);
                     }
                     rsC.close();
                     psC.close();
@@ -2709,7 +2711,7 @@ public class GeneDataTools {
             PreparedStatement psC = conn.prepareStatement(chrQ);
             ResultSet rsC = psC.executeQuery();
             if(rsC.next()){
-                chrID=rsC.getInt(0);
+                chrID=rsC.getInt(1);
             }
             rsC.close();
             psC.close();
@@ -2826,7 +2828,7 @@ public class GeneDataTools {
                 PreparedStatement psC = conn.prepareStatement(chrQ);
                 ResultSet rsC = psC.executeQuery();
                 if(rsC.next()){
-                    chrID=rsC.getInt(0);
+                    chrID=rsC.getInt(1);
                 }
                 rsC.close();
                 psC.close();
