@@ -1314,7 +1314,7 @@ public class ParameterValue implements Comparable {
                     "	where user_name = 'public')) ";
         }
         query = query + "order by pv.category, pv.parameter";
-
+        log.debug("test_query:\n"+query);
         List<ParameterValue> myParameterValueList = new ArrayList<ParameterValue>();
 
         //log.info("In getParameterValuesForAllDatasetsForUser");

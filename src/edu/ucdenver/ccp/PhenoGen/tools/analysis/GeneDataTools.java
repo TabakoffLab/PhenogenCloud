@@ -999,34 +999,13 @@ public class GeneDataTools {
         if(chr.toLowerCase().startsWith("chr")){
             chr=chr.substring(3);
         }
-        String probeQuery="select s.Probeset_ID "+
-                                "from Chromosomes c, Affy_Exon_ProbeSet s "+
-                                "where s.chromosome_id = c.chromosome_id "+
-                                "and c.name = '"+chr.toUpperCase()+"' "+
-                            "and ( "+
-                            "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
-                            "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
-                            "(s.psstart <= "+min+" and s.psstop >="+min+")"+
-                            ") "+
-                            "and s.psannotation <> 'transcript' " +
-                            "and s.updatedlocation = 'Y' "+
-                            "and s.Array_TYPE_ID = "+arrayTypeID;
+        String organism="Rn";
+        if(genomeVer.startsWith("Mm")){
+            organism="Mm";
+        }
+        String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+organism+"'";
+        int chrID=-99;
 
-        String probeTransQuery="select distinct s.Probeset_ID,c2.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
-                "from location_specific_eqtl l "+
-                "left outer join snps sn on sn.snp_id=l.SNP_ID "+
-                "left outer join Affy_Exon_ProbeSet s on s.probeset_id = l.probe_id "+
-                "left outer join Chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
-                "where sn.genome_id='"+genomeVer+"' "+
-                "and c2.name = '"+chr.toUpperCase()+"' "+
-                "and s.genome_id='"+genomeVer+"' "+
-                "and ( "+
-                "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
-                "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
-                "(s.psstart <= "+min+" and s.psstop >="+min+") ) "+
-                "and s.psannotation = 'transcript' " +
-                "and s.updatedlocation = 'Y' "+
-                "and s.Array_TYPE_ID = " + arrayTypeID ;
 
 
         /*String probeTransQuery="select distinct s.Probeset_ID,c2.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
@@ -1049,14 +1028,33 @@ public class GeneDataTools {
                 "and ae.Array_TYPE_ID = " + arrayTypeID +" )";*/
 
         
-        log.debug("PSLEVEL SQL:"+probeQuery);
-        log.debug("Transcript Level SQL:"+probeTransQuery);
+
+
             String pListFile=outputDir+"tmp_psList.txt";
             try{
                 BufferedWriter psout=new BufferedWriter(new FileWriter(new File(pListFile)));
                 Connection conn=null;
                 try{
                     conn=pool.getConnection();
+                    PreparedStatement psC = conn.prepareStatement(chrQ);
+                    ResultSet rsC = psC.executeQuery();
+                    if(rsC.next()){
+                        chrID=rsC.getInt(0);
+                    }
+                    rsC.close();
+                    psC.close();
+                    String probeQuery="select s.Probeset_ID "+
+                            "from Affy_Exon_ProbeSet s "+
+                            "where s.chromosome_id =  "+chrID+" "+
+                            "and ( "+
+                            "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
+                            "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
+                            "(s.psstart <= "+min+" and s.psstop >="+min+")"+
+                            ") "+
+                            "and s.psannotation <> 'transcript' " +
+                            "and s.updatedlocation = 'Y' "+
+                            "and s.Array_TYPE_ID = "+arrayTypeID;
+                    log.debug("PSLEVEL SQL:"+probeQuery);
                     PreparedStatement ps = conn.prepareStatement(probeQuery);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
@@ -1092,6 +1090,21 @@ public class GeneDataTools {
                 Connection conn=null;
                 try{
                     conn=pool.getConnection();
+                    String probeTransQuery="select distinct s.Probeset_ID,'"+chr.toUpperCase()+"',s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
+                            "from location_specific_eqtl l "+
+                            "left outer join snps sn on sn.snp_id=l.SNP_ID "+
+                            "left outer join Affy_Exon_ProbeSet s on s.probeset_id = l.probe_id "+
+                            "where sn.genome_id='"+genomeVer+"' "+
+                            "and s.chromosome_id = "+chrID+" "+
+                            "and s.genome_id='"+genomeVer+"' "+
+                            "and ( "+
+                            "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
+                            "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
+                            "(s.psstart <= "+min+" and s.psstop >="+min+") ) "+
+                            "and s.psannotation = 'transcript' " +
+                            "and s.updatedlocation = 'Y' "+
+                            "and s.Array_TYPE_ID = " + arrayTypeID ;
+                    log.debug("Transcript Level SQL:"+probeTransQuery);
                     PreparedStatement ps = conn.prepareStatement(probeTransQuery);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
@@ -2685,29 +2698,38 @@ public class GeneDataTools {
         if(chr.startsWith("chr")){
             chr=chr.substring(3);
         }
+        String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+organism+"'";
+
         HashMap probesets=new HashMap();
-        String probeQuery="select phd.probeset_id, rd.tissue, phd.herit,phd.dabg "+
-                            "from probeset_herit_dabg phd , rnadataset_dataset rd "+
-                            "where rd.rna_dataset_id = "+rnaDS_ID+" "+
-                            "and phd.dataset_id=rd.dataset_id "+
-                            "and phd.genome_id='"+genomeVer+"' "+
-                            "and phd.probeset_id in ("+
-                                "select s.Probeset_ID "+
-                                "from Chromosomes c, Affy_Exon_ProbeSet s "+
-                                "where s.chromosome_id = c.chromosome_id "+
-                                "and c.name = '"+chr.toUpperCase()+"' "+
-                                "and s.genome_id='"+genomeVer+"' "+
-                            "and "+
-                            "((s.psstart >= "+min+" and s.psstart <="+max+") OR "+
-                            "(s.psstop >= "+min+" and s.psstop <= "+max+")) "+
-                            "and s.psannotation <> 'transcript' " +
-                            "and s.Array_TYPE_ID = "+arrayTypeID+") "+ 
-                            "order by phd.probeset_id,rd.tissue";
-        
         Connection conn=null;
         try{
-            log.debug("herit/DABG SQL\n"+probeQuery);
+
             conn=pool.getConnection();
+            int chrID=-99;
+            PreparedStatement psC = conn.prepareStatement(chrQ);
+            ResultSet rsC = psC.executeQuery();
+            if(rsC.next()){
+                chrID=rsC.getInt(0);
+            }
+            rsC.close();
+            psC.close();
+            String probeQuery="select phd.probeset_id, rd.tissue, phd.herit,phd.dabg "+
+                    "from probeset_herit_dabg phd , rnadataset_dataset rd "+
+                    "where rd.rna_dataset_id = "+rnaDS_ID+" "+
+                    "and phd.dataset_id=rd.dataset_id "+
+                    "and phd.genome_id='"+genomeVer+"' "+
+                    "and phd.probeset_id in ("+
+                    "select s.Probeset_ID "+
+                    "from Affy_Exon_ProbeSet s "+
+                    "where s.chromosome_id = "+chrID+" "+
+                    "and s.genome_id='"+genomeVer+"' "+
+                    "and "+
+                    "((s.psstart >= "+min+" and s.psstart <="+max+") OR "+
+                    "(s.psstop >= "+min+" and s.psstop <= "+max+")) "+
+                    "and s.psannotation <> 'transcript' " +
+                    "and s.Array_TYPE_ID = "+arrayTypeID+") "+
+                    "order by phd.probeset_id,rd.tissue";
+            log.debug("herit/DABG SQL\n"+probeQuery);
             PreparedStatement ps = conn.prepareStatement(probeQuery);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
@@ -2790,23 +2812,35 @@ public class GeneDataTools {
             if(chr.startsWith("chr")){
                 chr=chr.substring(3);
             }
+            String organism="Rn";
+            if(genomeVer.startsWith("Mm")){
+                organism="Mm";
+            }
             //HashMap probesets=new HashMap();
-            String qtlQuery="select eq.identifier,eq.lod_score,eq.p_value,eq.fdr,eq.marker,eq.marker_chromosome,eq.marker_mb,eq.lower_limit,eq.upper_limit,eq.tissue "+
-                              "from Chromosomes c, Affy_Exon_ProbeSet s "+
-                              "left outer join expression_qtls eq on eq.identifier = TO_CHAR (s.probeset_id) "+
-                              "where s.chromosome_id = c.chromosome_id "+
-                              //"and substr(c.name,1,2) = '"+chr+"'"+
-                              "and c.name = '"+chr.toUpperCase()+"'"+
-                              "and ((s.psstart >= "+min+" and s.psstart <="+max+") OR "+
-                              "(s.psstop >= "+min+" and s.psstop <= "+max+")) "+
-                              "and s.psannotation <> 'transcript' " +
-                              "and s.Array_TYPE_ID = "+arrayTypeID+" "+
-                              "and eq.lod_score>2.5 "+
-                              "order by eq.identifier";
+            String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+organism+"'";
             Connection conn=null;
             try{
-                log.debug("SQL\n"+qtlQuery);
+
                 conn=pool.getConnection();
+                int chrID=-99;
+                PreparedStatement psC = conn.prepareStatement(chrQ);
+                ResultSet rsC = psC.executeQuery();
+                if(rsC.next()){
+                    chrID=rsC.getInt(0);
+                }
+                rsC.close();
+                psC.close();
+                String qtlQuery="select eq.identifier,eq.lod_score,eq.p_value,eq.fdr,eq.marker,eq.marker_chromosome,eq.marker_mb,eq.lower_limit,eq.upper_limit,eq.tissue "+
+                        "from Affy_Exon_ProbeSet s "+
+                        "left outer join expression_qtls eq on eq.identifier = TO_CHAR (s.probeset_id) "+
+                        "where s.chromosome_id = "+chrID+" "+
+                        "and ((s.psstart >= "+min+" and s.psstart <="+max+") OR "+
+                        "(s.psstop >= "+min+" and s.psstop <= "+max+")) "+
+                        "and s.psannotation <> 'transcript' " +
+                        "and s.Array_TYPE_ID = "+arrayTypeID+" "+
+                        "and eq.lod_score>2.5 "+
+                        "order by eq.identifier";
+                log.debug("SQL\n"+qtlQuery);
                 PreparedStatement ps = conn.prepareStatement(qtlQuery);
                 ResultSet rs = ps.executeQuery();
                 while(rs.next()){
