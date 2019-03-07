@@ -204,36 +204,18 @@ public class AsyncGeneDataTools extends Thread {
         if(chr.toLowerCase().startsWith("chr")){
             chr=chr.substring(3);
         }
-        String probeQuery="select s.Probeset_ID "+
-                                "from Chromosomes c, Affy_Exon_ProbeSet s "+
-                                "where s.chromosome_id = c.chromosome_id "+
-                                "and c.name = '"+chr.toUpperCase()+"' "+
-                                "and s.genome_id='"+genomeVer+"' "+
-                            "and ( "+
-                            "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
-                            "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
-                            "(s.psstart <= "+min+" and s.psstop >="+min+")"+
-                            ") "+
-                            "and s.psannotation <> 'transcript' " +
-                            "and s.updatedlocation = 'Y' "+
-                            "and s.Array_TYPE_ID = "+arrayTypeID;
+
+        String organism="Rn";
+        if(genomeVer.startsWith("Mm")){
+            organism="Mm";
+        }
+        String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+organism+"'";
+        int chrID=-99;
 
 
-        String probeTransQuery="select distinct s.Probeset_ID,c2.name,s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
-                "from location_specific_eqtl l "+
-                "left outer join snps sn on sn.snp_id=l.SNP_ID "+
-                "left outer join Affy_Exon_ProbeSet s on s.probeset_id = l.probe_id "+
-                "left outer join Chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
-                "where sn.genome_id='"+genomeVer+"' "+
-                "and c2.name = '"+chr.toUpperCase()+"' "+
-                "and s.genome_id='"+genomeVer+"' "+
-                "and ( "+
-                "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
-                "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
-                "(s.psstart <= "+min+" and s.psstop >="+min+") ) "+
-                "and s.psannotation = 'transcript' " +
-                "and s.updatedlocation = 'Y' "+
-                "and s.Array_TYPE_ID = " + arrayTypeID;
+
+
+
 
         // Original version
         /*
@@ -260,14 +242,34 @@ public class AsyncGeneDataTools extends Thread {
 
                             //" and s.PROBESET_ID in (select l.probe_id from location_specific_eqtl l,snps sn where sn.genome_id='"+genomeVer+"' and l.snp_id=sn.snp_id)";
         
-        log.debug("PSLEVEL SQL:"+probeQuery);
-        log.debug("Transcript Level SQL:"+probeTransQuery);
+
+
         String pListFile=outputDir+"tmp_psList.txt";
             try{
                 BufferedWriter psout=new BufferedWriter(new FileWriter(new File(pListFile)));
                 Connection conn=null;
                 try{
                     conn=pool.getConnection();
+                    PreparedStatement psC = conn.prepareStatement(chrQ);
+                    ResultSet rsC = psC.executeQuery();
+                    if(rsC.next()){
+                        chrID=rsC.getInt(0);
+                    }
+                    rsC.close();
+                    psC.close();
+                    String probeQuery="select s.Probeset_ID "+
+                            "from Affy_Exon_ProbeSet s "+
+                            "where s.chromosome_id = "+chrID+" "+
+                            "and s.genome_id='"+genomeVer+"' "+
+                            "and ( "+
+                            "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
+                            "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
+                            "(s.psstart <= "+min+" and s.psstop >="+min+")"+
+                            ") "+
+                            "and s.psannotation <> 'transcript' " +
+                            "and s.updatedlocation = 'Y' "+
+                            "and s.Array_TYPE_ID = "+arrayTypeID;
+                    log.debug("PSLEVEL SQL:"+probeQuery);
                     PreparedStatement ps = conn.prepareStatement(probeQuery);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
@@ -298,6 +300,21 @@ public class AsyncGeneDataTools extends Thread {
                 Connection conn=null;
                 try{
                     conn=pool.getConnection();
+                    String probeTransQuery="select distinct s.Probeset_ID,'"+chr.toUpperCase()+"',s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
+                            "from location_specific_eqtl l "+
+                            "left outer join snps sn on sn.snp_id=l.SNP_ID "+
+                            "left outer join Affy_Exon_ProbeSet s on s.probeset_id = l.probe_id "+
+                            "where sn.genome_id='"+genomeVer+"' "+
+                            "and s.chromosome_id = "+chrID+" "+
+                            "and s.genome_id='"+genomeVer+"' "+
+                            "and ( "+
+                            "(s.psstart >= "+min+" and s.psstart <="+max+") OR "+
+                            "(s.psstop >= "+min+" and s.psstop <= "+max+") OR "+
+                            "(s.psstart <= "+min+" and s.psstop >="+min+") ) "+
+                            "and s.psannotation = 'transcript' " +
+                            "and s.updatedlocation = 'Y' "+
+                            "and s.Array_TYPE_ID = " + arrayTypeID;
+                    log.debug("Transcript Level SQL:"+probeTransQuery);
                     PreparedStatement ps = conn.prepareStatement(probeTransQuery);
                     ResultSet rs = ps.executeQuery();
                     while (rs.next()) {
