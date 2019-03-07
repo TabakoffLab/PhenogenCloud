@@ -5,8 +5,8 @@ use Cwd;
 use File::Copy;
 use Sys::Hostname;
 
-require 'prepCircosReverse.pl';
-require 'postprocessCircosReverse.pl';
+require 'prepCircosGeneList.pl';
+require 'postprocessCircosGeneList.pl';
 
 
 
@@ -40,7 +40,7 @@ sub setupDirectories{
 
 
 
-sub callCircosReverse{
+sub callCircosGeneList{
 	my($cutoff,$organism,$geneCentricPath,$tissueString,$chromosomeString)=@_;
 	#
 	# General outline of process:
