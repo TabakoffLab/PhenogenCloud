@@ -2899,26 +2899,39 @@ public class GeneDataTools {
             }
         }
         if(run){*/
-            log.debug("\ngenerating new-controlled from\n");
-            String qtlQuery="select aep.transcript_cluster_id,c1.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c2.name,s.snp_start,s.snp_end "+
-                                "from affy_exon_probeset aep " +
-                                "left outer join location_specific_eqtl lse on lse.probe_id=aep.probeset_id " +
-                    "left outer join snps s on lse.snp_id = s.snp_id " +
-                    "left outer join chromosomes c1 on c1.chromosome_id = aep.chromosome_id " +
-                    "left outer join chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
-                                "where c1.name='"+chr.toUpperCase()+"' "+
-                                "and ((aep.psstart >="+min+" and aep.psstart <="+max+") or (aep.psstop>="+min+" and aep.psstop <="+max+")or (aep.psstop<="+min+" and aep.psstop >="+max+")) "+
-                                "and aep.psannotation = 'transcript' ";
-            if(level.equals("All")){
-                qtlQuery=qtlQuery+"and aep.pslevel <> 'ambiguous' ";
-            }else{
-                qtlQuery=qtlQuery+"and aep.pslevel = '"+level+"' ";
+
+            String organism="Rn";
+            if(arrayTypeID==21){
+                organism="Mm";
             }
-            qtlQuery=qtlQuery+"and aep.array_type_id="+arrayTypeID+" "+
-                                "and aep.updatedlocation='Y' "+
-                                "and lse.pvalue >= "+(-Math.log10(pvalue))+" "+
-                                "order by aep.probeset_id,s.tissue,s.chromosome_id,s.snp_start";
+            String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+organism+"'";
+            int chrID=-99;
             try(Connection conn=pool.getConnection()){
+                PreparedStatement psC = conn.prepareStatement(chrQ);
+                ResultSet rsC = psC.executeQuery();
+                if(rsC.next()){
+                    chrID=rsC.getInt(1);
+                }
+                rsC.close();
+                psC.close();
+                log.debug("\ngenerating new-controlled from\n");
+                String qtlQuery="select aep.transcript_cluster_id,'"+chr.toUpperCase()+"',aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c2.name,s.snp_start,s.snp_end "+
+                        "from affy_exon_probeset aep " +
+                        "left outer join location_specific_eqtl lse on lse.probe_id=aep.probeset_id " +
+                        "left outer join snps s on lse.snp_id = s.snp_id " +
+                        "left outer join chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
+                        "where aep.chromosome_id = "+chrID+" "+
+                        "and ((aep.psstart >="+min+" and aep.psstart <="+max+") or (aep.psstop>="+min+" and aep.psstop <="+max+")or (aep.psstop<="+min+" and aep.psstop >="+max+")) "+
+                        "and aep.psannotation = 'transcript' ";
+                if(level.equals("All")){
+                    qtlQuery=qtlQuery+"and aep.pslevel <> 'ambiguous' ";
+                }else{
+                    qtlQuery=qtlQuery+"and aep.pslevel = '"+level+"' ";
+                }
+                qtlQuery=qtlQuery+"and aep.array_type_id="+arrayTypeID+" "+
+                        "and aep.updatedlocation='Y' "+
+                        "and lse.pvalue >= "+(-Math.log10(pvalue))+" "+
+                        "order by aep.probeset_id,s.tissue,s.chromosome_id,s.snp_start";
                 log.debug("SQL eQTL FROM QUERY\n"+qtlQuery);
                 PreparedStatement ps = conn.prepareStatement(qtlQuery);
                 ResultSet rs = ps.executeQuery();
@@ -3079,35 +3092,7 @@ public class GeneDataTools {
         }
         if(run){*/
             HashMap<String,TranscriptCluster> tmpHM=new HashMap<String,TranscriptCluster>();
-            String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end " +
-                                "from location_specific_eqtl lse " +
-                                "left outer join snps s on s.snp_id=lse.snp_id " +
-                                "left outer join chromosomes c on c.chromosome_id=s.chromosome_id " +
-                                "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
-                                "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
-                                "where s.genome_id='"+genomeVer+"' " +
-                                "and lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
-                    "and c.name='"+chr.toUpperCase()+"' " +
-                    "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
-                    " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
-                    "and aep.genome_id='"+genomeVer+"' " +
-                    "and aep.updatedlocation='Y' " +
-                    "and aep.psannotation='transcript' " +
-                    "and aep.array_type_id="+arrayTypeID;
 
-
-                                //"and ( aep.pslevel='core'  or aep.pslevel='extended'  or aep.pslevel='full' ) \n" +
-            if(!level.equals("All")){
-                qtlQuery=qtlQuery+" and ( ";
-                for(int k=0;k<levels.length;k++){
-                    if(k==0){
-                        qtlQuery=qtlQuery+"aep.pslevel='"+levels[k]+"' ";
-                    }else{
-                        qtlQuery=qtlQuery+" or aep.pslevel='"+levels[k]+"' ";
-                    }
-                }
-                qtlQuery=qtlQuery+") ";
-            }
 
 //            String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end "+
 //                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep "+
@@ -3146,33 +3131,7 @@ public class GeneDataTools {
 //                                qtlQuery=qtlQuery+"and aep.psannotation='transcript' "+
 //                                "and aep.array_type_id="+arrayTypeID+") "+
 //                                "order by aep.transcript_cluster_id, s.tissue";
-            String qtlQuery2="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end " +
-                                "from location_specific_eqtl lse " +
-                                "left outer join snps s on s.snp_id=lse.snp_id " +
-                                "left outer join chromosomes c on c.chromosome_id=s.chromosome_id " +
-                                "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
-                                "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
-                                "where  s.genome_id='"+genomeVer+"' " +
-                                "and lse.pvalue between 1.0 and "+(-Math.log10(pvalue))+" " +
-                                "and c.name='"+chr.toUpperCase()+"' " +
-                                "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
-                                " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
-                                "and aep.genome_id='"+genomeVer+"' "+
-                                "and aep.updatedlocation='Y' " +
-                                "and aep.psannotation='transcript' " +
-                                "and aep.array_type_id="+arrayTypeID+" ";
 
-            if(!level.equals("All")){
-                qtlQuery2=qtlQuery2+" and ( ";
-                for(int k=0;k<levels.length;k++){
-                    if(k==0){
-                        qtlQuery2=qtlQuery2+"aep.pslevel='"+levels[k]+"' ";
-                    }else{
-                        qtlQuery2=qtlQuery2+" or aep.pslevel='"+levels[k]+"' ";
-                    }
-                }
-                qtlQuery2=qtlQuery2+") ";
-            }
             //qtlQuery2=qtlQuery2+"order by s.tissue";
 //            String qtlQuery2="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end "+//,eq.LOD_SCORE "+
 //                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep "+//, expression_qtls eq "+
@@ -3201,7 +3160,49 @@ public class GeneDataTools {
 //                                "and s.chromosome_id=c.chromosome_id "+
 //                                "and c2.chromosome_id=aep.chromosome_id "+
 //                                "order by aep.transcript_cluster_id,s.tissue,aep.chromosome_id,aep.psstart";
+            String org="Rn";
+            if(genomeVer.toLowerCase().startsWith("mm")){
+                org="Mm";
+            }
+            String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+org+"'";
+            int chrID=-99;
             try(Connection conn=pool.getConnection()){
+
+                PreparedStatement psC = conn.prepareStatement(chrQ);
+                ResultSet rsC = psC.executeQuery();
+                if(rsC.next()){
+                    chrID=rsC.getInt(1);
+                }
+                rsC.close();
+                psC.close();
+                String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,'"+chr.toUpperCase()+"',s.snp_start,s.snp_end " +
+                        "from location_specific_eqtl lse " +
+                        "left outer join snps s on s.snp_id=lse.snp_id " +
+                        "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
+                        "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
+                        "where s.genome_id='"+genomeVer+"' " +
+                        "and lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
+                        "and s.chromosome_id = "+chrID+" " +
+                        "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
+                        " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
+                        "and aep.genome_id='"+genomeVer+"' " +
+                        "and aep.updatedlocation='Y' " +
+                        "and aep.psannotation='transcript' " +
+                        "and aep.array_type_id="+arrayTypeID;
+
+
+                //"and ( aep.pslevel='core'  or aep.pslevel='extended'  or aep.pslevel='full' ) \n" +
+                if(!level.equals("All")){
+                    qtlQuery=qtlQuery+" and ( ";
+                    for(int k=0;k<levels.length;k++){
+                        if(k==0){
+                            qtlQuery=qtlQuery+"aep.pslevel='"+levels[k]+"' ";
+                        }else{
+                            qtlQuery=qtlQuery+" or aep.pslevel='"+levels[k]+"' ";
+                        }
+                    }
+                    qtlQuery=qtlQuery+") ";
+                }
                 log.debug("SQL eQTL FROM QUERY\n"+qtlQuery);
                 PreparedStatement ps = conn.prepareStatement(qtlQuery);
                 ResultSet rs = ps.executeQuery();
@@ -3245,12 +3246,10 @@ public class GeneDataTools {
                 log.debug("done");
                 
                 if(tmpHM.size()==0){
-                    String snpQ="select * from snps s,chromosomes c where "+
+                    String snpQ="select * from snps s where "+
                             "((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+max+")) "+
-                            "and s.chromosome_id=c.chromosome_id "+
-                            "and s.genome_id ='"+genomeVer+"' "+
-                            //"and substr(c.name,1,2)='"+chr+"' ";
-                            "and c.name='"+chr.toUpperCase()+"' ";
+                            "and s.chromosome_id="+chrID+" " +
+                            "and s.genome_id ='"+genomeVer+"'";
                     ps = conn.prepareStatement(snpQ);
                     rs = ps.executeQuery();
                     int snpcount=0;
@@ -3265,6 +3264,32 @@ public class GeneDataTools {
                     }
                     
                 }else{
+                    String qtlQuery2="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,'"+chr.toUpperCase()+"',s.snp_start,s.snp_end " +
+                            "from location_specific_eqtl lse " +
+                            "left outer join snps s on s.snp_id=lse.snp_id " +
+                            "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
+                            "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
+                            "where  s.genome_id='"+genomeVer+"' " +
+                            "and lse.pvalue between 1.0 and "+(-Math.log10(pvalue))+" " +
+                            "and s.chromosome_id="+chrID+" " +
+                            "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
+                            " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
+                            "and aep.genome_id='"+genomeVer+"' "+
+                            "and aep.updatedlocation='Y' " +
+                            "and aep.psannotation='transcript' " +
+                            "and aep.array_type_id="+arrayTypeID+" ";
+
+                    if(!level.equals("All")){
+                        qtlQuery2=qtlQuery2+" and ( ";
+                        for(int k=0;k<levels.length;k++){
+                            if(k==0){
+                                qtlQuery2=qtlQuery2+"aep.pslevel='"+levels[k]+"' ";
+                            }else{
+                                qtlQuery2=qtlQuery2+" or aep.pslevel='"+levels[k]+"' ";
+                            }
+                        }
+                        qtlQuery2=qtlQuery2+") ";
+                    }
                     log.debug("Query2:"+qtlQuery2);
                     ps = conn.prepareStatement(qtlQuery2);
                     rs = ps.executeQuery();
