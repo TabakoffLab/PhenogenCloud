@@ -66,6 +66,7 @@
 	if(request.getParameter("genomeVer")!=null){
 		genomeVer=request.getParameter("genomeVer");
 	}
+	log.debug("after params");
 	gcPath=applicationRoot + contextRoot+"tmpData/browserCache/"+genomeVer+"/geneData/" +id+"/";
 	
 	String[] tissuesList1=new String[1];
@@ -112,6 +113,7 @@
         if(len<200 && !curGene.getBioType().equals("protein_coding")){
             isSmall=true;
         }
+        log.debug("end of init code");
 %>
 
 <style>

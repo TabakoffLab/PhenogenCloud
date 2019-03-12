@@ -67,11 +67,11 @@ sub readAffyProbesetDataFromDB{
 	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	my $geneChromNumber = addChr($geneChrom,"subtract");
-	$org="Rn"
+	my $org="Rn";
 	if($genomeVer eq "mm10"){
-	    $org="Mm"
+	    $org="Mm";
 	}
-    $chrQ="select chromosome_id from chromosomes where cname='".uc($geneChromNumber)."' and organism='".org."'";
+    $chrQ="select chromosome_id from chromosomes where name='".uc($geneChromNumber)."' and organism='".$org."'";
     $query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
 
     # EXECUTE THE QUERY
@@ -178,6 +178,7 @@ sub readAffyProbesetDataFromDB{
 			$previousdbName=$dbname;
 		}
 	}
+	$query_handle1->finish();
 	$query_handle->finish();
 	$connect->disconnect();
 	push @probesetHOH,
@@ -220,7 +221,6 @@ sub readAffyProbesetDataFromDBwoHeritDABG{
 	
 	$probesetTablename = 'Affy_Exon_ProbeSet';
 	$probeTablename = 'Affy_Exon_Probes';
-	$chromosomeTablename = 'Chromosomes';
 	
 	# DATA SOURCE NAME
 	#$dsn = "dbi:$platform:$service_name";
@@ -229,11 +229,11 @@ sub readAffyProbesetDataFromDBwoHeritDABG{
 	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	my $geneChromNumber = addChr($geneChrom,"subtract");
-    $org="Rn"
+    $org="Rn";
     if($genomeVer eq "mm10"){
-    	    $org="Mm"
+    	    $org="Mm";
     }
-    $chrQ="select chromosome_id from chromosomes where cname='".uc($geneChromNumber)."' and organism='".org."'";
+    $chrQ="select chromosome_id from chromosomes where name='".uc($geneChromNumber)."' and organism='".$org."'";
     $query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
 
     # EXECUTE THE QUERY
@@ -244,7 +244,6 @@ sub readAffyProbesetDataFromDBwoHeritDABG{
 		
 		$query = "select s.Probeset_ID, s.psstart, s.psstop, s.strand, s.pslevel, s.pssequence, s.updatedlocation, p.PROBE_ID, p.STRAND, p.PROBESEQUENCE
 		from  $probesetTablename s
-		left outer join $chromosomeTablename c on c.chromosome_id = s.chromosome_id
 		left outer join $probeTablename p on p.probeset_id = s.probeset_id and p.genome_id=s.genome_id
 		where s.chromosome_id =  ".$chrID."
         and s.genome_id='".$genomeVer."'
@@ -330,6 +329,7 @@ sub readAffyProbesetDataFromDBwoHeritDABG{
 			$previousdbName=$dbname;
 		}
 	}
+	$query_handle1->finish();
 	$query_handle->finish();
 	$connect->disconnect();
 	push @probesetHOH,
@@ -376,12 +376,16 @@ sub readTissueAffyProbesetDataFromDB{
 	# PERL DBI CONNECT
 	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
-	my $geneChromNumber = addChr($geneChrom,"subtract");
-    $org="Rn"
-        if($genomeVer eq "mm10"){
-        	    $org="Mm"
-        }
-        $chrQ="select chromosome_id from chromosomes where cname='".uc($geneChromNumber)."' and organism='".org."'";
+	my $geneChromNumber = $geneChrom;
+	if(length($geneChromNumber)>2){
+	    $geneChromNumber = addChr($geneChrom,"subtract");
+	}
+
+    $org="Rn";
+    if($genomeVer eq "mm10"){
+        	    $org="Mm";
+    }
+        $chrQ="select chromosome_id from chromosomes where name='".uc($geneChromNumber)."' and organism='".$org."'";
         $query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
 
         # EXECUTE THE QUERY
@@ -466,12 +470,15 @@ sub readAffyProbesetDataFromDBwoProbes{
 	# PERL DBI CONNECT
 	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
-	my $geneChromNumber = addChr($geneChrom,"subtract");
-	$org="Rn"
+	my $geneChromNumber = $geneChrom;
+    if(length($geneChromNumber)>2){
+        $geneChromNumber = addChr($geneChrom,"subtract");
+    }
+	$org="Rn";
             if($genomeVer eq "mm10"){
-            	    $org="Mm"
+            	    $org="Mm";
             }
-            $chrQ="select chromosome_id from chromosomes where cname='".uc($geneChromNumber)."' and organism='".org."'";
+            $chrQ="select chromosome_id from chromosomes where name='".uc($geneChromNumber)."' and organism='".$org."'";
             $query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
 
             # EXECUTE THE QUERY
@@ -534,6 +541,7 @@ sub readAffyProbesetDataFromDBwoProbes{
 			$probesetH{$dbname}=$count;
 			$count++;
 	}
+
 	$query_handle->finish();
 	
 	my $org="Mm";
@@ -542,7 +550,6 @@ sub readAffyProbesetDataFromDBwoProbes{
 	}
 	
 	$query = "select p.probeset_id,t.tissue,p.dabg, p.herit from probeset_herit_dabg p , rnadataset_dataset t, $probesetTablename s
-
 			where s.chromosome_id =  ".$chrID."
 			and t.dataset_id = p.dataset_id
 			and s.probeset_id=p.PROBESET_ID
@@ -565,6 +572,7 @@ sub readAffyProbesetDataFromDBwoProbes{
 		$probesetHOH[$probesetH{$probeset}]{herit}{$tissue}=$herit;
 		$probesetHOH[$probesetH{$probeset}]{dabg}{$tissue}=$dabg;
 	}
+	$query_handle1->finish();
 	$query_handle->finish();
 	$connect->disconnect();
 	#close PSFILE;
@@ -600,18 +608,21 @@ sub readTissueEQTLProbesetDataFromDB{
 	# PERL DBI CONNECT
 	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
-	#my $geneChromNumber = addChr($geneChrom,"subtract");
-    $org="Rn"
-                if($genomeVer eq "mm10"){
-                	    $org="Mm"
-                }
-                $chrQ="select chromosome_id from chromosomes where cname='".uc($geneChromNumber)."' and organism='".org."'";
-                $query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
+	my $geneChromNumber = $geneChrom;
+    if(length($geneChromNumber)>2){
+    	    $geneChromNumber = addChr($geneChrom,"subtract");
+    }
+    $org="Rn";
+    if($genomeVer eq "mm10"){
+       $org="Mm";
+    }
+    $chrQ="select chromosome_id from chromosomes where name='".uc($geneChromNumber)."' and organism='".$org."'";
+    $query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
 
-                # EXECUTE THE QUERY
-                $query_handle1->execute() or die ( "Probeset query execute failed \n");
-                $query_handle1->bind_columns(\$chrID);
-                $query_handle1->fetch();
+    # EXECUTE THE QUERY
+    $query_handle1->execute() or die ( "Probeset query execute failed \n");
+    $query_handle1->bind_columns(\$chrID);
+    $query_handle1->fetch();
 	# PREPARE THE QUERY for probesets
 		
 		$query = "select s.Probeset_ID, s.psstart, s.psstop, s.strand, s.pslevel, h.dabg, rd.tissue
@@ -654,6 +665,7 @@ sub readTissueEQTLProbesetDataFromDB{
 		$tmpcount++;
 		$probesetHOH{$dbtissue}{count}=$tmpcount;
 	}
+	$query_handle1->finish();
 	$query_handle->finish();
 	$connect->disconnect();
 	

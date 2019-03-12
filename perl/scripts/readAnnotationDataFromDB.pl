@@ -46,7 +46,19 @@ sub readTranscriptAnnotationDataFromDB{
 	
 	# PERL DBI CONNECT
 	my $connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
-	
+
+	#my $org="Rn";
+    #if($genomeVer eq "mm10"){
+    #	    $org="Mm";
+    #}
+    #$chrQ="select chromosome_id from chromosomes where cname='".uc($geneChromNumber)."' and organism='".org."'";
+    #$query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
+
+        # EXECUTE THE QUERY
+    #$query_handle1->execute() or die ( "Probeset query execute failed \n");
+    #$query_handle1->bind_columns(\$chrID);
+    #$query_handle1->fetch();
+
 	my $query="";
 	
 		$query ="select rta.rna_transcript_id, rta.annotation, ras.shrt_name,rta.match_reason

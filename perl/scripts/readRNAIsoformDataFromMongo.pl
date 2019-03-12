@@ -167,29 +167,37 @@ sub readRNAIsoformDataFromDB{
 	if(defined $tmpType){
 		$type=$tmpType;
 	}
-	
-	#my $geneChromNumber = addChr($geneChrom,"subtract");
+	print $geneChrom."\n";
+	my $geneChromNumber = $geneChrom;
+    if(length($geneChromNumber)>2){
+    	    $geneChromNumber = addChr($geneChrom,"subtract");
+    }
+	$chrQ="select chromosome_id from chromosomes where name='".uc($geneChromNumber)."' and organism='".$organism."'";
+	print $chrQ."\n";
+    $query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
+
+        # EXECUTE THE QUERY
+    $query_handle1->execute() or die ( "Probeset query execute failed \n");
+    $query_handle1->bind_columns(\$chrID);
+    $query_handle1->fetch();
 	
 	my $ref=readTranscriptAnnotationDataFromDB($geneChrom,$geneStart,$geneStop,$dsid,$type,$dsn,$usr,$passwd);
 	my %annotHOH=%$ref;
 	
 	
 
-		$query ="Select rd.tissue,rt.gene_id,rt.isoform_id,rt.source,rt.trstart,rt.trstop,rt.strand,rt.category,rt.strain,c.name as \"chromosome\",
-			re.enumber,re.estart,re.estop ,rt.rna_transcript_id, rt.merge_gene_id, rt.merge_isoform_id 
-			from rna_dataset rd, rna_transcripts rt, rna_exons re,chromosomes c 
-			where 
-			c.chromosome_id=rt.chromosome_id 
-			and c.name =  '".uc($geneChrom)."' "."
-			and re.rna_transcript_id=rt.rna_transcript_id
-			and ((trstart>=$geneStart and trstart<=$geneStop) OR (trstop>=$geneStart and trstop<=$geneStop) OR (trstart<=$geneStart and trstop>=$geneStop)) ";
-                if(index($dsid,",")>-1){
+		$query ="Select rd.tissue,rt.gene_id,rt.isoform_id,rt.source,rt.trstart,rt.trstop,rt.strand,rt.category,rt.strain,'".$geneChromNumber."',re.enumber,re.estart,re.estop ,rt.rna_transcript_id, rt.merge_gene_id, rt.merge_isoform_id ".
+			"from rna_dataset rd, rna_transcripts rt, rna_exons re ".
+			"where rt.chromosome_id = ".$chrID." ".
+			"and re.rna_transcript_id=rt.rna_transcript_id ".
+			"and ((trstart>=$geneStart and trstart<=$geneStop) OR (trstop>=$geneStart and trstop<=$geneStop) OR (trstart<=$geneStart and trstop>=$geneStop)) ";
+        if(index($dsid,",")>-1){
                     $query=$query." and rt.rna_dataset_id in (".$dsid.")";
-                }else{
+        }else{
                     $query=$query." and rt.rna_dataset_id=".$dsid;
-                }
-                $query=$query." and rt.rna_dataset_id=rd.rna_dataset_id ";
-                if($type ne "Any"){
+        }
+        $query=$query." and rt.rna_dataset_id=rd.rna_dataset_id ";
+        if($type ne "Any"){
                         if(index($type," in (")>-1){
                                 $query=$query." and rt.category".$type;
                         }else{
@@ -416,6 +424,7 @@ sub readRNAIsoformDataFromDB{
 			$previousTranscript=$isoform_id;
 		}
 	}
+	$query_handle1->finish();
 	$query_handle->finish();
 	$connect->disconnect();
 	
@@ -475,7 +484,17 @@ sub readSmallRNADataFromDB{
 	
 	# PERL DBI CONNECT
 	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
-	
+	my $geneChromNumber = $geneChrom;
+    	if(length($geneChromNumber)>2){
+    	    $geneChromNumber = addChr($geneChrom,"subtract");
+    	}
+    $chrQ="select chromosome_id from chromosomes where name='".uc($geneChromNumber)."' and organism='".$organism."'";
+    $query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
+
+     # EXECUTE THE QUERY
+    $query_handle1->execute() or die ( "Probeset query execute failed \n");
+    $query_handle1->bind_columns(\$chrID);
+    $query_handle1->fetch();
 	my $type="Any";
 	if(defined $tmpType){
 		$type=$tmpType;
@@ -488,10 +507,9 @@ sub readSmallRNADataFromDB{
 		$dsPartT=" and rt.rna_dataset_id in (".$dsid.")";
 	}
 	my $quantQuery="select * from rna_smallrna_quant rq where ".$dsPartQ;
-    $quantQuery=$quantQuery." and rq.rna_transcript_id in (select rna_transcript_id from rna_transcripts rt, chromosomes c where 
-    							c.chromosome_id=rt.chromosome_id 
-    							".$dsPartT." 
-								and c.name =  '".uc($geneChrom)."' "."
+    $quantQuery=$quantQuery." and rq.rna_transcript_id in (select rna_transcript_id from rna_transcripts rt where
+    							rt.chromosome_id = ".$chrID."
+    							".$dsPartT."
 								and ((trstart>=$geneStart and trstart<=$geneStop) OR (trstop>=$geneStart and trstop<=$geneStop) OR (trstart<=$geneStart and trstop>=$geneStop))";
 	if($type ne "Any"){
         if(index($type," in (")>-1){
@@ -536,12 +554,10 @@ sub readSmallRNADataFromDB{
 	print "results: $cQH\n";
 
 	#my $geneChromNumber = addChr($geneChrom,"subtract");
-	$query ="Select rd.tissue,rt.gene_id,rt.isoform_id,rt.source,rt.trstart,rt.trstop,rt.strand,rt.category,rt.strain,c.name as \"chromosome\",
+	$query ="Select rd.tissue,rt.gene_id,rt.isoform_id,rt.source,rt.trstart,rt.trstop,rt.strand,rt.category,rt.strain,'".$geneChromNumber."',
 			re.enumber,re.estart,re.estop ,rt.rna_transcript_id, rt.merge_gene_id, rt.merge_isoform_id 
-			from rna_dataset rd, rna_transcripts rt, rna_exons re,chromosomes c 
-			where 
-			c.chromosome_id=rt.chromosome_id 
-			and c.name =  '".uc($geneChrom)."' "."
+			from rna_dataset rd, rna_transcripts rt, rna_exons re
+			where rt.chromosome_id = ".$chrID."
 			and re.rna_transcript_id=rt.rna_transcript_id
 			and ((trstart>=$geneStart and trstart<=$geneStop) OR (trstop>=$geneStart and trstop<=$geneStop) OR (trstart<=$geneStart and trstop>=$geneStop)) ".$dsPartT;
                 $query=$query." and rt.rna_dataset_id=rd.rna_dataset_id ";
@@ -818,6 +834,7 @@ sub readSmallRNADataFromDB{
 			$previousTranscript=$isoform_id;
 		}
 	}
+	$query_handle1->finish();
 	$query_handle->finish();
 	$connect->disconnect();
 	
