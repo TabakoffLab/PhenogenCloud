@@ -2716,21 +2716,20 @@ public class GeneDataTools {
             rsC.close();
             psC.close();
             String probeQuery="select phd.probeset_id, rd.tissue, phd.herit,phd.dabg "+
-                    "from probeset_herit_dabg phd , rnadataset_dataset rd "+
+                    "from probeset_herit_dabg phd " +
+                    "left outer join rnadataset_dataset rd on rd.dataset_id = phd.dataset_id "+
+                    "left outer join Affy_Exon_ProbeSet s on s.probeset_id = phd.probeset_id "+
                     "where rd.rna_dataset_id = "+rnaDS_ID+" "+
                     "and phd.dataset_id=rd.dataset_id "+
                     "and phd.genome_id='"+genomeVer+"' "+
-                    "and phd.probeset_id in ("+
-                    "select s.Probeset_ID "+
-                    "from Affy_Exon_ProbeSet s "+
-                    "where s.chromosome_id = "+chrID+" "+
+                    "and s.chromosome_id = "+chrID+" "+
                     "and s.genome_id='"+genomeVer+"' "+
                     "and "+
                     "((s.psstart >= "+min+" and s.psstart <="+max+") OR "+
                     "(s.psstop >= "+min+" and s.psstop <= "+max+")) "+
                     "and s.psannotation <> 'transcript' " +
-                    "and s.Array_TYPE_ID = "+arrayTypeID+") "+
-                    "order by phd.probeset_id,rd.tissue";
+                    "and s.Array_TYPE_ID = "+arrayTypeID;
+                    //"order by phd.probeset_id,rd.tissue";
             log.debug("herit/DABG SQL\n"+probeQuery);
             PreparedStatement ps = conn.prepareStatement(probeQuery);
             ResultSet rs = ps.executeQuery();

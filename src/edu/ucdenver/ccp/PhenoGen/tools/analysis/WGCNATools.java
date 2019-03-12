@@ -116,36 +116,41 @@ public class WGCNATools{
             arrayID=22;
         }
         //String query="Select unique module from wgcna_module_info where wdsid="+dsid+" and gene_id='"+id+"'";
-        String query ="";
-        if(source.equals("array")){
-            query="select distinct module,gene_id from wgcna_module_info where probeset_id in " +
-                        "(select aep.probeset_id from affy_exon_probeset aep, chromosomes c " +
+         String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+org+"'";
+        try(Connection conn=pool.getConnection()) {
+            int chrID=-99;
+            PreparedStatement psC = conn.prepareStatement(chrQ);
+            ResultSet rsC = psC.executeQuery();
+            if(rsC.next()){
+                chrID=rsC.getInt(1);
+            }
+            rsC.close();
+            psC.close();
+
+            String query ="";
+            if(source.equals("array")){
+                query="select distinct module,gene_id from wgcna_module_info where probeset_id in " +
+                        "(select aep.probeset_id from affy_exon_probeset aep " +
                         " where aep.array_type_id=" + arrayID+
                         " and aep.genome_id='"+genomeVer+"' "+
-                        " and aep.chromosome_id=c.chromosome_id" +
-                        " and c.name = '"+chr+"'" +
+                        " and aep.chromosome_id="+ chrID +" "+
                         " and ( ("+start+"<=aep.psstart and aep.psstart<="+stop+")" +
                         " or " +
                         " ("+start+"<=aep.psstop and aep.psstop<="+stop+") )" +
                         ")" +
                         "  and wdsid=" +dsid+" order by module";
-        }else if(source.equals("seq")){
-            query="select distinct module,gene_id from wgcna_module_info where wdsid = " + dsid  + " and transcript_clust_id in " +
-                        "(select distinct rt.merge_gene_id from rna_transcripts rt, chromosomes c " +
+            }else if(source.equals("seq")){
+                query="select distinct module,gene_id from wgcna_module_info where wdsid = " + dsid  + " and transcript_clust_id in " +
+                        "(select distinct rt.merge_gene_id from rna_transcripts rt" +
                         " where rt.rna_dataset_id=" + rnaDSID +" "+
-                        " and c.name = '"+chr+"'"+
-                        " and c.chromosome_id=rt.chromosome_id "+
+                        " and rt.chromosome_id = "+chrID+" "+
                         " and ( ( rt.trstart <="+start+" and "+start+"<= rt.trstop )" +
                         " or " +
                         " ("+start+"<=rt.trstart and rt.trstart<="+stop+") )" +
                         ")" +
                         " order by module";
-        }
-                        
-        log.debug("QUERY:"+query);
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+            }
+            log.debug("QUERY:"+query);
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
@@ -160,8 +165,7 @@ public class WGCNATools{
                }
             }
             ps.close();
-            conn.close();
-            conn=null;     
+
         }catch(SQLException e){
              e.printStackTrace(System.err);
             log.error("Error getting WGCNA dataset id.",e);
@@ -178,14 +182,6 @@ public class WGCNATools{
             } catch (Exception mailException) {
                     log.error("error sending message", mailException);
                     throw new RuntimeException();
-            }
-        }finally{
-            try{
-                    if(conn!=null&&!conn.isClosed()){
-                        conn.close();
-                        conn=null;
-                    }
-            }catch(SQLException er){
             }
         }
         Set keys=geneCount.keySet();
