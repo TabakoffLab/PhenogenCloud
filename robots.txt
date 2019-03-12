@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /PhenoGen/tmpData/
+Disallow: /PhenoGen/userFiles/
+Crawl-delay: 60
+
+User-agent: Applebot
+Disallow: /gene.jsp
+Crawl-delay: 60
