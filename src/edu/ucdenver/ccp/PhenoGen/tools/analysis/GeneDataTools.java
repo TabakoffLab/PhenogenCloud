@@ -2887,6 +2887,7 @@ public class GeneDataTools {
         String tmpRegion=chr+":"+min+"-"+max;
         String curParams="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",pvalue="+pvalue+",level="+level;
         ArrayList<TranscriptCluster> transcriptClusters=new ArrayList<TranscriptCluster>();
+        HashMap<Integer,String> chrHM=new HashMap<>();
         /*boolean run=true;
         if(this.cacheHM.containsKey(tmpRegion)){
             HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
@@ -2903,22 +2904,27 @@ public class GeneDataTools {
             if(arrayTypeID==21){
                 organism="Mm";
             }
-            String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+organism+"'";
+            String chrQ="select chromosome_id,name from chromosomes where organism='"+organism+"'";
             int chrID=-99;
             try(Connection conn=pool.getConnection()){
                 PreparedStatement psC = conn.prepareStatement(chrQ);
                 ResultSet rsC = psC.executeQuery();
-                if(rsC.next()){
-                    chrID=rsC.getInt(1);
+                while(rsC.next()){
+                    int tmpID=rsC.getInt(1);
+                    String tmpName=rsC.getString(2);
+                    if(tmpName.equals(chr.toUpperCase())){
+                        chrID=tmpID;
+                    }
+                    chrHM.put(tmpID,tmpName);
                 }
                 rsC.close();
                 psC.close();
                 log.debug("\ngenerating new-controlled from\n");
-                String qtlQuery="select aep.transcript_cluster_id,'"+chr.toUpperCase()+"',aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c2.name,s.snp_start,s.snp_end "+
+                String qtlQuery="select aep.transcript_cluster_id,'"+chr.toUpperCase()+"',aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,s.chromosome_id,s.snp_start,s.snp_end "+
                         "from affy_exon_probeset aep " +
                         "left outer join location_specific_eqtl lse on lse.probe_id=aep.probeset_id " +
                         "left outer join snps s on lse.snp_id = s.snp_id " +
-                        "left outer join chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
+                        //"left outer join chromosomes c2 on c2.chromosome_id = s.chromosome_id "+
                         "where aep.chromosome_id = "+chrID+" "+
                         "and ((aep.psstart >="+min+" and aep.psstart <="+max+") or (aep.psstop>="+min+" and aep.psstop <="+max+")or (aep.psstop<="+min+" and aep.psstop >="+max+")) "+
                         "and aep.psannotation = 'transcript' ";
@@ -2929,8 +2935,8 @@ public class GeneDataTools {
                 }
                 qtlQuery=qtlQuery+"and aep.array_type_id="+arrayTypeID+" "+
                         "and aep.updatedlocation='Y' "+
-                        "and lse.pvalue >= "+(-Math.log10(pvalue))+" "+
-                        "order by aep.probeset_id,s.tissue,s.chromosome_id,s.snp_start";
+                        "and lse.pvalue >= "+(-Math.log10(pvalue));
+                        //+" order by aep.probeset_id,s.tissue,s.chromosome_id,s.snp_start";
                 log.debug("SQL eQTL FROM QUERY\n"+qtlQuery);
                 PreparedStatement ps = conn.prepareStatement(qtlQuery);
                 ResultSet rs = ps.executeQuery();
@@ -2954,7 +2960,11 @@ public class GeneDataTools {
                     String tissue=rs.getString(7);
                     double pval=Math.pow(10, (-1*rs.getDouble(8)));
                     String marker_name=rs.getString(9);
-                    String marker_chr=rs.getString(10);
+                    int tmp_marker_chr=rs.getInt(10);
+                    String marker_chr="Err";
+                    if(chrHM.containsKey(tmp_marker_chr)){
+                        marker_chr=chrHM.get(tmp_marker_chr);
+                    }
                     long marker_start=rs.getLong(11);
                     long marker_end=rs.getLong(12);
                     //double tcLODScore=rs.getDouble(13);
@@ -3091,6 +3101,7 @@ public class GeneDataTools {
         }
         if(run){*/
             HashMap<String,TranscriptCluster> tmpHM=new HashMap<String,TranscriptCluster>();
+            HashMap<Integer,String> chrHM=new HashMap<>();
 
 
 //            String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end "+
@@ -3163,22 +3174,27 @@ public class GeneDataTools {
             if(genomeVer.toLowerCase().startsWith("mm")){
                 org="Mm";
             }
-            String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+org+"'";
+            String chrQ="select chromosome_id from chromosomes where organism='"+org+"'";
             int chrID=-99;
             try(Connection conn=pool.getConnection()){
 
                 PreparedStatement psC = conn.prepareStatement(chrQ);
                 ResultSet rsC = psC.executeQuery();
-                if(rsC.next()){
-                    chrID=rsC.getInt(1);
+                while(rsC.next()){
+                    int tmpID=rsC.getInt(1);
+                    String tmpName=rsC.getString(2);
+                    if(tmpName.equals(chr.toUpperCase())){
+                        chrID=tmpID;
+                    }
+                    chrHM.put(tmpID,tmpName);
                 }
                 rsC.close();
                 psC.close();
-                String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,'"+chr.toUpperCase()+"',s.snp_start,s.snp_end " +
+                String qtlQuery="select aep.transcript_cluster_id,aep.chromosome_id,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,'"+chr.toUpperCase()+"',s.snp_start,s.snp_end " +
                         "from location_specific_eqtl lse " +
                         "left outer join snps s on s.snp_id=lse.snp_id " +
                         "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
-                        "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
+                        //"left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
                         "where s.genome_id='"+genomeVer+"' " +
                         "and lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
                         "and s.chromosome_id = "+chrID+" " +
@@ -3210,7 +3226,11 @@ public class GeneDataTools {
                 while(rs.next()){
                     String tcID=rs.getString(1);
                     //log.debug("process:"+tcID);
-                    String tcChr=rs.getString(2);
+                    String tcChr="Err";
+                    int tmp_chr_ID=rs.getInt(2);
+                    if(chrHM.containsKey(tmp_chr_ID)){
+                        tcChr=chrHM.get(tmp_chr_ID);
+                    }
                     int tcStrand=rs.getInt(3);
                     long tcStart=rs.getLong(4);
                     long tcStop=rs.getLong(5);
@@ -3263,11 +3283,11 @@ public class GeneDataTools {
                     }
                     
                 }else{
-                    String qtlQuery2="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,'"+chr.toUpperCase()+"',s.snp_start,s.snp_end " +
+                    String qtlQuery2="select aep.transcript_cluster_id,aep.chromosome_id,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,'"+chr.toUpperCase()+"',s.snp_start,s.snp_end " +
                             "from location_specific_eqtl lse " +
                             "left outer join snps s on s.snp_id=lse.snp_id " +
                             "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
-                            "left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
+                            //"left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
                             "where  s.genome_id='"+genomeVer+"' " +
                             "and lse.pvalue between 1.0 and "+(-Math.log10(pvalue))+" " +
                             "and s.chromosome_id="+chrID+" " +
@@ -3298,7 +3318,11 @@ public class GeneDataTools {
                         String tissue=rs.getString(7);
                         double pval=Math.pow(10, (-1*rs.getDouble(8)));
                         String marker_name=rs.getString(9);
-                        String marker_chr=rs.getString(10);
+                        int tmp_marker_chr=rs.getInt(10);
+                        String marker_chr="Err";
+                        if(chrHM.containsKey(tmp_marker_chr)){
+                            marker_chr=chrHM.get(tmp_marker_chr);
+                        }
                         long marker_start=rs.getLong(11);
                         long marker_end=rs.getLong(12);
                         //double tcLODScore=rs.getDouble(13);
