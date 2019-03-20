@@ -3051,13 +3051,10 @@ public class GeneDataTools {
                             tmpOutputDir=fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+folderName+"/";
                 }
         }
-        
-        
-        
+
         circosTissue=circosTissue.replaceAll(";;", ";");
         circosChr=circosChr.replaceAll(";;", ";");
-        
-        
+
         String[] levels=level.split(";");
         String tmpRegion=chr+":"+min+"-"+max;
         String curParams="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",pvalue="+pvalue+",level="+level+",org="+organism;
@@ -3065,111 +3062,11 @@ public class GeneDataTools {
         String curCircosParams="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",pvalue="+pvalue+",level="+level+",org="+organism+",circosTissue="+circosTissue+",circosChr="+circosChr;
         boolean run=true;
         boolean filter=false;
-        /*if(this.cacheHM.containsKey(tmpRegion)){
-            HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
-            String testParam=(String)regionHM.get("controlledRegionParams");
-            String testMinusPval="";
-            int indPvalue=-1;
-            if(testParam!=null){
-                indPvalue=testParam.indexOf(",pvalue=")+8;
-                if(indPvalue>-1){
-                    testMinusPval=testParam.substring(0, indPvalue-8);
-                    testMinusPval=testMinusPval+testParam.substring(testParam.indexOf(",",indPvalue));
-                }
-            }
-            //log.debug("\n"+curParamsMinusPval+"\n"+testMinusPval+"\n");
-            if(curParams.equals(testParam)){
-                //log.debug("\nreturning previous-controlling\n");
-                transcriptClusters=(ArrayList<TranscriptCluster>)regionHM.get("controlledRegion");
-                run=false;
-            }else if(curParamsMinusPval.equals(testMinusPval)){
-                //log.debug("\nreturning Filtered\n");
-                
-                String testPval=testParam.substring(indPvalue,testParam.indexOf(",",indPvalue));
-                double testPvalue=Double.parseDouble(testPval);
-                if(pvalue<testPvalue){
-                    filter=true;
-                    run=false;
-                    beforeFilter=(ArrayList<TranscriptCluster>)regionHM.get("controlledRegion");
-                }
-            }
-            
-            File testF=new File(tmpOutputDir+"TranscriptClusterDetails.txt");
-            if(!testF.exists()){
-                run=true;
-            }
-        }
-        if(run){*/
+
             HashMap<String,TranscriptCluster> tmpHM=new HashMap<String,TranscriptCluster>();
             HashMap<Integer,String> chrHM=new HashMap<>();
 
 
-//            String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end "+
-//                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep "+
-//                                "where s.snp_id=lse.snp_id "+
-//                                "and lse.probe_id=aep.probeset_id "+
-//                                "and c2.chromosome_id=aep.chromosome_id "+
-//                                "and c.chromosome_id=s.chromosome_id "+
-//                                "and lse.pvalue>= "+(-Math.log10(pvalue))+" "+
-//                                "and aep.updatedlocation='Y' "+
-//                                "and aep.transcript_cluster_id in "+
-//                                    "(select aep.transcript_cluster_id "+
-//                                    "from location_specific_eqtl lse, snps s, chromosomes c1 , affy_exon_probeset aep "+
-//                                    "where s.snp_id=lse.snp_id "+
-//                                    "and lse.pvalue>= "+(-Math.log10(pvalue))+" "+
-//                                    "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
-//                                    " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
-//                                    "and s.chromosome_id=c1.chromosome_id "+
-//                                    "and s.organism ='"+organism+"' "+
-//                                    "and c1.name='"+chr.toUpperCase()+"' "+
-//                                    "and aep.updatedlocation='Y' "+
-//                                    "and lse.probe_id=aep.probeset_id ";
-//                                if(!level.equals("All")){
-//                                    qtlQuery=qtlQuery+" and ( ";
-//                                    for(int k=0;k<levels.length;k++){
-//                                        if(k==0){
-//                                            qtlQuery=qtlQuery+"aep.pslevel='"+levels[k]+"' ";
-//                                        }else{
-//                                            qtlQuery=qtlQuery+" or aep.pslevel='"+levels[k]+"' ";
-//                                        }
-//                                    }
-//                                    qtlQuery=qtlQuery+") ";
-//                                    //qtlQuery=qtlQuery+"and aep.pslevel='"+level+"' ";
-//                                }/*else{
-//                                    qtlQuery=qtlQuery+"and aep.pslevel<>'ambiguous' ";
-//                                }*/
-//                                qtlQuery=qtlQuery+"and aep.psannotation='transcript' "+
-//                                "and aep.array_type_id="+arrayTypeID+") "+
-//                                "order by aep.transcript_cluster_id, s.tissue";
-
-            //qtlQuery2=qtlQuery2+"order by s.tissue";
-//            String qtlQuery2="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end "+//,eq.LOD_SCORE "+
-//                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep "+//, expression_qtls eq "+
-//                                "where s.snp_id=lse.snp_id "+
-//                                "and lse.pvalue< "+(-Math.log10(pvalue))+" "+
-//                                //"and substr(c.name,1,2)='"+chr+"' "+
-//                                "and c.name='"+chr.toUpperCase()+"' "+
-//                                "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+max+")) "+
-//                                " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
-//                                "and s.organism ='"+organism+"' "+
-//                                "and lse.probe_id=aep.probeset_id ";
-//                                if(!level.equals("All")){
-//                                    qtlQuery2=qtlQuery2+" and ( ";
-//                                    for(int k=0;k<levels.length;k++){
-//                                        if(k==0){
-//                                            qtlQuery2=qtlQuery2+"aep.pslevel='"+levels[k]+"' ";
-//                                        }else{
-//                                            qtlQuery2=qtlQuery2+" or aep.pslevel='"+levels[k]+"' ";
-//                                        }
-//                                    }
-//                                    qtlQuery2=qtlQuery2+") ";
-//                                }
-//                                qtlQuery2=qtlQuery2+"and aep.psannotation='transcript' "+
-//                                "and aep.array_type_id="+arrayTypeID+" "+
-//                                "and aep.updatedlocation='Y' "+
-//                                "and s.chromosome_id=c.chromosome_id "+
-//                                "and c2.chromosome_id=aep.chromosome_id "+
-//                                "order by aep.transcript_cluster_id,s.tissue,aep.chromosome_id,aep.psstart";
             String org="Rn";
             if(genomeVer.toLowerCase().startsWith("mm")){
                 org="Mm";
@@ -3647,15 +3544,7 @@ public class GeneDataTools {
             }
 
             //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list
-
-            /*for (int i = 0; i < perlArgs.length; i++) {
-                log.debug(i + " perlArgs::" + perlArgs[i]);
-            }*/
             String[] envVar=perlEnvVar.split(",");
-            /*for (int i = 0; i < envVar.length; i++) {
-                log.debug(i + " EnvVar::" + envVar[i]);
-            }*/
-
 
             //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
             myExec_session = new ExecHandler(perlDir, perlArgs, envVar, tmpOutputDir+"circos_"+pvalue);
@@ -3663,35 +3552,12 @@ public class GeneDataTools {
             try {
 
                 myExec_session.runExec();
-                /*if(cacheHM.containsKey(tmpRegion)){
-                    HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
-                    regionHM.put("controlledCircosRegionParams",curCircosParams);        
-                }else{
-                    HashMap regionHM=new HashMap();
-                    regionHM.put("controlledCircosRegionParams",curCircosParams);        
-                    cacheHM.put(tmpRegion,regionHM);
-                    this.cacheList.add(tmpRegion);
-                }*/
-                //this.controlledCircosRegionParams=curCircosParams;
             } catch (ExecException e) {
                 //error=true;
                 log.error("In Exception of run callCircosReverse.pl Exec_session", e);
                 session.setAttribute("getTransControllingEQTLCircos","Error running Circos.  Unable to generate Circos image.  Please try again later.  The administrator has been notified of the problem.");
                 setError("Running Perl Script to match create circos plot.");
-               /* Email myAdminEmail = new Email();
-                myAdminEmail.setSubject("Exception thrown in Exec_session");
-                myAdminEmail.setContent("There was an error while running "
-                        + perlArgs[1] + " (" + perlArgs[2] +" , "+perlArgs[3]+" , "+perlArgs[4]+")\n\n"+myExec_session.getErrors());
-                try {
-                    myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
-                } catch (Exception mailException) {
-                    log.error("error sending message", mailException);
-                    try {
-                        myAdminEmail.sendEmailToAdministrator("");
-                    } catch (Exception mailException1) {
-                        //throw new RuntimeException();
-                    }
-                }*/
+
             }
         }
         

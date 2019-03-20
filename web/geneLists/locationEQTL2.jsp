@@ -4,6 +4,8 @@
 <jsp:useBean id="myOrganism" class="edu.ucdenver.ccp.PhenoGen.data.Organism"> </jsp:useBean>
 <jsp:useBean id="thisIDecoderClient" class="edu.ucdenver.ccp.PhenoGen.tools.idecoder.IDecoderClient"> </jsp:useBean>
 <jsp:useBean id="gdt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.GeneDataTools" scope="session"> </jsp:useBean>
+<jsp:useBean id="anonU" class="edu.ucdenver.ccp.PhenoGen.data.AnonUser" scope="session" />
+
 
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -49,8 +51,8 @@
     ArrayList<String>geneSymbol=new ArrayList<String>();
 
 
-    if(request.getParameter("uuid") !=null){
-        uuid=FilterInput.getFilteredInput(request.getParameter("uuid"));
+    if(userLoggedIn.getUser_name().equals("anon")){
+        uuid=anonU.getUUID();
     }
     if(request.getParameter("levels")!=null && !request.getParameter("levels").equals("") && !request.getParameter("levels").equals("null")){
         String tmpSelectedLevels = FilterInput.getFilteredInput(request.getParameter("levels"));
@@ -66,7 +68,7 @@
         log.debug("Getting selected levels: NULL Using defaults.");
         selectedLevels=levelString.split(";");
     }
-    log.debug("Getting species:"+request.getParameter("species"));
+    //log.debug("Getting species:"+request.getParameter("species"));
     if(request.getParameter("species")!=null && !request.getParameter("species").equals("null") ){
         org=FilterInput.getFilteredInput(request.getParameter("species").trim());
         if(org.equals("Rn")){
@@ -89,7 +91,7 @@
             genomeVer="mm10";
         }
     }
-    log.debug("Getting chromosomes:"+request.getParameter("chromosome"));
+    //log.debug("Getting chromosomes:"+request.getParameter("chromosome"));
     if(request.getParameter("chromosome")!=null && !request.getParameter("chromosome").equals("null")){
         chromosome=FilterInput.getFilteredInput(request.getParameter("chromosome"));
     }
@@ -104,7 +106,7 @@
         genomeVer=request.getParameter("genomeVer");
     }
 
-    gcPath=applicationRoot + contextRoot+"tmpData/"+userLoggedIn.getUser_name()+"/GeneLists/";
+    gcPath=applicationRoot + contextRoot+"userFiles/"+userLoggedIn.getUser_name()+"/GeneLists/";
     if(userLoggedIn.getUser_name().equals("anon")){
         gcPath=gcPath+uuid+"/"+selectedGeneList.getGene_list_id()+"/";
     }
@@ -195,21 +197,17 @@
         $("#tissuesMS option").each(function () {
             tisList += $(this).val() + ";";
         });
-
+        var genomeVer=$('#genomeVer').val();
         var pval=$('#cutoffValue').val();
-        var tcID=$('#transcriptClusterID').val();
-        if(source==="seq"){
-            tcID=idStr;
-        }
         var path="<%=gcPath%>";
-
         $.ajax({
-            url: "/web/geneLists/runCircosGeneList.jsp",
+            url: "/web/geneLists/include/runCircosGeneList.jsp",
             type: 'GET',
             cache: false,
-            data: {cutoffValue:pval,transcriptClusterID:tcID,tissues:tisList,chromosomes:chrList,geneCentricPath:path,genomeVer:genomeVer,source:source},
-            dataType: 'html',
+            data: {cutoffValue:pval,tissues:tisList,chromosomes:chrList,path:path,genomeVer:genomeVer,source:source},
+            dataType: 'json',
             beforeSend: function(){
+                $('#circosStatus').html("");
             },
             complete: function(){
                 displayType="RNA-Seq";
@@ -221,7 +219,15 @@
                 $('#forIframe').show();
             },
             success: function(data2){
-                $('#forIframe').html(data2);
+                console.log(data2);
+                console.log(data2.URL);
+                console.log(typeof data2.URL);
+                console.log(data2.Message.length);
+                if(data2.URL==="null" && data2.Message.length > 0){
+                    $('#circosStatus').html("<span style=\"color: red;\">"+data2.Message+"</span>");
+                }else{
+                    $('#forIframe').append("<iframe src=\""+data2.URL+"\" height=950 width=950 scrolling=no style=\"border-style:solid;border-color:rgb(139,137,137);\"");
+                }
             },
             error: function(xhr, status, error) {
                 $('#forIframe').html("<div>An error occurred generating this image.  Please try back later.</div>");
@@ -392,6 +398,30 @@
                 optionHash.put("5.0", "0.00001");
             %>
             <%@ include file="/web/common/selectBox.jsp" %>
+            <span style="padding-left:20px;"><strong>Genome Version:</strong></span>
+            <span class="eQTLtooltip" title="eQTLs have been calculated for transcripts in each genome version.  For rat both rn5 and rn6 are supported.  Mouse only has mm10."><img src="<%=imagesDir%>icons/info.gif"></span>
+            <%
+                selectName = "genomeVer";
+                if(genomeVer!=null){
+                    selectedOption = genomeVer;
+                }
+                else{
+                    selectedOption = "rn6";
+                    if(org.equals("Mm")){
+                        selectedOption="mm10";
+                    }
+                }
+                onChange = "";
+                style = "";
+                optionHash = new LinkedHashMap();
+                if(org.equals("Mm")) {
+                    optionHash.put("mm10", "Mm10");
+                }else {
+                    optionHash.put("rn5", "Rn5");
+                    optionHash.put("rn6", "Rn6");
+                }
+            %>
+            <%@ include file="/web/common/selectBox.jsp" %>
         </div>
         <table id="circosOptTbl" name="items" class="list_base" cellpadding="0" cellspacing="3" style="width:100%;text-align:left;" >
             <tbody >
@@ -526,7 +556,9 @@
         document.getElementById("wait2").style.display = 'none';
     </script>
     <div style="position:relative;top:-50px;width:100%;"><h2><span id="typeLabel">RNA-Seq</span> Based Gene Level eQTLs</h2></div>
+    <div id="circosStatus"></div>
     <div id="forIframe" style="position:relative;top:-50px;width:100%;">
+
     </div>
 
 
@@ -536,17 +568,11 @@
 
 
 <script>
-
+    var selectedChromosomes;
     $(document).ready(function() {
 
         $(".genemultiselect").twosidedmultiselect();
-        var selectedChromosomes = $("#chromosomes")[0].options;
-        //document.getElementById("circosError1").style.display = 'none';
-        /*$(".triggerEQTL").click(function(){
-        var baseName = $(this).attr("name");
-        $(this).toggleClass("less");
-        expandCollapse(baseName);
-    });*/
+        selectedChromosomes = $("#chromosomesMS")[0].options;
 
         $('.eQTLtooltip').tooltipster({
             position: 'top-right',
@@ -579,9 +605,9 @@
 
 <script type="text/javascript">
     $("div#wait1").hide();
-    $(document).ready(function(){
+    /*$(document).ready(function(){
         setupPage();
-    }); // document ready
+    }); // document ready*/
 </script>
 
 <%@ include file="/web/common/footer_adaptive.jsp" %>
