@@ -3,11 +3,11 @@ use strict;
 #
 # This routine reads in the svg file produced by circos and modifies the file
 #
-sub postprocessCircosReverse{
+sub postprocessCircosGeneList{
 
-	my($cutoff,$organism,$dataDirectory,$svgDirectory,$hostname,$tissueListRef) = @_;
-	my @tissueList = @{$tissueListRef};
-	my $numberOfTissues = scalar @tissueList;
+	my($cutoff,$organism,$dataDirectory,$svgDirectory,$hostname,$tissueList) = @_;
+	my $tissueListStr =  $tissueList;
+	#my $numberOfTissues = scalar @tissueList;
 
 	# Open the file that has tooltip information for links
 	my $toolTipFileName = $dataDirectory."LinkToolTips.txt";
@@ -18,23 +18,23 @@ sub postprocessCircosReverse{
 	my $toolTipHashValue;
 	my $mbString;
 	my $pvalueString;
-	open my $TOOLTIPSFILEHANDLE,'<',$toolTipFileName || die ("Can't open $toolTipFileName:$!");
-	while(<$TOOLTIPSFILEHANDLE>){
-		@tipArray = split("\t", $_);
-		$toolTipHashKey = $tipArray[0];
-		chomp $toolTipHashKey;
-		$toolTipHashValue = "SNP: ".$tipArray[1].':';
-		$mbString = sprintf "%.1f", $tipArray[2]/1000000;
-		$toolTipHashValue = $toolTipHashValue .$mbString." mb ; ";
-		$toolTipHashValue = $toolTipHashValue ."Gene: ".$tipArray[3].':';
-		$mbString = sprintf "%.1f", $tipArray[4]/1000000;
-		$toolTipHashValue = $toolTipHashValue .$mbString." mb  ";
-		$pvalueString = sprintf "%.1f",$tipArray[5];
-		$toolTipHashValue = $toolTipHashValue." Negative Log pValue: ".$pvalueString;
-		chomp $toolTipHashValue;
-		$toolTipHash{$toolTipHashKey}=$toolTipHashValue;
-	}
-	close($TOOLTIPSFILEHANDLE);
+	#open my $TOOLTIPSFILEHANDLE,'<',$toolTipFileName || die ("Can't open $toolTipFileName:$!");
+	#while(<$TOOLTIPSFILEHANDLE>){
+	#	@tipArray = split("\t", $_);
+	#	$toolTipHashKey = $tipArray[0];
+	#	chomp $toolTipHashKey;
+	#	$toolTipHashValue = "SNP: ".$tipArray[1].':';
+	#	$mbString = sprintf "%.1f", $tipArray[2]/1000000;
+	#	$toolTipHashValue = $toolTipHashValue .$mbString." mb ; ";
+	#	$toolTipHashValue = $toolTipHashValue ."Gene: ".$tipArray[3].':';
+	#	$mbString = sprintf "%.1f", $tipArray[4]/1000000;
+	#	$toolTipHashValue = $toolTipHashValue .$mbString." mb  ";
+	#	$pvalueString = sprintf "%.1f",$tipArray[5];
+	#	$toolTipHashValue = $toolTipHashValue." Negative Log pValue: ".$pvalueString;
+	#	chomp $toolTipHashValue;
+	#	$toolTipHash{$toolTipHashKey}=$toolTipHashValue;
+	#}
+	#close($TOOLTIPSFILEHANDLE);
 
 	my $modifiedLine;
 	# Open the current and new circos svg file
@@ -155,29 +155,29 @@ sub postprocessCircosReverse{
 				$nextLineIsPlot0++;
 				print $NEWSVGFILEHANDLE $_."\n";
 			}
-			elsif($nextLineIsPlot0>2){
-				$nextLineIsPlot0 = 0;
-				#Add lines for Tissue Labels and what yellow means
-
-				my %colorHash;
-				$colorHash{'Brain'} = 'rgb(107,154,200)';
-				$colorHash{'Heart'} = 'rgb(251,106,74)';
-				$colorHash{'Liver'} = 'rgb(116,196,118)';
-				$colorHash{'BAT'} = 'rgb(158,154,200)';
-				my @yArray;
-				$yArray[0] = '450.0';
-				$yArray[1] = '575.0';
-				$yArray[2] = '700.0';
-				$yArray[3] = '825.0';
-
-				for(my $i = 0; $i < $numberOfTissues ; $i ++){
-					print $NEWSVGFILEHANDLE '<text x="1475.0" y="',$yArray[$i],'" font-size="64px" font-family="CMUBright-Roman" style="text-anchor:end;fill:',$colorHash{$tissueList[$i]},'" >',$tissueList[$i],'</text>'."\n";
-				}
-				print $NEWSVGFILEHANDLE '<text x="1475.0" y="255.0" font-size="40px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(0,0,0)" >Megabases</text>'."\n";
-				print $NEWSVGFILEHANDLE '<text x="1475.0" y="60.0" font-size="32px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(0,0,0)" >Yellow means</text>'."\n";
-				print $NEWSVGFILEHANDLE '<text x="1475.0" y="90.0" font-size="32px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(0,0,0)" >negative log</text>'."\n";
-				print $NEWSVGFILEHANDLE '<text x="1475.0" y="120.0" font-size="32px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(0,0,0)" >p-value > '.$cutoff.'</text>'."\n";
-			}
+			#elsif($nextLineIsPlot0>2){
+			#	$nextLineIsPlot0 = 0;
+			#	#Add lines for Tissue Labels and what yellow means
+            #
+			#	my %colorHash;
+			#	$colorHash{'Brain'} = 'rgb(107,154,200)';
+			#	$colorHash{'Heart'} = 'rgb(251,106,74)';
+			#	$colorHash{'Liver'} = 'rgb(116,196,118)';
+			#	$colorHash{'BAT'} = 'rgb(158,154,200)';
+			#	my @yArray;
+			#	$yArray[0] = '450.0';
+			#	$yArray[1] = '575.0';
+			#	$yArray[2] = '700.0';
+			#	$yArray[3] = '825.0';
+            #
+			#	for(my $i = 0; $i < $numberOfTissues ; $i ++){
+			#		print $NEWSVGFILEHANDLE '<text x="1475.0" y="',$yArray[$i],'" font-size="64px" font-family="CMUBright-Roman" style="text-anchor:end;fill:',$colorHash{$tissueList[$i]},'" >',$tissueList[$i],'</text>'."\n";
+			#	}
+			#	print $NEWSVGFILEHANDLE '<text x="1475.0" y="255.0" font-size="40px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(0,0,0)" >Megabases</text>'."\n";
+			#	print $NEWSVGFILEHANDLE '<text x="1475.0" y="60.0" font-size="32px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(0,0,0)" >Yellow means</text>'."\n";
+			#	print $NEWSVGFILEHANDLE '<text x="1475.0" y="90.0" font-size="32px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(0,0,0)" >negative log</text>'."\n";
+			#	print $NEWSVGFILEHANDLE '<text x="1475.0" y="120.0" font-size="32px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(0,0,0)" >p-value > '.$cutoff.'</text>'."\n";
+			#}
 			else{
 				print $NEWSVGFILEHANDLE $_."\n";
 			}

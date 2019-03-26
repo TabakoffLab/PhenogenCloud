@@ -43,6 +43,9 @@
     if(request.getParameter("path")!=null){
         path = request.getParameter("path");
     }
+    if(request.getParameter("chromosomes")!=null){
+        chromosomeString = request.getParameter("chromosomes");
+    }
 
     //For now tissue is static.  Will need to update later in Rat.
     if(species.equals("Mm")){
@@ -51,8 +54,8 @@
     else{
         // we assume if not mouse that it's rat
         tissueString = "Brain";
-        if(request.getParameter("tissue")!=null){
-            tissueString = request.getParameter("tissue");
+        if(request.getParameter("tissues")!=null){
+            tissueString = request.getParameter("tissues");
         }
     }
     if(selectedCutoffValue.indexOf(".")>-1) {
@@ -78,18 +81,26 @@
         message="There was an error running Circos.  Please try again later.  The administrator has been notified of the error.<BR>"+cdt.getMessage();
     } // end of if(circosReturnStatus)
 
-    response.setContentType("application/json");
+    //response.setContentType("application/json");
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setDateHeader("Expires", 0);
 %>
 
 
-{
-"URL":"<%=iframeURL%>",
-"Message":"<%=message%>"
-}
-
-
+<%if(iframeURL!=null){%>
+<div align="center">
+    Inside of border below, the mouse wheel zooms.  Outside of the border, the mouse wheel scrolls.
+    <!--Download Circos image:
+    <a href="" target="_blank">
+        <img src="/web/images/icons/download_g.png">
+    </a>-->
+    <div id="iframe_parent" align="center">
+        <iframe id="circosIFrame" src=<%=iframeURL%> height=950 width=950  position=absolute scrolling="no" style="border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px">
+        </iframe>
+    </div>
+</div>
+<%}// end of if iframeURL != null
+%>
 
 
 

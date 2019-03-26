@@ -106,9 +106,9 @@
         genomeVer=request.getParameter("genomeVer");
     }
 
-    gcPath=applicationRoot + contextRoot+"userFiles/"+userLoggedIn.getUser_name()+"/GeneLists/";
+    gcPath=applicationRoot + contextRoot+"tmpData/"+userLoggedIn.getUser_name()+"/GeneLists/";
     if(userLoggedIn.getUser_name().equals("anon")){
-        gcPath=gcPath+uuid+"/"+selectedGeneList.getGene_list_id()+"/";
+        gcPath=gcPath+uuid+"/"+selectedGeneList.getGene_list_id();
     }
 
     String[] tissuesList1=new String[1];
@@ -205,7 +205,7 @@
             type: 'GET',
             cache: false,
             data: {cutoffValue:pval,tissues:tisList,chromosomes:chrList,path:path,genomeVer:genomeVer,source:source},
-            dataType: 'json',
+            dataType: 'html',
             beforeSend: function(){
                 $('#circosStatus').html("");
             },
@@ -219,15 +219,7 @@
                 $('#forIframe').show();
             },
             success: function(data2){
-                console.log(data2);
-                console.log(data2.URL);
-                console.log(typeof data2.URL);
-                console.log(data2.Message.length);
-                if(data2.URL==="null" && data2.Message.length > 0){
-                    $('#circosStatus').html("<span style=\"color: red;\">"+data2.Message+"</span>");
-                }else{
-                    $('#forIframe').append("<iframe src=\""+data2.URL+"\" height=950 width=950 scrolling=no style=\"border-style:solid;border-color:rgb(139,137,137);\"");
-                }
+                $('#forIframe').html(data2);
             },
             error: function(xhr, status, error) {
                 $('#forIframe').html("<div>An error occurred generating this image.  Please try back later.</div>");

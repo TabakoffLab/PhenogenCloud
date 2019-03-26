@@ -5,7 +5,7 @@ use Cwd;
 use File::Copy;
 use Sys::Hostname;
 
-require 'prepCircosCircosGeneList.pl';
+require 'prepCircosGeneList.pl';
 #require 'readModuleData.pl';
 require 'postprocessCircosGeneList.pl';
 
@@ -40,7 +40,7 @@ sub setupDirectories{
 
 
 sub callCircosCircosGeneList{
-	my($module,$cutoff,$organism,$chromosomeString,$tissueString,$modulePath,$timeStampString,$modColor,$genomeVer,$dsn,$usr,$passwd,$type)=@_;
+	my($cutoff,$organism,$chromosomeString,$tissueString,$geneListPath,$timeStampString,$genomeVer,$type)=@_;
 	#print "in callCircosMod() path:$modulePath\n";
 
 
@@ -55,30 +55,20 @@ sub callCircosCircosGeneList{
 	my $hostname = hostname;
 	#print " host name $hostname \n";
 	#create mainDir
-	unless(-d $modulePath)
+	unless(-d $geneListPath)
 	{
-		#print " Creating base directory $modulePath \n";
-		mkdir "$modulePath", 0777  || die(" Cannot create directory $modulePath $! \n");
+		#print " Creating base directory $geneListPath \n";
+		mkdir "$geneListPath", 0777  || die(" Cannot create directory $geneListPath $! \n");
 	}
 
-	my $baseDirectory = $modulePath.$module."_".$timeStampString.'/';
+	my $baseDirectory = $geneListPath."/".$timeStampString.'/';
 	#print " base directory $baseDirectory \n";
 	my $dataDirectory = $baseDirectory.'data/';
 	my $svgDirectory = $baseDirectory.'svg/';
 	my $confDirectory = $baseDirectory.'conf/';
-	#print " svg directory $svgDirectory \n";
 
 
-	#print "Tissue String $tissueString \n";
 
-
-	#print "Module:$module\n";
-	#print "cutoff:$cutoff\n";
-	#print "organism:$organism\n";
-	#print "chrstr:$chromosomeString\n";
-	#print "modulePath:$modulePath\n";
-	#print "timestamp:$timeStampString\n";
-	#print "tissue:$tissueString\n";
 
 	#
 	# Create necessary directories if they do not already exist
@@ -87,7 +77,7 @@ sub callCircosCircosGeneList{
 	my @chromosomeList = split(/;/, $chromosomeString);
 	my $chromosomeListRef = (\@chromosomeList);
 	#print " Ready to call prepCircos \n";
-	prepCircosGeneList($module,$cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$dsn,$usr,$passwd,$type);
+	prepCircosGeneList($cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$type);
 	#print " Finished prepCircos \n";
 
 
@@ -133,24 +123,22 @@ sub callCircosCircosGeneList{
 
 	#print " Finished running Circos \n";
 	#print " Ready to call postprocessCircos \n";
-	postprocessCircosMod($module,$cutoff,$organism,$dataDirectory,$svgDirectory,$hostname,$tissueString,$modColor);
+	postprocessCircosGeneList($cutoff,$organism,$dataDirectory,$svgDirectory,$hostname,$tissueString);
 	#print " Finished with Circos \n";
 
 
 	#-- go back to original directory
 	chdir($pwd);
 }
-#	my $arg1 = $ARGV[0]; # module
-#	my $arg2 = $ARGV[1]; # cutoff
-#	my $arg3 = $ARGV[2]; # organism
-#	my $arg4 = $ARGV[3]; # chromosomes
-#	my $arg5 = $ARGV[4]; # tissue
-#	my $arg6 = $ARGV[5]; # module path
-#	my $arg7 = $ARGV[6]; # timestamp
-#	my $arg8 = $ARGV[7]; # module color
-#	my $arg9= $ARGV[8]; # dsn
-#	my $arg10= $ARGV[9]; # user
-#	my $arg11= $ARGV[10]; # password
-#	callCircosMod($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10,$arg11);
+	my $arg1 = $ARGV[0];
+	my $arg2 = $ARGV[1];
+	my $arg3 = $ARGV[2];
+	my $arg4 = $ARGV[3];
+	my $arg5 = $ARGV[4];
+	my $arg6 = $ARGV[5];
+	my $arg7 = $ARGV[6];
+	my $arg8 = $ARGV[7];
+
+	callCircosCircosGeneList($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8);
 
 1;
