@@ -47,15 +47,19 @@
         chromosomeString = request.getParameter("chromosomes");
     }
 
-    //For now tissue is static.  Will need to update later in Rat.
-    if(species.equals("Mm")){
-        tissueString = "Brain";
-    }
-    else{
-        // we assume if not mouse that it's rat
-        tissueString = "Brain";
-        if(request.getParameter("tissues")!=null){
-            tissueString = request.getParameter("tissues");
+    if(request.getParameter("tissues")!=null){
+        tissueString = request.getParameter("tissues");
+    }else {
+        if (species.equals("Mm")) {
+            tissueString = "Brain";
+        } else {
+            // we assume if not mouse that it's rat
+            if(source.equals("seq")) {
+                tissueString = "Brain;Liver";
+            }else{
+                tissueString = "Brain;Liver;Heart;BAT";
+            }
+
         }
     }
     if(selectedCutoffValue.indexOf(".")>-1) {

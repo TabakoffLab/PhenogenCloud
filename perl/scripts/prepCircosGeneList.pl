@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 use strict;
+use POSIX;
 
 #
 #
@@ -19,6 +20,7 @@ sub prepCircosGeneList
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# if probeChromosome is not in chromosomeList then we don't want to create a links file
 	my $oneToCreateLinks = 1;
+	my $interval=2000000;
 
 	if ($debugLevel >= 2){
 		print " In prepCircos \n";
@@ -42,8 +44,8 @@ sub prepCircosGeneList
 	createCircosIdeogramConfFiles($confDirectory,$organism,$chromosomeListRef);
 	createCircosGenesTextConfFile($dataDirectory,$confDirectory);
 	createCircosGenesTextDataFile($dataDirectory,$organism);
-	createCircosPvaluesConfFile($confDirectory,$dataDirectory,$cutoff,$organism,$tissueString);
-
+	createCircosEQTLCountConfFile($confDirectory,$dataDirectory,$cutoff,$organism,$tissueString,$type);
+	createCircosEQTLCountDataFiles($dataDirectory,$organism,$chromosomeListRef,$tissueString,$interval,$cutoff,$type);
 	#*************************************************** TO FIX
 
 	#my $eqtlAOHRef = readLocusSpecificPvaluesModule($module,$organism,$tissueString,$chromosomeListRef,$genomeVer,$dsn,$usr,$passwd,$type);
@@ -99,7 +101,7 @@ sub createCircosConfFile{
 	print CONFFILE '<<include '.$confDirectory.'circosGenesText.conf>>'."\n";
 
 
-	#print CONFFILE '<<include '.$confDirectory.'circosQTLCount.conf>>'."\n";
+	print CONFFILE '<<include '.$confDirectory.'circosQTLCount.conf>>'."\n";
 
 	print CONFFILE '</plots>'."\n";
 
@@ -233,15 +235,16 @@ sub createCircosGenesTextDataFile{
  }
 
 
-sub createCircosPvaluesConfFile{
+sub createCircosEQTLCountConfFile{
 	# Create the circos configuration file that allows displaying pvalue histograms
-	my ($confDirectory,$dataDirectory,$cutoff,$organism,$tissue)=@_;
-	my $numberOfTissues = 1;
+	my ($confDirectory,$dataDirectory,$cutoff,$organism,$tissue,$type)=@_;
+	my @tissueList=split(";",$tissue);
+	my $numberOfTissues =scalar @tissueList;
 	if($debugLevel >= 2){
 		print " In createCircosPvaluesConfFile \n";
 	}
 
-	my $fileName = $confDirectory.'circosModPValues.conf';
+	my $fileName = $confDirectory.'circosQTLCount.conf';
 	#open(CONFFILE,'>',$fileName) || die ("Can't open $fileName:!\n");
 
 
@@ -258,17 +261,19 @@ sub createCircosPvaluesConfFile{
 	my $outerRadius;
 	my $plotFileName;
 	my %colorHash;
+	$colorHash{'Brain'}='blues-6-seq';
+	$colorHash{'Liver'}='greens-6-seq';
 
-	$colorHash{'Heart'}='red';
-	$colorHash{'Brain'}='blue';
-	$colorHash{'Liver'}='green';
-	$colorHash{'BAT'}='purple';
 	my %filenameHash;
+	$filenameHash{'Brain'}='circosBrainCount.txt';
+	$filenameHash{'Liver'}='circosLiverCount.txt';
 
-	$filenameHash{'Heart'}='circosHeartPValues.txt';
-	$filenameHash{'Brain'}='circosBrainPValues.txt';
-	$filenameHash{'Liver'}='circosLiverPValues.txt';
-	$filenameHash{'BAT'}='circosBATPValues.txt';
+	if($type eq "array") {
+		$colorHash{'Heart'}='reds-6-seq';
+		$colorHash{'BAT'}='purples-6-seq';
+		$filenameHash{'Heart'} = 'circosHeartCount.txt';
+		$filenameHash{'BAT'} = 'circosBATCount.txt';
+	}
 
 	if($debugLevel >= 2){
 		foreach my $key (keys(%colorHash)){
@@ -278,18 +283,18 @@ sub createCircosPvaluesConfFile{
 	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r');
 	my @outerRadiusArray = ('0.85r + 100p','0.75r + 100p','0.65r + 100p','0.55r + 100p');
 
-
-	$plotColor = $colorHash{$tissue};
-	$plotFileName = $dataDirectory.$filenameHash{$tissue};
-	$innerRadius=$innerRadiusArray[0];
-	$outerRadius=$outerRadiusArray[0];
-	writePlot($PLOTFILEHANDLE,$plotFileName,$plotColor,$innerRadius,$outerRadius,$cutoff);
-
+	for(my $i=0; $i<$numberOfTissues; $i++){
+		$plotColor = $colorHash{$tissueList[$i]};
+		$plotFileName = $dataDirectory.$filenameHash{$tissueList[$i]};
+		$innerRadius=$innerRadiusArray[$i];
+		$outerRadius=$outerRadiusArray[$i];
+		writePlot($PLOTFILEHANDLE,$plotFileName,$plotColor,$innerRadius,$outerRadius,$cutoff);
+	}
 	close($PLOTFILEHANDLE);
 }
 
 
-sub createCircosPvaluesDataFiles{
+sub createCircosEQTLCountDataFiles{
 	# Create data files for pvalues
 	# The number of data files will depend on the species and the variable "tissue"
 	# If species is rat and tissue is "all" then
@@ -301,55 +306,106 @@ sub createCircosPvaluesDataFiles{
 	# The 2nd column is the location of the SNP
 	# The 3rd column has been modified so the histogram shows up better.
 	# The 3rd column might be modified by adding 5000000
-	# my ($dataDirectory,$module,$organism, $eqtlAOHRef,$chromosomeListRef,$tissueString) = @_;
-	# my @chromosomeList = @{$chromosomeListRef};
-	# my $numberOfChromosomes = scalar @chromosomeList;
-	# my @eqtlAOH = @{$eqtlAOHRef};
-	# my $arrayLength = scalar @eqtlAOH;
-	# my %filenameHash;
-	# $filenameHash{'Heart'}='circosHeartPValues.txt';
-	# $filenameHash{'Brain'}='circosBrainPValues.txt';
-	# $filenameHash{'Liver'}='circosLiverPValues.txt';
-	# $filenameHash{'BAT'}='circosBATPValues.txt';
-	# my $brainFileName =  $dataDirectory.$filenameHash{$tissueString};
-	# open(BRAINFILE,'>',$brainFileName) || die ("Can't open $brainFileName:!\n");
-	#
-	# #my $liverFileName = $dataDirectory.'circosLiverPValues.txt';
-	# #open(LIVERFILE,'>',$liverFileName) || die ("Can't open $liverFileName:!\n");
-	#
-	# #my $heartFileName = $dataDirectory.'circosHeartPValues.txt';
-	# #open(HEARTFILE,'>',$heartFileName) || die ("Can't open $heartFileName:!\n");
-	#
-	# #my $BATFileName = $dataDirectory.'circosBATPValues.txt';
-	# #open(BATFILE,'>',$BATFileName) || die ("Can't open $BATFileName:!\n");
-	# my $sp="mm";
-	# if ($organism eq "Rn") {
-	# 	$sp="rn";
-	# }
-	#
-	# # Go through the eqtl array of hashes and write data to appropriate files
-	# my $tissue;
-	# my $stopLocation;
-	# my $i;
-	# for($i=0;$i<$arrayLength;$i++){
-	# 	$tissue = $eqtlAOH[$i]{tissue};
-	# 	$stopLocation = $eqtlAOH[$i]{location} + 50000*$numberOfChromosomes;
-	# 	#if($tissue eq 'Whole Brain'){
-	# 	print BRAINFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
-	# 	#}
-	# 	#elsif($tissue eq 'Liver'){
-	# 	#	print LIVERFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
-	# 	#}
-	# 	#elsif($tissue eq 'Heart'){
-	# 	#	print HEARTFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
-	# 	#}
-	# 	#elsif($tissue eq 'Brown Adipose'){
-	# 	#	print BATFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
-	# 	#}
-	# 	#else{
-	# 	#	die(" Invalid Tissue in createCircosPvaluesDataFiles.  Organism: $organism  Tissue: $tissue\n");
-	# 	#}
-	# }
+	my ($dataDirectory,$organism, $chromosomeListRef,$tissueString,$interval,$cutoff,$type) = @_;
+
+	my @tissueList=split(";",$tissueString);
+	my $numberOfTissues = scalar @tissueList;
+	my @chromosomeList = @{$chromosomeListRef};
+	my $numberOfChromosomes = scalar @chromosomeList;
+
+	my $end=rindex($dataDirectory,"/",rindex($dataDirectory,"/",rindex($dataDirectory,"/")-1)-1);
+	my $inputFile=substr($dataDirectory,0,$end)."/geneListEQTLs_".$type.".txt";
+	open(INPUT,'<',$inputFile) || die ("Can't open $inputFile:!\n");
+	my %eQTLsHOH={};
+
+	while(<INPUT>) {
+		my @cols = split("\t", $_);
+		if($cols[3] >= $cutoff) {
+			if (exists $eQTLsHOH{$cols[2]}) {
+
+			}
+			else {
+				print "adding tissue:" . $cols[2] . "\n";
+				$eQTLsHOH{$cols[2]} = {};
+			}
+			if (exists $eQTLsHOH{$cols[2]}{$cols[0]}) {
+
+			}
+			else {
+				print "adding chr:" . $cols[0] . "\n";
+				$eQTLsHOH{$cols[2]}{$cols[0]} = {};
+			}
+			my $ind = "";
+			#calculate index
+			my $base = floor($cols[1] / $interval);
+			my $start = $base * $interval + 1;
+			my $end = $start + $interval - 1;
+			$ind = $start . "-" . $end;
+			print($cols[1] . ":" . $base . ":" . $start . ":" . $end . ":" . $ind . "\n");
+			if (exists $eQTLsHOH{$cols[2]}{$cols[0]}{$ind}) {
+				$eQTLsHOH{$cols[2]}{$cols[0]}{$ind} = $eQTLsHOH{$cols[2]}{$cols[0]}{$ind} + 1;
+			}
+			else {
+				$eQTLsHOH{$cols[2]}{$cols[0]}{$ind} = 1;
+			}
+		}
+	}
+	close(INPUT);
+
+	my %filenameHash;
+	$filenameHash{'Brain'}='circosBrainCount.txt';
+	$filenameHash{'Liver'}='circosLiverCount.txt';
+	$filenameHash{'Heart'}='circosHeartCount.txt';
+	$filenameHash{'BAT'}='circosBATCount.txt';
+	for(my $i=0; $i<$numberOfTissues; $i++){
+		my $outFileName =  $dataDirectory.$filenameHash{$tissueList[$i]};
+		open(OUTFILE,'>',$outFileName) || die ("Can't open $outFileName:!\n");
+		my $curTissue=$tissueList[$i];
+		if($curTissue eq "Brain"){
+			$curTissue="Whole Brain";
+		}elsif($curTissue eq "BAT"){
+			$curTissue="Brown Adipose";
+		}
+		if(exists $eQTLsHOH{$curTissue}) {
+			print "tissue:".$curTissue."\n";
+			my %tissueHOH = %{$eQTLsHOH{$curTissue}};
+
+			my @chrKeys = keys %tissueHOH;
+			foreach ( @chrKeys) {
+				my $chr = $_;
+				print "chr:".$chr.":\n";
+				if(exists $tissueHOH{$chr}) {
+					my %rangeH = %{$tissueHOH{$chr}};
+					my @rangeKeys = keys %rangeH;
+					foreach ( @rangeKeys) {
+						my $range=$_;
+						my @splitRange = split("-", $range);
+						print OUTFILE $organism . $chr . " " . $splitRange[0] . " " . $splitRange[1] . " " . $rangeH{$range} . "\n";
+					}
+				}
+			}
+		}
+		close(OUTFILE);
+	}
+
+	 #my $brainFileName =  $dataDirectory.$filenameHash{$tissueString};
+	 #open(BRAINFILE,'>',$brainFileName) || die ("Can't open $brainFileName:!\n");
+
+	 #my $liverFileName = $dataDirectory.'circosLiverPValues.txt';
+	 #open(LIVERFILE,'>',$liverFileName) || die ("Can't open $liverFileName:!\n");
+
+	 #my $heartFileName = $dataDirectory.'circosHeartPValues.txt';
+	 #open(HEARTFILE,'>',$heartFileName) || die ("Can't open $heartFileName:!\n");
+
+	 #my $BATFileName = $dataDirectory.'circosBATPValues.txt';
+	 #open(BATFILE,'>',$BATFileName) || die ("Can't open $BATFileName:!\n");
+
+	 #my $sp="mm";
+	 #if ($organism eq "Rn") {
+	 #	$sp="rn";
+	 #}
+
+
 	# close(BRAINFILE);
 	#close(HEARTFILE);
 	#close(LIVERFILE);
@@ -465,62 +521,19 @@ sub writeLink{
 }
 
 sub writePlot{
-	my ($FILEHANDLE,$plotFileName,$plotColor,$innerRadius,$outerRadius,$cutoff) = @_;
-	# print $FILEHANDLE '<plot>'."\n";
-	# print $FILEHANDLE 'show = yes'."\n";
-	# print $FILEHANDLE 'type = histogram'."\n";
-	# print $FILEHANDLE 'stroke_color = '.$plotColor."\n";
-	# print $FILEHANDLE 'fill_color = '.$plotColor."\n";
-	# print $FILEHANDLE 'min = 0'."\n";
-	# print $FILEHANDLE 'max = 5'."\n";
+	my ($FILEHANDLE,$plotFileName,$plotColor,$innerRadius,$outerRadius) = @_;
+	 print $FILEHANDLE '<plot>'."\n";
+	 print $FILEHANDLE 'show = yes'."\n";
+	 print $FILEHANDLE 'type = heatmap'."\n";
+	 print $FILEHANDLE 'color = '.$plotColor."\n";
+	 print $FILEHANDLE 'r0 = '.$innerRadius."\n";
+	 print $FILEHANDLE 'r1 = '.$outerRadius."\n";
 	#
-	# #print $FILEHANDLE 'r0 = 0.85r'."\n";
-	# #print $FILEHANDLE 'r1 = 0.85r +100p'."\n";
-	#
-	#
-	# print $FILEHANDLE 'r0 = '.$innerRadius."\n";
-	# print $FILEHANDLE 'r1 = '.$outerRadius."\n";
-	# print $FILEHANDLE '<axes>'."\n";
-	# print $FILEHANDLE '<axis>'."\n";
-	# print $FILEHANDLE 'thickness = 1'."\n";
-	# print $FILEHANDLE 'spacing = 0.2r'."\n";
-	# #print $FILEHANDLE 'spacing = 1.0r'."\n";
-	# print $FILEHANDLE 'color = black'."\n";
-	# #print $FILEHANDLE 'axis           = yes'."\n";
-	# #print $FILEHANDLE 'axis_color     = black'."\n";
-	# #print $FILEHANDLE 'axis_thickness = 1'."\n";
-	# #print $FILEHANDLE 'axis_spacing   = 1.0'."\n";
-	# print $FILEHANDLE '</axis>'."\n";
-	# print $FILEHANDLE '</axes>'."\n";
-	#
-	#
-	# print $FILEHANDLE '<backgrounds>'."\n";
-	# print $FILEHANDLE '<background>'."\n";
-	# print $FILEHANDLE 'color = l'.$plotColor."\n";
-	# #print $FILEHANDLE 'background       = yes'."\n";
-	# #print $FILEHANDLE 'background_color = l'.$plotColor."\n";
-	# #print $FILEHANDLE 'background_stroke_color = black'."\n";
-	# #print $FILEHANDLE 'background_stroke_thickness = 2'."\n";
-	# print $FILEHANDLE '</background>'."\n";
-	# print $FILEHANDLE '</backgrounds>'."\n";
-	#
-	#
-	# print $FILEHANDLE '<rules>'."\n";
-	# print $FILEHANDLE '<rule>'."\n";
-	# print $FILEHANDLE 'importance = 100'."\n";
-	# print $FILEHANDLE 'condition  = var(value) > '.$cutoff."\n";
-	# #print $FILEHANDLE 'condition  = _VALUE_ > '.$cutoff."\n";
-	# print $FILEHANDLE 'fill_color = yellow'."\n";
-	# print $FILEHANDLE 'color = dyellow'."\n";
-	# print $FILEHANDLE '</rule>'."\n";
-	# print $FILEHANDLE '</rules>'."\n";
-	#
-	#
-	# print $FILEHANDLE 'file = '.$plotFileName."\n";
+	print $FILEHANDLE 'file = '.$plotFileName."\n";
 	#
 	# #print $FILEHANDLE 'file = '.$dataDirectory.'circosBrainPValues.txt'."\n";
 	#
-	# print $FILEHANDLE '</plot>'."\n";
+	print $FILEHANDLE '</plot>'."\n";
 
 }
 
