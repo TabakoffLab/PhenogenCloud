@@ -129,6 +129,8 @@
     #genePart2Tbl{
             width:100%;
     }
+    <%@ include file="/css/forGN2.css" %>
+
 </style>
 
 
@@ -376,6 +378,7 @@ Add report here.
                                         <B>SHR/NCrlPrin:</B> <%=curGene.getSnpCount("SHRJ","SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRJ","Indel")%> (Insertions/Deletions)<BR />
                                     
                                         <B>F344:</B> <%=curGene.getSnpCount("F344","SNP")%> (SNPs) / <%=curGene.getSnpCount("F344","Indel")%> (Insertions/Deletions)<BR />
+                                        <span class="GN2Snps" style="cursor: pointer;text-underline-color:#0000FF;color:#0000FF;text-decoration:underline;">GN2 SNP Browser</span>
                                     
                                 </TD>
                                 
@@ -633,6 +636,10 @@ Add report here.
     <div style="display:none;" id="geneWGCNA">
     </div>
 
+    <div style="display:none;" id="GN2SNPBrowserForm">
+        <%@ include file="/web/GeneCentric/includeGNSNPs.jsp" %>
+    </div>
+
  </div>
             
 
@@ -749,8 +756,10 @@ Add report here.
             //    $("#geneDiv").scrollTop($("#geneDiv")[0].scrollHeight);
             //},500);
         },200);
+
         <%@ include file="/javascript/chart.js" %>
         <%@ include file="include/js_addExprSrcCtrl.js" %>
+        <%@ include file="include/linkGN.js" %>
         var peGR;
         setTimeout(function(){
                 console.log("EXPR_URL:<%=genURL%>");
@@ -770,8 +779,14 @@ Add report here.
                         peGR.rlChart.setWidth("98%");
                     }
                }
+            createDialog("#GN2SNPBrowserForm", {width: 900, height: 375, title: "Link to GeneNetwork SNP Browser", zIndex: 999});
+            $('span.GN2Snps').on('click',function(){
+                $('#GN2SNPBrowserForm [name=gene_name]').val(gs.selectedGeneSymbol);
+                //TODO need to set species/strains
+                
+                $('#GN2SNPBrowserForm').dialog("open").css({'font-size':12});
+            });
             },5000);
-        //svgList[1].updateLinks();
         $(window).resize(function (){
             if($(window).width()<1500 && peGR){
                 if(peGR.rbChart){

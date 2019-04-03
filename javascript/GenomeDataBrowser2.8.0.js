@@ -5943,6 +5943,7 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
 					//loadState(newLevel);
 
 				selectedGeneSymbol=d.getAttribute("geneSymbol");
+				that.gsvg.selectedGeneSymbol=d.getAttribute("geneSymbol");
 				selectedID=new String(d.getAttribute("ID"));
 				if(selectedID.indexOf("ENS")===-1){
 					if(akaENS.length>0){

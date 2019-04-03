@@ -1,0 +1,56 @@
+
+.GNColumn{
+    width:33%;
+    padding: 0px;
+    display: inline-block;
+}
+.GNrow{
+
+}
+.GNLeftDiv{
+    padding-bottom: 10px;
+    text-align: right;
+    width:30%;
+    float: left;
+    padding-right: 5px;
+    padding-left: 5px;
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.GNRightDiv{
+    padding-bottom: 10px;
+    width:62%;
+    float: left;
+    padding-right: 5px;
+    padding-left: 5px;
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.GNButton{
+    -webkit-appearance: button;
+    cursor: pointer;
+    color: #fff;
+    background-color: #369;
+    border-color: #357ebd;
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+.ui-dialog-titlebar{
+background:#336699;
+    color:#FFFFFF;
+    font-size:14px;
+}
