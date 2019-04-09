@@ -42,6 +42,7 @@
     <% } %>
 
     <div id="expressionValues" data-landingPage="expressionValues"><span>Expression<BR/>Values</span></div>
+    <div id="chilibot" data-landingPage="chilibot"><span>Literature Based<BR>Relationships</span></div>
     <!--<div id="exonCorrelationTab" data-landingPage="exonCorrelationTab"><span>Exon<BR />Correlation</span></div>-->
     <div id="compare" class="single" data-landingPage="compareGeneLists"><span>Compare</span></div>
     <%if (!userLoggedIn.getUser_name().equals("anon")) {%>

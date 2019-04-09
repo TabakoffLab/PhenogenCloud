@@ -109,6 +109,7 @@
 			<tr class="col_title">
 				<th > ID in Gene List </th>
 				<th> GeneSymbol</th>
+				<TH>Links</TH>
 			</tr>
 			</thead>
 			<tbody>
@@ -140,13 +141,18 @@
 													hm.put(symbol.getIdentifier().toLowerCase(),1);
 												}
 									}
-									%></td><% 
+									%></td>
+									<TD>
+										<%
+
+										%>
+									</TD><%
 								} else { 
 									//log.debug("no gene symbols");	
-									%><td>&nbsp; </td><% 
+							%><td>&nbsp; </td><TD></TD><%
 								} 
 							} else {
-								%><td>&nbsp; </td><%
+								%><td>&nbsp; </td><TD></TD><%
 							} 
                        	%></tr><%
                 	}
