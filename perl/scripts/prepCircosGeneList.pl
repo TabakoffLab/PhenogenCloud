@@ -261,16 +261,16 @@ sub createCircosEQTLCountConfFile{
 	my $outerRadius;
 	my $plotFileName;
 	my %colorHash;
-	$colorHash{'Brain'}='blues-6-seq';
-	$colorHash{'Liver'}='greens-6-seq';
+	$colorHash{'Brain'}='blues-5-seq';
+	$colorHash{'Liver'}='greens-5-seq';
 
 	my %filenameHash;
 	$filenameHash{'Brain'}='circosBrainCount.txt';
 	$filenameHash{'Liver'}='circosLiverCount.txt';
 
 	if($type eq "array") {
-		$colorHash{'Heart'}='reds-6-seq';
-		$colorHash{'BAT'}='purples-6-seq';
+		$colorHash{'Heart'}='reds-5-seq';
+		$colorHash{'BAT'}='purples-5-seq';
 		$filenameHash{'Heart'} = 'circosHeartCount.txt';
 		$filenameHash{'BAT'} = 'circosBATCount.txt';
 	}
@@ -325,14 +325,14 @@ sub createCircosEQTLCountDataFiles{
 
 			}
 			else {
-				print "adding tissue:" . $cols[2] . "\n";
+				#print "adding tissue:" . $cols[2] . "\n";
 				$eQTLsHOH{$cols[2]} = {};
 			}
 			if (exists $eQTLsHOH{$cols[2]}{$cols[0]}) {
 
 			}
 			else {
-				print "adding chr:" . $cols[0] . "\n";
+				#print "adding chr:" . $cols[0] . "\n";
 				$eQTLsHOH{$cols[2]}{$cols[0]} = {};
 			}
 			my $ind = "";
@@ -341,7 +341,7 @@ sub createCircosEQTLCountDataFiles{
 			my $start = $base * $interval + 1;
 			my $end = $start + $interval - 1;
 			$ind = $start . "-" . $end;
-			print($cols[1] . ":" . $base . ":" . $start . ":" . $end . ":" . $ind . "\n");
+			#print($cols[1] . ":" . $base . ":" . $start . ":" . $end . ":" . $ind . "\n");
 			if (exists $eQTLsHOH{$cols[2]}{$cols[0]}{$ind}) {
 				$eQTLsHOH{$cols[2]}{$cols[0]}{$ind} = $eQTLsHOH{$cols[2]}{$cols[0]}{$ind} + 1;
 			}
@@ -367,13 +367,13 @@ sub createCircosEQTLCountDataFiles{
 			$curTissue="Brown Adipose";
 		}
 		if(exists $eQTLsHOH{$curTissue}) {
-			print "tissue:".$curTissue."\n";
+			#print "tissue:".$curTissue."\n";
 			my %tissueHOH = %{$eQTLsHOH{$curTissue}};
 
 			my @chrKeys = keys %tissueHOH;
 			foreach ( @chrKeys) {
 				my $chr = $_;
-				print "chr:".$chr.":\n";
+				#print "chr:".$chr.":\n";
 				if(exists $tissueHOH{$chr}) {
 					my %rangeH = %{$tissueHOH{$chr}};
 					my @rangeKeys = keys %rangeH;
