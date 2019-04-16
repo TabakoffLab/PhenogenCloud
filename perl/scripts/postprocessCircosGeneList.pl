@@ -7,15 +7,17 @@ sub postprocessCircosGeneList{
 
 	my($cutoff,$organism,$dataDirectory,$svgDirectory,$hostname,$tissueList) = @_;
 	my $tissueListStr =  $tissueList;
+    my @tissueList=split(";",$tissueListStr);
+    my $numberOfTissues = scalar @tissueList;
 	#my $numberOfTissues = scalar @tissueList;
 
 	# Open the file that has tooltip information for links
-	my $toolTipFileName = $dataDirectory."LinkToolTips.txt";
+#	my $toolTipFileName = $dataDirectory."LinkToolTips.txt";
 	# Sample line in tooltip table: Link_Brown_Adipose_00004	19	53407142	19	53991142	1.8771290771
-	my %toolTipHash;
+#	my %toolTipHash;
 	my @tipArray;
-	my $toolTipHashKey;
-	my $toolTipHashValue;
+#	my $toolTipHashKey;
+#	my $toolTipHashValue;
 	my $mbString;
 	my $pvalueString;
 	#open my $TOOLTIPSFILEHANDLE,'<',$toolTipFileName || die ("Can't open $toolTipFileName:$!");
@@ -80,34 +82,34 @@ sub postprocessCircosGeneList{
 				}
 				$nextLineIsLinkPath = 0;
 			}
-			elsif($_ =~ m/^<g id=\"Link_(.+)_(.+)\">/){
-				#Look for links, for example: <g id="Link_Brain_00001"
+#			elsif($_ =~ m/^<g id=\"Link_(.+)_(.+)\">/){
+#				#Look for links, for example: <g id="Link_Brain_00001"
 				#Replace the links lines with modifications that give tool tips
-				$toolTipHashKey = "Link_".$1."_".$2;
-				if (exists $toolTipHash{$toolTipHashKey})
-				{
-					$toolTipHashValue = $toolTipHash{$toolTipHashKey};
+#				$toolTipHashKey = "Link_".$1."_".$2;
+#				if (exists $toolTipHash{$toolTipHashKey})
+#				{
+#					$toolTipHashValue = $toolTipHash{$toolTipHashKey};
 					# Modified line should look like this: <g id="Link_Brain_00001" onmousemove="ShowTooltip(evt,'Link_Brain_00001')" onmouseout="HideTooltip(evt)" class="Brain">
-					$modifiedLine = '<g id="'.$toolTipHashKey;
-					$modifiedLine = $modifiedLine .'" onmousemove="ShowTooltip(evt,';
-					$modifiedLine = $modifiedLine ."\'".$toolTipHashValue."\'";
-					$modifiedTissue = $1;
-					if($modifiedTissue eq 'Brown_Adipose'){
-						$modifiedTissue = 'BAT';
-					}
-					elsif($modifiedTissue eq 'Whole_Brain'){
-						$modifiedTissue = 'Brain';
-					}
-					$modifiedLine = $modifiedLine.','."'".$modifiedTissue."'".')" onmouseout="HideTooltip(evt)" class="'.$modifiedTissue.'">';
-					print " Modified Link: ".$modifiedLine."\n";
-					print $NEWSVGFILEHANDLE $modifiedLine."\n";
-					$nextLineIsLinkPath = 1;
-				}
-				else
-				{
-					die( " Found Link but not in hash ".$1."\n");
-				}
-			}
+#					$modifiedLine = '<g id="'.$toolTipHashKey;
+#					$modifiedLine = $modifiedLine .'" onmousemove="ShowTooltip(evt,';
+#					$modifiedLine = $modifiedLine ."\'".$toolTipHashValue."\'";
+#					$modifiedTissue = $1;
+#					if($modifiedTissue eq 'Brown_Adipose'){
+#						$modifiedTissue = 'BAT';
+#					}
+#					elsif($modifiedTissue eq 'Whole_Brain'){
+#						$modifiedTissue = 'Brain';
+#					}
+#					$modifiedLine = $modifiedLine.','."'".$modifiedTissue."'".')" onmouseout="HideTooltip(evt)" class="'.$modifiedTissue.'">';
+#					print " Modified Link: ".$modifiedLine."\n";
+#					print $NEWSVGFILEHANDLE $modifiedLine."\n";
+#					$nextLineIsLinkPath = 1;
+#				}
+#				else
+#				{
+#					die( " Found Link but not in hash ".$1."\n");
+#				}
+#			}
 			elsif($_ =~ m/^<\/svg>$/){
 				#Look for the bottom of the file: </svg>
 				#Add two lines before the last line
@@ -144,10 +146,32 @@ sub postprocessCircosGeneList{
                 print $NEWSVGFILEHANDLE '<text class="helpText" id="helpText" visibility="hidden" x="275" y="290"></text>'."\n";
                 print $NEWSVGFILEHANDLE '</g>'."\n";
                 print $NEWSVGFILEHANDLE $_."\n";
-
 			}
 			elsif($_ =~ m/$plot0MatchString/){
 				# Write out this line and the next two lines as-is
+                # Insert labels
+                my %colorHash;
+                $colorHash{'Brain'} = 'rgb(107,154,200)';
+                $colorHash{'Heart'} = 'rgb(251,106,74)';
+                $colorHash{'Liver'} = 'rgb(116,196,118)';
+                $colorHash{'BAT'} = 'rgb(158,154,200)';
+                my @yArray;
+                $yArray[0] = '450.0';
+                $yArray[1] = '575.0';
+                $yArray[2] = '700.0';
+                $yArray[3] = '825.0';
+                print $NEWSVGFILEHANDLE '<g id="plot999">'."\n";
+                for(my $i = 0; $i < $numberOfTissues ; $i ++){
+                    print $NEWSVGFILEHANDLE '<text x="1475.0" y="',$yArray[$i],'" font-size="64px" font-family="CMUBright-Roman" style="text-anchor:end;fill:',$colorHash{$tissueList[$i]},'" >',$tissueList[$i],'</text>'."\n";
+                }
+                #print $NEWSVGFILEHANDLE '<text x="1475.0" y="450.0" font-size="64px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(107,154,200)" >Brain</text>'."\n";
+                #if($organism eq "Rn"){
+                #print $NEWSVGFILEHANDLE '<text x="1475.0" y="575.0" font-size="64px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(251,106,74)" >Heart</text>'."\n";
+                #print $NEWSVGFILEHANDLE '<text x="1475.0" y="700.0" font-size="64px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(116,196,118)" >Liver</text>'."\n";
+                #print $NEWSVGFILEHANDLE '<text x="1475.0" y="825.0" font-size="64px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(158,154,200)" >BAT</text>'."\n";
+                #}
+                print $NEWSVGFILEHANDLE '<text x="1475.0" y="255.0" font-size="40px" font-family="CMUBright-Roman" style="text-anchor:end;fill:rgb(0,0,0)" >Megabases</text>'."\n";
+                print $NEWSVGFILEHANDLE '</g>'."\n";
 				$nextLineIsPlot0=1;
 				print $NEWSVGFILEHANDLE $_."\n";
 			}

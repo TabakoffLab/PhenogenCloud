@@ -217,7 +217,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                 }else{
                     inIDs=pgID.toString();
                 }
-                String qtlQuery="select s.chromosome_id,s.snp_start,s.tissue,l.pvalue "
+                String qtlQuery="select s.chromosome_id,s.snp_start,s.tissue,l.pvalue,l.probe_id "
                         +"from SNPS s "
                         +"left outer join location_specific_eqtl2 l on s.snp_id=l.snp_id "
                         +"where l.probe_id in ( "+inIDs+") "
@@ -232,7 +232,8 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                     int start=rs.getInt(2);
                     String tissue=rs.getString(3);
                     float pval=rs.getFloat(4);
-                    out.write(curChr+"\t"+start+"\t"+tissue+"\t"+pval+"\n");
+                    String probe=rs.getString(5);
+                    out.write(curChr+"\t"+start+"\t"+tissue+"\t"+pval+"\t"+probe+"\n");
                 }
             }catch (SQLException e) {
                 message = "Error SQL.";

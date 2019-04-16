@@ -68,7 +68,6 @@
     int cutoff=Integer.parseInt(selectedCutoffValue);
     CircosDataTools cdt=new CircosDataTools(session,path);
     cdt.runCircosGeneList(selectedGeneList.getGene_list_id(),chromosomeString,tissueString,source,genomeVer,cutoff);
-
     //
     // call perl script
     //

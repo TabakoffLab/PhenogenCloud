@@ -43,9 +43,11 @@ sub prepCircosGeneList
 	createCircosConfFile($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$genomeVer,$chromosomeListRef,$oneToCreateLinks,$oneToCreateLinks);
 	createCircosIdeogramConfFiles($confDirectory,$organism,$chromosomeListRef);
 	createCircosGenesTextConfFile($dataDirectory,$confDirectory);
-	createCircosGenesTextDataFile($dataDirectory,$organism);
+	my $geneHashRef=createCircosGenesTextDataFile($dataDirectory,$organism);
 	createCircosEQTLCountConfFile($confDirectory,$dataDirectory,$cutoff,$organism,$tissueString,$type);
-	createCircosEQTLCountDataFiles($dataDirectory,$organism,$chromosomeListRef,$tissueString,$interval,$cutoff,$type);
+	createCircosEQTLCountLinkDataFiles($dataDirectory,$organism,$chromosomeListRef,$tissueString,$interval,$cutoff,$type,$geneHashRef);
+	createCircosLinksConf($dataDirectory,$organism,$confDirectory,$tissueString);
+	#createCircosLinksConfAndData($dataDirectory,$organism,$confDirectory,$cutoff,$tissueString);
 	#*************************************************** TO FIX
 
 	#my $eqtlAOHRef = readLocusSpecificPvaluesModule($module,$organism,$tissueString,$chromosomeListRef,$genomeVer,$dsn,$usr,$passwd,$type);
@@ -106,11 +108,11 @@ sub createCircosConfFile{
 	print CONFFILE '</plots>'."\n";
 
 	if($oneToCreateLinks == 1){
-		#print CONFFILE '<links>'."\n";
+		print CONFFILE '<links>'."\n";
 
-		#print CONFFILE '<<include '.$confDirectory.'circosLinks.conf>>'."\n";
+		print CONFFILE '<<include '.$confDirectory.'circosLinks.conf>>'."\n";
 
-		#print CONFFILE '</links>'."\n";
+		print CONFFILE '</links>'."\n";
 	}
 	print CONFFILE '<<include '.$genericConfLocation.'housekeeping.conf>>'."\n";
 	close(CONFFILE);
@@ -206,8 +208,8 @@ sub createCircosGenesTextConfFile{
 
 sub createCircosGenesTextDataFile{
 	# Create the circos data file that allows labeling of the genes in the module
- 	my ($dataDirectory,$organism)=@_;
-
+ 	my ($dataDirectory,$organism,$type)=@_;
+	my %geneHash={};
 	my $end=rindex($dataDirectory,"/",rindex($dataDirectory,"/",rindex($dataDirectory,"/")-1)-1);
 	my $inputFile=substr($dataDirectory,0,$end)."/geneListLocations.txt";
     print "INPUT ".$inputFile."\n";
@@ -224,6 +226,14 @@ sub createCircosGenesTextDataFile{
 		my @gs=split(",",$cols[2]);
 		my @trx=split(",",$cols[3]);
 		my @phid=split(",",$cols[4]);
+		my $id="";
+		if($type eq "array"){
+			$id=$trx[0];
+		}else{
+			$id=$phid[0];
+		}
+		$id =~ s/\s+$//;
+		$geneHash{$id}={chromosome => $cols[0],start=>$cols[1],stop=>$cols[1]+20000,geneSymbol=>$gs[0],id=>$id};
 		my $colorGene="96,151,184";
 		if(index($gs[0],"P")==0){
 			$colorGene="193,163,102";
@@ -232,6 +242,7 @@ sub createCircosGenesTextDataFile{
 	}
  	close(INFILE);
  	close(DATAFILE);
+	return (\%geneHash);
  }
 
 
@@ -294,7 +305,7 @@ sub createCircosEQTLCountConfFile{
 }
 
 
-sub createCircosEQTLCountDataFiles{
+sub createCircosEQTLCountLinkDataFiles{
 	# Create data files for pvalues
 	# The number of data files will depend on the species and the variable "tissue"
 	# If species is rat and tissue is "all" then
@@ -306,8 +317,8 @@ sub createCircosEQTLCountDataFiles{
 	# The 2nd column is the location of the SNP
 	# The 3rd column has been modified so the histogram shows up better.
 	# The 3rd column might be modified by adding 5000000
-	my ($dataDirectory,$organism, $chromosomeListRef,$tissueString,$interval,$cutoff,$type) = @_;
-
+	my ($dataDirectory,$organism, $chromosomeListRef,$tissueString,$interval,$cutoff,$type,$geneHashRef) = @_;
+	my %geneHash=%{$geneHashRef};
 	my @tissueList=split(";",$tissueString);
 	my $numberOfTissues = scalar @tissueList;
 	my @chromosomeList = @{$chromosomeListRef};
@@ -317,7 +328,12 @@ sub createCircosEQTLCountDataFiles{
 	my $inputFile=substr($dataDirectory,0,$end)."/geneListEQTLs_".$type.".txt";
 	open(INPUT,'<',$inputFile) || die ("Can't open $inputFile:!\n");
 	my %eQTLsHOH={};
-
+	my %outfileHash;
+	open($outfileHash{'Brain'},'>',$dataDirectory.'links_brain.txt');
+	open($outfileHash{'Liver'},'>',$dataDirectory.'links_liver.txt');
+	open($outfileHash{'Heart'},'>',$dataDirectory.'links_heart.txt');
+	open($outfileHash{'BAT'},'>',$dataDirectory.'links_bat.txt');
+	my $count=0;
 	while(<INPUT>) {
 		my @cols = split("\t", $_);
 		if($cols[3] >= $cutoff) {
@@ -348,9 +364,27 @@ sub createCircosEQTLCountDataFiles{
 			else {
 				$eQTLsHOH{$cols[2]}{$cols[0]}{$ind} = 1;
 			}
+
+			my $tissue=$cols[2];
+			if($tissue eq "Whole Brain"){
+				$tissue="Brain";
+			}elsif($tissue eq "Brown Adipose"){
+				$tissue="BAT";
+			}
+			my $curID=$cols[4];
+			$curID =~ s/\s+$//;
+			print $curID.":".$geneHash{$curID}{'id'}.":\n";
+
+			print {$outfileHash{$tissue}} $tissue."_".$count." ".$organism.$cols[0]." ".$cols[1]." ".($cols[1]+20000)."\n";
+			print {$outfileHash{$tissue}} $tissue."_".$count." ".$geneHash{$curID}{'chromosome'}." ".$geneHash{$curID}{'start'}." ".$geneHash{$curID}{'stop'}."\n";
+			$count=$count+1;
 		}
 	}
 	close(INPUT);
+	close($outfileHash{'Brain'});
+	close($outfileHash{'Liver'});
+	close($outfileHash{'Heart'});
+	close($outfileHash{'BAT'});
 
 	my %filenameHash;
 	$filenameHash{'Brain'}='circosBrainCount.txt';
@@ -412,113 +446,50 @@ sub createCircosEQTLCountDataFiles{
 	#close(BATFILE);
 }
 
-sub createCircosLinksConfAndData{
+sub createCircosLinksConf{
 	# Create configuration and data file for circos links
 	# This is more complicated since there will be a varying number of data files
 	# Therefore, keeping the configuration and data file creation together
-	my ($dataDirectory,$organism,$confDirectory,$eqtlAOHRef,$cutoff,$tissue,$firstChr) = @_;
-	my $numberOfTissues = 1;
-	my @linkAOH; # this is an array of hashes to store required data
-	my @eqtlAOH = @{$eqtlAOHRef};
-	my $arrayLength = scalar @eqtlAOH;
-	my $i;
-	my $linkCount = -1;
-	my $numberString;
-	my $linkColor;
-	my $keepLink;
-	my $sp="mm";
-	if ($organism eq "Rn") {
-		$sp="rn";
-	}
-
-	for($i=0;$i<$arrayLength;$i++){
-		if($eqtlAOH[$i]{pvalue} > $cutoff){
-			$linkCount++;
-			# We want a link here between the probeset and this SNP.
-			$linkAOH[$linkCount]{tissue}=$tissue;
-			if($tissue eq "Brain"){
-				$linkColor = 'blue';
-			}
-			elsif($tissue eq "Liver"){
-				$linkColor = 'green';
-			}
-			elsif($tissue eq "Heart"){
-				$linkColor = 'red';
-			}
-			elsif($tissue eq "BAT"){
-				$linkColor = 'purple';
-			}
-
-			my $tmpName=$eqtlAOH[$i]{name};
-			$tmpName =~ s/\./_/g;
-
-			$linkAOH[$linkCount]{chromosome} = $eqtlAOH[$i]{chromosome};
-			$linkAOH[$linkCount]{location} = $eqtlAOH[$i]{location};
-			$linkAOH[$linkCount]{name} = $tmpName;
-			$linkAOH[$linkCount]{color}=$linkColor;
-			$numberString = sprintf "%05d", $linkCount;
-			$linkAOH[$linkCount]{linkname} = "Link_".$tmpName;
-			$linkAOH[$linkCount]{linknumber} = $linkCount;
-		}
-	}
-	my $totalLinks = scalar @linkAOH;
-	if($debugLevel >= 2){
-		print "Total Links: $totalLinks \n";
-	}
-	# Now create data files
-	# Also create tool tip file
-	my $toolTipFileName = $dataDirectory."LinkToolTips.txt";
-	open(TOOLTIPFILE,'>',$toolTipFileName) || die ("Can't open $toolTipFileName:!\n");
-	my $linkFileName;
-	my $linkName;
-	for($i=0;$i<$totalLinks;$i++){
-		print TOOLTIPFILE $linkAOH[$i]{linkname}."\t".substr($linkAOH[$i]{chromosome},2)."\t".$linkAOH[$i]{location}."\n";
-		$linkFileName = $dataDirectory.$linkAOH[$i]{linkname}.".txt";
-		open(LINKFILE,'>',$linkFileName) || die ("Can't open $linkFileName:!\n");
-		print LINKFILE $linkAOH[$i]{name}." ".$linkAOH[$i]{chromosome}." ".$linkAOH[$i]{location}." ".$linkAOH[$i]{location}." radius1=0.85r\n"; # This is the SNP location
-		print LINKFILE $linkAOH[$i]{name}." ".$firstChr." 1 1 radius2=0r\n"; # This is the probeset location
-		close(LINKFILE);
-	}
-	close(TOOLTIPFILE);
+	my ($dataDirectory,$organism,$confDirectory,$tissueString) = @_;
+	my @tissueList=split(";",$tissueString);
+	my $numberOfTissues = scalar @tissueList;
 	# Now create the conf file
 	my $confFileName = $confDirectory."circosLinks.conf";
-	open my $CONFFILEHANDLE,'>',$confFileName || die ("Can't open $confFileName:!\n");
+	open CONFFILEHANDLE,'>',$confFileName || die ("Can't open $confFileName:!\n");
 
-	for($i=0;$i<$totalLinks;$i++){
-		$linkFileName = $dataDirectory.$linkAOH[$i]{linkname}.".txt";
-		$linkName = $linkAOH[$i]{linkname};
-		$linkColor = $linkAOH[$i]{color};
-		writeLink($CONFFILEHANDLE,$linkFileName,$linkName,$linkColor,$organism,$numberOfTissues,$i);
+
+	my %colorHash;
+	$colorHash{'Brain'}='blue';
+	$colorHash{'Liver'}='green';
+	$colorHash{'Heart'}='red';
+	$colorHash{'BAT'}='purple';
+	my $radius="0.75r";
+	if($numberOfTissues==1){
+		$radius="0.85r";
+	}elsif($numberOfTissues==3){
+		$radius="0.65r";
+	}elsif($numberOfTissues==4){
+		$radius="0.55r";
 	}
-	close(CONFFILE);
+	for(my $i=0;$i<$numberOfTissues;$i++){
+		#$linkFileName = $dataDirectory."links_".tolower($tissueList[$i]).".txt";
+		print CONFFILEHANDLE "<link>\n";
+		print CONFFILEHANDLE "file = data/links_".tolower($tissueList[$i]).".txt\n";
+		print CONFFILEHANDLE "color = ".$colorHash{$tissueList[$i]}."\n";
+		print CONFFILEHANDLE "radius = ".$radius."\n";
+		print CONFFILEHANDLE "bezier_radius = 0.1r \n";
+		print CONFFILEHANDLE "thickness = 1\n";
+		print CONFFILEHANDLE "</link>\n";
+
+
+	}
+	close(CONFFILEHANDLE);
 	#print " Finished with createCircosLinksConfAndData \n";
 }
 
 
 
-sub writeLink{
-	my ($FILEHANDLE,$LinkFileName,$linkName,$linkColor,$organism,$numberOfTissues,$i) = @_;
-	# print $FILEHANDLE "<link ".$linkName.">"."\n";
-	# print $FILEHANDLE  "z = ".$i."\n";
-	# if($numberOfTissues == 4){
-	# 	print $FILEHANDLE  "radius = 0.55r"."\n";
-	# }
-	# elsif($numberOfTissues == 3){
-	# 	print $FILEHANDLE  "radius = 0.65r"."\n";
-	# }
-	# elsif($numberOfTissues == 2){
-	# 	print $FILEHANDLE  "radius = 0.75r"."\n";
-	# }
-	# else{
-	# 	print $FILEHANDLE "radius = 0.85r"."\n";
-	# }
-	# print $FILEHANDLE  "bezier_radius = 0r"."\n";
-	# print $FILEHANDLE  "show = yes"."\n";
-	# print $FILEHANDLE  "color = ".$linkColor."\n";
-	# print $FILEHANDLE  "thickness = 5"."\n";
-	# print $FILEHANDLE  "file = ".$LinkFileName."\n";
-	# print $FILEHANDLE  "</link>"."\n";
-}
+
 
 sub writePlot{
 	my ($FILEHANDLE,$plotFileName,$plotColor,$innerRadius,$outerRadius) = @_;
