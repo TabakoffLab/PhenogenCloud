@@ -356,7 +356,10 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
         File tmp=new File(path+"/"+timeStampString+"/svg/circos_new.svg");
         tmp.setReadable(true,false);
         tmp.setExecutable(true,false);
-        url = "http://test.phenogen.org/"+path.substring(path.indexOf("tmpData"))+"/"+timeStampString+"/svg/circos_new.svg";
+        //url = path.substring(path.indexOf("tmpData"))+"/"+timeStampString+"/svg/circos_new.svg";
+        url = "https://test.phenogen.org"+path.substring(path.indexOf("/tmpData"))+"/"+timeStampString+"/svg/circos_new.svg";
+        log.debug("circosPath:\n"+url);
+
         message = "success";
     }
     return success;

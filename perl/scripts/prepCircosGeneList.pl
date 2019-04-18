@@ -43,7 +43,7 @@ sub prepCircosGeneList
 	createCircosConfFile($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$genomeVer,$chromosomeListRef,$oneToCreateLinks,$oneToCreateLinks);
 	createCircosIdeogramConfFiles($confDirectory,$organism,$chromosomeListRef);
 	createCircosGenesTextConfFile($dataDirectory,$confDirectory);
-	my $geneHashRef=createCircosGenesTextDataFile($dataDirectory,$organism);
+	my $geneHashRef=createCircosGenesTextDataFile($dataDirectory,$organism,$type);
 	createCircosEQTLCountConfFile($confDirectory,$dataDirectory,$cutoff,$organism,$tissueString,$type);
 	createCircosEQTLCountLinkDataFiles($dataDirectory,$organism,$chromosomeListRef,$tissueString,$interval,$cutoff,$type,$geneHashRef);
 	createCircosLinksConf($dataDirectory,$organism,$confDirectory,$tissueString);
@@ -238,7 +238,7 @@ sub createCircosGenesTextDataFile{
 		if(index($gs[0],"P")==0){
 			$colorGene="193,163,102";
 		}
-		print DATAFILE $cols[0], " ",$cols[1], " ",$cols[1]+20000, " ",$gs[0]," svgclass=circosGene.",replaceDot($gs[0]),",color=",$colorGene,",svgid=",replaceDot($gs[0]), "\n";
+		print DATAFILE $cols[0], " ",$cols[1], " ",$cols[1]+20000, " ",$gs[0]," svgclass=circosGene.",replaceDot($gs[0]),",color=",$colorGene,",svgid=",replaceDot($id), "\n";
 	}
  	close(INFILE);
  	close(DATAFILE);
@@ -318,6 +318,7 @@ sub createCircosEQTLCountLinkDataFiles{
 	# The 3rd column has been modified so the histogram shows up better.
 	# The 3rd column might be modified by adding 5000000
 	my ($dataDirectory,$organism, $chromosomeListRef,$tissueString,$interval,$cutoff,$type,$geneHashRef) = @_;
+	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r');
 	my %geneHash=%{$geneHashRef};
 	my @tissueList=split(";",$tissueString);
 	my $numberOfTissues = scalar @tissueList;
@@ -333,6 +334,11 @@ sub createCircosEQTLCountLinkDataFiles{
 	open($outfileHash{'Liver'},'>',$dataDirectory.'links_liver.txt');
 	open($outfileHash{'Heart'},'>',$dataDirectory.'links_heart.txt');
 	open($outfileHash{'BAT'},'>',$dataDirectory.'links_bat.txt');
+	my %tissueRadius={};
+	for(my $i=0; $i<$numberOfTissues; $i++) {
+		$tissueRadius{$tissueList[$i]}=$innerRadiusArray[$i];
+	}
+
 	my $count=0;
 	while(<INPUT>) {
 		my @cols = split("\t", $_);
@@ -373,10 +379,10 @@ sub createCircosEQTLCountLinkDataFiles{
 			}
 			my $curID=$cols[4];
 			$curID =~ s/\s+$//;
-			print $curID.":".$geneHash{$curID}{'id'}.":\n";
-
-			print {$outfileHash{$tissue}} $tissue."_".$count." ".$organism.$cols[0]." ".$cols[1]." ".($cols[1]+20000)."\n";
-			print {$outfileHash{$tissue}} $tissue."_".$count." ".$geneHash{$curID}{'chromosome'}." ".$geneHash{$curID}{'start'}." ".$geneHash{$curID}{'stop'}."\n";
+			#print $curID.":".$geneHash{$curID}{'id'}.":\n";
+			print {$outfileHash{$tissue}} $organism.$cols[0]." ".$cols[1]." ".($cols[1]+20000)." ".$geneHash{$curID}{'chromosome'}." ".$geneHash{$curID}{'start'}." ".$geneHash{$curID}{'stop'}." thickness=".(floor($cols[3])+1)."p,radius2=1.05r,radius1=".$tissueRadius{$tissue}.",svgid=".$curID."_".$tissue."_".$cols[0]."_".$base.",svgclass=".$curID."_".$tissue."-".$cols[0]."-".$base."\n";
+			#print {$outfileHash{$tissue}} $tissue."_".$count." ".$organism.$cols[0]." ".$cols[1]." ".($cols[1]+20000)." thickness=".(floor($cols[3])+1)."p,class=\"".$tissue." ".$curID."\"\n";
+			#print {$outfileHash{$tissue}} $tissue."_".$count." ".$geneHash{$curID}{'chromosome'}." ".$geneHash{$curID}{'start'}." ".$geneHash{$curID}{'stop'}." thickness=".(floor($cols[3])+1)."p,class=\"".$tissue." ".$curID."\"\n";
 			$count=$count+1;
 		}
 	}
@@ -414,7 +420,8 @@ sub createCircosEQTLCountLinkDataFiles{
 					foreach ( @rangeKeys) {
 						my $range=$_;
 						my @splitRange = split("-", $range);
-						print OUTFILE $organism . $chr . " " . $splitRange[0] . " " . $splitRange[1] . " " . $rangeH{$range} . "\n";
+						my $base=($splitRange[0]-1)/$interval;
+						print OUTFILE $organism . $chr . " " . $splitRange[0] . " " . $splitRange[1] . " " . $rangeH{$range} ." svgid=".$tissueList[$i]."-".$chr."-".$base.",svgclass=heatmap\n";
 					}
 				}
 			}
@@ -459,10 +466,10 @@ sub createCircosLinksConf{
 
 
 	my %colorHash;
-	$colorHash{'Brain'}='blue';
-	$colorHash{'Liver'}='green';
-	$colorHash{'Heart'}='red';
-	$colorHash{'BAT'}='purple';
+	$colorHash{'Brain'}="107,174,214,0.0";
+	$colorHash{'Liver'}="116,196,118,0.0";
+	$colorHash{'Heart'}="251,106,74,0.0";
+	$colorHash{'BAT'}="158,154,200,0.0";
 	my $radius="0.75r";
 	if($numberOfTissues==1){
 		$radius="0.85r";
@@ -479,6 +486,13 @@ sub createCircosLinksConf{
 		print CONFFILEHANDLE "radius = ".$radius."\n";
 		print CONFFILEHANDLE "bezier_radius = 0.1r \n";
 		print CONFFILEHANDLE "thickness = 1\n";
+		print CONFFILEHANDLE "<rules>\n";
+		print CONFFILEHANDLE "<rule>\n";
+		print CONFFILEHANDLE "condition = 1\n";
+		print CONFFILEHANDLE "svgclass  = eval(my \$x = var(svgclass); \$x =~ s/_/ /g; \$x)\n";
+		print CONFFILEHANDLE "</rule>\n";
+		print CONFFILEHANDLE "</rules>\n";
+
 		print CONFFILEHANDLE "</link>\n";
 
 

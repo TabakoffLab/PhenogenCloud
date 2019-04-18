@@ -90,21 +90,8 @@
 %>
 
 
-<%if(iframeURL!=null){%>
-<div align="center">
-    Inside of border below, the mouse wheel zooms.  Outside of the border, the mouse wheel scrolls.
-    <!--Download Circos image:
-    <a href="" target="_blank">
-        <img src="/web/images/icons/download_g.png">
-    </a>-->
-    <div id="iframe_parent" align="center">
-        <iframe id="circosIFrame" src=<%=iframeURL%> height=950 width=950  position=absolute scrolling="no" style="border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px">
-        </iframe>
-    </div>
-</div>
-<%}// end of if iframeURL != null
-%>
-
-
+{
+    "path":"<%=iframeURL%>"
+}
 
 

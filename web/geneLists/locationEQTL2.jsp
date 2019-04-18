@@ -10,6 +10,7 @@
 <%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setDateHeader("Expires", 0);
+    extrasList.add("d3.v4.8.0.min.js");
     extrasList.add("jquery.twosidedmultiselect.js");
     extrasList.add("tsmsselect.css");
     optionsList.add("geneListDetails");
@@ -178,6 +179,7 @@
 </style>
 <script type="text/javascript">
     var source="<%=source%>";
+    var geneToggle={};
     function displayWorkingCircos(){
         document.getElementById("wait2").style.display = 'block';
         //document.getElementById("circosError1").style.display = 'none';
@@ -205,6 +207,83 @@
             type: 'GET',
             cache: false,
             data: {cutoffValue:pval,tissues:tisList,chromosomes:chrList,path:path,genomeVer:genomeVer,source:source},
+            dataType: 'json',
+            beforeSend: function(){
+                $('#circosStatus').html("");
+            },
+            complete: function(){
+                displayType="RNA-Seq";
+                if(source==="array"){
+                    displayType="Microarray";
+                }
+                $('span#typeLabel').html(displayType);
+                $('#wait2').hide();
+                $('#forIframe').show();
+            },
+            success: function(data2){
+                $("#forIframe").load(data2.path,{},function(){
+                    console.log(d3.selectAll(".circosGene"))
+                    d3.selectAll(".circosGene").each(function() {
+                        d3.select(this).on("mouseover", function () {
+                            gene = d3.select(this).property("id");
+                            d3.selectAll("svg path."+gene).style("stroke-opacity","0.4");
+                        }).on("mouseout",function(){
+                            gene = d3.select(this).property("id");
+                            if(!geneToggle[gene] || geneToggle[gene]===0) {
+                                d3.selectAll("svg path." + gene).style("stroke-opacity", "0.0");
+                            }
+                        }).on("click",function(){
+                            gene = d3.select(this).property("id");
+
+                            test=d3.select(this).data().toggleDisp;
+                            console.log("test-op:");
+                            console.log(geneToggle[gene]);
+                            if(geneToggle[gene]===1){
+                                d3.selectAll("svg path."+gene).style("stroke-opacity","0.0");
+                                geneToggle[gene]=0;
+                            }else{
+                                d3.selectAll("svg path."+gene).style("stroke-opacity","0.4");
+                                geneToggle[gene]=1;
+                            }
+
+                        }).style("cursor","pointer");
+                    });
+                    d3.selectAll(".heatmap").each(function() {
+                        d3.select(this).on("mouseover", function () {
+                            gene = d3.select(this).property("id");
+                            d3.selectAll("svg path."+gene).style("stroke-opacity","0.4");
+                        }).on("mouseout",function(){
+                            gene = d3.select(this).property("id");
+                            if(!geneToggle[gene] || geneToggle[gene]===0) {
+                                d3.selectAll("svg path." + gene).style("stroke-opacity", "0.0");
+                            }
+                        }).on("click",function(){
+                            gene = d3.select(this).property("id");
+
+                            test=d3.select(this).data().toggleDisp;
+                            console.log("test-op:");
+                            console.log(geneToggle[gene]);
+                            if(geneToggle[gene]===1){
+                                d3.selectAll("svg path."+gene).style("stroke-opacity","0.0");
+                                geneToggle[gene]=0;
+                            }else{
+                                d3.selectAll("svg path."+gene).style("stroke-opacity","0.4");
+                                geneToggle[gene]=1;
+                            }
+
+                        }).style("cursor","pointer");
+                    });
+                });
+            },
+            error: function(xhr, status, error) {
+                $('#forIframe').html("<div>An error occurred generating this image.  Please try back later.</div>");
+            }
+        });
+        /*$.ajax({
+            url: "/web/geneLists/include/runCircosGeneList.jsp",
+            type: 'GET',
+            cache: false,
+            data: {cutoffValue:pval,tissues:tisList,chromosomes:chrList,path:path,genomeVer:genomeVer,source:source},
             dataType: 'html',
             beforeSend: function(){
                 $('#circosStatus').html("");
@@ -224,7 +303,7 @@
             error: function(xhr, status, error) {
                 $('#forIframe').html("<div>An error occurred generating this image.  Please try back later.</div>");
             }
-        });
+        });*/
         //$('.allowChromSelection').show();
     }
     function changeSource(){
