@@ -11,6 +11,9 @@
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setDateHeader("Expires", 0);
     extrasList.add("d3.v4.8.0.min.js");
+    extrasList.add("SVGPanCircos.js");
+    extrasList.add("helper_functions.js");
+    extrasList.add("textFlow.js");
     extrasList.add("jquery.twosidedmultiselect.js");
     extrasList.add("tsmsselect.css");
     optionsList.add("geneListDetails");
@@ -146,6 +149,7 @@
 <script type="text/javascript">
     $('#geneEQTL table#circosOptTbl').css("top","0px");
     $("span[name='circosOption']").css("margin-left","60px");
+    var panZoom;
     //runCircos();
 </script>
 
@@ -273,6 +277,7 @@
 
                         }).style("cursor","pointer");
                     });
+                    panZoom = svgPanZoom('#forIframe');
                 });
             },
             error: function(xhr, status, error) {
@@ -323,6 +328,74 @@
         source=tmpSrc;
         //$("#tissuesMS").twosidedmultiselect();
     }
+    function init(evt) {
+        if (window.svgDocument == null) {
+            svgDocument = evt.target.ownerDocument;
+            tooltip = svgDocument.getElementById('tooltip');
+            tooltip_bg = svgDocument.getElementById('tooltip_bg');
+            controls = svgDocument.getElementById('controls');
+            controlText1 = svgDocument.getElementById('controlText1');
+            controlText2=svgDocument.getElementById('controlText2');
+            controlText3=svgDocument.getElementById('controlText3');
+            controlText4=svgDocument.getElementById('controlText4');
+            helpText=svgDocument.getElementById('helpText');
+            help=svgDocument.getElementById('help');
+            closeHelpLine1=svgDocument.getElementById('closeHelpLine1');
+            closeHelpLine2=svgDocument.getElementById('closeHelpLine2');
+            var myText = "To zoom in, click on the plus button.  To zoom out, click on the minus button. ";
+            myText = myText+"Alternatively, you can zoom in and out by using your mouse wheel. ";
+            myText = myText+"To move the circos image, click with your mouse and drag into position. ";
+            myText = myText+"If you want to return to the origional view, click on the reset button. ";
+            var dy = textFlow(myText,helpText,450,275,20,false);
+        }
+    }
+    function newGetEventPoint(evt,xval,yval){
+        var p = root.createSVGPoint();
+        p.x = evt.pageX+xval;
+        p.y = evt.pageY+yval;
+        return p;
+    }
+    function ShowHelp(evt){
+        var isVisible = help.getAttributeNS(null,"visibility");
+        if(isVisible == "hidden"){
+            helpText.setAttributeNS(null,"visibility","visible");
+            help.setAttributeNS(null,"visibility","visible");
+            closeHelpLine1.setAttributeNS(null,"visibility","visible")
+            closeHelpLine2.setAttributeNS(null,"visibility","visible");
+            helpText.setAttributeNS(null,"cursor","default");
+            help.setAttributeNS(null,"cursor","default");
+            closeHelpLine1.setAttributeNS(null,"cursor","pointer");
+            closeHelpLine2.setAttributeNS(null,"cursor","pointer");
+        }
+    }
+    function HideHelp(evt){
+        var isVisible = help.getAttributeNS(null,"visibility");
+        if(isVisible != "hidden"){
+            helpText.setAttributeNS(null,"visibility","hidden");
+            help.setAttributeNS(null,"visibility","hidden");
+            closeHelpLine1.setAttributeNS(null,"visibility","hidden");
+            closeHelpLine2.setAttributeNS(null,"visibility","hidden");
+            helpText.setAttributeNS(null,"cursor","move");
+            help.setAttributeNS(null,"cursor","move");
+            closeHelpLine1.setAttributeNS(null,"cursor","move");
+            closeHelpLine2.setAttributeNS(null,"cursor","move");
+        }
+    }
+    function ShowControlTooltip(evt){
+        controlText1.setAttributeNS(null,"visibility","visible");
+        controlText2.setAttributeNS(null,"visibility","visible");
+        controlText3.setAttributeNS(null,"visibility","visible");
+        controlText4.setAttributeNS(null,"visibility","visible");
+        controls.setAttributeNS(null,"visibility","visible");
+    }
+    function HideControlTooltip(evt){
+        controlText1.setAttributeNS(null,"visibility","hidden");
+        controlText2.setAttributeNS(null,"visibility","hidden");
+        controlText3.setAttributeNS(null,"visibility","hidden");
+        controlText4.setAttributeNS(null,"visibility","hidden");
+        controls.setAttributeNS(null,"visibility","hidden");
+    }
+
 </script>
 <%
     String selectedCutoffValue = null;
@@ -628,7 +701,7 @@
     </script>
     <div style="position:relative;top:-50px;width:100%;"><h2><span id="typeLabel">RNA-Seq</span> Based Gene Level eQTLs</h2></div>
     <div id="circosStatus"></div>
-    <div id="forIframe" style="position:relative;top:-50px;width:100%;">
+    <div id="forIframe" style="display:inline-block;text-align:center;/*position:relative;top:-37px;left:50px;*/width:90%;height:950px;border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px; padding-bottom:75px;">
 
     </div>
 

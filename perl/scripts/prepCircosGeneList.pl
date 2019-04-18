@@ -226,11 +226,16 @@ sub createCircosGenesTextDataFile{
 		my @gs=split(",",$cols[2]);
 		my @trx=split(",",$cols[3]);
 		my @phid=split(",",$cols[4]);
+		my $noID=0;
 		my $id="";
 		if($type eq "array"){
-			$id=$trx[0];
+			$id="g".$trx[0];
 		}else{
 			$id=$phid[0];
+		}
+		if(length($id)<=1){
+			$noID=1;
+			$id=$gs[0];
 		}
 		$id =~ s/\s+$//;
 		$geneHash{$id}={chromosome => $cols[0],start=>$cols[1],stop=>$cols[1]+20000,geneSymbol=>$gs[0],id=>$id};
@@ -238,6 +243,10 @@ sub createCircosGenesTextDataFile{
 		if(index($gs[0],"P")==0){
 			$colorGene="193,163,102";
 		}
+		if($noID==1){
+			$colorGene="255,0,0";
+		}
+
 		print DATAFILE $cols[0], " ",$cols[1], " ",$cols[1]+20000, " ",$gs[0]," svgclass=circosGene.",replaceDot($gs[0]),",color=",$colorGene,",svgid=",replaceDot($id), "\n";
 	}
  	close(INFILE);
@@ -379,8 +388,12 @@ sub createCircosEQTLCountLinkDataFiles{
 			}
 			my $curID=$cols[4];
 			$curID =~ s/\s+$//;
+			if($type eq "array"){
+				$curID="g".$curID;
+			}
 			#print $curID.":".$geneHash{$curID}{'id'}.":\n";
-			print {$outfileHash{$tissue}} $organism.$cols[0]." ".$cols[1]." ".($cols[1]+20000)." ".$geneHash{$curID}{'chromosome'}." ".$geneHash{$curID}{'start'}." ".$geneHash{$curID}{'stop'}." thickness=".(floor($cols[3])+1)."p,radius2=1.05r,radius1=".$tissueRadius{$tissue}.",svgid=".$curID."_".$tissue."_".$cols[0]."_".$base.",svgclass=".$curID."_".$tissue."-".$cols[0]."-".$base."\n";
+			print {$outfileHash{$tissue}} $organism.$cols[0]." ".$cols[1]." ".($cols[1]+20000)." ".$geneHash{$curID}{'chromosome'}." ".$geneHash{$curID}{'start'}." ".$geneHash{$curID}{'stop'}." thickness=".(floor($cols[3]*2)+1)."p,radius2=1.05r,radius1=".$tissueRadius{$tissue}.",svgid=";
+			print {$outfileHash{$tissue}} $curID."_".$tissue."_".$cols[0]."_".$base.",svgclass=".$curID."_".$tissue."-".$cols[0]."-".$base."\n";
 			#print {$outfileHash{$tissue}} $tissue."_".$count." ".$organism.$cols[0]." ".$cols[1]." ".($cols[1]+20000)." thickness=".(floor($cols[3])+1)."p,class=\"".$tissue." ".$curID."\"\n";
 			#print {$outfileHash{$tissue}} $tissue."_".$count." ".$geneHash{$curID}{'chromosome'}." ".$geneHash{$curID}{'start'}." ".$geneHash{$curID}{'stop'}." thickness=".(floor($cols[3])+1)."p,class=\"".$tissue." ".$curID."\"\n";
 			$count=$count+1;
@@ -466,10 +479,10 @@ sub createCircosLinksConf{
 
 
 	my %colorHash;
-	$colorHash{'Brain'}="107,174,214,0.0";
-	$colorHash{'Liver'}="116,196,118,0.0";
-	$colorHash{'Heart'}="251,106,74,0.0";
-	$colorHash{'BAT'}="158,154,200,0.0";
+	$colorHash{'Brain'}="107,174,214,0";
+	$colorHash{'Liver'}="116,196,118,0";
+	$colorHash{'Heart'}="251,106,74,0";
+	$colorHash{'BAT'}="158,154,200,0";
 	my $radius="0.75r";
 	if($numberOfTissues==1){
 		$radius="0.85r";
