@@ -12,6 +12,13 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">Complex Traits Consortium 2019</H2>
+                        <div style="margin-left:5px;">
+                            PDFs of posters for CTC 2019 Meeting:<BR>
+                            <a href="/downloads/CTC_cirRNA_2019.pdf">Circular RNA Array/Predictions</a><BR>
+                            <a href="/downloads/CTC_REST_API_2019.pdf">PhenoGen REST API - gene level data</a><BR>
+
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">Phenogen in the Cloud</H2>
                         <div style="margin-left:5px;">
                             This is the new home for PhenoGen running in the cloud.  As such, a large number of changes have occurred in the background that will help us maintain the site and improve performance.  Please excuse some ongoing bugs as we are beta testing the site now.  This is not currently the recommended version.
