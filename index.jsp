@@ -73,7 +73,7 @@
 
 <div style="text-align:center;">
     <!--Download the slides from the Informatics Workshop <a href="<%=webDir%>overview/PhenoGen.workshop.16Apr15.pdf">here</A>.-->
-    Download the 2019 NIDA Meeting poster <a href="/web/overview/NIDA_NGC_2019_poster.pdf">here</a> .
+    <!--Download the 2019 NIDA Meeting poster <a href="/web/overview/NIDA_NGC_2019_poster.pdf">here</a> .-->
 </div>
 
 <div id="index">
