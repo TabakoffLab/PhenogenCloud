@@ -12,6 +12,14 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">Rat Genomics Workshop 8/2-8/3</H2>
+                        <div style="margin-left:5px;">
+                        <a href="/downloads/SuRGeFlyer_2019.pdf">Summer of Rat Genomics and Genetics Workshop - Aug 2nd-3rd, 2019 - Colorado - NIDA Center for Omics, Systems Genetics and the Addictome</a><BR>
+                            Come to Colorado in August for a 2-day hands-on workshop on web-based tools for rat genetics/genomics including RGD, GeneNetwork2, PhenoGen, GeneWeaver, and several others.  Offered by the NIDA Center for Omics, Systems Genetics, and the Addictiome.<BR>
+                            <a href="https://github.com/OSGA-OPAR/SuRGe_2019">More Info</a> <BR>
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSew8JI0K9L89jZ-7lWca11bGQZCR_F-9DBUt7zy8D-yCB11Kw/viewform">Registration</a>
+
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">Complex Traits Consortium 2019</H2>
                         <div style="margin-left:5px;">
                             PDFs of posters for CTC 2019 Meeting:<BR>
