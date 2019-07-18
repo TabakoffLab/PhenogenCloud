@@ -118,16 +118,20 @@
 
 <style>
     #psHeritTbl{
-            width:100%;
+            width:49%;
+        vertical-align: top;
     }
     #psDABGTbl{
-            width:100%;
+            width:49%;
+        vertical-align: top;
     }
     #genePart1Tbl{
-            width:100%;
+            width:49%;
+            vertical-align: top;
     }
     #genePart2Tbl{
-            width:100%;
+            width:49%;
+            vertical-align: top;
     }
     <%@ include file="/css/forGN2.css" %>
 
@@ -232,8 +236,9 @@ Add report here.
 				chr="chr"+chr;
 			}
             %>
-            <div class="adapt2Col">
-            <table id="genePart1Tbl" class="geneReport" style="display:inline-block;">
+
+            <div class="adapt2Col" style="vertical-align: top;">
+            <table id="genePart1Tbl" class="geneReport adapt2Col" style="display:inline-block;">
             <TR>
             <TD style="width:20%;">
              Gene Symbol: 
@@ -358,33 +363,40 @@ Add report here.
                 </TD>
                  
             </TR>
+                <%if(myOrganism.equals("Rn")){%>
+                <TR>
+                    <TD style="width:20%;">Exonic Variants:</TD>
+                    <TD style="width:78%;">
+
+                        <B>Common:</B> <%=curGene.getSnpCount("common","SNP")%> (SNPs) / <%=curGene.getSnpCount("common","Indel")%>(Insertions/Deletions)<BR />
+
+                        <B>BN-Lx/CubPrin:</B> <%=curGene.getSnpCount("BNLX","SNP")%> (SNPs) / <%=curGene.getSnpCount("BNLX","Indel")%>(Insertions/Deletions)<BR />
+
+                        <B>SHR/OlaPrin:</B> <%=curGene.getSnpCount("SHRH","SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRH","Indel")%> (Insertions/Deletions)<BR />
+
+                        <B>SHR/NCrlPrin:</B> <%=curGene.getSnpCount("SHRJ","SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRJ","Indel")%> (Insertions/Deletions)<BR />
+
+                        <B>F344:</B> <%=curGene.getSnpCount("F344","SNP")%> (SNPs) / <%=curGene.getSnpCount("F344","Indel")%> (Insertions/Deletions)<BR />
+                        <span class="GN2Snps button" style="width:275px;height:37px;cursor: pointer;color:#658cb2;">GN2 SNP Browser (Additional Strains/Functional Annotation)</span>
+
+                    </TD>
+
+                </TR>
+                <%}%>
+                <TR>
+                    <TD style="width:20%;">
+                    Literature Based Searches:
+                </TD>
+                    <TD><span class="button" style="width:275px;height:37px;pointer;color:#658cb2;" id="chilibotLink">Gene Relationships / Interactions (Chilibot.net)</span><BR>
+                        <span class="button" style="width:275px;height:37px;cursor: pointer;color:#658cb2;" id="ratsPubLink">Gene Relationships for Addiction (Rats.pub/OPAR.io)</span>
+                    </TD>
+                </TR>
             <TR>
             	<TD></TD>
                 <TD></TD>
             </TR>
             </table>
-            <table id="genePart2Tbl" class="geneReport" style="display:inline-block;">          
-                               
-            <%if(myOrganism.equals("Rn")){%>
-   			<TR>
-            	<TD style="width:20%;">Exonic Variants:</TD>
-                <TD style="width:78%;">
-                                    
-                                        <B>Common:</B> <%=curGene.getSnpCount("common","SNP")%> (SNPs) / <%=curGene.getSnpCount("common","Indel")%>(Insertions/Deletions)<BR />
-                                    
-                                        <B>BN-Lx/CubPrin:</B> <%=curGene.getSnpCount("BNLX","SNP")%> (SNPs) / <%=curGene.getSnpCount("BNLX","Indel")%>(Insertions/Deletions)<BR />
-                                   
-                                        <B>SHR/OlaPrin:</B> <%=curGene.getSnpCount("SHRH","SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRH","Indel")%> (Insertions/Deletions)<BR />
-                                    
-                                        <B>SHR/NCrlPrin:</B> <%=curGene.getSnpCount("SHRJ","SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRJ","Indel")%> (Insertions/Deletions)<BR />
-                                    
-                                        <B>F344:</B> <%=curGene.getSnpCount("F344","SNP")%> (SNPs) / <%=curGene.getSnpCount("F344","Indel")%> (Insertions/Deletions)<BR />
-                                        <span class="GN2Snps" style="cursor: pointer;color:#658cb2;">GN2 SNP Browser</span>
-                                    
-                                </TD>
-                                
-            </TR>
-            <%}%>
+            <table id="genePart2Tbl" class="geneReport adapt2Col" style="display:inline-block;">
             <TR>
             <TD style="width:20%;">
 			Transcripts:
@@ -403,11 +415,6 @@ Add report here.
                	<%}%>
             </TD>
             </TR>
-                <TR>
-                    <TD colspan="2"><span style="cursor: pointer;color:#658cb2;" id="chilibotLink">Literature Based Gene Relationships/Interactions(Chilibot.net)</span></TD>
-                </TR>
-
-
 
             </table>
             </div>
@@ -831,6 +838,11 @@ Add report here.
                 $('div#chilibot').dialog("open").css({'font-size':12});
             });
             },5000);
+    setTimeout(function(){
+        $('span#ratsPubLink').on('click',function(){
+            window.open("http://rats.pub/progress?query=%09<%=curGene.getGeneSymbol()%>+" , "_blank");
+        });
+    },10);
         $(window).resize(function (){
             if($(window).width()<1500 && peGR){
                 if(peGR.rbChart){
