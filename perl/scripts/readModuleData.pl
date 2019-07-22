@@ -21,7 +21,7 @@ sub readLocusSpecificPvaluesModule{
 	#INPUT VARIABLES: $probeID, $organism
 
 	# Read inputs
-	my($module,$organism,$tissue,$chromosomeListRef,$genomeVer,$dsn,$usr,$passwd,$type)=@_;   
+	my($module,$organism,$tissue,$chromosomeListRef,$genomeVer,$rnaDSID,$dsn,$usr,$passwd,$type)=@_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# $hostname is used to determine the connection to the database.
@@ -49,14 +49,22 @@ sub readLocusSpecificPvaluesModule{
                         and s.tissue='$tissue'
                         and s.snp_id=e.snp_id
                         and s.genome_id='".$genomeVer."'
-                        and s.type='$type'
-                        and c.chromosome_id=s.chromosome_id
+                        and s.type='$type'";
+	if($type eq 'seq') {
+		$query = $query . " and s.rna_dataset_id=" . $rnaDSID;
+	}
+	$query=$query." and c.chromosome_id=s.chromosome_id
                         and e.pvalue>=1
-                        and e.wdsid in (Select wd.wdsid from wgcna_dataset wd where wd.organism='$organism' and wd.tissue='$tissue' and wd.genome_id='$genomeVer' and wd.visible=1)
-                        and e.module_id in 
-                            (Select wi.module_id from wgcna_module_info wi where 
-                                wi.wdsid in (Select wd.wdsid from wgcna_dataset wd where wd.organism='$organism' and wd.tissue='$tissue' and wd.genome_id='$genomeVer' and wd.visible=1) 
-                        and wi.module='$module')
+                        and e.wdsid in (Select wd.wdsid from wgcna_dataset wd where wd.organism='$organism' and wd.tissue='$tissue' and wd.genome_id='$genomeVer' and wd.visible=1";
+	if($type eq 'seq') {
+		$query = $query . " and wd.rna_dataset_id=" . $rnaDSID;
+	}
+	$query=$query.") and e.module_id in (Select wi.module_id from wgcna_module_info wi where
+                                wi.wdsid in (Select wd.wdsid from wgcna_dataset wd where wd.organism='$organism' and wd.tissue='$tissue' and wd.genome_id='$genomeVer' and wd.visible=1 ";
+	if($type eq 'seq') {
+		$query = $query . " and wd.rna_dataset_id=" . $rnaDSID;
+	}
+	$query=$query.") and wi.module='$module')
                         order by e.pvalue";
     #print "$query\n";
                       
@@ -92,7 +100,7 @@ sub readLocusSpecificPvaluesModule{
 	}
 	$query_handle->finish();
 	$connect->disconnect();
-        
+	#print "count".$counter."\n";
 	return (\@eqtlAOH);
 }
 1;

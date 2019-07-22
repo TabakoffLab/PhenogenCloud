@@ -40,7 +40,7 @@ sub setupDirectories{
 
 
 sub callCircosMod{
-	my($module,$cutoff,$organism,$chromosomeString,$tissueString,$modulePath,$timeStampString,$modColor,$genomeVer,$dsn,$usr,$passwd,$type)=@_;
+	my($module,$cutoff,$organism,$chromosomeString,$tissueString,$modulePath,$timeStampString,$modColor,$genomeVer,$rnaDSID,$dsn,$usr,$passwd,$type)=@_;
         #print "in callCircosMod() path:$modulePath\n";
 
 
@@ -87,7 +87,7 @@ sub callCircosMod{
 	my @chromosomeList = split(/;/, $chromosomeString);
 	my $chromosomeListRef = (\@chromosomeList);
 	#print " Ready to call prepCircos \n";
-	prepCircosMod($module,$cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$dsn,$usr,$passwd,$type);
+	prepCircosMod($module,$cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$dsn,$usr,$passwd,$type,$rnaDSID);
 	#print " Finished prepCircos \n";	
 	
 
