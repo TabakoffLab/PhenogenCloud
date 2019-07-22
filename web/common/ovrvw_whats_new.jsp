@@ -26,7 +26,7 @@
 
 <%@ include file="/web/common/basicHeader.jsp" %>
 
-        <div id="welcome" style="height:575px; width:980px; overflow:auto;">
+        <div id="welcome" style="height:1000px;width:980px; overflow:auto;">
 		
                 <h2>What's New</h2>
                 <div id="overview-wrap"  >

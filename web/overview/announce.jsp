@@ -12,6 +12,16 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.6</H2>
+                        <div style="margin-left:5px;">
+                            <UL>
+                                <LI>Version 3.6 has been released with HRDP v4.  Transcriptomes are now based on the full HXB/BXH RI panel in brain and liver and available inbred strains except for the F344/Stm and LE/Stm.  The FXLE/LEXF parents will be included in HRDP v5.
+                                    Updated WGCNA, expression values, eQTLs, and transcriptomes are available.  Transcript level WGCNA is coming in the next 1-2 months.  Transcript level expression is available again now for the full panel.</LI>
+                                <LI>Links to Literature searches for gene-gene/gene-keyword relationshipts and gene-Addiction relationships.</LI>
+                                <LI>Shortcuts to the genome browser to get you to sections of interest more directly.</LI>
+                                <LI>New gene list eQTL image/browser.</LI>
+                            </UL>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">Rat Genomics Workshop 8/2-8/3</H2>
                         <div style="margin-left:5px;">
                         <a href="/downloads/SuRGeFlyer_2019.pdf">Summer of Rat Genomics and Genetics Workshop - Aug 2nd-3rd, 2019 - Colorado - NIDA Center for Omics, Systems Genetics and the Addictome</a><BR>

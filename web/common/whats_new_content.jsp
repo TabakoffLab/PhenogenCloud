@@ -28,7 +28,22 @@ span.control{
 		background:#989898;
 	}
 </style>
-    <div class="whats_new version"><p><h3>Version: v3.5</h3><BR /> To be available on 11/12/2018</p></div>
+<div class="whats_new version"><p><h3>Version: v3.6</h3><BR />7/23/2019</p></div>
+<ul>
+    <li><span class="highlight-dark"> HRDP v4 Data is available</span>
+        <UL>
+            <LI>Transcriptomes are now based on the full HXB/BXH RI panel in brain and liver and available inbred strains except for the F344/Stm and LE/Stm.  The FXLE/LEXF parents will be included in HRDP v5.</LI>
+            <LI>Updated WGCNA, expression values, eQTLs, and transcriptomes are available.</LI>
+            <LI>Transcript level expression is available again now for the full panel.</LI>
+            <LI>Transcript level WGCNA is coming in the next 1-2 months.</LI>
+        </UL>
+    </li>
+    <LI><span class="highlight-dark">New gene list circos plot eQTL image/browser.</span></LI>
+    <li><span class="highlight-dark">Genome Browser Section shortcuts</span> </li>
+    <li><span class="highlight-dark">Links to Gene Relationship Literature Search, Gene and Addiction Literature Searches, GeneNetwor SNP Browser</span></li>
+</ul>
+<hr/>
+    <div class="whats_new version"><p><h3>Version: v3.5</h3><BR />11/12/2018</p></div>
     <ul>
                 <li><span class="highlight-dark">Beta Testing cloud version now</span></li>
                 <li> Most of the changes occurred behind the scenes and users will not see much of a difference with 2 exceptions.
