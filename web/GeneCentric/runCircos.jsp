@@ -32,6 +32,7 @@
         String timeStampString = null;
         String genomeVer="";
         String source="seq";
+        String version="";
         FileHandler myFH=new FileHandler();
         //
         //Configure Inputs from session variables, unless they are already defined on the page.
@@ -49,6 +50,9 @@
         }
         if(request.getParameter("genomeVer")!=null){
                 genomeVer = request.getParameter("genomeVer");
+        }
+        if(request.getParameter("versoin")!=null){
+            version=FilterInput.getFilteredInput(request.getParameter("version"));
         }
         log.debug("before geneCentricPath");
         inputHash.put("geneSymbol",geneSymbolinternal);
@@ -164,7 +168,7 @@
             if(transcriptClusterID.startsWith("ENS")){
                 // find the corresponding Reconstruction Gene
                 try{
-                    ArrayList<String> idlist=gdt.getPhenoGenID(transcriptClusterID,genomeVer);
+                    ArrayList<String> idlist=gdt.getPhenoGenID(transcriptClusterID,genomeVer,version);
                     if(idlist.size()==1){
                         transcriptClusterID=idlist.get(0);
                     }else if(idlist.size()>1){
@@ -391,7 +395,7 @@
             String OracleUserName = myProperties.getProperty("USER");
             String password = myProperties.getProperty("PASSWORD");
             log.debug("\n******* Create Perl Arguments");
-            String[] perlScriptArguments = new String[20];
+            String[] perlScriptArguments = new String[21];
             // the 0 element in the perlScriptArguments array must be "perl" ??
             perlScriptArguments[0] = "perl";
             // the 1 element in the perlScriptArguments array must be the script name including path
@@ -405,7 +409,6 @@
             perlScriptArguments[8]=transcriptClusterStop;
             perlScriptArguments[9]=selectedCutoffValue;
             perlScriptArguments[10]=species;
-            log.debug("\n******* Create Perl Arguments[10]:"+genomeVer);
             perlScriptArguments[11]=genomeVer;
             perlScriptArguments[12]=chromosomeString;
             perlScriptArguments[13]=geneCentricPath;
@@ -416,6 +419,7 @@
             perlScriptArguments[17]=OracleUserName;
             perlScriptArguments[18]=password;
             perlScriptArguments[19]=source;
+            perlScriptArguments[20]=version;
             log.debug("\n******* Create Perl Arguments[20]");
 
             log.debug("\n*** Calling createCircosFiles from GeneDataTools");

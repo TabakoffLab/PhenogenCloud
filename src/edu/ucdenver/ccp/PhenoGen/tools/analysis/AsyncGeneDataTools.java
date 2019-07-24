@@ -300,6 +300,7 @@ public class AsyncGeneDataTools extends Thread {
                             "left outer join snps sn on sn.snp_id=l.SNP_ID "+
                             "left outer join Affy_Exon_ProbeSet s on s.probeset_id = l.probe_id "+
                             "where sn.genome_id='"+genomeVer+"' "+
+                            "and sn.type='array' "+
                             "and s.chromosome_id = "+chrID+" "+
                             "and s.genome_id='"+genomeVer+"' "+
                             "and ( "+

@@ -48,13 +48,14 @@ sub getRNADatasetFromDB{
 				rd2.organism = '".$organism."' "."
                                 and rd2.trx_recon=1
 				and rd2.user_id= $publicUserID 
-				and rd2.genome_id='$genomeVer' ";
+				and rd2.genome_id='$genomeVer'
+				and rd2.visible=1 ";
     if(!($tissue eq "Any")){
         $query=$query."and rd2.tissue = '".$tissue."' "; 
     }
     $query=$query." and rd2.strain_panel like '".$panel."' ";
-    if($$version==0){
-            $query=$query." and rd2.visible=1 and rd2.previous=0";
+    if($$version==0 || $$version eq ""){
+            $query=$query." order by build_version DESC";
     }else{
             $query=$query." and rd2.build_version='".$$version."'";
     }

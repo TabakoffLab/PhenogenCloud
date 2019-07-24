@@ -44,7 +44,7 @@ public CircosDataTools (HttpSession session,String path){
     log = Logger.getRootLogger();
 }
 
-public boolean runCircosGeneList(int geneListID,String chromosomeList,String tissueList,String source, String genomeVer, int cutoff){
+public boolean runCircosGeneList(int geneListID,String chromosomeList,String tissueList,String source, String genomeVer, String rnaDSIDs, int cutoff){
     this.chrList=chromosomeList;
     this.tisList=tissueList;
     this.source=source;
@@ -127,7 +127,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                             int count = 0;
                             while (pItr.hasNext()) {
                                 Identifier tmpP = (Identifier) pItr.next();
-                                if(tmpP.getIdentifier().startsWith("PRN6G")) {
+                                if(tmpP.getIdentifier().startsWith("PRN6")) {
                                     if (count > 0) {
                                         phID = phID + ",";
                                     }else if(count==0){
@@ -223,6 +223,10 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                         +"where l.probe_id in ( "+inIDs+") "
                         +"and s.genome_id='"+genomeVer+"' "
                         +"and s.type='"+source+"' ";
+                if(source.equals("seq")){
+
+                    qtlQuery=qtlQuery+" and s.rna_dataset_id in ("+rnaDSIDs+")";
+                }
                         //+"and l.PVALUE >= "+cutoff;
                 log.debug("\n"+qtlQuery+"\n");
                 PreparedStatement ps = conn.prepareStatement(qtlQuery);
@@ -259,7 +263,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
         String perlEnvironmentVariables = (String)session.getAttribute("perlEnvVar");
 
         perlEnvironmentVariables += ":/usr/bin:/usr/share/circos/lib:/usr/share/circos/bin";
-        String[] perlScriptArguments = new String[10];
+        String[] perlScriptArguments = new String[11];
         // the 0 element in the perlScriptArguments array must be "perl" ??
         perlScriptArguments[0] = "perl";
         // the 1 element in the perlScriptArguments array must be the script name including path
@@ -272,6 +276,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
         perlScriptArguments[7]=timeStampString;
         perlScriptArguments[8]=genomeVer;
         perlScriptArguments[9]=source;
+        perlScriptArguments[10]=rnaDSIDs;
         //setup params
         //call circos
         String[] envVar=perlEnvironmentVariables.split(",");
