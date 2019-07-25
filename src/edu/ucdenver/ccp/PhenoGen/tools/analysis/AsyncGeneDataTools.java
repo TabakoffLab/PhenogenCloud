@@ -58,6 +58,7 @@ public class AsyncGeneDataTools extends Thread {
         private String genomeVer="";
         private String perlDir="";
         private String perlEnvVar="";
+        private String version="";
         
         private int minCoord=0;
         private int maxCoord=0;
@@ -70,7 +71,7 @@ public class AsyncGeneDataTools extends Thread {
         private String[] tissues=new String[2];
         private ExecHandler myExec_session = null;
         
-    public AsyncGeneDataTools(HttpSession inSession,DataSource pool,String outputDir,String chr,int min,int max,int arrayTypeID,int rnaDS_ID,int usageID,String genomeVer,boolean isEnsemblGene) {
+    public AsyncGeneDataTools(HttpSession inSession,DataSource pool,String outputDir,String chr,int min,int max,int arrayTypeID,int rnaDS_ID,int usageID,String genomeVer,boolean isEnsemblGene,String version) {
                 this.session = inSession;
                 this.outputDir=outputDir;
                 log = Logger.getRootLogger();
@@ -85,6 +86,7 @@ public class AsyncGeneDataTools extends Thread {
                 this.usageID=usageID;
                 this.genomeVer=genomeVer;
                 this.isEnsemblGene=isEnsemblGene;
+                this.version=version;
 
                 log.debug("start");
 
@@ -123,7 +125,7 @@ public class AsyncGeneDataTools extends Thread {
         done=false;
         Date start=new Date();
         try{
-            outputRNASeqExprFiles(outputDir,chrom,minCoord,maxCoord,genomeVer);
+            outputRNASeqExprFiles(outputDir,chrom,minCoord,maxCoord,genomeVer,version);
             if(isEnsemblGene){
                 //log.debug("Before outputProbesetID");
                 outputProbesetIDFiles(outputDir,chrom, minCoord, maxCoord,arrayTypeID,genomeVer);
@@ -787,10 +789,15 @@ public class AsyncGeneDataTools extends Thread {
         return error;
     }*/
     
-    public boolean outputRNASeqExprFiles(String outputDir,String chr, int min, int max,String genomeVer){
+    public boolean outputRNASeqExprFiles(String outputDir,String chr, int min, int max,String genomeVer,String version){
         boolean success=true;
         // get list of tissues/datasets
         String query="select RNA_DATASET_ID, TISSUE,BUILD_VERSION,EXP_DATA_ID from rna_dataset where genome_id=? and trx_recon=1 and visible=1 and exp_data_id is not null";
+        if(version.equals("")){
+            query=query+" order by BUILD_VERSION DESC";
+        }else{
+            query=query+" and build_Version='"+version+"'";
+        }
         String querySmall="select RNA_DATASET_ID, TISSUE,BUILD_VERSION,EXP_DATA_ID from rna_dataset where genome_id=? and trx_recon=0 and visible=0 and description like ? and exp_data_id is not null";
         Connection conn=null;
         HashMap<String,Tissues> tissuesTotal=new HashMap<String,Tissues>();

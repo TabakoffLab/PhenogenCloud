@@ -51,7 +51,7 @@
         if(request.getParameter("genomeVer")!=null){
                 genomeVer = request.getParameter("genomeVer");
         }
-        if(request.getParameter("versoin")!=null){
+        if(request.getParameter("version")!=null){
             version=FilterInput.getFilteredInput(request.getParameter("version"));
         }
         log.debug("before geneCentricPath");
@@ -394,8 +394,22 @@
             //String dsn = "dbi:"+ myProperties.getProperty("PLATFORM")+ ":" + myProperties.getProperty("DATABASE");
             String OracleUserName = myProperties.getProperty("USER");
             String password = myProperties.getProperty("PASSWORD");
+
+            String rnaDSIDs="";
+            String prnID="";
+            if(source.equals("seq")){
+                rnaDSIDs=gdt.getRNADatasetIDsforTissues(species,tissueString,genomeVer,version);
+                String[] tmpID=rnaDSIDs.split(",");
+                prnID=gdt.translateENStoPRN(tmpID[0],ensemblIdentifier);
+                if(prnID.contains("PRN")){
+                    missingPhenoGenIDError=false;
+                }
+            }
+
+
+
             log.debug("\n******* Create Perl Arguments");
-            String[] perlScriptArguments = new String[21];
+            String[] perlScriptArguments = new String[22];
             // the 0 element in the perlScriptArguments array must be "perl" ??
             perlScriptArguments[0] = "perl";
             // the 1 element in the perlScriptArguments array must be the script name including path
@@ -419,7 +433,8 @@
             perlScriptArguments[17]=OracleUserName;
             perlScriptArguments[18]=password;
             perlScriptArguments[19]=source;
-            perlScriptArguments[20]=version;
+            perlScriptArguments[20]=rnaDSIDs;
+            perlScriptArguments[21]=prnID;
             log.debug("\n******* Create Perl Arguments[20]");
 
             log.debug("\n*** Calling createCircosFiles from GeneDataTools");

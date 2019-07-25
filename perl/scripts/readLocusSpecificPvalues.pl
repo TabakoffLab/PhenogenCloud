@@ -56,9 +56,13 @@ sub readLocusSpecificPvalues{
 
 	my $query = "select s.SNP_NAME, c.NAME, s.SNP_START, s.TISSUE, e.PVALUE
 		      from $snpTablename s, $chromosomeTablename c, $locationSpecificEQTLTablename e
-		      where
-		      e.PROBE_ID = '$probeID'
-		      and s.organism = '$organism'
+		      where ";
+	if(index($probeID,",")>0){
+		$query=$query." e.PROBE_ID in ($probeID) ";
+	}else{
+		$query=$query." e.PROBE_ID = '$probeID' ";
+	}
+	$query=$query." and s.organism = '$organism'
 		      and s.chromosome_id = c.chromosome_id
 		      and s.type='$type'
 		      and e.SNP_ID = s.SNP_ID

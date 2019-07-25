@@ -425,6 +425,7 @@
             perlScriptArguments[18]=password;
             perlScriptArguments[19]="array";
             perlScriptArguments[20]="";
+            perlScriptArguments[21]="";
 
 			log.debug(" Calling createCircosFiles from GeneDataTools");
 			//log.debug(" filePrefixWithPath "+filePrefixWithPath);

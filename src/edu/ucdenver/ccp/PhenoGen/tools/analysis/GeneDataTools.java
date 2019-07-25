@@ -251,6 +251,97 @@ public class GeneDataTools {
             }
             return ret;
     }
+
+    public String getRNADatasetIDsforTissues(String organism,String tissueIn,String genomeVer,String version){
+        String ret="";
+        String organismLong="Mouse";
+        if(organism.equals("Rn")){
+            organismLong="Rat";
+        }
+        String[] list=tissueIn.split(";");
+        String tissues="";
+        for(int i=0;i<list.length;i++) {
+            if (list[i].equals("Whole Brain")) {
+                list[i] = "Brain";
+            }
+            if(i==0){
+                tissues="'"+list[i]+"'";
+            }else{
+                tissues=tissues+",'"+list[i]+"'";
+            }
+        }
+        /*
+         *  This does only look for the brain RNA dataset id.  Right now the tables link that RNA Dataset ID to
+         *  the other datasets.  This means finding the right organism and genome version for now is sufficient without
+         *  regard to tissues as all other tables link to the brain dataset since we have brain for both supported organisms
+         */
+        String rnaIDQuery="select rna_dataset_id,tissue from RNA_DATASET "+
+                "where organism = '"+organism+"' and tissue in ("+tissues+") and strain_panel='BNLX/SHRH' and visible=1 and genome_id='"+genomeVer+"'";
+        if(version.equals("")) {
+            rnaIDQuery=rnaIDQuery+" order by BUILD_VERSION DESC";
+        }else{
+            rnaIDQuery=rnaIDQuery+" and BUILD_VERSION='"+version+"' ";
+        }
+        log.debug("\nRNAID Query:\n"+rnaIDQuery);
+        HashMap<String,String> hm=new HashMap<>();
+        try(Connection conn=pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(rnaIDQuery);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String tmpTissue=rs.getString(2);
+                int tmpInt=rs.getInt(1);
+                String tmp=Integer.toString(tmpInt);
+                if(hm.containsKey(tmpTissue)){
+                    //skip
+                }else{
+                    hm.put(tmpTissue,tmp);
+                }
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            log.error("SQL Exception retreiving RNA_dataset_ID from RNA_DATASET for Organism="+organism ,ex);
+
+        }
+        Iterator itr=hm.keySet().iterator();
+
+        while(itr.hasNext()){
+            String tmp=(String)itr.next();
+            if(ret.equals("")){
+                ret=hm.get(tmp);
+            }else {
+                ret = ret + "," + hm.get(tmp);
+            }
+        }
+        return ret;
+    }
+    public String translateENStoPRN(String rnaDS,String ens){
+        String ret="";
+
+        String rnaIDQuery="select merge_gene_id from rna_transcripts rt " +
+                "where rt.rna_dataset_id="+rnaDS +" "+
+                "and rt.rna_transcript_id in (select rna_transcript_id from rna_transcripts_annot where annotation like '"+ens+":%')";
+
+        log.debug("\nENS to PRN ID Query:\n"+rnaIDQuery);
+        try(Connection conn=pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(rnaIDQuery);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String tmp=rs.getString(1);
+
+                if(ret.equals("")){
+                    ret="'"+tmp+"'";
+                }else{
+                    ret=ret+",'"+tmp+"'";
+                }
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            log.error("SQL Exception retreiving ENS ID" ,ex);
+
+        }
+
+        return ret;
+    }
     
     public HashMap<String,String> getGenomeVersionSource(String genomeVer){
         
@@ -958,7 +1049,7 @@ public class GeneDataTools {
         try{
            conn=pool.getConnection();
            String org="Rn";
-           if(ensemblID.startsWith("ENSMMU")){
+           if(ensemblID.startsWith("ENSMUS")){
                org="Mm";
            }
            String query="select rt.gene_id,rta.annotation from rna_transcripts_annot rta, rna_transcripts rt "+
@@ -1308,7 +1399,7 @@ public class GeneDataTools {
             String ensPassword=myENSProperties.getProperty("PASSWORD");
             log.debug("after ens dbprop");
             //construct perl Args
-            String[] perlArgs = new String[14];
+            String[] perlArgs = new String[15];
             perlArgs[0] = "perl";
             perlArgs[1] = perlDir + "findGeneRegion.pl";
             perlArgs[2] = outputDir;
@@ -1328,6 +1419,7 @@ public class GeneDataTools {
             perlArgs[11] = ensPort;
             perlArgs[12] = ensUser;
             perlArgs[13] = ensPassword;
+            perlArgs[14]=genomeVer;
             
             log.debug("after perl args");
             log.debug("setup params");
@@ -2107,7 +2199,7 @@ public class GeneDataTools {
     
     public AsyncGeneDataTools callAsyncGeneDataTools(String chr, int min, int max,int arrayTypeID,int rnaDS_ID,String genomeVer,boolean isENSGene){
         AsyncGeneDataTools agdt;         
-        agdt = new AsyncGeneDataTools(session,pool,outputDir,chr, min, max,arrayTypeID,rnaDS_ID,usageID,genomeVer,isENSGene);
+        agdt = new AsyncGeneDataTools(session,pool,outputDir,chr, min, max,arrayTypeID,rnaDS_ID,usageID,genomeVer,isENSGene,"");
         //log.debug("Getting ready to start");
         agdt.start();
         //log.debug("Started AsyncGeneDataTools");
@@ -3462,7 +3554,7 @@ public class GeneDataTools {
             }catch(SQLException e){
                 log.error("Error retreiving EQTLs.",e);
                 session.setAttribute("getTransControllingEQTL","Error retreiving eQTLs.  Please try again later.  The administrator has been notified of the problem.");
-                e.printStackTrace(System.err);\
+                e.printStackTrace(System.err);
 
                 Email myAdminEmail = new Email();
                     myAdminEmail.setSubject("Exception thrown in GeneDataTools.getTransControllingEQTLS");

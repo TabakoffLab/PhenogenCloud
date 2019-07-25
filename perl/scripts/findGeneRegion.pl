@@ -177,7 +177,7 @@ sub createXMLFile
 	#
 
 	# Read in the arguments for the subroutine	
-	my( $outputDir,$species,$type,$geneNames,$publicID,$dsn,$usr,$passwd,$ensHost,$ensPort,$ensUsr,$ensPasswd)=@_;
+	my( $outputDir,$species,$type,$geneNames,$publicID,$dsn,$usr,$passwd,$ensHost,$ensPort,$ensUsr,$ensPasswd,$genomeVer)=@_;
 	
 	my @geneNamesList=split(/,/,$geneNames);
 	my $geneNameGlobal=$geneNamesList[0];
@@ -330,7 +330,7 @@ sub createXMLFile
 	if($shortSpecies eq 'Rn'){
 	    #get expanded min max
 	    if($prevMin!=$minCoord or $prevMax!=$maxCoord){
-	        $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any",$tissue,0);
+	        $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any",$tissue,0,$genomeVer);
 		my $tmpGeneArray=$$isoformHOH{Gene};
 		foreach my $tmpgene ( @$tmpGeneArray){
 		    print "gene:".$$tmpgene{ID}."\n";
@@ -353,7 +353,7 @@ sub createXMLFile
 	    }
 	}else{
             if($prevMin!=$minCoord or $prevMax!=$maxCoord){
-	        $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'ILS/ISS',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any",$tissue,0);
+	        $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'ILS/ISS',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any",$tissue,0,$genomeVer);
 		my $tmpGeneArray=$$isoformHOH{Gene};
 		foreach my $tmpgene ( @$tmpGeneArray){
 		    print "gene:".$$tmpgene{ID}."\n";
@@ -448,7 +448,8 @@ sub createXMLFile
 	my $arg10=$ARGV[9]; #rnaDatasetID
 	my $arg11=$ARGV[10];
 	my $arg12=$ARGV[11];
-	createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9,$arg10,$arg11,$arg12);
+	my $arg13=$ARGV[12];
+	createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9,$arg10,$arg11,$arg12,$arg13);
 
 	
 	# Example call:

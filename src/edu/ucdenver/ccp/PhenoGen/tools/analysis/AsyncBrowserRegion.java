@@ -85,7 +85,7 @@ public class AsyncBrowserRegion extends Thread {
         createRegionImagesXMLFiles(outputDir,org,genomeVer,ensemblPath,arrayTypeID,rnaDatasetID,ucscDB);
         if(runAGDT) {
             AsyncGeneDataTools agdt;
-            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false);
+            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false,"");
             agdt.start();
             try {
                 agdt.join();
