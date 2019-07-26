@@ -75,9 +75,10 @@ sub getRNADatasetFromDB{
         if($c==0){
             $ret=$dsid;
             $$version=$ver;
-        }else{
-            $ret=$ret.",".$dsid;
         }
+	#	elsif($multipleVersions==1){
+    #        $ret=$ret.",".$dsid;
+    #    }
         $c++;
     }
     $query_handle->finish();
@@ -149,6 +150,8 @@ sub readRNAIsoformDataFromDB{
 	
 
     my $dsid=getRNADatasetFromDB($organism,$publicUserID,$panel,$tissue,$genomeVer,$dsn,$usr,$passwd,$version);
+	print "$organism:$publicUserID:$panel:$tissue:$genomeVer,$version\n";
+	print "rnaDSID:$dsid\n";
 
 	#open PSFILE, $psOutputFileName;//Added to output for R but now not needed.  R will read in XML file
 	#print "read probesets chr:$geneChrom\n";

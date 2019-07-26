@@ -132,7 +132,7 @@ public class GeneDataTools {
             *  regard to tissues as all other tables link to the brain dataset since we have brain for both supported organisms
             */
             String rnaIDQuery="select rna_dataset_id from RNA_DATASET "+
-                        "where organism = '"+organism+"' and tissue='Brain' and strain_panel='BNLX/SHRH' and visible=1 and genome_id='"+genomeVer+"'";
+                        "where organism = '"+organism+"' and tissue='Brain' and strain_panel='BNLX/SHRH' and visible=1 and genome_id='"+genomeVer+"' order by BUILD_VERSION DESC";
             Connection conn=null;
             PreparedStatement ps=null;
             try {
@@ -157,7 +157,7 @@ public class GeneDataTools {
                 }
                 ps = conn.prepareStatement(rnaIDQuery);
                 ResultSet rs = ps.executeQuery();
-                while(rs.next()){
+                if(rs.next()){
                     ret[1]=rs.getInt(1);
                 }
                 ps.close();

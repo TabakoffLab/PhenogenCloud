@@ -21,7 +21,7 @@ import="org.json.*" %>
 
 <%
     gdt.setSession(session);
-String chromosome="",panel="",myOrganism="",track="",folderName="",bedFile="",outputFile="",web="",type="",genomeVer="";
+String chromosome="",panel="",myOrganism="",track="",folderName="",bedFile="",outputFile="",web="",type="",genomeVer="",version="";
 int min=0,max=0,rnaDatasetID=0,arrayTypeID=0,binSize=0;
 double forwardPValueCutoff=0;
 if(request.getParameter("chromosome")!=null){
@@ -33,6 +33,9 @@ if(request.getParameter("track")!=null){
 if(request.getParameter("folder")!=null){
 		folderName=request.getParameter("folder").trim();
 }
+	if(request.getParameter("version")!=null){
+		version=request.getParameter("version").trim();
+	}
 if(request.getParameter("minCoord")!=null){
 	try{
 		min=Integer.parseInt(request.getParameter("minCoord").trim());

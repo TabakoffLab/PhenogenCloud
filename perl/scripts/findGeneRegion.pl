@@ -327,54 +327,54 @@ sub createXMLFile
 	#$maxCoord=$maxCoord+$diff;
 	#read SNPs/Indels
 	
-	if($shortSpecies eq 'Rn'){
-	    #get expanded min max
-	    if($prevMin!=$minCoord or $prevMax!=$maxCoord){
-	        $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any",$tissue,0,$genomeVer);
-		my $tmpGeneArray=$$isoformHOH{Gene};
-		foreach my $tmpgene ( @$tmpGeneArray){
-		    print "gene:".$$tmpgene{ID}."\n";
-		    my $tmpTransArray=$$tmpgene{TranscriptList}{Transcript};
-		    foreach my $tmptranscript (@$tmpTransArray){
-			print $$tmptranscript{ID}."\n";
-			if($$tmptranscript{start}<$minCoord){
-			    $minCoord=$$tmptranscript{start};
-			}elsif($$tmptranscript{start}>$maxCoord){
-			    $maxCoord=$$tmptranscript{start};
-			}
-			if($$tmptranscript{stop}<$minCoord){
-			    $minCoord=$$tmptranscript{stop};
-			}elsif($$tmptranscript{stop}>$maxCoord){
-			    $maxCoord=$$tmptranscript{stop};
-			}
-		    }
-                    print "min".$minCoord."\tmax:".$maxCoord."\n";
-		}
-	    }
-	}else{
-            if($prevMin!=$minCoord or $prevMax!=$maxCoord){
-	        $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'ILS/ISS',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any",$tissue,0,$genomeVer);
-		my $tmpGeneArray=$$isoformHOH{Gene};
-		foreach my $tmpgene ( @$tmpGeneArray){
-		    print "gene:".$$tmpgene{ID}."\n";
-		    my $tmpTransArray=$$tmpgene{TranscriptList}{Transcript};
-		    foreach my $tmptranscript (@$tmpTransArray){
-			print $$tmptranscript{ID}."\n";
-			if($$tmptranscript{start}<$minCoord){
-			    $minCoord=$$tmptranscript{start};
-			}elsif($$tmptranscript{start}>$maxCoord){
-			    $maxCoord=$$tmptranscript{start};
-			}
-			if($$tmptranscript{stop}<$minCoord){
-			    $minCoord=$$tmptranscript{stop};
-			}elsif($$tmptranscript{stop}>$maxCoord){
-			    $maxCoord=$$tmptranscript{stop};
-			}
-		    }
-                    print "min".$minCoord."\tmax:".$maxCoord."\n";
-		}
-	    }
-        }
+	# if($shortSpecies eq 'Rn'){
+	#     #get expanded min max
+	#     if($prevMin!=$minCoord or $prevMax!=$maxCoord){
+	#         $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any",$tissue,0,$genomeVer);
+	# 	my $tmpGeneArray=$$isoformHOH{Gene};
+	# 	foreach my $tmpgene ( @$tmpGeneArray){
+	# 	    print "gene:".$$tmpgene{ID}."\n";
+	# 	    my $tmpTransArray=$$tmpgene{TranscriptList}{Transcript};
+	# 	    foreach my $tmptranscript (@$tmpTransArray){
+	# 		print $$tmptranscript{ID}."\n";
+	# 		if($$tmptranscript{start}<$minCoord){
+	# 		    $minCoord=$$tmptranscript{start};
+	# 		}elsif($$tmptranscript{start}>$maxCoord){
+	# 		    $maxCoord=$$tmptranscript{start};
+	# 		}
+	# 		if($$tmptranscript{stop}<$minCoord){
+	# 		    $minCoord=$$tmptranscript{stop};
+	# 		}elsif($$tmptranscript{stop}>$maxCoord){
+	# 		    $maxCoord=$$tmptranscript{stop};
+	# 		}
+	# 	    }
+    #                 print "min".$minCoord."\tmax:".$maxCoord."\n";
+	# 	}
+	#     }
+	# }else{
+    #         if($prevMin!=$minCoord or $prevMax!=$maxCoord){
+	#         $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'ILS/ISS',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any",$tissue,0,$genomeVer);
+	# 	my $tmpGeneArray=$$isoformHOH{Gene};
+	# 	foreach my $tmpgene ( @$tmpGeneArray){
+	# 	    print "gene:".$$tmpgene{ID}."\n";
+	# 	    my $tmpTransArray=$$tmpgene{TranscriptList}{Transcript};
+	# 	    foreach my $tmptranscript (@$tmpTransArray){
+	# 		print $$tmptranscript{ID}."\n";
+	# 		if($$tmptranscript{start}<$minCoord){
+	# 		    $minCoord=$$tmptranscript{start};
+	# 		}elsif($$tmptranscript{start}>$maxCoord){
+	# 		    $maxCoord=$$tmptranscript{start};
+	# 		}
+	# 		if($$tmptranscript{stop}<$minCoord){
+	# 		    $minCoord=$$tmptranscript{stop};
+	# 		}elsif($$tmptranscript{stop}>$maxCoord){
+	# 		    $maxCoord=$$tmptranscript{stop};
+	# 		}
+	# 	    }
+    #                 print "min".$minCoord."\tmax:".$maxCoord."\n";
+	# 	}
+	#     }
+    #     }
 	
 	
 	
