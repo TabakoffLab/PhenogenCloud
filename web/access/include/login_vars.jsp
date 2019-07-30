@@ -101,7 +101,6 @@
     String propertiesDir = mySessionHandler.getPropertiesDir();
     String aptDir = mySessionHandler.getAptDir();
     String dbExtFileDir = mySessionHandler.getDbExtFileDir();
-
     //
     // all others need only the context path specified
     //
@@ -150,6 +149,12 @@
         } catch (Exception e) {
             dbUnavail = true;
         }
+    }
+    if (session.getAttribute("dbPoolRO") != null) {
+        poolRO = (DataSource) session.getAttribute("dbPoolRO");
+    } else {
+        poolRO = mySessionHandler.getDBPoolRO();
+        session.setAttribute("dbPoolRO", poolRO);
     }
 %>
 

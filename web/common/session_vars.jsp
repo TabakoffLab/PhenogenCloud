@@ -113,6 +113,9 @@
 		pool=(DataSource)session.getAttribute("dbPool");
 		log.debug("DB POOL SETUP");
 	}
+	if(session.getAttribute("dbPoolRO")!=null){
+		poolRO=(DataSource)session.getAttribute("dbPoolRO");
+	}
 
         if(pool!=null){
             try{
@@ -123,7 +126,6 @@
                 dbUnavail=true;
             }
         }
-	
 	String checkMark = "<img src='" + imagesDir + "icons/" + "checkmark.gif' height=\"20\" width=\"20\" alt=\"\">";
 	String resultsIcon = "<img src='" + imagesDir + "icons/" + "results.png' height=\"20\" width=\"20\" alt=\"\">";
 	String downloadIcon = "<img src='" + imagesDir + "icons/" + "download_g.png' height=\"20\" width=\"20\" alt=\"\">";

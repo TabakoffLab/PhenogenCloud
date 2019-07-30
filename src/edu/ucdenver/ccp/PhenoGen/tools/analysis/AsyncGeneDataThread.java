@@ -63,8 +63,7 @@ public class AsyncGeneDataThread extends Thread {
         double forwardPValueCutoff=0.01;
 
         
-       
-        
+
     public AsyncGeneDataThread(HttpSession inSession,GeneDataTools gdt,String chromosome,int min,int max,int fullmin,int fullmax,String panel,String myOrganism,String genomeVer,int rnaDatasetID,int arrayTypeID,double forwardPValueCutoff) {
                 this.session = inSession;
                 this.gdt=gdt;

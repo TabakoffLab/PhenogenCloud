@@ -168,8 +168,6 @@ public class AsyncBrowserRegion extends Thread {
                 }
                 log.debug(i + " EnvVar::" + envVar[i]);
             }
-
-
             //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
             myExec_session = new ExecHandler(perlDir, perlArgs, envVar, outputDir+"genRegion");
             boolean exception=false;

@@ -51,6 +51,7 @@ public class AsyncGeneDataTools extends Thread {
         private String urlPrefix = "";
         private String ucscDir="";
         private DataSource pool=null;
+        private DataSource poolRO=null;
         private String dbPropertiesFile=null;
         private String mongoDBPropertiesFile=null;
         private String outputDir="";
@@ -69,7 +70,8 @@ public class AsyncGeneDataTools extends Thread {
         private String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_TOOLS=? , RESULT=? where TRANS_DETAIL_ID=?";
         private String[] tissues=new String[2];
         private ExecHandler myExec_session = null;
-        
+
+
     public AsyncGeneDataTools(HttpSession inSession,DataSource pool,String outputDir,String chr,int min,int max,int arrayTypeID,int rnaDS_ID,int usageID,String genomeVer,boolean isEnsemblGene) {
                 this.session = inSession;
                 this.outputDir=outputDir;
@@ -92,6 +94,7 @@ public class AsyncGeneDataTools extends Thread {
                 //this.selectedDatasetVersion = (Dataset.DatasetVersion) session.getAttribute("selectedDatasetVersion");
                 //this.publicDatasets = (Dataset[]) session.getAttribute("publicDatasets");
                 this.pool = (DataSource) session.getAttribute("dbPool");
+                this.poolRO= (DataSource) session.getAttribute("dbPoolRO");
                 dbPropertiesFile = (String) session.getAttribute("dbPropertiesFile");
                 mongoDBPropertiesFile = (String)session.getAttribute("mongoDbPropertiesFile");
                 //log.debug("db");
@@ -244,7 +247,7 @@ public class AsyncGeneDataTools extends Thread {
                 BufferedWriter psout=new BufferedWriter(new FileWriter(new File(pListFile)));
                 Connection conn=null;
                 try{
-                    conn=pool.getConnection();
+                    conn=poolRO.getConnection();
                     PreparedStatement psC = conn.prepareStatement(chrQ);
                     ResultSet rsC = psC.executeQuery();
                     if(rsC.next()){
@@ -294,7 +297,7 @@ public class AsyncGeneDataTools extends Thread {
                 StringBuilder sb=new StringBuilder();
                 Connection conn=null;
                 try{
-                    conn=pool.getConnection();
+                    conn=poolRO.getConnection();
                     String probeTransQuery="select distinct s.Probeset_ID,'"+chr.toUpperCase()+"',s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
                             "from location_specific_eqtl l "+
                             "left outer join snps sn on sn.snp_id=l.SNP_ID "+
@@ -795,7 +798,7 @@ public class AsyncGeneDataTools extends Thread {
         HashMap<String,Tissues> tissuesTotal=new HashMap<String,Tissues>();
         HashMap<String,Tissues> tissuesSmall=new HashMap<String,Tissues>();
         try{
-            conn=pool.getConnection();
+            conn=poolRO.getConnection();
             PreparedStatement ps=conn.prepareStatement(query);
             ps.setString(1,genomeVer);
             ResultSet rs=ps.executeQuery();
@@ -882,7 +885,7 @@ public class AsyncGeneDataTools extends Thread {
                     " r.merge_gene_id in (";
             log.debug(selectTrx);
             try{
-                conn=pool.getConnection();
+                conn=poolRO.getConnection();
                 PreparedStatement ps=conn.prepareStatement(selectTrx);
                 String org="Rn";
                 if(genomeVer.toLowerCase().startsWith("mm")){
@@ -1057,7 +1060,7 @@ public class AsyncGeneDataTools extends Thread {
                     " r.merge_gene_id in (";*/
             log.debug("SMALL:"+selectTrx);
             try{
-                conn=pool.getConnection();
+                conn=poolRO.getConnection();
                 PreparedStatement ps=conn.prepareStatement(selectTrx);
                 String org="Rn";
                 if(genomeVer.toLowerCase().startsWith("mm")){

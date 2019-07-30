@@ -43,6 +43,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
     that.moduleGenes={};
 	that.modules={};
 	that.tissue=tissue;
+
 	that.panel="";
 	that.requests=0;
 	that.skipGrey=1;
@@ -63,8 +64,10 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
             if(that.selSource==="seq"){
             	if(tissue==="Whole Brain"){
 	            	that.wDSID=6;
+
 	            }else if(tissue==="Liver"){
 					that.wDSID=7;
+
 	            }
             }else{
 	            if(tissue==="Whole Brain"){
@@ -77,6 +80,8 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
         	}
         }
     }
+
+
     that.eQTLKey=function(d){return "Link_"+d.Snp;};
     that.mirKey=function(d){return d.ID;};
     that.modKey=function(d){return d.MODULE;};
