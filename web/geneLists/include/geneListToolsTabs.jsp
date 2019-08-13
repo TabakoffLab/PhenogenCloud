@@ -11,7 +11,7 @@
 <div class="action_tabs">
     <div id="list" class="single" data-landingPage="geneList"><span>List</span></div>
     <div id="annotation" class="single" data-landingPage="annotation"><span>Annotation</span></div>
-    <div id="loc_eQTL" data-landingPage="locationEQTL"><span>Location<BR/>(eQTL)</span></div>
+    <div id="loc_eQTL" data-landingPage="locationEQTL2"><span>Location<BR/>(eQTL)</span></div>
     <%if (!userLoggedIn.getUser_name().equals("anon")) {%>
     <div id="literature" class="single" data-landingPage="litSearch"><span>Literature </span></div>
     <%}%>
@@ -42,6 +42,8 @@
     <% } %>
 
     <div id="expressionValues" data-landingPage="expressionValues"><span>Expression<BR/>Values</span></div>
+    <!--***************TODO:FINISH CHILIBOT/Rats.pub******************************-->
+    <!--<div id="chilibot" data-landingPage="chilibot"><span>Literature Based<BR>Relationships</span></div>-->
     <!--<div id="exonCorrelationTab" data-landingPage="exonCorrelationTab"><span>Exon<BR />Correlation</span></div>-->
     <div id="compare" class="single" data-landingPage="compareGeneLists"><span>Compare</span></div>
     <%if (!userLoggedIn.getUser_name().equals("anon")) {%>

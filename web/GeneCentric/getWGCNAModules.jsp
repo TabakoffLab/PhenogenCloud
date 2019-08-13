@@ -29,6 +29,7 @@ String region="";
 String genomeVer="";
 String source="";
 int geneList=0;
+String version="";
 
 if(request.getParameter("id")!=null){
 	id=request.getParameter("id");
@@ -54,16 +55,19 @@ if(request.getParameter("genomeVer")!=null){
 if(request.getParameter("source")!=null){
         source=request.getParameter("source");
 }
+if(request.getParameter("version")!=null){
+        version=request.getParameter("version");
+}
 
 wgt.setSession(session);
 gdt.setSession(session);
 ArrayList<String> modules=null;
 if(!id.equals("")){
-    modules=wgt.getWGCNAModulesForGene(gdt,id,panel,tissue,org,genomeVer,source);
+    modules=wgt.getWGCNAModulesForGene(gdt,id,panel,tissue,org,genomeVer,source,version);
 }else if(!region.equals("")){
-    modules=wgt.getWGCNAModulesForRegion(gdt,region,panel,tissue,org,genomeVer,source);
+    modules=wgt.getWGCNAModulesForRegion(gdt,region,panel,tissue,org,genomeVer,source,version);
 }else if(geneList>0){
-    modules=wgt.getWGCNAModulesForGeneList(gdt,geneList,panel,tissue,genomeVer,source);
+    modules=wgt.getWGCNAModulesForGeneList(gdt,geneList,panel,tissue,genomeVer,source,version);
 }
 response.setContentType("application/json");
 response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");

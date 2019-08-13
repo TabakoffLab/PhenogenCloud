@@ -266,7 +266,7 @@ table.tooltipTable TD{
         }
         
         .triggerEC {
-            padding-left: 8px;
+            padding-right: 8px;
         }
         
         table tr.col_title th {
@@ -281,16 +281,18 @@ table.tooltipTable TD{
         .inpageHelpContent {
             display:none;
         }
-        div.adapt2Col{
-            -webkit-column-count: 2; /* Chrome, Safari, Opera */
-            -moz-column-count: 2; /* Firefox */
-            column-count: 2;
+
+        table.adapt2Col{
+            width:49%;
         }
-        @media screen and (max-width:1000px){
+        @media screen and (max-width:900px){
             div.adapt2Col{
                 -webkit-column-count: 1; /* Chrome, Safari, Opera */
             -moz-column-count:1; /* Firefox */
             column-count: 1;
+            }
+            table.adapt2Col{
+                width:100%;
             }
         }
         @media screen and (min-width:1500px){
@@ -305,5 +307,32 @@ table.tooltipTable TD{
                 float:left;
             }
         }
-        
+span.shrt-button{
+    cursor: pointer;
+    display:inline-block;
+    padding:0.3em 1.2em;
+    margin:0 0.3em 0.3em 0;
+    border-radius:2em;
+    box-sizing: border-box;
+    text-decoration:none;
+    font-family:'Roboto',sans-serif;
+    font-weight:300;
+    color:#FFFFFF;
+    background-color:#3f92d2;
+    text-align:center;
+    transition: all 0.2s;
+}
+span.shrt-button.gene{
+    background-color:#00992D;
+}
+span.shrt-button:hover{
+    background-color:#1f72b2;
+}
+span.shrt-button.gene:hover{
+    background-color:#00790D;
+}
+@media all and (max-width:30em){
+    span.shrt-button{display:block;margin:0.2em auto;}
+}
+
 </style>

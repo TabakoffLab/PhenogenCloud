@@ -77,7 +77,6 @@ if(request.getParameter("genomeVer")!=null){
 
 <% 
 	String tmpOutput=gdt.getImageRegionData(chromosome,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,false);
-
 	String foldername=chromosome+"/img_"+min+"_"+max;
 	JSONObject genejson;
 	genejson = new JSONObject();

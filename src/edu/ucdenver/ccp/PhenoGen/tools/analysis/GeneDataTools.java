@@ -63,7 +63,7 @@ public class GeneDataTools {
     private HttpSession session = null;
     private User userLoggedIn = null;
     private DataSource pool = null;
-    private DataSource poolRO = null;
+    //private DataSource poolRO = null;
     private Logger log = null;
     private String perlDir = "", fullPath = "";
     private String rFunctDir = "";
@@ -138,7 +138,7 @@ public class GeneDataTools {
             Connection conn=null;
             PreparedStatement ps=null;
             try {
-                conn=poolRO.getConnection();
+                conn=pool.getConnection();
                 ps = conn.prepareStatement(atQuery);
                 ResultSet rs = ps.executeQuery();
                 while(rs.next()){
@@ -155,7 +155,7 @@ public class GeneDataTools {
             }
             try {
                 if(conn==null || conn.isClosed()){
-                    conn=poolRO.getConnection();
+                    conn=pool.getConnection();
                 }
                 ps = conn.prepareStatement(rnaIDQuery);
                 ResultSet rs = ps.executeQuery();
@@ -182,7 +182,7 @@ public class GeneDataTools {
         
     }
     
-    public int[] getOrganismSpecificIdentifiers(String organism,String tissue,String genomeVer){
+    public int[] getOrganismSpecificIdentifiers(String organism,String tissue,String genomeVer,String version){
         
             int[] ret=new int[2];
             String organismLong="Mouse";
@@ -202,32 +202,29 @@ public class GeneDataTools {
             */
             String rnaIDQuery="select rna_dataset_id from RNA_DATASET "+
                         "where organism = '"+organism+"' and tissue='"+tissue+"' and strain_panel='BNLX/SHRH' and visible=1 and genome_id='"+genomeVer+"'";
+            if(version.equals("")) {
+                rnaIDQuery=rnaIDQuery+" order by BUILD_VERSION DESC";
+            }else{
+                rnaIDQuery=rnaIDQuery+" and BUILD_VERSION='"+version+"' ";
+            }
             log.debug("\nRNAID Query:\n"+rnaIDQuery);
-            Connection conn=null;
             PreparedStatement ps=null;
-            try {
-                conn=poolRO.getConnection();
+            try(Connection conn=pool.getConnection()) {
+
                 ps = conn.prepareStatement(atQuery);
                 ResultSet rs = ps.executeQuery();
-                while(rs.next()){
+                if(rs.next()){
                     ret[0]=rs.getInt(1);
                 }
                 ps.close();
             } catch (SQLException ex) {
                 log.error("SQL Exception retreiving Array_Type_ID from array_types for Organism="+organism ,ex);
-                try {
-                    ps.close();
-                } catch (Exception ex1) {
-                   
-                }
+
             }
-            try {
-                if(conn==null || conn.isClosed()){
-                    conn=poolRO.getConnection();
-                }
+            try(Connection conn=pool.getConnection()) {
                 ps = conn.prepareStatement(rnaIDQuery);
                 ResultSet rs = ps.executeQuery();
-                while(rs.next()){
+                if(rs.next()){
                     ret[1]=rs.getInt(1);
                 }
                 ps.close();
@@ -239,14 +236,99 @@ public class GeneDataTools {
                 } catch (Exception ex1) {
 
                 }
-            }finally{
-                    try {
-                            if(conn!=null)
-                                conn.close();
-                        } catch (SQLException ex) {
-                        }
             }
             return ret;
+    }
+
+    public String getRNADatasetIDsforTissues(String organism,String tissueIn,String genomeVer,String version){
+        String ret="";
+        String organismLong="Mouse";
+        if(organism.equals("Rn")){
+            organismLong="Rat";
+        }
+        String[] list=tissueIn.split(";");
+        String tissues="";
+        for(int i=0;i<list.length;i++) {
+            if (list[i].equals("Whole Brain")) {
+                list[i] = "Brain";
+            }
+            if(i==0){
+                tissues="'"+list[i]+"'";
+            }else{
+                tissues=tissues+",'"+list[i]+"'";
+            }
+        }
+        /*
+         *  This does only look for the brain RNA dataset id.  Right now the tables link that RNA Dataset ID to
+         *  the other datasets.  This means finding the right organism and genome version for now is sufficient without
+         *  regard to tissues as all other tables link to the brain dataset since we have brain for both supported organisms
+         */
+        String rnaIDQuery="select rna_dataset_id,tissue from RNA_DATASET "+
+                "where organism = '"+organism+"' and tissue in ("+tissues+") and strain_panel='BNLX/SHRH' and visible=1 and genome_id='"+genomeVer+"'";
+        if(version.equals("")) {
+            rnaIDQuery=rnaIDQuery+" order by BUILD_VERSION DESC";
+        }else{
+            rnaIDQuery=rnaIDQuery+" and BUILD_VERSION='"+version+"' ";
+        }
+        log.debug("\nRNAID Query:\n"+rnaIDQuery);
+        HashMap<String,String> hm=new HashMap<>();
+        try(Connection conn=pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(rnaIDQuery);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String tmpTissue=rs.getString(2);
+                int tmpInt=rs.getInt(1);
+                String tmp=Integer.toString(tmpInt);
+                if(hm.containsKey(tmpTissue)){
+                    //skip
+                }else{
+                    hm.put(tmpTissue,tmp);
+                }
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            log.error("SQL Exception retreiving RNA_dataset_ID from RNA_DATASET for Organism="+organism ,ex);
+
+        }
+        Iterator itr=hm.keySet().iterator();
+
+        while(itr.hasNext()){
+            String tmp=(String)itr.next();
+            if(ret.equals("")){
+                ret=hm.get(tmp);
+            }else {
+                ret = ret + "," + hm.get(tmp);
+            }
+        }
+        return ret;
+    }
+    public String translateENStoPRN(String rnaDS,String ens){
+        String ret="";
+
+        String rnaIDQuery="select merge_gene_id from rna_transcripts rt " +
+                "where rt.rna_dataset_id="+rnaDS +" "+
+                "and rt.rna_transcript_id in (select rna_transcript_id from rna_transcripts_annot where annotation like '"+ens+":%')";
+
+        log.debug("\nENS to PRN ID Query:\n"+rnaIDQuery);
+        try(Connection conn=pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(rnaIDQuery);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String tmp=rs.getString(1);
+
+                if(ret.equals("")){
+                    ret="'"+tmp+"'";
+                }else{
+                    ret=ret+",'"+tmp+"'";
+                }
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            log.error("SQL Exception retreiving ENS ID" ,ex);
+
+        }
+
+        return ret;
     }
     
     public HashMap<String,String> getGenomeVersionSource(String genomeVer){
@@ -255,10 +337,9 @@ public class GeneDataTools {
             String query="select * from Browser_Genome_versions "+
                         "where genome_id='"+genomeVer+"'";
 
-            Connection conn=null;
             PreparedStatement ps=null;
-            try {
-                conn=poolRO.getConnection();
+            try(Connection conn=pool.getConnection()) {
+
                 ps = conn.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 if(rs.next()){
@@ -266,20 +347,9 @@ public class GeneDataTools {
                     hm.put("ucsc",rs.getString("UCSC"));
                 }
                 ps.close();
-                conn.close();
-                conn=null;
             } catch (SQLException ex) {
                 log.error("SQL Exception retreiving datasources for genome Version="+genomeVer ,ex);
-                try {
-                   if(conn!=null && !conn.isClosed()){
-                       try{
-                           conn.close();
-                           conn=null;
-                       }catch(SQLException e){}
-                   }
-                } catch (Exception ex1) {
-                   
-                }
+
             }
             
             return hm;
@@ -948,20 +1018,20 @@ public class GeneDataTools {
         return true;
     }
     
-    public ArrayList<String> getPhenoGenID(String ensemblID,String genomeVer) throws SQLException{
-        Connection conn=null;
+    public ArrayList<String> getPhenoGenID(String ensemblID,String genomeVer,String version) throws SQLException{
+
         ArrayList<String> ret=new ArrayList<String>();
-        try{
-           conn=poolRO.getConnection();
+        try(Connection conn=pool.getConnection();){
+
            String org="Rn";
-           if(ensemblID.startsWith("ENSMMU")){
+           if(ensemblID.startsWith("ENSMUS")){
                org="Mm";
            }
            String query="select rt.gene_id,rta.annotation from rna_transcripts_annot rta, rna_transcripts rt "+
                         "where rt.RNA_TRANSCRIPT_ID=rta.RNA_TRANSCRIPT_ID "+
                         "and rt.RNA_DATASET_ID=? "+
                         "and rta.ANNOTATION like '"+ensemblID+"%'";
-           int[] tmp=getOrganismSpecificIdentifiers(org,"Merged",genomeVer);
+           int[] tmp=getOrganismSpecificIdentifiers(org,"Merged",genomeVer,version);
            int dsid=tmp[1];
            PreparedStatement ps=conn.prepareStatement(query);
            ps.setInt(1, dsid);
@@ -983,14 +1053,8 @@ public class GeneDataTools {
                }
            }
            ps.close();
-           conn.close();
+
         }catch(SQLException e){
-            try{
-                if(conn!=null && !conn.isClosed()){
-                    conn.close();
-                    conn=null;
-                }
-            }catch(SQLException ex){}
             throw(e);
         }
         return ret;
@@ -1034,9 +1098,7 @@ public class GeneDataTools {
             String pListFile=outputDir+"tmp_psList.txt";
             try{
                 BufferedWriter psout=new BufferedWriter(new FileWriter(new File(pListFile)));
-                Connection conn=null;
-                try{
-                    conn=poolRO.getConnection();
+                try(Connection conn=pool.getConnection()){
                     PreparedStatement psC = conn.prepareStatement(chrQ);
                     ResultSet rsC = psC.executeQuery();
                     if(rsC.next()){
@@ -1068,12 +1130,6 @@ public class GeneDataTools {
                     conn.close();
                 }catch(SQLException ex){
                     log.error("Error getting exon probesets",ex);
-                }finally{
-                    try {
-                        if(conn!=null)
-                            conn.close();
-                    } catch (SQLException ex) {
-                    }
                 }
                 psout.flush();
                 psout.close();
@@ -1090,14 +1146,15 @@ public class GeneDataTools {
             //try{
                 StringBuffer sb=new StringBuffer();
                 //BufferedWriter psout = new BufferedWriter(new FileWriter(srcFile));
-                Connection conn=null;
-                try{
-                    conn=poolRO.getConnection();
+
+                try (Connection conn=pool.getConnection()){
+
                     String probeTransQuery="select distinct s.Probeset_ID,'"+chr.toUpperCase()+"',s.PSSTART,s.PSSTOP,s.PSLEVEL,s.Strand "+
                             "from location_specific_eqtl l "+
                             "left outer join snps sn on sn.snp_id=l.SNP_ID "+
                             "left outer join Affy_Exon_ProbeSet s on s.probeset_id = l.probe_id "+
                             "where sn.genome_id='"+genomeVer+"' "+
+                            "and sn.type='array' "+
                             "and s.chromosome_id = "+chrID+" "+
                             "and s.genome_id='"+genomeVer+"' "+
                             "and ( "+
@@ -1169,12 +1226,6 @@ public class GeneDataTools {
                     conn.close();
                 }catch(SQLException ex){
                     log.error("Error getting transcript probesets",ex);
-                }finally{
-                    try {
-                        if(conn!=null)
-                            conn.close();
-                    } catch (SQLException ex) {
-                    }
                 }
                 try{
                     //log.debug("To File:"+ptransListFiletmp+"\n\n"+sb.toString());
@@ -1303,7 +1354,7 @@ public class GeneDataTools {
             String ensPassword=myENSProperties.getProperty("PASSWORD");
             log.debug("after ens dbprop");
             //construct perl Args
-            String[] perlArgs = new String[14];
+            String[] perlArgs = new String[15];
             perlArgs[0] = "perl";
             perlArgs[1] = perlDir + "findGeneRegion.pl";
             perlArgs[2] = outputDir;
@@ -1323,6 +1374,7 @@ public class GeneDataTools {
             perlArgs[11] = ensPort;
             perlArgs[12] = ensUser;
             perlArgs[13] = ensPassword;
+            perlArgs[14]=genomeVer;
             
             log.debug("after perl args");
             log.debug("setup params");
@@ -2102,7 +2154,7 @@ public class GeneDataTools {
     
     public AsyncGeneDataTools callAsyncGeneDataTools(String chr, int min, int max,int arrayTypeID,int rnaDS_ID,String genomeVer,boolean isENSGene){
         AsyncGeneDataTools agdt;         
-        agdt = new AsyncGeneDataTools(session,pool,outputDir,chr, min, max,arrayTypeID,rnaDS_ID,usageID,genomeVer,isENSGene);
+        agdt = new AsyncGeneDataTools(session,pool,outputDir,chr, min, max,arrayTypeID,rnaDS_ID,usageID,genomeVer,isENSGene,"");
         //log.debug("Getting ready to start");
         agdt.start();
         //log.debug("Started AsyncGeneDataTools");
@@ -2587,7 +2639,7 @@ public class GeneDataTools {
         //log.debug("start");
         //this.dbConn = (Connection) session.getAttribute("dbConn");
         this.pool= (DataSource) session.getAttribute("dbPool");
-        this.poolRO= (DataSource) session.getAttribute("dbPoolRO");
+        //this.poolRO= (DataSource) session.getAttribute("dbPoolRO");
         //log.debug("db");
         this.perlDir = (String) session.getAttribute("perlDir") + "scripts/";
         //log.debug("perl"+perlDir);
@@ -2705,10 +2757,7 @@ public class GeneDataTools {
         String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+organism+"'";
 
         HashMap probesets=new HashMap();
-        Connection conn=null;
-        try{
-
-            conn=poolRO.getConnection();
+        try (Connection conn=pool.getConnection()){
             int chrID=-99;
             PreparedStatement psC = conn.prepareStatement(chrQ);
             ResultSet rsC = psC.executeQuery();
@@ -2763,12 +2812,6 @@ public class GeneDataTools {
             log.error("Error retreiving Herit/DABG.",e);
             System.err.println("Error retreiving Herit/DABG.");
             e.printStackTrace(System.err);
-        }finally{
-            try {
-                    if(conn!=null)
-                        conn.close();
-                } catch (SQLException ex) {
-                }
         }
         if(probesets!=null){
             //fill probeset data for each Gene
@@ -2821,10 +2864,7 @@ public class GeneDataTools {
             }
             //HashMap probesets=new HashMap();
             String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+organism+"'";
-            Connection conn=null;
-            try{
-
-                conn=poolRO.getConnection();
+            try (Connection conn=pool.getConnection()){
                 int chrID=-99;
                 PreparedStatement psC = conn.prepareStatement(chrQ);
                 ResultSet rsC = psC.executeQuery();
@@ -2869,12 +2909,6 @@ public class GeneDataTools {
                 //log.debug("Tissue Size:"+tissues.size());
             }catch(SQLException e){
                 log.error("Error retreiving EQTLs.",e);
-            }finally{
-                try {
-                        if(conn!=null)
-                            conn.close();
-                } catch (SQLException ex) {
-                }
             }
         }else{
             
@@ -2908,7 +2942,7 @@ public class GeneDataTools {
             }
             String chrQ="select chromosome_id,name from chromosomes where organism='"+organism+"'";
             int chrID=-99;
-            try(Connection conn=poolRO.getConnection()){
+            try(Connection conn=pool.getConnection()){
                 PreparedStatement psC = conn.prepareStatement(chrQ);
                 ResultSet rsC = psC.executeQuery();
                 while(rsC.next()){
@@ -3037,6 +3071,23 @@ public class GeneDataTools {
     
     public String getFolder(int min,int max,String chr,String organism,String genomeVer){
         String folder="";
+
+        if(chr.startsWith("chr")){
+            chr=chr.substring(3);
+        }
+        log.debug("getFolderName:"+organism+"chr"+chr+"_"+min+"_"+max+"_");
+        /*RegionDirFilter rdf=new RegionDirFilter(organism+"chr"+chr+"_"+min+"_"+max+"_");
+        log.debug(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData");
+        File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData");
+        File[] list=mainDir.listFiles(rdf);    
+        if(list.length>0){
+            log.debug("length>0");
+            String tmpOutputDir=list[0].getAbsolutePath()+"/";
+            int second=tmpOutputDir.lastIndexOf("/",tmpOutputDir.length()-2);
+            folder=tmpOutputDir.substring(second+1,tmpOutputDir.length()-1);
+                        
+        }
+        log.debug(folder);*/
         folder=min+"_"+max;
         return folder;
     }
@@ -3053,21 +3104,17 @@ public class GeneDataTools {
         String folderName=min+"_"+max;
         String tmpOutputDir=fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/chr"+chr+"/"+folderName+"/";
         File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/chr"+chr+"/"+min+"_"+max);
-        if(!mainDir.exists()){
+        if(! mainDir.exists()){
                 String panel="BNLX/SHRH";
                 if(organism.equals("Mm")){
                     panel="ILS/ISS";
                 }
                 this.getRegionData(chr, min, max, panel, organism,genomeVer, RNADatasetID, arrayTypeID, pvalue, false);
-
         }
-        
-        
-        
+
         circosTissue=circosTissue.replaceAll(";;", ";");
         circosChr=circosChr.replaceAll(";;", ";");
-        
-        
+
         String[] levels=level.split(";");
         String tmpRegion=chr+":"+min+"-"+max;
         String curParams="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",pvalue="+pvalue+",level="+level+",org="+organism;
@@ -3075,189 +3122,71 @@ public class GeneDataTools {
         String curCircosParams="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",pvalue="+pvalue+",level="+level+",org="+organism+",circosTissue="+circosTissue+",circosChr="+circosChr;
         boolean run=true;
         boolean filter=false;
-        /*if(this.cacheHM.containsKey(tmpRegion)){
-            HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
-            String testParam=(String)regionHM.get("controlledRegionParams");
-            String testMinusPval="";
-            int indPvalue=-1;
-            if(testParam!=null){
-                indPvalue=testParam.indexOf(",pvalue=")+8;
-                if(indPvalue>-1){
-                    testMinusPval=testParam.substring(0, indPvalue-8);
-                    testMinusPval=testMinusPval+testParam.substring(testParam.indexOf(",",indPvalue));
-                }
-            }
-            //log.debug("\n"+curParamsMinusPval+"\n"+testMinusPval+"\n");
-            if(curParams.equals(testParam)){
-                //log.debug("\nreturning previous-controlling\n");
-                transcriptClusters=(ArrayList<TranscriptCluster>)regionHM.get("controlledRegion");
-                run=false;
-            }else if(curParamsMinusPval.equals(testMinusPval)){
-                //log.debug("\nreturning Filtered\n");
-                
-                String testPval=testParam.substring(indPvalue,testParam.indexOf(",",indPvalue));
-                double testPvalue=Double.parseDouble(testPval);
-                if(pvalue<testPvalue){
-                    filter=true;
-                    run=false;
-                    beforeFilter=(ArrayList<TranscriptCluster>)regionHM.get("controlledRegion");
-                }
-            }
-            
-            File testF=new File(tmpOutputDir+"TranscriptClusterDetails.txt");
-            if(!testF.exists()){
-                run=true;
-            }
-        }
-        if(run){*/
-        HashMap<String,TranscriptCluster> tmpHM=new HashMap<>();
+
+        HashMap<String,TranscriptCluster> tmpHM=new HashMap<String,TranscriptCluster>();
         HashMap<Integer,String> chrHM=new HashMap<>();
+        String org="Rn";
+        if(genomeVer.toLowerCase().startsWith("mm")){
+            org="Mm";
+        }
+        String chrQ="select chromosome_id,name from chromosomes where organism='"+org+"'";
 
+        int chrID=-99;
+        try(Connection conn=pool.getConnection()){
 
-//            String qtlQuery="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end "+
-//                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep "+
-//                                "where s.snp_id=lse.snp_id "+
-//                                "and lse.probe_id=aep.probeset_id "+
-//                                "and c2.chromosome_id=aep.chromosome_id "+
-//                                "and c.chromosome_id=s.chromosome_id "+
-//                                "and lse.pvalue>= "+(-Math.log10(pvalue))+" "+
-//                                "and aep.updatedlocation='Y' "+
-//                                "and aep.transcript_cluster_id in "+
-//                                    "(select aep.transcript_cluster_id "+
-//                                    "from location_specific_eqtl lse, snps s, chromosomes c1 , affy_exon_probeset aep "+
-//                                    "where s.snp_id=lse.snp_id "+
-//                                    "and lse.pvalue>= "+(-Math.log10(pvalue))+" "+
-//                                    "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
-//                                    " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
-//                                    "and s.chromosome_id=c1.chromosome_id "+
-//                                    "and s.organism ='"+organism+"' "+
-//                                    "and c1.name='"+chr.toUpperCase()+"' "+
-//                                    "and aep.updatedlocation='Y' "+
-//                                    "and lse.probe_id=aep.probeset_id ";
-//                                if(!level.equals("All")){
-//                                    qtlQuery=qtlQuery+" and ( ";
-//                                    for(int k=0;k<levels.length;k++){
-//                                        if(k==0){
-//                                            qtlQuery=qtlQuery+"aep.pslevel='"+levels[k]+"' ";
-//                                        }else{
-//                                            qtlQuery=qtlQuery+" or aep.pslevel='"+levels[k]+"' ";
-//                                        }
-//                                    }
-//                                    qtlQuery=qtlQuery+") ";
-//                                    //qtlQuery=qtlQuery+"and aep.pslevel='"+level+"' ";
-//                                }/*else{
-//                                    qtlQuery=qtlQuery+"and aep.pslevel<>'ambiguous' ";
-//                                }*/
-//                                qtlQuery=qtlQuery+"and aep.psannotation='transcript' "+
-//                                "and aep.array_type_id="+arrayTypeID+") "+
-//                                "order by aep.transcript_cluster_id, s.tissue";
-
-            //qtlQuery2=qtlQuery2+"order by s.tissue";
-//            String qtlQuery2="select aep.transcript_cluster_id,c2.name,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,c.name,s.snp_start,s.snp_end "+//,eq.LOD_SCORE "+
-//                                "from location_specific_eqtl lse, snps s, chromosomes c ,chromosomes c2, affy_exon_probeset aep "+//, expression_qtls eq "+
-//                                "where s.snp_id=lse.snp_id "+
-//                                "and lse.pvalue< "+(-Math.log10(pvalue))+" "+
-//                                //"and substr(c.name,1,2)='"+chr+"' "+
-//                                "and c.name='"+chr.toUpperCase()+"' "+
-//                                "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+max+")) "+
-//                                " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
-//                                "and s.organism ='"+organism+"' "+
-//                                "and lse.probe_id=aep.probeset_id ";
-//                                if(!level.equals("All")){
-//                                    qtlQuery2=qtlQuery2+" and ( ";
-//                                    for(int k=0;k<levels.length;k++){
-//                                        if(k==0){
-//                                            qtlQuery2=qtlQuery2+"aep.pslevel='"+levels[k]+"' ";
-//                                        }else{
-//                                            qtlQuery2=qtlQuery2+" or aep.pslevel='"+levels[k]+"' ";
-//                                        }
-//                                    }
-//                                    qtlQuery2=qtlQuery2+") ";
-//                                }
-//                                qtlQuery2=qtlQuery2+"and aep.psannotation='transcript' "+
-//                                "and aep.array_type_id="+arrayTypeID+" "+
-//                                "and aep.updatedlocation='Y' "+
-//                                "and s.chromosome_id=c.chromosome_id "+
-//                                "and c2.chromosome_id=aep.chromosome_id "+
-//                                "order by aep.transcript_cluster_id,s.tissue,aep.chromosome_id,aep.psstart";
-            String org="Rn";
-            if(genomeVer.toLowerCase().startsWith("mm")){
-                org="Mm";
+            PreparedStatement psC = conn.prepareStatement(chrQ);
+            ResultSet rsC = psC.executeQuery();
+            while(rsC.next()){
+                int tmpID=rsC.getInt(1);
+                String tmpName=rsC.getString(2);
+                if(tmpName.equals(chr.toUpperCase())){
+                    chrID=tmpID;
+                }
+                chrHM.put(tmpID,tmpName);
             }
-            String chrQ="select chromosome_id,name from chromosomes where organism='"+org+"'";
+            rsC.close();
+            psC.close();
+            int snpcount=0;
+            String snpQ="select snp_id,tissue,snp_name,snp_start,snp_end from snps s where "+
+                    "s.genome_id='"+genomeVer+"' " +
+                    "and s.type='array' "+
+                    "and s.chromosome_id = "+chrID+" " +
+                    "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
+                    " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) ";
 
-            int chrID=-99;
-            try(Connection conn=poolRO.getConnection()){
-
-                PreparedStatement psC = conn.prepareStatement(chrQ);
-                ResultSet rsC = psC.executeQuery();
-                while(rsC.next()){
-                    int tmpID=rsC.getInt(1);
-                    String tmpName=rsC.getString(2);
-                    if(tmpName.equals(chr.toUpperCase())){
-                        chrID=tmpID;
-                    }
-                    chrHM.put(tmpID,tmpName);
+            HashMap<String,HashMap<String,String>> snpsHM=new HashMap<>();
+            StringBuffer sb=new StringBuffer();
+            PreparedStatement ps = conn.prepareStatement(snpQ);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()) {
+                if (sb.length() == 0) {
+                    sb.append(rs.getInt(1));
+                } else {
+                    sb.append("," + rs.getInt(1));
                 }
-                rsC.close();
-                psC.close();
-                int snpcount=0;
-                String snpQ="select snp_id,tissue,snp_name,snp_start,snp_end from snps s where "+
-                        "s.genome_id='"+genomeVer+"' " +
-                        "and s.type='array' "+
-                        "and s.chromosome_id = "+chrID+" " +
-                        "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
-                        " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) ";
+                String id=Integer.toString(rs.getInt(1));
+                HashMap<String,String> snpEntry=new HashMap<>();
+                snpEntry.put("id",id);
+                snpEntry.put("tissue",rs.getString(2));
+                snpEntry.put("snp_name",rs.getString(3));
+                snpEntry.put("start",Integer.toString(rs.getInt(4)));
+                snpEntry.put("end",Integer.toString(rs.getInt(5)));
+                snpsHM.put(id,snpEntry);
+                snpcount++;
+            }
+            rs.close();
+            ps.close();
+            String qtlQuery="select aep.transcript_cluster_id,aep.chromosome_id,aep.strand,aep.psstart,aep.psstop,aep.pslevel,lse.snp_id, lse.pvalue " +
+                    "from location_specific_eqtl lse " +
+                    "inner join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
+                    //"where lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
+                    //"where lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
+                    "where lse.snp_id in ("+sb.toString()+") " +
+                    "and aep.genome_id='"+genomeVer+"' " +
+                    "and aep.updatedlocation='Y' " +
+                    "and aep.psannotation='transcript' " +
+                    "and aep.array_type_id="+arrayTypeID;
 
-                HashMap<String,HashMap<String,String>> snpsHM=new HashMap<>();
-                StringBuffer sb=new StringBuffer();
-                PreparedStatement ps = conn.prepareStatement(snpQ);
-                ResultSet rs = ps.executeQuery();
-                while(rs.next()) {
-                    if (sb.length() == 0) {
-                        sb.append(rs.getInt(1));
-                    } else {
-                        sb.append("," + rs.getInt(1));
-                    }
-                    String id=Integer.toString(rs.getInt(1));
-                    HashMap<String,String> snpEntry=new HashMap<>();
-                    snpEntry.put("id",id);
-                    snpEntry.put("tissue",rs.getString(2));
-                    snpEntry.put("snp_name",rs.getString(3));
-                    snpEntry.put("start",Integer.toString(rs.getInt(4)));
-                    snpEntry.put("end",Integer.toString(rs.getInt(5)));
-                    snpsHM.put(id,snpEntry);
-                    snpcount++;
-                }
-                rs.close();
-                ps.close();
-                String qtlQuery="select aep.transcript_cluster_id,aep.chromosome_id,aep.strand,aep.psstart,aep.psstop,aep.pslevel,lse.snp_id, lse.pvalue " +
-                        "from location_specific_eqtl lse " +
-                        "inner join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
-                        //"where lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
-                        //"where lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
-                        "where lse.snp_id in ("+sb.toString()+") " +
-                        "and aep.genome_id='"+genomeVer+"' " +
-                        "and aep.updatedlocation='Y' " +
-                        "and aep.psannotation='transcript' " +
-                        "and aep.array_type_id="+arrayTypeID;
-               /* String qtlQuery="select aep.transcript_cluster_id,aep.chromosome_id,aep.strand,aep.psstart,aep.psstop,aep.pslevel, s.tissue,lse.pvalue, s.snp_name,'"+chr.toUpperCase()+"',s.snp_start,s.snp_end " +
-                        "from location_specific_eqtl lse " +
-                        "left outer join snps s on s.snp_id=lse.snp_id " +
-                        "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
-                        //"left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
-                        "where s.genome_id='"+genomeVer+"' " +
-                        "and lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
-                        "and s.chromosome_id = "+chrID+" " +
-                        "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
-                        " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
-                        "and aep.genome_id='"+genomeVer+"' " +
-                        "and aep.updatedlocation='Y' " +
-                        "and aep.psannotation='transcript' " +
-                        "and aep.array_type_id="+arrayTypeID;*/
-
-
-                //"and ( aep.pslevel='core'  or aep.pslevel='extended'  or aep.pslevel='full' ) \n" +
                 if(!level.equals("All")){
                     if(level.equals("core;extended;full")){
                         qtlQuery = qtlQuery + " and aep.pslevel <> 'ambiguous' ";
@@ -3326,6 +3255,7 @@ public class GeneDataTools {
                 ps.close();
                 log.debug("done");
                 
+
                 if(snpcount==0){
                     session.setAttribute("getTransControllingEQTL","This region does not overlap with any markers used in the eQTL calculations.  You should expand the region to view eQTLs.");
                 }/*else{
@@ -3344,10 +3274,11 @@ public class GeneDataTools {
                             "left outer join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
                             //"left outer join chromosomes c2 on c2.chromosome_id=aep.chromosome_id " +
                             "where  s.genome_id='"+genomeVer+"' " +
-                            "and lse.pvalue between 1.0 and "+(-Math.log10(pvalue))+" " +
+                            "and s.type='array' "+
                             "and s.chromosome_id="+chrID+" " +
                             "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
                             " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) "+
+                            "and lse.pvalue between 1.0 and "+(-Math.log10(pvalue))+" " +
                             "and aep.genome_id='"+genomeVer+"' "+
                             "and aep.updatedlocation='Y' " +
                             "and aep.psannotation='transcript' " +
@@ -3626,6 +3557,7 @@ public class GeneDataTools {
                 log.error("Error retreiving EQTLs.",e);
                 session.setAttribute("getTransControllingEQTL","Error retreiving eQTLs(3).  Please try again later.  The administrator has been notified of the problem.");
                 e.printStackTrace(System.err);
+
                 Email myAdminEmail = new Email();
                     myAdminEmail.setSubject("Exception thrown in GeneDataTools.getTransControllingEQTLS");
                     myAdminEmail.setContent("There was an error while running getTransControllingEQTLS.\n SQLException getting transcript clusters.",e);
@@ -3701,15 +3633,7 @@ public class GeneDataTools {
             }
 
             //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list
-
-            /*for (int i = 0; i < perlArgs.length; i++) {
-                log.debug(i + " perlArgs::" + perlArgs[i]);
-            }*/
             String[] envVar=perlEnvVar.split(",");
-            /*for (int i = 0; i < envVar.length; i++) {
-                log.debug(i + " EnvVar::" + envVar[i]);
-            }*/
-
 
             //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
             myExec_session = new ExecHandler(perlDir, perlArgs, envVar, tmpOutputDir+"circos_"+pvalue);
@@ -3717,35 +3641,12 @@ public class GeneDataTools {
             try {
 
                 myExec_session.runExec();
-                /*if(cacheHM.containsKey(tmpRegion)){
-                    HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
-                    regionHM.put("controlledCircosRegionParams",curCircosParams);        
-                }else{
-                    HashMap regionHM=new HashMap();
-                    regionHM.put("controlledCircosRegionParams",curCircosParams);        
-                    cacheHM.put(tmpRegion,regionHM);
-                    this.cacheList.add(tmpRegion);
-                }*/
-                //this.controlledCircosRegionParams=curCircosParams;
             } catch (ExecException e) {
                 //error=true;
                 log.error("In Exception of run callCircosReverse.pl Exec_session", e);
                 session.setAttribute("getTransControllingEQTLCircos","Error running Circos.  Unable to generate Circos image.  Please try again later.  The administrator has been notified of the problem.");
                 setError("Running Perl Script to match create circos plot.");
-               /* Email myAdminEmail = new Email();
-                myAdminEmail.setSubject("Exception thrown in Exec_session");
-                myAdminEmail.setContent("There was an error while running "
-                        + perlArgs[1] + " (" + perlArgs[2] +" , "+perlArgs[3]+" , "+perlArgs[4]+")\n\n"+myExec_session.getErrors());
-                try {
-                    myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
-                } catch (Exception mailException) {
-                    log.error("error sending message", mailException);
-                    try {
-                        myAdminEmail.sendEmailToAdministrator("");
-                    } catch (Exception mailException1) {
-                        //throw new RuntimeException();
-                    }
-                }*/
+
             }
         }
         
@@ -3813,7 +3714,7 @@ public class GeneDataTools {
                                 "and ((rsn.feature_start>="+min+" and rsn.feature_start<="+max+") OR (rsn.feature_stop>="+min+" and rsn.feature_stop<="+max+") OR (rsn.feature_start<="+min+" and rsn.feature_stop>="+max+")) "+
                                 ")";
 
-            try(Connection conn=poolRO.getConnection()){
+            try(Connection conn=pool.getConnection()){
                 log.debug("SQL smnc FROM QUERY\n"+smncQuery);
                 PreparedStatement ps = conn.prepareStatement(smncQuery);
                 ResultSet rs = ps.executeQuery();
@@ -3946,7 +3847,7 @@ public class GeneDataTools {
                             "and c.name='"+chr.toUpperCase()+"' "+ 
                             "and c.chromosome_id=pq.chromosome";
             try{ 
-            try(Connection conn=poolRO.getConnection()){
+            try(Connection conn=pool.getConnection()){
                 log.debug("SQL eQTL FROM QUERY\n"+query);
                 PreparedStatement ps = conn.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
@@ -4029,7 +3930,7 @@ public class GeneDataTools {
             try{ 
             try{
                 log.debug("SQL bQTL FROM QUERY\n"+query);
-                conn=poolRO.getConnection();
+                conn=pool.getConnection();
                 PreparedStatement ps = conn.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 if(rs.next()){
@@ -4107,7 +4008,7 @@ public class GeneDataTools {
                         "and pq.QTL_SYMBOL='"+qtlSymbol+"'";
         
         try{ 
-        try(Connection conn=poolRO.getConnection()){
+        try(Connection conn=pool.getConnection()){
             //log.debug("SQL eQTL FROM QUERY\n"+query);
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();

@@ -150,12 +150,12 @@
             dbUnavail = true;
         }
     }
-    if (session.getAttribute("dbPoolRO") != null) {
+    /*if (session.getAttribute("dbPoolRO") != null) {
         poolRO = (DataSource) session.getAttribute("dbPoolRO");
     } else {
         poolRO = mySessionHandler.getDBPoolRO();
         session.setAttribute("dbPoolRO", poolRO);
-    }
+    }*/
 %>
 
 <%@ include file="/web/common/alertMsgSetup.jsp" %>

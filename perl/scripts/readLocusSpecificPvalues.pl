@@ -29,7 +29,7 @@ sub readLocusSpecificPvalues{
 	#INPUT VARIABLES: $probeID, $organism
 
 	# Read inputs
-	my($probeID,$organism,$genomeVer,$chromosomeListRef,$dsn,$usr,$passwd,$type)=@_;   
+	my($probeID,$organism,$genomeVer,$chromosomeListRef,$dsn,$usr,$passwd,$type,$rnaDSID)=@_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# $hostname is used to determine the connection to the database.
@@ -56,13 +56,23 @@ sub readLocusSpecificPvalues{
 
 	my $query = "select s.SNP_NAME, c.NAME, s.SNP_START, s.TISSUE, e.PVALUE
 		      from $snpTablename s, $chromosomeTablename c, $locationSpecificEQTLTablename e
-		      where
-		      e.PROBE_ID = '$probeID'
-		      and s.organism = '$organism'
+		      where ";
+	if(index($probeID,",")>0){
+		$query=$query." e.PROBE_ID in ($probeID) ";
+	}else{
+		$query=$query." e.PROBE_ID = '$probeID' ";
+	}
+	$query=$query." and s.organism = '$organism'
 		      and s.chromosome_id = c.chromosome_id
 		      and s.type='$type'
 		      and e.SNP_ID = s.SNP_ID
               and s.genome_id='$genomeVer'";
+
+	if($type eq 'seq' && index($rnaDSID,",")==-1){
+		$query=$query." and s.rna_dataset_id=".$rnaDSID;
+	}elsif($type eq 'seq' && index($rnaDSID,",")>-1){
+		$query=$query." and s.rna_dataset_id in (".$rnaDSID.")";
+	}
 
 		      
 	#if ($debugLevel >= 2){

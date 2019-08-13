@@ -58,34 +58,34 @@ sub readAffyProbesetDataFromDB{
 	$probeTablename = 'Affy_Exon_Probes';
 	$heritTablename = 'Probeset_Herit_Dabg';
 	$chromosomeTablename = 'Chromosomes';
-	
-	# DATA SOURCE NAME
-	#$dsn = "dbi:$platform:$service_name";
+	if(length($geneChrom)<5) {
+		# DATA SOURCE NAME
+		#$dsn = "dbi:$platform:$service_name";
 
-	
-	# PERL DBI CONNECT
-	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
-	
-	my $geneChromNumber = addChr($geneChrom,"subtract");
-	my $org="Rn";
-	if($genomeVer eq "mm10"){
-	    $org="Mm";
-	}
-    $chrQ="select chromosome_id from chromosomes where name='".uc($geneChromNumber)."' and organism='".$org."'";
-    $query_handle1 = $connect->prepare($chrQ) or die (" Probeset query prepare failed \n");
 
-    # EXECUTE THE QUERY
-    $query_handle1->execute() or die ( "Probeset query execute failed \n");
-    $query_handle1->bind_columns(\$chrID);
-    $query_handle1->fetch();
+		# PERL DBI CONNECT
+		$connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
 
-	# PREPARE THE QUERY for probesets
-        $query = "select s.Probeset_ID, s.psstart, s.psstop, s.strand, s.pslevel, s.pssequence, s.updatedlocation, h.herit, h.dabg, p.PROBE_ID, p.STRAND, p.PROBESEQUENCE
+		my $geneChromNumber = addChr($geneChrom, "subtract");
+		my $org = "Rn";
+		if ($genomeVer eq "mm10") {
+			$org = "Mm";
+		}
+		$chrQ = "select chromosome_id from chromosomes where name='" . uc($geneChromNumber) . "' and organism='" . $org . "'";
+		$query_handle1 = $connect->prepare($chrQ) or die(" Probeset query prepare failed \n");
+
+		# EXECUTE THE QUERY
+		$query_handle1->execute() or die("Probeset query execute failed \n");
+		$query_handle1->bind_columns(\$chrID);
+		$query_handle1->fetch();
+
+		# PREPARE THE QUERY for probesets
+		$query = "select s.Probeset_ID, s.psstart, s.psstop, s.strand, s.pslevel, s.pssequence, s.updatedlocation, h.herit, h.dabg, p.PROBE_ID, p.STRAND, p.PROBESEQUENCE
         from  $probesetTablename s
         left outer join $heritTablename h on s.probeset_id = h.probeset_id and h.genome_id=s.genome_id
         left outer join $probeTablename p on p.probeset_id = s.probeset_id and p.genome_id=s.genome_id
-        where s.chromosome_id =  ".$chrID."
-        and s.genome_id='".$genomeVer."'
+        where s.chromosome_id =  " . $chrID . "
+        and s.genome_id='" . $genomeVer . "'
         and 
         ((s.psstart >= $geneStart and s.psstart <=$geneStop) OR
         (s.psstop >= $geneStart and s.psstop <= $geneStop))
@@ -95,106 +95,106 @@ sub readAffyProbesetDataFromDB{
         and s.updatedlocation='Y'
         order by s.probeset_id";
 
-	print $query."\n";
-	$query_handle = $connect->prepare($query) or die (" Probeset query prepare failed \n");
+		print $query . "\n";
+		$query_handle = $connect->prepare($query) or die(" Probeset query prepare failed \n");
 
-# EXECUTE THE QUERY
-	$query_handle->execute() or die ( "Probeset query execute failed \n");
+		# EXECUTE THE QUERY
+		$query_handle->execute() or die("Probeset query execute failed \n");
 
-# BIND TABLE COLUMNS TO VARIABLES
+		# BIND TABLE COLUMNS TO VARIABLES
 
-	$query_handle->bind_columns(undef ,\$dbname, \$dbchromStart, \$dbchromStop,\$dbstrand, \$dbtype, \$dbsequence, \$dbupdloc, \$dbherit, \$dbdabg, \$dbprobename, \$dbprobestrand, \$dbprobesequence);
-# Loop through results, adding to array of hashes.
-	my $continue=1;
-	my @tmpArr=();
-	my @probeArray = @tmpArr ;
-	my $cntProbes=0;
-	my $previousdbName="";
-	my $tmpType = "";
-	my $tmpStop = 0;
-	my $tmpID = "";
-	my $tmpStart = 0;
-	my $tmpStrand = "";
-	my $tmpSequence = "";
-	my $tmpChromosome = 0;
-	my $tmpUpdatedLocation = 'N';
-	my $tmpHeritability = 0;
-	my $tmpDABG = 0;
-	
-	while($query_handle->fetch()) {
-		if($dbname eq $previousdbName){
-			#print "Adding probe $dbname\n";
-			$$probeArray[$cntProbes]{ID}=$dbprobename;
-			$$probeArray[$cntProbes]{start}=$dbprobeStart;
-			$$probeArray[$cntProbes]{stop}=$dbprobeStop;
-			$$probeArray[$cntProbes]{strand}=$dbprobestrand;
-			$$probeArray[$cntProbes]{sequence}=$dbprobesequence;
-			$cntProbes++;
-			#print Data::Dumper->Dump(\@probeArray);
-		}else{	
-			#print "done $tmpID\n";
-			#print " Number of probes $cntProbes \n";
-			#print Data::Dumper->Dump(\@$probeArray);
-			push @probesetHOH,
-			{
-				type => $tmpType,
-				stop => $tmpStop,
-				ID => $tmpID,
-				start => $tmpStart,
-				strand => $tmpStrand,
-				sequence => $tmpSequence,
-				chromosome => $tmpChromosome,
-				updatedlocation => $tmpUpdatedLocation,
-				heritability => $tmpHeritability,
-				DABG => $tmpDABG,
-				ProbeList => {Probe => \@$probeArray}
-			};
-			my @tmpArray=();
-			$probeArray=\@tmpArray;
-			$cntProbes=0;
-			
-			$tmpType = $dbtype;
-			$tmpStop = $dbchromStop;
-			$tmpID = $dbname;
-			$tmpStart = $dbchromStart;
-			$tmpStrand = $dbstrand;
-			$tmpSequence = $dbsequence;
-			$tmpChromosome = $geneChrom;
-			$tmpUpdatedLocation = $dbupdloc;
-			$tmpHeritability = $dbherit;
-			$tmpDABG = $dbdabg;
-			
-			
-			
-			$$probeArray[$cntProbes]{ID}=$dbprobename;
-			$$probeArray[$cntProbes]{start}=$dbprobeStart;
-			$$probeArray[$cntProbes]{stop}=$dbprobeStop;
-			$$probeArray[$cntProbes]{strand}=$dbprobestrand;
-			$$probeArray[$cntProbes]{sequence}=$dbprobesequence;
-			$cntProbes++;
-			
-			#print "starting $dbname: $cntProbes probes\n";
-			
-			$previousdbName=$dbname;
+		$query_handle->bind_columns(undef, \$dbname, \$dbchromStart, \$dbchromStop, \$dbstrand, \$dbtype, \$dbsequence, \$dbupdloc, \$dbherit, \$dbdabg, \$dbprobename, \$dbprobestrand, \$dbprobesequence);
+		# Loop through results, adding to array of hashes.
+		my $continue = 1;
+		my @tmpArr = ();
+		my @probeArray = @tmpArr;
+		my $cntProbes = 0;
+		my $previousdbName = "";
+		my $tmpType = "";
+		my $tmpStop = 0;
+		my $tmpID = "";
+		my $tmpStart = 0;
+		my $tmpStrand = "";
+		my $tmpSequence = "";
+		my $tmpChromosome = 0;
+		my $tmpUpdatedLocation = 'N';
+		my $tmpHeritability = 0;
+		my $tmpDABG = 0;
+
+		while ($query_handle->fetch()) {
+			if ($dbname eq $previousdbName) {
+				#print "Adding probe $dbname\n";
+				$$probeArray[$cntProbes]{ID} = $dbprobename;
+				$$probeArray[$cntProbes]{start} = $dbprobeStart;
+				$$probeArray[$cntProbes]{stop} = $dbprobeStop;
+				$$probeArray[$cntProbes]{strand} = $dbprobestrand;
+				$$probeArray[$cntProbes]{sequence} = $dbprobesequence;
+				$cntProbes++;
+				#print Data::Dumper->Dump(\@probeArray);
+			}
+			else {
+				#print "done $tmpID\n";
+				#print " Number of probes $cntProbes \n";
+				#print Data::Dumper->Dump(\@$probeArray);
+				push @probesetHOH,
+					{
+						type            => $tmpType,
+						stop            => $tmpStop,
+						ID              => $tmpID,
+						start           => $tmpStart,
+						strand          => $tmpStrand,
+						sequence        => $tmpSequence,
+						chromosome      => $tmpChromosome,
+						updatedlocation => $tmpUpdatedLocation,
+						heritability    => $tmpHeritability,
+						DABG            => $tmpDABG,
+						ProbeList       => { Probe => \@$probeArray }
+					};
+				my @tmpArray = ();
+				$probeArray = \@tmpArray;
+				$cntProbes = 0;
+
+				$tmpType = $dbtype;
+				$tmpStop = $dbchromStop;
+				$tmpID = $dbname;
+				$tmpStart = $dbchromStart;
+				$tmpStrand = $dbstrand;
+				$tmpSequence = $dbsequence;
+				$tmpChromosome = $geneChrom;
+				$tmpUpdatedLocation = $dbupdloc;
+				$tmpHeritability = $dbherit;
+				$tmpDABG = $dbdabg;
+
+				$$probeArray[$cntProbes]{ID} = $dbprobename;
+				$$probeArray[$cntProbes]{start} = $dbprobeStart;
+				$$probeArray[$cntProbes]{stop} = $dbprobeStop;
+				$$probeArray[$cntProbes]{strand} = $dbprobestrand;
+				$$probeArray[$cntProbes]{sequence} = $dbprobesequence;
+				$cntProbes++;
+
+				#print "starting $dbname: $cntProbes probes\n";
+
+				$previousdbName = $dbname;
+			}
 		}
-	}
-	$query_handle1->finish();
-	$query_handle->finish();
-	$connect->disconnect();
-	push @probesetHOH,
+		$query_handle1->finish();
+		$query_handle->finish();
+		$connect->disconnect();
+		push @probesetHOH,
 			{
-				type => $tmpType,
-				stop => $tmpStop,
-				ID => $tmpID,
-				start => $tmpStart,
-				strand => $tmpStrand,
-				sequence => $tmpSequence,
-				chromosome => $tmpChromosome,
+				type            => $tmpType,
+				stop            => $tmpStop,
+				ID              => $tmpID,
+				start           => $tmpStart,
+				strand          => $tmpStrand,
+				sequence        => $tmpSequence,
+				chromosome      => $tmpChromosome,
 				updatedlocation => $tmpUpdatedLocation,
-				heritability => $tmpHeritability,
-				DABG => $tmpDABG,
-				ProbeList => {Probe => \@$probeArray}
+				heritability    => $tmpHeritability,
+				DABG            => $tmpDABG,
+				ProbeList       => { Probe => \@$probeArray }
 			};
+	}
 	#close PSFILE;
 	return (\@probesetHOH);
 }

@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 
 public class WGCNATools{
     private DataSource pool=null;
-    private DataSource poolRO=null;
+    //private DataSource poolRO=null;
     private HttpSession session = null;
     private Logger log=null;
     private String fullPath="";
@@ -40,26 +40,32 @@ public class WGCNATools{
         log=Logger.getRootLogger();
         this.session=session;
         this.pool= (DataSource) session.getAttribute("dbPool");
-        this.poolRO= (DataSource) session.getAttribute("dbPoolRO");
+        //this.poolRO= (DataSource) session.getAttribute("dbPoolRO");
     }
     
     public void setSession(HttpSession session){
         this.session=session;
         this.pool= (DataSource) session.getAttribute("dbPool");
-        this.poolRO= (DataSource) session.getAttribute("dbPoolRO");
+        //this.poolRO= (DataSource) session.getAttribute("dbPoolRO");
         String contextRoot = (String) session.getAttribute("contextRoot");
         String appRoot = (String) session.getAttribute("applicationRoot");
         this.fullPath = appRoot + contextRoot;
     }
 
-    public ArrayList<String> getWGCNAModulesForGene(GeneDataTools gdt,String id,String panel,String tissue,String org,String genomeVer,String source){
+    public ArrayList<String> getWGCNAModulesForGene(GeneDataTools gdt,String id,String panel,String tissue,String org,String genomeVer,String source,String version){
         ArrayList<String> ret=new ArrayList<String>();
-        int dsid=this.getWGCNADataset(panel,tissue,org,genomeVer,source);
+        int rnaDSID=-1;
+        int dsid=-1;
+        int[] tmpIDs=this.getWGCNADataset(panel,tissue,org,genomeVer,source,version);
+        if(tmpIDs!=null && tmpIDs.length>1) {
+            dsid=tmpIDs[0];
+            rnaDSID=tmpIDs[1];
+        }
         String query="Select distinct module from wgcna_module_info where wdsid="+dsid+" and gene_id='"+id+"'";
         log.debug("QUERY:"+query);
         Connection conn = null;
         try {
-            conn = poolRO.getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while(rs.next()){
@@ -98,18 +104,22 @@ public class WGCNATools{
         return ret;
     }
     
-     public ArrayList<String> getWGCNAModulesForRegion(GeneDataTools gdt,String region,String panel,String tissue,String org,String genomeVer,String source){
+     public ArrayList<String> getWGCNAModulesForRegion(GeneDataTools gdt,String region,String panel,String tissue,String org,String genomeVer,String source,String version){
         ArrayList<String> ret=new ArrayList<String>();
         HashMap<String,String> geneCount=new HashMap<String,String>();
-        int dsid=this.getWGCNADataset(panel,tissue,org,genomeVer,source);
+         int rnaDSID=-1;
+         int dsid=-1;
+         int[] tmpIDs=this.getWGCNADataset(panel,tissue,org,genomeVer,source,version);
+         if(tmpIDs!=null && tmpIDs.length>1) {
+             dsid=tmpIDs[0];
+             rnaDSID=tmpIDs[1];
+         }
         String idlookupTissue=tissue;
         String geneIDColumn="merge_gene_id";
         if(dsid==6 || dsid==7){
             idlookupTissue="Merged";
             geneIDColumn="gene_id";
         }
-        int[] tmpRNADS=gdt.getOrganismSpecificIdentifiers(org,idlookupTissue,genomeVer);
-        int rnaDSID=tmpRNADS[1];
         String chr=region.substring(0,region.indexOf(":"));
         if(chr.indexOf("chr")>-1){
             chr=chr.substring(3);
@@ -126,7 +136,7 @@ public class WGCNATools{
         }
         //String query="Select unique module from wgcna_module_info where wdsid="+dsid+" and gene_id='"+id+"'";
          String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+org+"'";
-        try(Connection conn=poolRO.getConnection()) {
+        try(Connection conn=pool.getConnection()) {
             int chrID=-99;
             PreparedStatement psC = conn.prepareStatement(chrQ);
             ResultSet rsC = psC.executeQuery();
@@ -203,7 +213,7 @@ public class WGCNATools{
         return ret;
     }
      
-    public ArrayList<String> getWGCNAModulesForGeneList(GeneDataTools gdt,int glID,String panel,String tissue,String genomeVer,String source){
+    public ArrayList<String> getWGCNAModulesForGeneList(GeneDataTools gdt,int glID,String panel,String tissue,String genomeVer,String source,String version){
         ArrayList<String> ret=new ArrayList<String>();
         HashMap<String,String> geneCount=new HashMap<String,String>();
         String ensemblStart="ENSMUSG";
@@ -211,14 +221,14 @@ public class WGCNATools{
         int id=glID;
         AnonGeneList myAnonGL=new AnonGeneList();
         try{
-            GeneList gl=myAnonGL.getGeneList(id,poolRO);
+            GeneList gl=myAnonGL.getGeneList(id,pool);
             String org=gl.getOrganism();
             if(org.equals("Rn")){
                 ensemblStart="ENSRNOG";
             }
             IDecoderClient myIDecoder=new IDecoderClient();
             myIDecoder.setNum_iterations(2);
-            Set iDecoderAnswer=myIDecoder.getIdentifiersByInputIDAndTarget(id,new String[] {"Ensembl ID"},poolRO);
+            Set iDecoderAnswer=myIDecoder.getIdentifiersByInputIDAndTarget(id,new String[] {"Ensembl ID"},pool);
             StringBuilder ensIDs=new StringBuilder(100);
             //StringBuilder affyIDs=new StringBuilder(100);
             Iterator ida=iDecoderAnswer.iterator();
@@ -238,8 +248,13 @@ public class WGCNATools{
                 }
             }
 
-
-            int dsid=this.getWGCNADataset(panel,tissue,org,genomeVer,source);
+            int rnaDSID=-1;
+            int dsid=-1;
+            int[] tmpIDs=this.getWGCNADataset(panel,tissue,org,genomeVer,source,version);
+            if(tmpIDs!=null && tmpIDs.length>1) {
+                dsid=tmpIDs[0];
+                rnaDSID=tmpIDs[1];
+            }
             int arrayID=21;
             if(org.equals("Rn")){
                 arrayID=22;
@@ -250,7 +265,7 @@ public class WGCNATools{
                             "  and wdsid=" +dsid+" order by module";
 
             log.debug("QUERY:"+query);
-            try(Connection conn=poolRO.getConnection()) {
+            try(Connection conn=pool.getConnection()) {
                 PreparedStatement ps = conn.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 while(rs.next()){
@@ -296,13 +311,19 @@ public class WGCNATools{
         return ret;
     }
     
-    public ArrayList<WGCNAMetaModule> getWGCNAMetaModulesForModule(String modName,String panel,String tissue, String org, String genomeVer, String source){
+    public ArrayList<WGCNAMetaModule> getWGCNAMetaModulesForModule(String modName,String panel,String tissue, String org, String genomeVer, String source,String version){
         ArrayList<WGCNAMetaModule> ret=new ArrayList<WGCNAMetaModule>();
-        int dsid=this.getWGCNADataset(panel,tissue,org,genomeVer,source);
+        int rnaDSID=-1;
+        int dsid=-1;
+        int[] tmpIDs=this.getWGCNADataset(panel,tissue,org,genomeVer,source,version);
+        if(tmpIDs!=null && tmpIDs.length>1) {
+            dsid=tmpIDs[0];
+            rnaDSID=tmpIDs[1];
+        }
         String mmidQuery="select distinct mmpid from WGCNA_META_MODULES where wdsid=? and module_name=?";
         WGCNAMetaModule getW=new WGCNAMetaModule();
 
-        try(Connection conn=poolRO.getConnection()) {
+        try(Connection conn=pool.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(mmidQuery);
             ps.setInt(1, dsid);
             ps.setString(2,modName);
@@ -310,7 +331,7 @@ public class WGCNATools{
             while(rs.next()){
                 int mmpid=rs.getInt(1);
                 log.debug("MMPID:"+mmpid);
-                ret.add(getW.getMetaModule(poolRO,mmpid));
+                ret.add(getW.getMetaModule(pool,mmpid));
             }
             ps.close();
 
@@ -334,30 +355,39 @@ public class WGCNATools{
         }
         return ret;
     }
-    
-    private int getWGCNADataset(String panel, String tissue, String org,String genomeVer,String source) {
+
+    private int[] getWGCNADataset(String panel, String tissue, String org,String genomeVer,String source,String version) {
         Connection conn = null;
-        String query="Select wdsid from WGCNA_Dataset where organism=? and tissue=? and panel=? and genome_id=? and type=? and visible=1";
-        int ret=-1;
+        String query="Select wdsid,rna_dataset_id from WGCNA_Dataset where organism=? and tissue=? and panel=? and genome_id=? and type=? and visible=1";
+        if(version.equals("")){
+            query=query+" order by version DESC";
+        }else{
+            query=query+" and version=?";
+        }
+        int[] ret=new int[2];
         try {
-            conn = poolRO.getConnection();
+            conn = pool.getConnection();
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1,org);
             ps.setString(2,tissue);
             ps.setString(3,panel);
             ps.setString(4, genomeVer);
             ps.setString(5, source);
-            
+            if(!version.equals("")){
+                ps.setString(6,version);
+            }
+            log.debug(ps);
             ResultSet rs = ps.executeQuery();
             //int count=0;
             if (rs.next()) {
-                ret=rs.getInt(1);
+                ret[0]=rs.getInt(1);
+                ret[1]=rs.getInt(2);
             }
             ps.close();
             conn.close();
             conn=null;
         }catch(SQLException e){
-             e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
             log.error("Error getting WGCNA dataset id.",e);
             Email myAdminEmail = new Email();
             String fullerrmsg=e.getMessage();
@@ -368,21 +398,26 @@ public class WGCNATools{
             myAdminEmail.setSubject("Exception thrown getting WGCNA dataset id");
             myAdminEmail.setContent("There was an error getting WGCNA dataset id.\n"+fullerrmsg);
             try {
-                    myAdminEmail.sendEmailToAdministrator("");
+                myAdminEmail.sendEmailToAdministrator("");
             } catch (Exception mailException) {
-                    log.error("error sending message", mailException);
-                    throw new RuntimeException();
+                log.error("error sending message", mailException);
+                throw new RuntimeException();
             }
         }finally{
             try{
-                    if(conn!=null&&!conn.isClosed()){
-                        conn.close();
-                        conn=null;
-                    }
+                if(conn!=null&&!conn.isClosed()){
+                    conn.close();
+                    conn=null;
+                }
             }catch(SQLException er){
             }
         }
+
         return ret;
+    }
+
+    private int[] getWGCNADataset(String panel, String tissue, String org,String genomeVer,String source) {
+        return getWGCNADataset(panel,tissue,org,genomeVer,source,"");
     }
     
     private ArrayList<WGCNAMetaModLink> getWGCNAMetaLinks(){

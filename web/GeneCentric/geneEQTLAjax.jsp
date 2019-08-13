@@ -8,7 +8,7 @@
 	String myOrganism="Rn";
 	String id="";
 	String chromosome="";
-        String genomeVer="";
+	String genomeVer="";
 	
 	String[] selectedLevels=null;
 	String levelString="core;extended;full";
@@ -16,6 +16,7 @@
 		String panel="";
 	String gcPath="";
         String source="seq";
+        String version="";
 	int selectedGene=0;
 	ArrayList<String>geneSymbol=new ArrayList<String>();
 	
@@ -65,7 +66,10 @@
         if(request.getParameter("genomeVer")!=null){
 		genomeVer=request.getParameter("genomeVer");
 	}
-	
+	if(request.getParameter("version")!=null){
+		version=request.getParameter("version");
+	}
+
 	gcPath=applicationRoot + contextRoot+"tmpData/browserCache/"+genomeVer+"/geneData/" +id+"/";
 	
 	String[] tissuesList1=new String[1];

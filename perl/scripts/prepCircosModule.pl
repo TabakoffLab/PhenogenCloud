@@ -14,7 +14,7 @@ sub replaceDot{
 sub prepCircosMod
 {
 	# this routine creates configuration and data files for circos
-	my($module,$cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$dsn,$usr,$passwd,$type)=@_;	
+	my($module,$cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$dsn,$usr,$passwd,$type,$rnaDSID)=@_;	
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# if probeChromosome is not in chromosomeList then we don't want to create a links file
@@ -39,12 +39,12 @@ sub prepCircosMod
 	my $genericConfLocation2 = '/usr/share/tomcat/webapps/PhenoGen/web/';
     my $genericConfLocation = '/usr/share/circos/etc/';
 	my $karyotypeLocation = '/usr/share/circos/data/karyotype/';
-	createCircosConfFile($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$chromosomeListRef,$oneToCreateLinks,$oneToCreateLinks);
+	createCircosConfFile($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$genomeVer,$chromosomeListRef,$oneToCreateLinks,$oneToCreateLinks);
 	createCircosIdeogramConfFiles($confDirectory,$organism,$chromosomeListRef);
 	createCircosModGenesTextConfFile($dataDirectory,$confDirectory);
 	createCircosModGenesTextDataFile($module,$tissueString,$dataDirectory,$organism,$genomeVer,$dsn,$usr,$passwd);
 	createCircosPvaluesConfFile($confDirectory,$dataDirectory,$cutoff,$organism,$tissueString);
-	my $eqtlAOHRef = readLocusSpecificPvaluesModule($module,$organism,$tissueString,$chromosomeListRef,$genomeVer,$dsn,$usr,$passwd,$type);
+	my $eqtlAOHRef = readLocusSpecificPvaluesModule($module,$organism,$tissueString,$chromosomeListRef,$genomeVer,$rnaDSID,$dsn,$usr,$passwd,$type);
 	createCircosPvaluesDataFiles($dataDirectory,$module,$organism,$eqtlAOHRef,$chromosomeListRef,$tissueString);
 	if($oneToCreateLinks == 1){
 		createCircosLinksConfAndData($dataDirectory,$organism,$confDirectory,$eqtlAOHRef,$cutoff,$tissueString,$chromosomeList[0]);	
@@ -54,7 +54,7 @@ sub prepCircosMod
 
 sub createCircosConfFile{
 	# Create main circos configuration file
-	my ($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$chromosomeListRef,$oneToCreateLinks) = @_;
+	my ($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$genomeVer,$chromosomeListRef,$oneToCreateLinks) = @_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	if($debugLevel >= 2){
@@ -68,10 +68,11 @@ sub createCircosConfFile{
 	print CONFFILE '<<include '.$confDirectory.'ideogram.conf>>'."\n";
 	print CONFFILE '<<include '.$genericConfLocation2.'ticks.conf>>'."\n";
 
-	if($organism eq 'Rn'){
+	if($genomeVer eq 'rn5'){
 		print CONFFILE 'karyotype   = '.$karyotypeLocation.'karyotype.rat.rn5.txt'."\n";
-	}
-	elsif($organism eq 'Mm'){
+	}elsif( $genomeVer eq 'rn6'){
+		print CONFFILE 'karyotype   = '.$karyotypeLocation.'karyotype.rat.rn6.txt'."\n";
+	} elsif($organism eq 'Mm'){
 		 print CONFFILE 'karyotype   = '.$karyotypeLocation.'karyotype.mouse.mm10.txt'."\n";
 	}
 	else{

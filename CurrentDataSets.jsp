@@ -459,7 +459,7 @@
     </table>
 </div>
 <script type="text/javascript">
- 
+    $("div#wait1").hide();
     var tblData=$('#datasets').dataTable({
         "bPaginate": false,
         /*"columnDefs": [

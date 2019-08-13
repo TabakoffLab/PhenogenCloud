@@ -18,8 +18,6 @@ var filterExpanded=0;
 var tblBQTLAdjust=false;
 var tblFromAdjust=false;
 var tblFrom;
-
-
 var ucsctype="region";
 var ucscgeneID="";
 var defaultView="<%=defView%>";
@@ -124,6 +122,26 @@ console.log("urlprefix:"+urlprefix);
 		});
     </script>
 <div id="page" style="min-height:1050px;text-align:center;">
+    <BR>
+    <div style="width:100%;text-align:left;"><span class="trigger less triggerEC" name="shortcutButtons" style="font-weight: bold;font-size:16px;">Shortcuts:</span>
+        <div id="shortcutButtons">
+        <span>
+            <span class="shrt-button region" name="detail1">Region Summary</span>
+            <%if(myOrganism.equals("Rn") && genomeVer.equals("rn6")){%>
+                <span class="shrt-button region" name="detail4">Region Gene Expression</span>
+            <%}%>
+            <span class="shrt-button region" name="detail2">Region Gene eQTLs</span>
+            <span class="shrt-button region" name="detail3">Region WGCNA</span>
+
+            <span class="shrt-button gene" name="geneDetail">Gene Summary</span>
+            <span class="shrt-button gene" name="geneEQTL">Gene eQTLs</span>
+            <span class="shrt-button gene" name="geneApp">Gene Tissue Expression</span>
+            <span class="shrt-button gene" name="geneWGCNA">Gene WGCNA</span>
+            <span class="shrt-button gene" name="miGenerna">Gene miRNA targeting</span>
+            <!--<span class="shrt-button gene" name="geneGO">Gene GO Summary</span>-->
+        </span>
+        </div>
+    </div>
 	<div style="width:100%;text-align:left;">
 	Not sure where to start: <a href="web/demo/largerDemo.jsp?demoPath=web/demo/BrowserNavDemo" target="_blank">watch a quick navigation demonstration</a> or <a id="fbhelp1" class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help1.1.jpg" title="Navigation Help<BR>Basic Controls on the main image."> view the help images again</a><a id="fbhelp2" class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help2.jpg" title="Controls to select and edit views."></a><a id="fbhelp3" class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help3.jpg" title="Controls to select and edit views."></a>
     </div>
@@ -136,7 +154,7 @@ console.log("urlprefix:"+urlprefix);
             <tbody>
             	<TR>
                 	<TD style="background-color:#DEDEDE;font-size:18px; font-weight:bold;">
-                        <span class="trigger less" name="collapsableImage" >Region Image</span>
+                        <span class="trigger less triggerEC" name="collapsableImage" >Region Image</span>
                         <div class="inpageHelp" style="display:inline-block; "><img id="HelpRegionImage" class="helpImage" src="../web/images/icons/help.png" /></div>
                   	</TD>
                     <TD style="background-color:#DEDEDE; text-align:center; width:50%;font-size:18px; font-weight:bold; vertical-align: middle;">
@@ -162,7 +180,8 @@ console.log("urlprefix:"+urlprefix);
 
             <div id="geneImage" class="ucscImage"  style="display:inline-block;width:100%;">
                 <!--<script src="javascript/gdb.2.7.2.min.js" type="text/javascript"></script>-->
-            <script src="javascript/GenomeDataBrowser2.7.2.js" type="text/javascript"></script>
+
+            <script src="javascript/GenomeDataBrowser2.8.0.js" type="text/javascript"></script>
             <script src="javascript/GenomeReport2.6.0.js" type="text/javascript"></script>
             <script src="javascript/GenomeViewMenu2.6.1.js" type="text/javascript"></script>
             <script src="javascript/GenomeTrackMenu2.6.1.js" type="text/javascript"></script>
@@ -185,7 +204,7 @@ console.log("urlprefix:"+urlprefix);
                 </div>
     </div>
     <div style="font-size:18px; font-weight:bold; background-color:#3f92d2; color:#FFFFFF; text-align:left; width:100%;">
-    		<span class="trigger less triggerEC" name="collapsableReport" >Region Summary</span>
+    		<span class="trigger triggerEC less" name="collapsableReport" >Region Summary</span>
     		<div class="inpageHelp" style="display:inline-block; "><img id="HelpRegionSummary" class="helpImage" src="../web/images/icons/help.png" /></div>
     </div>
     <div id="collapsableReport" style="width:100%;">

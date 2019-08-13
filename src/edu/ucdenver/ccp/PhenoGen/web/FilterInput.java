@@ -117,6 +117,14 @@ public class FilterInput {
       out=out.replaceAll("(?i)"+Pattern.quote("outer"),"");
       out=out.replaceAll("(?i)"+Pattern.quote("inner"),"");
       out=out.replaceAll("(?i)"+Pattern.quote("where"),"");
+      out=out.replaceAll("(?i)"+Pattern.quote("unhex"),"");
+      out=out.replaceAll("(?i)"+Pattern.quote("information_schema"),"");
+      out=out.replaceAll("(?i)"+Pattern.quote("tables"),"");
+      out=out.replaceAll("(?i)"+Pattern.quote("floor"),"");
+      out=out.replaceAll("(?i)"+Pattern.quote("rand"),"");
+      out=out.replaceAll("(?i)"+Pattern.quote("count"),"");
+      out=out.replaceAll("(?i)"+Pattern.quote("0x[0-9a-f]+"),"");
+      out=out.replaceAll("(?i)"+Pattern.quote("limit"),"");
       return out;
   }
   public static String filterScript(String in){

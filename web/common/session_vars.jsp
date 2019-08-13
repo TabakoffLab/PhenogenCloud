@@ -113,9 +113,9 @@
 		pool=(DataSource)session.getAttribute("dbPool");
 		log.debug("DB POOL SETUP");
 	}
-	if(session.getAttribute("dbPoolRO")!=null){
+	/*if(session.getAttribute("dbPoolRO")!=null){
 		poolRO=(DataSource)session.getAttribute("dbPoolRO");
-	}
+	}*/
 
         if(pool!=null){
             try{

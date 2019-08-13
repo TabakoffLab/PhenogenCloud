@@ -28,6 +28,7 @@
 	</style>
 	<script type="text/javascript">
                 var source="<%=source%>";
+                var version="<%=version%>";
 		function displayWorkingCircos(){
 			document.getElementById("wait2").style.display = 'block';
 			//document.getElementById("circosError1").style.display = 'none';
@@ -54,13 +55,13 @@
                             tcID=idStr;
                         }
 			var path="<%=gcPath%>";
-                        
+			var version=$('#version').val();
 			var geneSymbol="<%=geneSymbol.get(selectedGene)%>";
 			$.ajax({
 				url: "/web/GeneCentric/runCircos.jsp",
    				type: 'GET',
                                 cache: false,
-				data: {cutoffValue:pval,transcriptClusterID:tcID,tissues:tisList,chromosomes:chrList,geneCentricPath:path,hiddenGeneSymbol:geneSymbol,genomeVer:genomeVer,source:source},
+				data: {cutoffValue:pval,transcriptClusterID:tcID,tissues:tisList,chromosomes:chrList,geneCentricPath:path,hiddenGeneSymbol:geneSymbol,genomeVer:genomeVer,source:source,version:version},
 				dataType: 'html',
 				beforeSend: function(){
 				},
@@ -91,10 +92,12 @@
                         $("#tissuesMS option[value='BAT']").remove();
                          $("#tissuesMStsms option[value='BAT']").remove();
                          $("td#trxClusterCB").hide();
+                         $("span#versionSelect").show();
                     }else{
                         $("#tissuesMS").append('<option value="Heart" selected>Heart</option>');
                         $("#tissuesMS").append('<option value="BAT" selected>Brown Adipose</option>');
                         $("td#trxClusterCB").show();
+                        $("span#versionSelect").hide();
                     }
                     source=tmpSrc;
                     //$("#tissuesMS").twosidedmultiselect();
@@ -305,9 +308,8 @@
                     </div>
       	<table id="circosOptTbl" name="items" class="list_base" cellpadding="0" cellspacing="3" style="width:100%;text-align:left;" >
         <tbody id="circosOption">
- 		
-		<tr>
-                    <TD>
+ 		<tr>
+		<td>
                         <strong>Data Source:</strong>
                         <span class="eQTLtooltip" title="RNA-Seq eQTLs and Microarray eQTLs are available at the gene/transcript cluster level.  Please note the label at the top of the image will indicate the data source for the image displayed."><img src="<%=imagesDir%>icons/info.gif"></span>
                         <%
@@ -319,7 +321,23 @@
 				optionHash = new LinkedHashMap();
                         	optionHash.put("seq", "RNA-Seq");
                         	optionHash.put("array", "Microarrays");
-				%><%@ include file="/web/common/selectBox.jsp" %>
+				%><%@ include file="/web/common/selectBox.jsp" %><BR>
+						<span id="versionSelect" style="display:inline-block;">
+							<strong>Version:</strong>
+						<span class="eQTLtooltip" title="HRDP data version to use."><img src="<%=imagesDir%>icons/info.gif"></span>
+						<%
+							selectName = "version";
+							if(version.equals("")){
+								selectedOption ="3";
+							}else{
+								selectedOption = version;
+							}
+							style = "";
+							optionHash = new LinkedHashMap();
+							optionHash.put("1", "HRDP v3");
+							optionHash.put("3", "HRDP v4");
+						%><%@ include file="/web/common/selectBox.jsp" %>
+						</span>
                                 
                     </td>
 			<td style="text-align:center;">

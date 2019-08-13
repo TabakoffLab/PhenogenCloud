@@ -118,17 +118,23 @@
 
 <style>
     #psHeritTbl{
-            width:100%;
+            width:49%;
+        vertical-align: top;
     }
     #psDABGTbl{
-            width:100%;
+            width:49%;
+        vertical-align: top;
     }
     #genePart1Tbl{
-            width:100%;
+            width:49%;
+            vertical-align: top;
     }
     #genePart2Tbl{
-            width:100%;
+            width:49%;
+            vertical-align: top;
     }
+    <%@ include file="/css/forGN2.css" %>
+
 </style>
 
 
@@ -185,6 +191,7 @@ Add report here.
                 <span class="selectdetailMenu" name="geneMIrna">miRNA Targeting Gene(multiMiR)<div class="inpageHelp" style="display:inline-block; "><img id="HelpMirTargetTab" class="helpGeneRpt" src="/web/images/icons/help.png" /></div></span>
                 <!--<span class="selectdetailMenu" name="geneGO">GO<div class="inpageHelp" style="display:inline-block; "><img id="HelpUCSCImage" class="helpImage" src="/web/images/icons/help.png" /></div></span>-->
                 <span class="selectdetailMenu" name="geneWGCNA">WGCNA<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneWGCNATab" class="helpGeneRpt" src="/web/images/icons/help.png" /></div></span>
+                <!--<span class="selectdetailMenu" name="chilibot">Gene Interactions<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneChilibotTab" class="helpGeneRpt" src="/web/images/icons/help.png" /></div></span>-->
             <%}else{
                 if(myOrganism.equals("Rn") && genomeVer.equals("rn6")){%>
                     <span class="selectdetailMenu" name="geneApp">Expression Data<div class="inpageHelp" style="display:inline-block; "><img id="HelpGenePSTab" class="helpGeneRpt" src="/web/images/icons/help.png" /></div></span>
@@ -230,8 +237,9 @@ Add report here.
 				chr="chr"+chr;
 			}
             %>
-            <div class="adapt2Col">
-            <table id="genePart1Tbl" class="geneReport" style="display:inline-block;">
+
+            <div class="adapt2Col" style="vertical-align: top;">
+            <table id="genePart1Tbl" class="geneReport adapt2Col" style="display:inline-block;">
             <TR>
             <TD style="width:20%;">
              Gene Symbol: 
@@ -366,32 +374,40 @@ Add report here.
                 </TD>
                  
             </TR>
+                <%if(myOrganism.equals("Rn")){%>
+                <TR>
+                    <TD style="width:20%;">Exonic Variants:</TD>
+                    <TD style="width:78%;">
+
+                        <B>Common:</B> <%=curGene.getSnpCount("common","SNP")%> (SNPs) / <%=curGene.getSnpCount("common","Indel")%>(Insertions/Deletions)<BR />
+
+                        <B>BN-Lx/CubPrin:</B> <%=curGene.getSnpCount("BNLX","SNP")%> (SNPs) / <%=curGene.getSnpCount("BNLX","Indel")%>(Insertions/Deletions)<BR />
+
+                        <B>SHR/OlaPrin:</B> <%=curGene.getSnpCount("SHRH","SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRH","Indel")%> (Insertions/Deletions)<BR />
+
+                        <B>SHR/NCrlPrin:</B> <%=curGene.getSnpCount("SHRJ","SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRJ","Indel")%> (Insertions/Deletions)<BR />
+
+                        <B>F344:</B> <%=curGene.getSnpCount("F344","SNP")%> (SNPs) / <%=curGene.getSnpCount("F344","Indel")%> (Insertions/Deletions)<BR />
+                        <span class="GN2Snps button" style="width:275px;height:37px;cursor: pointer;color:#658cb2;">GN2 SNP Browser (Additional Strains/Functional Annotation)</span>
+
+                    </TD>
+
+                </TR>
+                <%}%>
+                <TR>
+                    <TD style="width:20%;">
+                    Literature Based Searches:
+                </TD>
+                    <TD><span class="button" style="width:275px;height:37px;pointer;color:#658cb2;" id="chilibotLink">Gene Relationships / Interactions (Chilibot.net)</span><BR>
+                        <span class="button" style="width:275px;height:37px;cursor: pointer;color:#658cb2;" id="ratsPubLink">Gene Relationships for Addiction (Rats.pub/OPAR.io)</span>
+                    </TD>
+                </TR>
             <TR>
             	<TD></TD>
                 <TD></TD>
             </TR>
             </table>
-            <table id="genePart2Tbl" class="geneReport" style="display:inline-block;">          
-                               
-            <%if(myOrganism.equals("Rn")){%>
-   			<TR>
-            	<TD style="width:20%;">Exonic Variants:</TD>
-                <TD style="width:78%;">
-                                    
-                                        <B>Common:</B> <%=curGene.getSnpCount("common","SNP")%> (SNPs) / <%=curGene.getSnpCount("common","Indel")%>(Insertions/Deletions)<BR />
-                                    
-                                        <B>BN-Lx/CubPrin:</B> <%=curGene.getSnpCount("BNLX","SNP")%> (SNPs) / <%=curGene.getSnpCount("BNLX","Indel")%>(Insertions/Deletions)<BR />
-                                   
-                                        <B>SHR/OlaPrin:</B> <%=curGene.getSnpCount("SHRH","SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRH","Indel")%> (Insertions/Deletions)<BR />
-                                    
-                                        <B>SHR/NCrlPrin:</B> <%=curGene.getSnpCount("SHRJ","SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRJ","Indel")%> (Insertions/Deletions)<BR />
-                                    
-                                        <B>F344:</B> <%=curGene.getSnpCount("F344","SNP")%> (SNPs) / <%=curGene.getSnpCount("F344","Indel")%> (Insertions/Deletions)<BR />
-                                    
-                                </TD>
-                                
-            </TR>
-            <%}%>
+            <table id="genePart2Tbl" class="geneReport adapt2Col" style="display:inline-block;">
             <TR>
             <TD style="width:20%;">
 			Transcripts:
@@ -410,6 +426,7 @@ Add report here.
                	<%}%>
             </TD>
             </TR>
+
             </table>
             </div>
             <div>
@@ -643,6 +660,28 @@ Add report here.
     </div>
     <div style="display:none;" id="geneWGCNA">
     </div>
+    <div style="display:none;" id="chilibot">
+        <table>
+            <TR>
+                <TD>
+                    <H3 style="text-align: left;">2 Term search:</H3><BR>
+                    <div style="padding-top:10px;padding-bottom:10px;text-align:center;">Current Gene: <input type="text" id="chiliterm1" value="<%=geneSymbol.get(0)%>"> & <input type="text" id="chiliterm2"><input type="button" class="GNButton" value="Go To Chilibot.net" onclick="linkChilibot2term()"><BR>Term2 can be another gene/phenotype/other keyword/protein.</div>
+                </TD>
+            </TR>
+            <TR>
+                <TD><H3 style="text-align: left;padding-top: 10px;padding-bottom: 10px;">Or</H3></TD>
+            </TR>
+             <TR>
+                 <TD>
+                     <H3 style="text-align: left;">Multiterm search:</H3><BR>
+                     <div style="padding-top:10px;padding-bottom:10px;text-align: center;">Multiterm list(2-10, one per line):<BR><textarea rows="5" cols="30"  id="chililist"><%=geneSymbol.get(0)%></textarea> <BR><input type="button" class="GNButton" value="Go To Chilibot.net" onclick="linkChilibotGeneList()"></div>
+                 </TD>
+             </TR>
+                </table>
+    </div>
+    <div style="display:none;" id="GN2SNPBrowserForm">
+        <%@ include file="/web/GeneCentric/includeGNSNPs.jsp" %>
+    </div>
 
  </div>
             
@@ -754,14 +793,30 @@ Add report here.
                                     "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
             }
         }
+
+        function linkChilibot2term(){
+            var t1=encodeURIComponent($('#chiliterm1').val());
+            var t2=encodeURIComponent($('#chiliterm2').val());
+            var url="http://chilibot.net/cgi-bin/chilibot/chili2terms?term1="+t1+"&term2="+t2;
+            window.open(url, 'Chilibot', '');
+        }
+
+    function linkChilibotGeneList(){
+        var t1=encodeURIComponent($('#chililist').val());
+        var url="http://chilibot.net/cgi-bin/chilibot/chilibot.cgi?NEW=t&name=&list="+t1+"&IN=Search";
+        window.open(url, 'Chilibot', '');
+    }
+
         setTimeout(function(){
             setSelectedTab(true);
             //setTimeout(function(){
             //    $("#geneDiv").scrollTop($("#geneDiv")[0].scrollHeight);
             //},500);
         },200);
+
         <%@ include file="/javascript/chart.js" %>
         <%@ include file="include/js_addExprSrcCtrl.js" %>
+        <%@ include file="include/linkGN.js" %>
         var peGR;
         setTimeout(function(){
                 console.log("EXPR_URL:<%=genURL%>");
@@ -781,8 +836,24 @@ Add report here.
                         peGR.rlChart.setWidth("98%");
                     }
                }
+            createDialog("#GN2SNPBrowserForm", {width: 900, height: 375, title: "Link to GeneNetwork SNP Browser", zIndex: 999});
+            createDialog("div#chilibot", {width: 600, height: 375, title: "Link to Chilibot", zIndex: 999});
+            $('span.GN2Snps').on('click',function(){
+                $('#GN2SNPBrowserForm [name=gene_name]').val(gs.selectedGeneSymbol);
+                //TODO need to set species/strains
+
+                $('#GN2SNPBrowserForm').dialog("open").css({'font-size':12});
+            });
+            $('span#chilibotLink').on('click',function(){
+                console.log("click chilibot link");
+                $('div#chilibot').dialog("open").css({'font-size':12});
+            });
             },5000);
-        //svgList[1].updateLinks();
+    setTimeout(function(){
+        $('span#ratsPubLink').on('click',function(){
+            window.open("http://rats.pub/progress?query=%09<%=curGene.getGeneSymbol()%>+" , "_blank");
+        });
+    },10);
         $(window).resize(function (){
             if($(window).width()<1500 && peGR){
                 if(peGR.rbChart){

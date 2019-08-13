@@ -428,7 +428,6 @@ public class GeneList {
             }
             myGeneList.setColumnHeadings(getColumnHeadings(geneListID, pool));
             myResults.close();
-            conn.close();
         } catch (SQLException e) {
             log.debug("getGeneList ERROR:", e);
             throw e;
