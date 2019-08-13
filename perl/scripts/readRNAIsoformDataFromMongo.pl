@@ -44,7 +44,7 @@ sub getRNADatasetFromDB{
         $organism="Mm";
     }
     my $connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
-    my $query="select rd2.rna_dataset_id,rd2.build_version from rna_dataset rd2 where
+    my $query="select rd2.rna_dataset_id,rd2.build_version,rd2.tissue from rna_dataset rd2 where
 				rd2.organism = '".$organism."' "."
                                 and rd2.trx_recon=1
 				and rd2.user_id= $publicUserID 
@@ -59,25 +59,33 @@ sub getRNADatasetFromDB{
             $query=$query." and rd2.build_version='".$$version."'";
     }
 
-    print $query."\n";
+    print $query." order by rd2.build_version\n";
     $query_handle = $connect->prepare($query) or die (" RNA Isoform query prepare failed \n");
 
     # EXECUTE THE QUERY
     $query_handle->execute() or die ( "RNA Isoform query execute failed \n");
     my $dsid;
     my $ver;
+	my $tissue;
+	my %tissueVer;
     # BIND TABLE COLUMNS TO VARIABLES
-    $query_handle->bind_columns(\$dsid,\$ver);
+    $query_handle->bind_columns(\$dsid,\$ver,\$tissue);
     my $c=0;
     while($query_handle->fetch()){
         print "DatasetID=$dsid\nver=$ver\n";
-        if($c==0){
-            $ret=$dsid;
-            $$version=$ver;
-        }else{
-            $ret=$ret.",".$dsid;
-        }
-        $c++;
+		if(exists $tissueVer{$tissue}){
+
+		}else {
+			if ($c == 0) {
+				$ret = $dsid;
+				$$version = $ver;
+			}
+			else {
+				$ret = $ret . "," . $dsid;
+			}
+			$c++;
+		}
+
     }
     $query_handle->finish();
 	$connect->disconnect();
@@ -789,7 +797,7 @@ sub readSmallRNADataFromDB{
 				biotype => "",
 				geneSymbol => "",   ####NEED TO FILL THIS IN WITH AKA ANNOTATION
 				source => "",
-                                intGeneID => $mergeGeneID
+				intGeneID => $mergeGeneID
 				};
 			$cntGene++;
 			#print "adding transcript $isoform_id\n";

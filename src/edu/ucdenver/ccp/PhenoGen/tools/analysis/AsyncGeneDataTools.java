@@ -126,6 +126,7 @@ public class AsyncGeneDataTools extends Thread {
         done=false;
         Date start=new Date();
         try{
+            log.debug("AsyncGeneDataTools.run()");
             outputRNASeqExprFiles(outputDir,chrom,minCoord,maxCoord,genomeVer);
             if(isEnsemblGene){
                 //log.debug("Before outputProbesetID");
@@ -791,6 +792,7 @@ public class AsyncGeneDataTools extends Thread {
     
     public boolean outputRNASeqExprFiles(String outputDir,String chr, int min, int max,String genomeVer){
         boolean success=true;
+        log.debug("outputRNASeqExprFiles");
         // get list of tissues/datasets
         String query="select RNA_DATASET_ID, TISSUE,BUILD_VERSION,EXP_DATA_ID from rna_dataset where genome_id=? and trx_recon=1 and visible=1 and exp_data_id is not null";
         String querySmall="select RNA_DATASET_ID, TISSUE,BUILD_VERSION,EXP_DATA_ID from rna_dataset where genome_id=? and trx_recon=0 and visible=0 and description like ? and exp_data_id is not null";
@@ -813,7 +815,7 @@ public class AsyncGeneDataTools extends Thread {
                 }else{
                     tissuesTotal.put(tissue, t);
                 }
-                //log.debug("*********"+tissue+":"+build+":"+rs.getInt(1)+":"+rs.getInt(4));
+                log.debug("*********"+tissue+":"+build+":"+rs.getInt(1)+":"+rs.getInt(4));
             }
             ps.close();
             log.debug("SMALL TISSUE QUERY:\n"+querySmall);
@@ -850,6 +852,7 @@ public class AsyncGeneDataTools extends Thread {
         }
         
         if(success){
+            log.debug("call processTotal()");
             success=processTotal(tissuesTotal,chr, min, max);
         }
         log.debug("****AFTER TOTAL");
@@ -897,7 +900,7 @@ public class AsyncGeneDataTools extends Thread {
                 }
                 ps.setString(2,chr);
                 ps.setInt(3,curTissue.getDatasetID());
-                //log.debug(selectTrx+"\norg:"+org+"\nchr:"+chr+"\nds:"+curTissue.getDatasetID()+"\n");
+                log.debug(selectTrx+"\norg:"+org+"\nchr:"+chr+"\nds:"+curTissue.getDatasetID()+"\n");
                
                 ResultSet rs=ps.executeQuery();
                 while (rs.next()){
@@ -926,32 +929,36 @@ public class AsyncGeneDataTools extends Thread {
                     //log.debug("\n&&&&&&&&&&&&&&&&&&&&&&&& trx:"+trxID+"::"+geneID);
                 }
                 ps.close();
-                
+                log.debug("between queries");
                 ps=conn.prepareStatement(selectR2+sb.toString()+" )");
                 ps.setInt(1,curTissue.getDatasetID());
                 rs=ps.executeQuery();
+                log.debug(rs.getStatement());
                 while (rs.next()){
                     String geneID=rs.getString(1);
                     String trxID=rs.getString(2);
                     double gHerit=rs.getDouble(3);
                     double tHerit=rs.getDouble(4);
-                    TrxID tmpTrx=new TrxID(trxID,tHerit);
+
                     
                     GeneID tmpGene=genes.get(geneID);
-                    boolean found=false;
-                    for(int i=0;i<tmpGene.getTranscripts().size()&&!found;i++){
-                        if(tmpGene.getTranscripts().get(i).getID().equals(trxID)){
-                            found=true;
+                    if(trxID!=null && !trxID.equals("")) {
+                        TrxID tmpTrx = new TrxID(trxID, tHerit);
+                        boolean found = false;
+                        for (int i = 0; i < tmpGene.getTranscripts().size() && !found; i++) {
+                            if (tmpGene.getTranscripts().get(i).getID().equals(trxID)) {
+                                found = true;
+                            }
+                        }
+                        if (!found) {
+                            tmpGene.addTranscript(tmpTrx);
+                            featList.add(tmpTrx);
                         }
                     }
-                    if(!found){
-                        tmpGene.addTranscript(tmpTrx);
-                        featList.add(tmpTrx);
-                    }
-                    
                 }
                 ps.close();
                 conn.close();
+                log.debug("after R2");
             }catch(SQLException e){
                 log.error("\n\nError in outputRNASeqExprFiles",e);
             }finally{

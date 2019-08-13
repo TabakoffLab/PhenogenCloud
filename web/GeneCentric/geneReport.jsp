@@ -224,6 +224,7 @@ Add report here.
 			HashMap dMax=curGene.getDabgMax();
 			
 			String chr=curGene.getChromosome();
+			String phenogenID=curGene.getGeneID();
 			ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Transcript> tmpTrx=curGene.getTranscripts();
 			if(!chr.startsWith("chr")){
 				chr="chr"+chr;
@@ -243,6 +244,16 @@ Add report here.
            	<%}%>
             </TD>
             </TR>
+                <TR>
+                    <TD style="width:20%;">
+                        Phenogen ID:
+                    </TD>
+                    <TD style="width:78%;">
+
+                        <%=phenogenID%>
+
+                    </TD>
+                </TR>
             <TR>
             	<TD>
             		Location:  

@@ -356,7 +356,7 @@
         shortRegionCentricPath = regionCentricPath.substring(regionCentricPath.indexOf("/tmpData/"));
 
         String iframeURL = shortRegionCentricPath + "/circos" + cutoffTimesTen + "/svg/circos_new.svg";
-        String svgPdfFile = shortRegionCentricPath + "/circos" + cutoffTimesTen + "/svg/circos_new.pdf";
+        String svgPdfFile = shortRegionCentricPath + "/circos" + cutoffTimesTen + "/svg/circos.png";
         log.debug("MADE IT TO:path");
         log.debug("iframe:\n"+iframeURL);
     %>

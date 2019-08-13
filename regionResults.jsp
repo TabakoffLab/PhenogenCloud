@@ -166,7 +166,7 @@ console.log("urlprefix:"+urlprefix);
             <script src="javascript/GenomeReport2.6.0.js" type="text/javascript"></script>
             <script src="javascript/GenomeViewMenu2.6.1.js" type="text/javascript"></script>
             <script src="javascript/GenomeTrackMenu2.6.1.js" type="text/javascript"></script>
-            <script src="javascript/wgcnaBrowser1.3.5.js" type="text/javascript"></script>
+            <script src="javascript/wgcnaBrowser1.3.6.js" type="text/javascript"></script>
            </div>
         </div>
 

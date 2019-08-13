@@ -400,7 +400,7 @@
             //String dsn = "dbi:"+ myProperties.getProperty("PLATFORM")+ ":" + myProperties.getProperty("DATABASE");
             String OracleUserName = myProperties.getProperty("USER");
             String password = myProperties.getProperty("PASSWORD");			
-     		String[] perlScriptArguments = new String[18];
+     		String[] perlScriptArguments = new String[19];
      		// the 0 element in the perlScriptArguments array must be "perl" ??
      		perlScriptArguments[0] = "perl";
      		// the 1 element in the perlScriptArguments array must be the script name including path
@@ -422,6 +422,7 @@
      		perlScriptArguments[15]=dsn;
             perlScriptArguments[16]=OracleUserName;
             perlScriptArguments[17]=password;
+            perlScriptArguments[18]="array";
 
 			log.debug(" Calling createCircosFiles from GeneDataTools");
 			//log.debug(" filePrefixWithPath "+filePrefixWithPath);
@@ -440,7 +441,7 @@
 					shortGeneCentricPath = geneCentricPath.substring(geneCentricPath.indexOf("/PhenoGenTEST/"));
 				}*/
 				String svgFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos_new.svg";
-				svgPdfFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos_new.pdf";
+				svgPdfFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos.png";
 				iframeURL = svgFile;
 				allowChromosomeSelection=true;  // After the first time they run circos, let them select the chromosomes.
 			}

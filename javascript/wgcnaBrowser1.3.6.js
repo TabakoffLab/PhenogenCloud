@@ -2799,7 +2799,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 						}
 						
 		                d3.select(this).append("td").html(d.LinkSum.toFixed(2));
-		                d3.select(this).append("td").html(function(){return tmpI+1;});
+		                //d3.select(this).append("td").html(function(){return tmpI+1;});
 				});
 		        $('table#moduleTable').DataTable({
 						"bPaginate": false,
@@ -4316,6 +4316,8 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
         $(".goCTL").hide();
         $(".eqtlCtls").hide();
         $(".linkCTL").show();
+		$(".mirCTL").hide();
+
         
         thatimg.CorCutoff_min=0.75;
         thatimg.CorCutoff_max=1;
@@ -4809,7 +4811,9 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                         thatimg.metaData=data2[0];
                         //console.log(thatimg.geneMirList);
                         thatimg.draw();
+						that.singleWGCNATableMetaView();
                     },50);
+
                 },
                 error: function(xhr, status, error) {
                     setTimeout(function(){

@@ -436,7 +436,7 @@
                         shortGeneCentricPath = geneCentricPath.substring(geneCentricPath.indexOf("/PhenoGenTEST/"));
                 }*/
                 String svgFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos_new.svg";
-                svgPdfFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos_new.pdf";
+                svgPdfFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos.png";
                 iframeURL = svgFile;
             }
             else{
