@@ -1341,7 +1341,7 @@ public class GeneDataTools {
             File myPropertiesFile = new File(dbPropertiesFile);
             myProperties.load(new FileInputStream(myPropertiesFile));
 
-            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
+            String dsn="dbi:mysql:database="+myProperties.getProperty("DATABASE")+";host="+myProperties.getProperty("HOST")+";port=3306";
             String dbUser=myProperties.getProperty("USER");
             String dbPassword=myProperties.getProperty("PASSWORD");
             log.debug("after dbprop");
@@ -1512,7 +1512,7 @@ public class GeneDataTools {
             File myPropertiesFile = new File(dbPropertiesFile);
             myProperties.load(new FileInputStream(myPropertiesFile));
 
-            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
+            String dsn="dbi:mysql:database="+myProperties.getProperty("DATABASE")+";host="+myProperties.getProperty("HOST")+";port=3306";
             String dbUser=myProperties.getProperty("USER");
             String dbPassword=myProperties.getProperty("PASSWORD");
             
@@ -1554,8 +1554,8 @@ public class GeneDataTools {
             log.debug("done properties");
             
             //NEED TO MODIFY*************************
-            String ensDsn="DBI:mysql:database="+source.get("ucsc")+";host="+ucscHost+";port="+ucscPort+";";
-            String ucscDsn="DBI:mysql:database="+source.get("ucsc")+";host="+ucscHost+";port="+ucscPort+";";
+            String ensDsn="DBI:mysql:database="+source.get("ucsc")+";host="+ucscHost+";port=3306;";
+            String ucscDsn="DBI:mysql:database="+source.get("ucsc")+";host="+ucscHost+";port=3306;";
             //NEED TO MODIFY******************************************************************************************************
             String tissue="Brain";
             if(track.startsWith("liver")){
@@ -2187,7 +2187,7 @@ public class GeneDataTools {
                 File myPropertiesFile = new File(dbPropertiesFile);
                 myProperties.load(new FileInputStream(myPropertiesFile));
 
-                String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
+                String dsn="dbi:mysql:database="+myProperties.getProperty("DATABASE")+";host="+myProperties.getProperty("HOST")+";port=3306";
                 String dbUser=myProperties.getProperty("USER");
                 String dbPassword=myProperties.getProperty("PASSWORD");
 

@@ -191,7 +191,7 @@ public class ExonDataTools {
             log.error("Error Reading Oracle DB Properties",e);
         }
 
-            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":"+myProperties.getProperty("DATABASE");
+            String dsn="dbi:mysql:"+myProperties.getProperty("DATABASE");
             String dbUser=myProperties.getProperty("USER");
             String dbPassword=myProperties.getProperty("PASSWORD");
 
