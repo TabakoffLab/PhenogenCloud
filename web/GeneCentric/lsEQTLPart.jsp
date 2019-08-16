@@ -396,11 +396,12 @@
             Properties myProperties = new Properties();
             File myPropertiesFile = new File(dbPropertiesFile);
             myProperties.load(new FileInputStream(myPropertiesFile));
-			String dsn = "dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
+			String dsn = "dbi:mysql:database="+myProperties.getProperty("DATABASE")+";host="+myProperties.getProperty("HOST")+";port=3306";
             //String dsn = "dbi:"+ myProperties.getProperty("PLATFORM")+ ":" + myProperties.getProperty("DATABASE");
             String OracleUserName = myProperties.getProperty("USER");
             String password = myProperties.getProperty("PASSWORD");			
-     		String[] perlScriptArguments = new String[18];
+
+     		String[] perlScriptArguments = new String[22];
      		// the 0 element in the perlScriptArguments array must be "perl" ??
      		perlScriptArguments[0] = "perl";
      		// the 1 element in the perlScriptArguments array must be the script name including path
@@ -414,14 +415,18 @@
      		perlScriptArguments[8]=transcriptClusterStop;
      		perlScriptArguments[9]=selectedCutoffValue;
      		perlScriptArguments[10]=species;
-     		perlScriptArguments[11]=chromosomeString;
-     		perlScriptArguments[12]=geneCentricPath;
-     		perlScriptArguments[13]=timeStampString;
-     		perlScriptArguments[14]=tissueString;
-     		//perlScriptArguments[14]="All";
-     		perlScriptArguments[15]=dsn;
-            perlScriptArguments[16]=OracleUserName;
-            perlScriptArguments[17]=password;
+			perlScriptArguments[11]="rn6";
+     		perlScriptArguments[12]=chromosomeString;
+     		perlScriptArguments[13]=geneCentricPath;
+     		perlScriptArguments[14]=timeStampString;
+     		perlScriptArguments[15]=tissueString;
+     		perlScriptArguments[16]=dsn;
+            perlScriptArguments[17]=OracleUserName;
+            perlScriptArguments[18]=password;
+            perlScriptArguments[19]="array";
+            perlScriptArguments[20]="";
+            perlScriptArguments[21]="";
+
 
 			log.debug(" Calling createCircosFiles from GeneDataTools");
 			//log.debug(" filePrefixWithPath "+filePrefixWithPath);
@@ -440,7 +445,7 @@
 					shortGeneCentricPath = geneCentricPath.substring(geneCentricPath.indexOf("/PhenoGenTEST/"));
 				}*/
 				String svgFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos_new.svg";
-				svgPdfFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos_new.pdf";
+				svgPdfFile = shortGeneCentricPath+transcriptClusterID+"_"+timeStampString+"/svg/circos.png";
 				iframeURL = svgFile;
 				allowChromosomeSelection=true;  // After the first time they run circos, let them select the chromosomes.
 			}

@@ -74,7 +74,8 @@ public class AsyncGeneDataExpr extends Thread {
         BufferedWriter outIndiv;
         SyncAndClose sac;
        
-        
+
+
     public AsyncGeneDataExpr(HttpSession inSession,String pListFile,String outputDir,AsyncGeneDataTools prevThread,ArrayList<Thread> threadList,int maxThreadCount,BufferedWriter outGroup,BufferedWriter outIndiv,SyncAndClose sac,String ver ) {
                 this.session = inSession;
                 this.pListFile=pListFile;

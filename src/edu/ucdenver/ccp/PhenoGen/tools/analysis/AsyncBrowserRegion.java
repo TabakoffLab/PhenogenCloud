@@ -85,7 +85,7 @@ public class AsyncBrowserRegion extends Thread {
         createRegionImagesXMLFiles(outputDir,org,genomeVer,ensemblPath,arrayTypeID,rnaDatasetID,ucscDB);
         if(runAGDT) {
             AsyncGeneDataTools agdt;
-            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false);
+            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false,"");
             agdt.start();
             try {
                 agdt.join();
@@ -104,7 +104,7 @@ public class AsyncBrowserRegion extends Thread {
             Properties myProperties = new Properties();
             File myPropertiesFile = new File(dbPropertiesFile);
             myProperties.load(new FileInputStream(myPropertiesFile));
-            String dsn="dbi:"+myProperties.getProperty("PLATFORM") +":database="+myProperties.getProperty("DATABASE")+":host="+myProperties.getProperty("HOST");
+            String dsn="dbi:mysql:database="+myProperties.getProperty("DATABASE")+";host="+myProperties.getProperty("HOST")+";port=3306";
             String dbUser=myProperties.getProperty("USER");
             String dbPassword=myProperties.getProperty("PASSWORD");
 
@@ -168,10 +168,8 @@ public class AsyncBrowserRegion extends Thread {
                 }
                 log.debug(i + " EnvVar::" + envVar[i]);
             }
-
-
             //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
-            myExec_session = new ExecHandler(perlDir, perlArgs, envVar, outputDir+"genRegion");
+            myExec_session = new ExecHandler(perlDir, perlArgs, envVar, outputDir+"genRegionAsync");
             boolean exception=false;
             try {
 

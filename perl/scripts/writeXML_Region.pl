@@ -1006,7 +1006,7 @@ sub createXMLFile
 		
 
     print "start read RefSeq\n";
-	my $ensDsn="DBI:mysql:database=".$ucscDB.";host=".$ensHost.";port=".$ensPort.";";
+	my $ensDsn="DBI:mysql:database=".$ucscDB.";host=".$ensHost.";port=3306;";
     my $refSeqRef=readRefSeqDataFromDB($chr,$species,$minCoord,$maxCoord,$ensDsn,$ensUsr,$ensPasswd);
     my %refSeqHOH=%$refSeqRef;
     createRefSeqXMLTrack(\%refSeqHOH,$outputDir."refSeq.xml");

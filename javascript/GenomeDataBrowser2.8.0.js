@@ -1238,13 +1238,17 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				}
 				if( (track.indexOf("liverTotal")===0 || track.indexOf("brainTotal")===0) && track.indexOf("_")>0 ){
 					var strain=track.substr(track.indexOf("_")+1);
-					if(strain==="LEStm"){
-						strain="LE-Stm";
-					}
-					if(strain==="F344Stm"){
+					if(strain==="LEStm") {
+						strain = "LE-Stm";
+						lbl=strain+" "+lbl;
+					}else if(strain==="F344Stm"){
 						strain="F344-Stm";
+						lbl=strain+" "+lbl;
+					}else{
+
+						lbl=lbl+" v"+strain;
 					}
-					lbl=strain+" "+lbl;
+
 				}
 
 				d3.xml(dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/"+track+".xml",function (error,d){

@@ -93,6 +93,7 @@
         Toolbar.Option[] optionChoices = new Toolbar.Option[]{};
 
 	DataSource pool=null;
+	//DataSource poolRO=null;
 	boolean dbUnavail=false;
 	log.debug("end common_vars ");
 %>

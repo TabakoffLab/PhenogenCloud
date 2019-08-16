@@ -57,7 +57,6 @@
                         <TH>Transcript</th>
                         <TH>Probe Sets</th>
                         <TH>Link Total<!--<span class="" id=""><img src="/web/images/icons/info.png"></span>--></th>
-                        <TH>Link Rank</th>
                     </TR>
                 </thead>
                 <tbody>

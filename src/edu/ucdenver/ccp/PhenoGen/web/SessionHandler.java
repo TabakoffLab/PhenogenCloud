@@ -79,6 +79,7 @@ public class SessionHandler {
     private Experiment selectedExperiment = null;
     private GeneList selectedGeneList = null;
     private DataSource pool = null;
+    //private DataSource poolRO=null;
 
     //
     // data for sessions table
@@ -112,6 +113,10 @@ public class SessionHandler {
             if (pool == null) {
                 log.error("Unknown DataSource 'jdbc/" + this.dbMain + "'", new Exception("Unknown DataSource 'jdbc/" + this.dbMain + "'"));
             }
+            /*poolRO = (DataSource) ctx.lookup("java:comp/env/jdbc/" + this.dbMain+"RO");
+            if (poolRO == null) {
+                log.error("Unknown DataSource 'jdbc/" + this.dbMain + "RO'", new Exception("Unknown DataSource 'jdbc/" + this.dbMain + "RO'"));
+            }*/
         } catch (NamingException ex) {
             System.out.println("JNDI lookup exception:");
             ex.printStackTrace(System.out);
@@ -133,6 +138,10 @@ public class SessionHandler {
             if (pool == null) {
                 log.error("Unknown DataSource 'jdbc/" + this.dbMain + "'", new Exception("Unknown DataSource 'jdbc/" + this.dbMain + "'"));
             }
+            /*poolRO = (DataSource) ctx.lookup("java:comp/env/jdbc/" + this.dbMain+"RO");
+            if (poolRO == null) {
+                log.error("Unknown DataSource 'jdbc/" + this.dbMain + "RO'", new Exception("Unknown DataSource 'jdbc/" + this.dbMain + "RO'"));
+            }*/
         } catch (NamingException ex) {
             System.out.println("JNDI lookup exception:");
             ex.printStackTrace(System.out);
@@ -154,11 +163,30 @@ public class SessionHandler {
             if (pool == null) {
                 log.error("Unknown DataSource 'jdbc/" + this.dbMain + "'", new Exception("Unknown DataSource 'jdbc/" + this.dbMain + "'"));
             }
+            /*poolRO = (DataSource) ctx.lookup("java:comp/env/jdbc/" + this.dbMain+"RO");
+            if (poolRO == null) {
+                log.error("Unknown DataSource 'jdbc/" + this.dbMain + "RO'", new Exception("Unknown DataSource 'jdbc/" + this.dbMain + "RO'"));
+            }*/
         } catch (NamingException ex) {
             ex.printStackTrace();
         }
         return pool;
     }
+    /*public DataSource getDBPoolRO() {
+        try {
+            // Create a JNDI Initial context to be able to lookup the DataSource
+            InitialContext ctx = new InitialContext();
+            // Lookup the DataSource, which will be backed by a pool
+            //   that the application server provides.
+            poolRO = (DataSource) ctx.lookup("java:comp/env/jdbc/" + this.dbMain+"RO");
+            if (poolRO == null) {
+                log.error("Unknown DataSource 'jdbc/" + this.dbMain + "RO'", new Exception("Unknown DataSource 'jdbc/" + this.dbMain + "RO'"));
+            }
+        } catch (NamingException ex) {
+            ex.printStackTrace();
+        }
+        return poolRO;
+    }*/
 
     public HttpSession getSession() {
         log.debug("in getSession");
@@ -185,6 +213,7 @@ public class SessionHandler {
                 (GeneList) session.getAttribute("selectedGeneList"));
 
         session.setAttribute("dbPool", pool);
+        //session.setAttribute("dbPoolRO",pool);
 
 		/*
         	log.debug("here selectedDataset = " + selectedDataset.getDataset_id()); 
@@ -626,6 +655,7 @@ public class SessionHandler {
         session.setAttribute("maxRThreadCount", this.getMaxRThreadCount());
         session.setAttribute("dbExtFileDir", this.getDbExtFileDir());
         session.setAttribute("dbPool", this.pool);
+        //session.setAttribute("dbPoolRO", this.poolRO);
     }
 
     public void createSession(SessionHandler mySessionHandler, DataSource pool) throws SQLException {

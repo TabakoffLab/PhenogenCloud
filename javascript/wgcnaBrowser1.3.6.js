@@ -43,6 +43,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
     that.moduleGenes={};
 	that.modules={};
 	that.tissue=tissue;
+
 	that.panel="";
 	that.requests=0;
 	that.skipGrey=1;
@@ -63,11 +64,19 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
         	that.panel="BNLx/SHR";
             that.chrLen=20;
             if(that.selSource==="seq"){
-            	if(tissue==="Whole Brain"){
-	            	that.wDSID=8;
-	            }else if(tissue==="Liver"){
-					that.wDSID=9;
-	            }
+            	if(that.version==="2") {
+					if (tissue === "Whole Brain") {
+						that.wDSID = 8;
+					} else if (tissue === "Liver") {
+						that.wDSID = 9;
+					}
+				}else{
+					if (tissue === "Whole Brain") {
+						that.wDSID = 6;
+					} else if (tissue === "Liver") {
+						that.wDSID = 7;
+					}
+				}
             }else{
 	            if(tissue==="Whole Brain"){
 	            	that.wDSID=3;
@@ -79,6 +88,8 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
         	}
         }
     }
+
+
     that.eQTLKey=function(d){return "Link_"+d.Snp;};
     that.mirKey=function(d){return d.ID;};
     that.modKey=function(d){return d.MODULE;};
@@ -2848,7 +2859,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 						}
 						
 		                d3.select(this).append("td").html(d.LinkSum.toFixed(2));
-		                d3.select(this).append("td").html(function(){return tmpI+1;});
+		                //d3.select(this).append("td").html(function(){return tmpI+1;});
 				});
 		        $('table#moduleTable').DataTable({
 						"bPaginate": false,
@@ -4365,6 +4376,8 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
         $(".goCTL").hide();
         $(".eqtlCtls").hide();
         $(".linkCTL").show();
+		$(".mirCTL").hide();
+
         
         thatimg.CorCutoff_min=0.75;
         thatimg.CorCutoff_max=1;
@@ -4858,7 +4871,9 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                         thatimg.metaData=data2[0];
                         //console.log(thatimg.geneMirList);
                         thatimg.draw();
+						that.singleWGCNATableMetaView();
                     },50);
+
                 },
                 error: function(xhr, status, error) {
                     setTimeout(function(){

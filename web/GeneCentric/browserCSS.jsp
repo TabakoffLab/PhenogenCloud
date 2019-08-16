@@ -281,11 +281,7 @@ table.tooltipTable TD{
         .inpageHelpContent {
             display:none;
         }
-        div.adapt2Col{
-            -webkit-column-count: 2; /* Chrome, Safari, Opera */
-            -moz-column-count: 2; /* Firefox */
-            column-count: 2;
-        }
+
         table.adapt2Col{
             width:49%;
         }

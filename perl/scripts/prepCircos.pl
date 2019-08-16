@@ -7,7 +7,7 @@ my $debugLevel = 2;
 sub prepCircos
 {
 	# this routine creates configuration and data files for circos
-	my($geneName,$geneSymbol,$probeID,$psLevel,$probeChromosome,$probeStart,$probeStop,$cutoff,$organism,$genomeVer,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueListRef,$dsn,$usr,$passwd,$hostname,$type)=@_;	
+	my($geneName,$geneSymbol,$probeID,$psLevel,$probeChromosome,$probeStart,$probeStop,$cutoff,$organism,$genomeVer,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueListRef,$dsn,$usr,$passwd,$hostname,$type,$rnaDSID,$prnID)=@_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my @tissueList = @{$tissueListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
@@ -44,12 +44,16 @@ sub prepCircos
 	my $genericConfLocation = '/usr/share/circos/etc/';
 	my $genericConfLocation2 = '/usr/share/tomcat/webapps/PhenoGen/web/';
 	my $karyotypeLocation = '/usr/share/circos/data/karyotype/';
+	my $tmpPid=$probeID;
+	if(index($tmpPid,"ENS")==0){
+		$tmpPid=$prnID;
+	}
 	createCircosConfFile($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$chromosomeListRef,$oneToCreateLinks,$genomeVer);
 	createCircosIdeogramConfFiles($confDirectory,$organism,$chromosomeListRef);
 	createCircosProbesetTextConfFile($dataDirectory,$confDirectory);
 	createCircosProbesetTextDataFile($dataDirectory,$geneName,$geneSymbol,$probeID,$psLevel,$probeChromosome,$probeStart,$probeStop,$organism);
 	createCircosPvaluesConfFile($confDirectory,$dataDirectory,$cutoff,$organism,$tissueListRef);
-	my $eqtlAOHRef = readLocusSpecificPvalues($probeID,$organism,$genomeVer,$chromosomeListRef,$dsn,$usr,$passwd,$type);	
+	my $eqtlAOHRef = readLocusSpecificPvalues($tmpPid,$organism,$genomeVer,$chromosomeListRef,$dsn,$usr,$passwd,$type,$rnaDSID);
 	createCircosPvaluesDataFiles($dataDirectory,$probeID,$organism,$eqtlAOHRef,$chromosomeListRef);
 	if($oneToCreateLinks == 1){
 		createCircosLinksConfAndData($dataDirectory,$organism,$confDirectory,$eqtlAOHRef,$probeChromosome,$probeStart,$probeStop,$cutoff,$tissueListRef);	

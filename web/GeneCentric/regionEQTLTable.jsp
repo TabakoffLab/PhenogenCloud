@@ -232,7 +232,7 @@
         }
     }
     java.util.Date time = new java.util.Date();
-    log.debug("Setup before finging Path:" + (time.getTime() - startDate.getTime()));
+
     //String tmpOutput=gdt.getImageRegionData(chromosome,min,max,panel,myOrganism,rnaDatasetID,arrayTypeID,0.01,false);
     //int startInd=tmpOutput.lastIndexOf("/",tmpOutput.length()-2);
     //folderName=tmpOutput.substring(startInd+1,tmpOutput.length()-1);
@@ -269,7 +269,7 @@
     //}
 
     time = new java.util.Date();
-    log.debug("Setup after Path:" + (time.getTime() - startDate.getTime()));
+
 %>
 
 <style>
@@ -309,7 +309,9 @@
 <div id="eQTLListFromRegion" style="width:100%;">
 
 
-    <% log.debug("before eQTL table constr");
+    <%  session.removeAttribute("getTransControllingEQTL");
+        session.removeAttribute("getTransControllingEQTLCircos");
+        log.debug("before eQTL table constr");
         log.debug("loc:" + chromosome + ":" + min + "-" + max + "::" + folderName);
         log.debug("get EQTLs");
         java.util.Date tmpStart = new java.util.Date();
@@ -320,8 +322,12 @@
         ArrayList<String> eQTLRegions = gdt.getEQTLRegions();
         time = new java.util.Date();
         log.debug("Setup after get eqtls regions:\n" + (time.getTime() - tmpStart.getTime()));
-        if (session.getAttribute("getTransControllingEQTL") == null) {
-            if (transOutQTLs != null && transOutQTLs.size() > 0) {%>
+        log.debug("*********\n:"+session.getAttribute("getTransControllingEQTL")+"*::");
+        if (session.getAttribute("getTransControllingEQTL") == null || ((String)session.getAttribute("getTransControllingEQTL")).equals("") ) {
+            log.debug("after check session var");
+            if (transOutQTLs != null && transOutQTLs.size() > 0) {
+                log.debug("after check transOutQTLs");
+    %>
 
 
     <%
@@ -343,13 +349,16 @@
             cutoffTimesTen = Integer.toString(tmp);
         }
 
-        String tmpFolder = gdt.getFolder(min, max, chromosome, myOrganism, genomeVer);
-        log.debug(tmpFolder);
+
+        String tmpFolder = chromosome+"/"+ gdt.getFolder(min, max, chromosome, myOrganism, genomeVer);
+        log.debug("tmpFolder:"+tmpFolder);
         String regionCentricPath = applicationRoot + contextRoot + "tmpData/browserCache/" + genomeVer + "/regionData/" + tmpFolder;
         shortRegionCentricPath = regionCentricPath.substring(regionCentricPath.indexOf("/tmpData/"));
 
         String iframeURL = shortRegionCentricPath + "/circos" + cutoffTimesTen + "/svg/circos_new.svg";
-        String svgPdfFile = shortRegionCentricPath + "/circos" + cutoffTimesTen + "/svg/circos_new.pdf";
+        String svgPdfFile = shortRegionCentricPath + "/circos" + cutoffTimesTen + "/svg/circos.png";
+        log.debug("MADE IT TO:path");
+        log.debug("iframe:\n"+iframeURL);
     %>
 
 
@@ -370,36 +379,34 @@
             <span class="eQTLListToolTip" title="To control the viewable area of the Circos Plot below simply select your prefered size."><img src="<%=imagesDir%>icons/info.gif"></span>-->
 
         </div>
-        <%if (session.getAttribute("getTransControllingEQTLCircos") == null) {%>
-        <div id="circosPlot" style="text-align:center;">
-            <div style="display:inline-block;text-align:center; width:100%;">
-                <!--<span id="circosMinMax" style="cursor:pointer;"><img src="web/images/icons/circos_min.jpg"></span>-->
-                <a href="<%=svgPdfFile%>" target="_blank">
-                    <img src="/web/images/icons/download_g.png" title:"Download Circos Image">
-                </a>
-                Inside of border below, the mouse wheel zooms. Outside of the border, the mouse wheel scrolls.
-                <span id="filterBtn1" class="filter button">Filter eQTLs</span>
-            </div>
+
+        <%  log.debug("getTranscontrollingEQTLCircos\n"+session.getAttribute("getTransControllingEQTLCircos"));
+        if (session.getAttribute("getTransControllingEQTLCircos") == null  ) {%>
+            <div id="circosPlot" style="text-align:center;">
+                <div style="display:inline-block;text-align:center; width:100%;">
+                    <!--<span id="circosMinMax" style="cursor:pointer;"><img src="web/images/icons/circos_min.jpg"></span>-->
+                    <a href="<%=svgPdfFile%>" target="_blank">
+                        <img src="/web/images/icons/download_g.png" title:"Download Circos Image">
+                    </a>
+                    Inside of border below, the mouse wheel zooms. Outside of the border, the mouse wheel scrolls.
+                    <span id="filterBtn1" class="filter button">Filter eQTLs</span>
+                </div>
 
 
-            <div id="iframe_parent" align="center" style="width:100%">
-                <iframe id="circosIFrame" src="<%=iframeURL%>" height="950" position="absolute" scrolling="no"
-                        style="border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px">
-                </iframe>
-            </div>
-            <a href="http://genome.cshlp.org/content/early/2009/06/15/gr.092759.109.abstract" target="_blank"
-               style="text-decoration: none">Circos: an Information Aesthetic for Comparative Genomics.</a>
-        </div><!-- end CircosPlot -->
+                <div id="iframe_parent" align="center" style="width:100%">
+                    <iframe id="circosIFrame" src="<%=iframeURL%>" height="950" position="absolute" scrolling="no"
+                            style="border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px">
+                    </iframe>
+                </div>
+                <a href="http://genome.cshlp.org/content/early/2009/06/15/gr.092759.109.abstract" target="_blank"
+                   style="text-decoration: none">Circos: an Information Aesthetic for Comparative Genomics.</a>
+            </div><!-- end CircosPlot -->
         <%} else {%>
-        <div id="circosPlot" style="text-align:center;">
-            <strong><%=session.getAttribute("getTransControllingEQTLCircos")%>
-            </strong><BR/><BR/><BR/>
-        </div><!-- end CircosPlot -->
-        <%
-            }
-
-            //log.debug("end circos");
-        %>
+            <div id="circosPlot" style="text-align:center;">
+                <strong><%=session.getAttribute("getTransControllingEQTLCircos")%>
+                </strong><BR/><BR/><BR/>
+            </div><!-- end CircosPlot -->
+        <%}%>
     </div>
     <div id="qtlTableDiv" style="display:inline-block;">
         <div class="regionSubHeader" style="font-size:18px; font-weight:bold; text-align:center; width:100%;">
@@ -921,6 +928,7 @@
                                     multiple="true">
 
                                 <%
+                                    log.debug("MADE IT TO: chromosomesMS");
                                     String tmpChromosome = chromosome;
                                     if (tmpChromosome.toLowerCase().startsWith("chr")) {
                                         tmpChromosome.substring(3);

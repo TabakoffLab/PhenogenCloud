@@ -51,6 +51,7 @@
     String panel="";
     String gcPath="";
     String source="seq";
+    String hrdpVer="";
     int selectedGene=0;
     ArrayList<String>geneSymbol=new ArrayList<String>();
 
@@ -107,7 +108,10 @@
         source=FilterInput.getFilteredInput(request.getParameter("source"));
     }
     if(request.getParameter("genomeVer")!=null){
-        genomeVer=request.getParameter("genomeVer");
+        genomeVer=FilterInput.getFilteredInput(request.getParameter("genomeVer"));
+    }
+    if(request.getParameter("version")!=null){
+        hrdpVer=FilterInput.getFilteredInput(request.getParameter("version"));
     }
 
     gcPath=applicationRoot + contextRoot+"tmpData/"+userLoggedIn.getUser_name()+"/GeneLists/";
@@ -206,11 +210,12 @@
         var genomeVer=$('#genomeVer').val();
         var pval=$('#cutoffValue').val();
         var path="<%=gcPath%>";
+        var HRDPversion=$('#hrdpVer').val();
         $.ajax({
             url: "/web/geneLists/include/runCircosGeneList.jsp",
             type: 'GET',
             cache: false,
-            data: {cutoffValue:pval,tissues:tisList,chromosomes:chrList,path:path,genomeVer:genomeVer,source:source},
+            data: {cutoffValue:pval,tissues:tisList,chromosomes:chrList,path:path,genomeVer:genomeVer,source:source,version:HRDPversion},
             dataType: 'json',
             beforeSend: function(){
                 $('#circosStatus').html("");
@@ -566,6 +571,27 @@
                 }
             %>
             <%@ include file="/web/common/selectBox.jsp" %>
+            <%if(org.equals("Rn")){%>
+                <span style="padding-left:20px;"><strong>HRDP Version:</strong></span>
+                <span class="eQTLtooltip" title="HRDP Version for eQTL data to use for Circos plot."><img src="<%=imagesDir%>icons/info.gif"></span>
+                <%
+                    selectName = "hrdpVer";
+                    if(hrdpVer!=null && !hrdpVer.equals("")){
+                        selectedOption = hrdpVer;
+                    }
+                    else{
+                        selectedOption = "3";
+                    }
+                    onChange = "";
+                    style = "";
+                    optionHash = new LinkedHashMap();
+
+                    optionHash.put("1", "v1 (6/2016)");
+                    optionHash.put("3","v3 (7/2019)");
+
+                %>
+                <%@ include file="/web/common/selectBox.jsp" %>
+            <%}%>
         </div>
         <table id="circosOptTbl" name="items" class="list_base" cellpadding="0" cellspacing="3" style="width:100%;text-align:left;" >
             <tbody >

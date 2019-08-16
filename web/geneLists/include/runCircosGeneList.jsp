@@ -15,6 +15,8 @@
     String source="";
     String message="";
     String path="";
+    String HRDPversion="3";
+    String rnaDSIDs="93,94";
 
 
     //String contextRoot = (String) session.getAttribute("contextRoot");
@@ -46,7 +48,12 @@
     if(request.getParameter("chromosomes")!=null){
         chromosomeString = request.getParameter("chromosomes");
     }
-
+    if(request.getParameter("version")!=null){
+        HRDPversion = request.getParameter("version");
+        if(HRDPversion=="1"){
+            rnaDSIDs="21,23";
+        }
+    }
     if(request.getParameter("tissues")!=null){
         tissueString = request.getParameter("tissues");
     }else {
@@ -67,7 +74,7 @@
     }
     int cutoff=Integer.parseInt(selectedCutoffValue);
     CircosDataTools cdt=new CircosDataTools(session,path);
-    cdt.runCircosGeneList(selectedGeneList.getGene_list_id(),chromosomeString,tissueString,source,genomeVer,cutoff);
+    cdt.runCircosGeneList(selectedGeneList.getGene_list_id(),chromosomeString,tissueString,source,genomeVer,rnaDSIDs,cutoff);
     //
     // call perl script
     //

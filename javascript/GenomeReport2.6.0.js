@@ -195,6 +195,7 @@ function loadEQTLTable(){
 	}
 }
 
+
 function loadRegionWGCNA(){
 	$("div#geneWGCNA").html("");
 	var jspPage="web/GeneCentric/wgcnaGene.jsp";

@@ -40,7 +40,7 @@ sub setupDirectories{
 
 
 sub callCircosCircosGeneList{
-	my($cutoff,$organism,$chromosomeString,$tissueString,$geneListPath,$timeStampString,$genomeVer,$type)=@_;
+	my($cutoff,$organism,$chromosomeString,$tissueString,$geneListPath,$timeStampString,$genomeVer,$type,$rnaDSIDs)=@_;
 	#print "in callCircosMod() path:$modulePath\n";
 
 
@@ -77,7 +77,7 @@ sub callCircosCircosGeneList{
 	my @chromosomeList = split(/;/, $chromosomeString);
 	my $chromosomeListRef = (\@chromosomeList);
 	#print " Ready to call prepCircos \n";
-	prepCircosGeneList($cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$type);
+	prepCircosGeneList($cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$type,$rnaDSIDs);
 	#print " Finished prepCircos \n";
 
 
@@ -138,7 +138,8 @@ sub callCircosCircosGeneList{
 	my $arg6 = $ARGV[5];
 	my $arg7 = $ARGV[6];
 	my $arg8 = $ARGV[7];
+	my $arg9 = $ARGV[8];
 
-	callCircosCircosGeneList($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8);
+	callCircosCircosGeneList($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8,$arg9);
 
 1;

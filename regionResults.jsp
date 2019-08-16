@@ -179,18 +179,20 @@ console.log("urlprefix:"+urlprefix);
         <div id="collapsableImage" class="geneimage" >
 
             <div id="geneImage" class="ucscImage"  style="display:inline-block;width:100%;">
-                <!--<script src="javascript/gdb.2.7.2.min.js" type="text/javascript"></script>-->
-            <script src="javascript/GenomeDataBrowser2.8.0.js" type="text/javascript"></script>
+                <script src="javascript/gdb.2.8.0.min.js" type="text/javascript"></script>
+
+            <!--<script src="javascript/GenomeDataBrowser2.8.0.js" type="text/javascript"></script>
             <script src="javascript/GenomeReport2.6.0.js" type="text/javascript"></script>
             <script src="javascript/GenomeViewMenu2.6.1.js" type="text/javascript"></script>
             <script src="javascript/GenomeTrackMenu2.6.1.js" type="text/javascript"></script>
-            <script src="javascript/wgcnaBrowser1.3.6.js" type="text/javascript"></script>
+            <script src="javascript/wgcnaBrowser1.3.6.js" type="text/javascript"></script>-->
            </div>
         </div>
 
     </div><!--end Border Div -->
     <div id="regionDiv">
     <BR />
+
     <div style="width:100%;">
             	<div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
                     <span id="detail1" class="detailMenu selected" name="regionSummary">Track Details<div class="inpageHelp" style="display:inline-block; "><img id="HelpTrackDetails" class="helpImage" src="../web/images/icons/help.png" /></div></span>

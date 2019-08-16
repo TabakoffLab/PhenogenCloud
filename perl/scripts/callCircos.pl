@@ -7,6 +7,7 @@ use Sys::Hostname;
 
 require 'prepCircos.pl';
 require 'readLocusSpecificPvalues.pl';
+require 'readRNAIsoformDataFromMongo.pl';
 require 'postprocessCircos.pl';
 
 sub setupDirectories{
@@ -40,7 +41,7 @@ sub setupDirectories{
 
 
 sub callCircos{
-	my($geneName,$geneSymbol,$probeID,$psLevel,$probeChromosome,$probeStart,$probeStop,$cutoff,$organism,$genomeVer,$chromosomeString,$geneCentricPath,$timeStampString,$tissueString,$dsn,$usr,$passwd,$type)=@_;
+	my($geneName,$geneSymbol,$probeID,$psLevel,$probeChromosome,$probeStart,$probeStop,$cutoff,$organism,$genomeVer,$chromosomeString,$geneCentricPath,$timeStampString,$tissueString,$dsn,$usr,$passwd,$type,$rnaDSID,$prnID)=@_;
 	#
 	# General outline of process:
 	# First, prep circos conf and data files
@@ -56,6 +57,7 @@ sub callCircos{
 	my $confDirectory = $baseDirectory.'conf/';
 	print " svg directory $svgDirectory \n";
 	print "Tissue String $tissueString \n";
+	print "RNA_DS_IDs: $rnaDSID\n";
 
 	#
 	# Create necessary directories if they do not already exist
@@ -66,7 +68,8 @@ sub callCircos{
 	my @tissueList = split(/;/, $tissueString);
 	my $tissueListRef = (\@tissueList);
 	print " Ready to call prepCircos \n";
-	prepCircos($geneName, $geneSymbol,$probeID, $psLevel,$probeChromosome,$probeStart,$probeStop,$cutoff,$organism,$genomeVer,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueListRef,$dsn,$usr,$passwd,$hostname,$type);
+
+	prepCircos($geneName, $geneSymbol,$probeID, $psLevel,$probeChromosome,$probeStart,$probeStop,$cutoff,$organism,$genomeVer,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueListRef,$dsn,$usr,$passwd,$hostname,$type,$rnaDSID,$prnID);
 	print " Finished prepCircos \n";	
 	
 
@@ -160,6 +163,9 @@ sub callCircos{
 	my $arg16=$ARGV[15]; #password
     my $arg17=$ARGV[16]; #password
     my $arg18=$ARGV[17]; #Source
-	callCircos($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10, $arg11,$arg12,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18);
+	my $arg19=$ARGV[18]; #RnaDSID
+	my $arg20=$ARGV[19];
+
+	callCircos($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10, $arg11,$arg12,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18,$arg19,$arg20);
 
 1;
