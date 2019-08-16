@@ -52,10 +52,9 @@
     	
   </div> <!-- page_header -->
   
-<div style="width:100%; text-align:center;/*margin-top:5px;*/"><BR>
-    <div><a href="/downloads/SuRGeFlyer_2019.pdf">Summer of Rat Genomics and Genetics Workshop - Aug 2nd-3rd, 2019 - Colorado - NIDA Center for Omics, Systems Genetics and the Addictome</a></div>
-    <div> <a href="https://github.com/OSGA-OPAR/SuRGe_2019">More Info</a>  <a href="https://docs.google.com/forms/d/e/1FAIpQLSew8JI0K9L89jZ-7lWca11bGQZCR_F-9DBUt7zy8D-yCB11Kw/viewform">Registration</a></div>
-    <BR>
+<div style="width:100%; text-align:center;/*margin-top:5px;*/">
+    <!--*********MESSAGE TOP*********-->
+    <!--<BR><div></div><BR>-->
 <div id='cssmenu' >
    		<ul>
 
