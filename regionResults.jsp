@@ -386,28 +386,32 @@ console.log("urlprefix:"+urlprefix);
 
 
 <%}else{
-    if(myGene.startsWith("ENS")){%>
-        <div class="error">ERROR: The Ensembl ID entered is not present in the current version of the Ensembl database being used
-            for your selected genome version (<%=genomeVer%>).
-                <BR><BR>
-                <%if(genomeVer.startsWith("rn")){
-                    int port=request.getServerPort();
-                    String prefix="http";
-                    if(port==443){
-                        prefix=prefix+"s";
-                    }
-                    String newGenomeVer="rn5";
-                %>
-                We recommend trying again after switching genome versions to <% if(genomeVer.equals("rn5")){newGenomeVer="rn6";%>Rn6<%}else{%>Rn5<%}%> by <a href="<%=prefix+"://"+host+contextRoot+"gene.jsp?geneTxt="+myGene+"&genomeVer="+newGenomeVer+"&auto=Y&overideGV=Y"%>">following this link</a>.
-                <BR><BR>
-                It is possible that the ID is from an older ensembl/genome version or an intermediate version of the ensembl database that is not supported on PhenoGen.  We only support the latest
-                version of the Ensembl database for each genome version.  Currently v79 for rn5 and v84 for rn6.
+    if(myGene.startsWith("ENS")){
+        if(genURL.get(0).startsWith("ERROR:")){%>
+            <div class="error"><%=genURL.get(selectedGene)%><BR />The administrator has been notified of the problem and we will work on supporting contigs.  We apologize for any inconvenience.</div><BR /><BR /><BR /><BR /><BR /><BR /><BR /><BR /><BR /><BR><BR>
+        <%}else{%>
+                <div class="error">ERROR: The Ensembl ID entered is not present in the current version of the Ensembl database being used
+                    for your selected genome version (<%=genomeVer%>).
+                        <BR><BR>
+                        <%if(genomeVer.startsWith("rn")){
+                            int port=request.getServerPort();
+                            String prefix="http";
+                            if(port==443){
+                                prefix=prefix+"s";
+                            }
+                            String newGenomeVer="rn5";
+                        %>
+                        We recommend trying again after switching genome versions to <% if(genomeVer.equals("rn5")){newGenomeVer="rn6";%>Rn6<%}else{%>Rn5<%}%> by <a href="<%=prefix+"://"+host+contextRoot+"gene.jsp?geneTxt="+myGene+"&genomeVer="+newGenomeVer+"&auto=Y&overideGV=Y"%>">following this link</a>.
+                        <BR><BR>
+                        It is possible that the ID is from an older ensembl/genome version or an intermediate version of the ensembl database that is not supported on PhenoGen.  We only support the latest
+                        version of the Ensembl database for each genome version.  Currently v79 for rn5 and v84 for rn6.
 
-                <%}%>
-            </div>
-    <BR><BR><BR />
+                        <%}%>
+                    </div>
+            <BR><BR><BR /><BR><BR>
+        <%}%>
     <%}else{%>
-        <div class="error"><%=genURL.get(selectedGene)%><BR />The administrator has been notified of the problem and will investigate the error.  We apologize for any inconvenience.</div><BR /><BR /><BR /><BR /><BR /><BR /><BR /><BR /><BR />
+        <div class="error"><%=genURL.get(selectedGene)%><BR />The administrator has been notified of the problem and will investigate the error.  We apologize for any inconvenience.</div><BR /><BR /><BR /><BR /><BR /><BR /><BR /><BR /><BR /><BR><BR>
     <%}%>
 <%}%>
     
