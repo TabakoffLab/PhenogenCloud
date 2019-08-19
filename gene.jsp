@@ -285,6 +285,7 @@
                     //myEnsemblIDs.add(homologIdentifier.getIdentifier());
                     log.debug("RUNNING GDT for " + homologIdentifier.getIdentifier());
                     ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(myGene, homologIdentifier.getIdentifier(), panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, false);
+
                     String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
                     String tmpGeneSymbol = gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
                     log.debug(tmpURL + "\n" + tmpGeneSymbol);

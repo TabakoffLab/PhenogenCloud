@@ -510,8 +510,9 @@ public class GeneDataTools {
         Date endLoadLoc=new Date();
         Date endRegion=new Date();
         ArrayList<Gene> ret=new ArrayList<Gene>();
+        String[] loc=null;
         if(!error){
-            String[] loc=null;
+
             try{
                     loc=myFH.getFileContents(new File(outputDir+"location.txt"));
             }catch(IOException e){
@@ -536,6 +537,26 @@ public class GeneDataTools {
                 }
             }
             endRegion=new Date();
+        }else{
+            try{
+                loc=myFH.getFileContents(new File(outputDir+"location.txt"));
+            }catch(IOException e){
+                log.error("Couldn't load location for gene.",e);
+            }
+            if(loc!=null){
+                chrom=loc[0];
+                minCoord=Integer.parseInt(loc[1]);
+                maxCoord=Integer.parseInt(loc[2]);
+                if(chrom.length()>6){
+                    session.setAttribute("genURL","ERROR: Gene is located on a contig which is not currently supported.");
+                }
+            }
+            endLoadLoc=new Date();
+            //log.debug("getGeneCentricData->getRegionData");
+            if(!chrom.toLowerCase().startsWith("chr")){
+                chrom="chr"+chrom;
+            }
+
         }
         log.debug("\ngetRegion:"+(endRegion.getTime()-endFindGen.getTime())+"ms");
         try(Connection conn=pool.getConnection()){
@@ -662,82 +683,85 @@ public class GeneDataTools {
     public ArrayList<Gene> getRegionDataMain(String chromosome,int minCoord,int maxCoord,
             String panel,
             String organism,String genomeVer,int RNADatasetID,int arrayTypeID,double pValue,boolean withEQTL,String file) {
-        
-        
+
+        ArrayList<Gene> ret = new ArrayList<Gene>();
+
         chromosome=chromosome.toLowerCase();
         if(!chromosome.startsWith("chr")){
             chromosome="chr"+chromosome;
         }
-        
-        //Setup a String in the format YYYYMMDDHHMM to append to the folder
-        Date start = new Date();
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.setTime(start);
+        if(chromosome.length()>6){
+            returnGenURL="ERROR: Gene is located on a contig which is not currently supported.";
+        }else {
+            //Setup a String in the format YYYYMMDDHHMM to append to the folder
+            Date start = new Date();
+            GregorianCalendar gc = new GregorianCalendar();
+            gc.setTime(start);
         /*String datePart=Integer.toString(gc.get(gc.MONTH)+1)+
                 Integer.toString(gc.get(gc.DAY_OF_MONTH))+
                 Integer.toString(gc.get(gc.YEAR))+"_"+
                 Integer.toString(gc.get(gc.HOUR_OF_DAY))+
                 Integer.toString(gc.get(gc.MINUTE))+
                 Integer.toString(gc.get(gc.SECOND));*/
-        String rOutputPath = "";
-        outputDir="";
-        String result="";
-        this.minCoord=minCoord;
-        this.maxCoord=maxCoord;
-        this.chrom=chromosome;
-        String inputID=organism+":"+chromosome+":"+minCoord+"-"+maxCoord;
-        HashMap<String,String> source=this.getGenomeVersionSource(genomeVer);
-        try(Connection conn=pool.getConnection()){
+            String rOutputPath = "";
+            outputDir = "";
+            String result = "";
+            this.minCoord = minCoord;
+            this.maxCoord = maxCoord;
+            this.chrom = chromosome;
+            String inputID = organism + ":" + chromosome + ":" + minCoord + "-" + maxCoord;
+            HashMap<String, String> source = this.getGenomeVersionSource(genomeVer);
+            try (Connection conn = pool.getConnection()) {
 
-            PreparedStatement ps=conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
-            //ps.setInt(1, usageID);
-            ps.setString(1,inputID);
-            ps.setString(2, "");
-            ps.setTimestamp(3, new Timestamp(start.getTime()));
-            ps.setString(4, organism);
-            ps.execute();
-            ResultSet rs = ps.getGeneratedKeys();
-            if (rs.next()) {
-                usageID = rs.getInt(1);
+                PreparedStatement ps = conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
+                //ps.setInt(1, usageID);
+                ps.setString(1, inputID);
+                ps.setString(2, "");
+                ps.setTimestamp(3, new Timestamp(start.getTime()));
+                ps.setString(4, organism);
+                ps.execute();
+                ResultSet rs = ps.getGeneratedKeys();
+                if (rs.next()) {
+                    usageID = rs.getInt(1);
+                }
+                ps.close();
+            } catch (SQLException e) {
+                log.error("Error saving Transcription Detail Usage", e);
             }
-            ps.close();
-        }catch(SQLException e){
-            log.error("Error saving Transcription Detail Usage",e);
-        }
-        
-        //EnsemblIDList can be a comma separated list break up the list
-        boolean error=false;
+
+            //EnsemblIDList can be a comma separated list break up the list
+            boolean error = false;
 
             //Define output directory
-            outputDir = fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+chromosome+"/"+minCoord+"_"+maxCoord+"/";
+            outputDir = fullPath + "tmpData/browserCache/" + genomeVer + "/regionData/" + chromosome + "/" + minCoord + "_" + maxCoord + "/";
             //+"_"+datePart + "/";
             //session.setAttribute("geneCentricPath", outputDir);
-            log.debug("checking for path:"+outputDir);
-            String folderName = "/"+chromosome+"/"+minCoord+"_"+maxCoord;
+            log.debug("checking for path:" + outputDir);
+            String folderName = "/" + chromosome + "/" + minCoord + "_" + maxCoord;
             // +"_"+datePart;
             //String publicPath = H5File.substring(H5File.indexOf("/Datasets/") + 10);
             //publicPath = publicPath.substring(0, publicPath.indexOf("/Affy.NormVer.h5"));
 
             try {
-                File geneDir=new File(outputDir);
-                File errorFile=new File(outputDir+"errMsg.txt");
-                if(geneDir.exists()){
-                        //do nothing just need to set session var
-                        String errors;
-                        errors = loadErrorMessage();
-                        if(errors.equals("")){
-                            //String[] results=this.createImage("default", organism,outputDir,chrom,minCoord,maxCoord);
-                            //getUCSCUrl(results[1].replaceFirst(".png", ".url"));
-                            result="cache hit files not generated";
-                            
-                        }else{
-                            result="Previous Result had errors. Trying again.";
-                            generateRegionFiles(organism,genomeVer,source.get("ensembl"),folderName,RNADatasetID,arrayTypeID,source.get("ucsc"));
-                            
-                            //error=true;
-                            //this.setError(errors);
-                        }
-                }else{
+                File geneDir = new File(outputDir);
+                File errorFile = new File(outputDir + "errMsg.txt");
+                if (geneDir.exists()) {
+                    //do nothing just need to set session var
+                    String errors;
+                    errors = loadErrorMessage();
+                    if (errors.equals("")) {
+                        //String[] results=this.createImage("default", organism,outputDir,chrom,minCoord,maxCoord);
+                        //getUCSCUrl(results[1].replaceFirst(".png", ".url"));
+                        result = "cache hit files not generated";
+
+                    } else {
+                        result = "Previous Result had errors. Trying again.";
+                        generateRegionFiles(organism, genomeVer, source.get("ensembl"), folderName, RNADatasetID, arrayTypeID, source.get("ucsc"));
+
+                        //error=true;
+                        //this.setError(errors);
+                    }
+                } else {
                     /*RegionDirFilter rdf=new RegionDirFilter(organism+ chromosome+"_"+minCoord+"_"+maxCoord+"_");
                     File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/");
                     File[] list=mainDir.listFiles(rdf);
@@ -759,24 +783,24 @@ public class GeneDataTools {
                             //this.setError(errors);
                         }
                     }else{*/
-                        generateRegionFiles(organism,genomeVer,source.get("ensembl"),folderName,RNADatasetID,arrayTypeID,source.get("ucsc"));
-                        result="New Region generated successfully";
+                    generateRegionFiles(organism, genomeVer, source.get("ensembl"), folderName, RNADatasetID, arrayTypeID, source.get("ucsc"));
+                    result = "New Region generated successfully";
                     //}
                 }
-                
-                
+
+
             } catch (Exception e) {
-                error=true;
-                
+                error = true;
+
                 log.error("In Exception getting Gene Centric Results", e);
                 Email myAdminEmail = new Email();
-                String fullerrmsg=e.getMessage();
-                    StackTraceElement[] tmpEx=e.getStackTrace();
-                    for(int i=0;i<tmpEx.length;i++){
-                        fullerrmsg=fullerrmsg+"\n"+tmpEx[i];
-                    }
+                String fullerrmsg = e.getMessage();
+                StackTraceElement[] tmpEx = e.getStackTrace();
+                for (int i = 0; i < tmpEx.length; i++) {
+                    fullerrmsg = fullerrmsg + "\n" + tmpEx[i];
+                }
                 myAdminEmail.setSubject("Exception thrown getting Gene Centric Results");
-                myAdminEmail.setContent("There was an error while getting gene centric results.\n"+fullerrmsg);
+                myAdminEmail.setContent("There was an error while getting gene centric results.\n" + fullerrmsg);
                 try {
                     myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
                 } catch (Exception mailException) {
@@ -788,47 +812,48 @@ public class GeneDataTools {
                     }
                 }
             }
-        if(error){
-            result=this.returnGenURL;
-        }
-        this.setPublicVariables(error,genomeVer,folderName);
-        this.pathReady=true;
-        
-        ArrayList<Gene> ret=Gene.readGenes(outputDir+file);
-        log.debug("getRegionData() returning gene list of size:"+ret.size());
-
-        if(withEQTL){
-            this.addHeritDABG(ret,minCoord,maxCoord,organism,chromosome,RNADatasetID, arrayTypeID,genomeVer);
-            ArrayList<TranscriptCluster> tcList=getTransControlledFromEQTLs(minCoord,maxCoord,chromosome,arrayTypeID,pValue,"All",genomeVer);
-            HashMap<String,TranscriptCluster> transInQTLsCore=new HashMap<String,TranscriptCluster>();
-            HashMap<String,TranscriptCluster> transInQTLsExtended=new HashMap<String,TranscriptCluster>();
-            HashMap<String,TranscriptCluster> transInQTLsFull=new HashMap<String,TranscriptCluster>();
-            for(int i=0;i<tcList.size();i++){
-                TranscriptCluster tmp=tcList.get(i);
-                if(tmp.getLevel().equals("core")){
-                    transInQTLsCore.put(tmp.getTranscriptClusterID(),tmp);
-                }else if(tmp.getLevel().equals("extended")){
-                    transInQTLsExtended.put(tmp.getTranscriptClusterID(),tmp);
-                }else if(tmp.getLevel().equals("full")){
-                    transInQTLsFull.put(tmp.getTranscriptClusterID(),tmp);
-                }
+            if (error) {
+                result = this.returnGenURL;
             }
-            addFromQTLS(ret,transInQTLsCore,transInQTLsExtended,transInQTLsFull);
-        }
+            this.setPublicVariables(error, genomeVer, folderName);
+            this.pathReady = true;
 
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement ps=conn.prepareStatement(updateSQL, 
-						ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);
-            Date end=new Date();
-            long returnTimeMS=end.getTime()-start.getTime();
-            ps.setLong(1, returnTimeMS);
-            ps.setString(2, result);
-            ps.setInt(3, usageID);
-            ps.executeUpdate();
-            ps.close();
-        }catch(SQLException e){
-            log.error("Error saving Transcription Detail Usage",e);
+            ret = Gene.readGenes(outputDir + file);
+            log.debug("getRegionData() returning gene list of size:" + ret.size());
+
+            if (withEQTL) {
+                this.addHeritDABG(ret, minCoord, maxCoord, organism, chromosome, RNADatasetID, arrayTypeID, genomeVer);
+                ArrayList<TranscriptCluster> tcList = getTransControlledFromEQTLs(minCoord, maxCoord, chromosome, arrayTypeID, pValue, "All", genomeVer);
+                HashMap<String, TranscriptCluster> transInQTLsCore = new HashMap<String, TranscriptCluster>();
+                HashMap<String, TranscriptCluster> transInQTLsExtended = new HashMap<String, TranscriptCluster>();
+                HashMap<String, TranscriptCluster> transInQTLsFull = new HashMap<String, TranscriptCluster>();
+                for (int i = 0; i < tcList.size(); i++) {
+                    TranscriptCluster tmp = tcList.get(i);
+                    if (tmp.getLevel().equals("core")) {
+                        transInQTLsCore.put(tmp.getTranscriptClusterID(), tmp);
+                    } else if (tmp.getLevel().equals("extended")) {
+                        transInQTLsExtended.put(tmp.getTranscriptClusterID(), tmp);
+                    } else if (tmp.getLevel().equals("full")) {
+                        transInQTLsFull.put(tmp.getTranscriptClusterID(), tmp);
+                    }
+                }
+                addFromQTLS(ret, transInQTLsCore, transInQTLsExtended, transInQTLsFull);
+            }
+
+            try (Connection conn = pool.getConnection()) {
+                PreparedStatement ps = conn.prepareStatement(updateSQL,
+                        ResultSet.TYPE_SCROLL_INSENSITIVE,
+                        ResultSet.CONCUR_UPDATABLE);
+                Date end = new Date();
+                long returnTimeMS = end.getTime() - start.getTime();
+                ps.setLong(1, returnTimeMS);
+                ps.setString(2, result);
+                ps.setInt(3, usageID);
+                ps.executeUpdate();
+                ps.close();
+            } catch (SQLException e) {
+                log.error("Error saving Transcription Detail Usage", e);
+            }
         }
         return ret;
     }
@@ -970,18 +995,24 @@ public class GeneDataTools {
                 chrom=loc[0];
                 minCoord=Integer.parseInt(loc[1]);
                 maxCoord=Integer.parseInt(loc[2]);
-                log.debug("AsyncGeneDataTools with "+chrom+":"+minCoord+"-"+maxCoord);
-                callWriteXML(ensemblID1,organism,genomeVer,chrom, minCoord, maxCoord,arrayTypeID,RNADatasetID);
-                boolean isENS=false;
-                if(ensemblID1.startsWith("ENS")){
-                    isENS=true;
+                if(chrom.length()>6){
+                    error=true;
+                    setError("Gene is on a contig which is not currently supported.");
+                }else {
+                    log.debug("AsyncGeneDataTools with " + chrom + ":" + minCoord + "-" + maxCoord);
+                    callWriteXML(ensemblID1, organism, genomeVer, chrom, minCoord, maxCoord, arrayTypeID, RNADatasetID);
+                    boolean isENS = false;
+                    if (ensemblID1.startsWith("ENS")) {
+                        isENS = true;
+                    }
+                    prevThread = callAsyncGeneDataTools(chrom, minCoord, maxCoord, arrayTypeID, RNADatasetID, genomeVer, isENS);
                 }
-                prevThread=callAsyncGeneDataTools(chrom, minCoord, maxCoord,arrayTypeID,RNADatasetID,genomeVer,isENS);
+            }else{
+                error=true;
             }
         }else{
             error=true;
-        }    
-        
+        }
         return error;
     }
     

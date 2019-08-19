@@ -1394,22 +1394,34 @@ chart=function(params){
 		}
 	}
 	//Data Functions
-	that.getData=function(){
+	that.getData=function(retry){
 		$.ajax({
 				url: that.dataFile,
    				type: 'GET',
 				data: {},
 				dataType: 'json',
     			success: function(data2){
-
         			that.parseMultipleGenes(data2);
-        			
         			if(ga){
 						ga('send','event','loadChartData',that.dataFile);
 					}
     			},
     			error: function(xhr, status, error) {
         			console.log(error);
+        			var timeout=1500;
+        			if(retry<50){
+
+					}else{
+        				timeout=5000;
+					}
+        			setTimeout(function () {
+        				if(retry<250){
+							that.getData(retry+1);
+						}else{
+        					//Add error message
+						}
+					},timeout);
+
     			}
 			});
 	};
@@ -1631,7 +1643,7 @@ chart=function(params){
 	//Initial Setup
 	setTimeout(function(){
 		that.parseOptions(params);
-		that.getData();
+		that.getData(1);
 		that.setup();
 	},10);
 	
