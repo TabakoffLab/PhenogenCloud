@@ -244,12 +244,22 @@ console.log("urlprefix:"+urlprefix);
                <div class="help" style="width:100%;display:inline-block;text-align:center;"></div>
                 <div class="exprCol" id="expRegionBrain" style="display:inline-block;">
                     <div style="width:100%;text-align: center;"><H2><span id="regionExprTitleb"></span></h2></div><BR>
-                    <div id="chartBrainregionExpr" style="width:98%;"></div>
+                    <div id="chartBrainregionExpr" style="width:98%;">
+                        <div id="brainExprLoading" style="text-align: center;">
+                            <img src="/web/images/wait.gif"><BR>
+                            Loading...
+                        </div>
+                    </div>
                     
                 </div>
                 <div class="exprCol" id="expRegionLiver" style="display:inline-block;">
                     <div style="width:100%;text-align: center;"><H2><span id="regionExprTitlel"></span></h2></div><BR>
-                    <div id="chartLiverregionExpr" style="width:98%;"></div>
+                    <div id="chartLiverregionExpr" style="width:98%;">
+                        <div id="liverExprLoading" style="text-align: center;">
+                            <img src="/web/images/wait.gif"><BR>
+                            Loading...
+                        </div>
+                    </div>
                 </div>
           </div>
     </div><!--collapsableReport end-->
