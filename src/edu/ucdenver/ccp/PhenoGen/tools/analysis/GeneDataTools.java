@@ -1585,7 +1585,7 @@ public class GeneDataTools {
             log.debug("done properties");
             
             //NEED TO MODIFY*************************
-            String ensDsn="DBI:mysql:database="+source.get("ucsc")+";host="+ucscHost+";port=3306;";
+            String ensDsn="DBI:mysql:database="+source.get("ensembl")+";host="+ensHost+";port=3306;";
             String ucscDsn="DBI:mysql:database="+source.get("ucsc")+";host="+ucscHost+";port=3306;";
             //NEED TO MODIFY******************************************************************************************************
             String tissue="Brain";

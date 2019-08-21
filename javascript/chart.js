@@ -1401,6 +1401,8 @@ chart=function(params){
 				data: {},
 				dataType: 'json',
     			success: function(data2){
+					$('div#brainExprLoading').hide();
+					$('div#liverExprLoading').hide();
         			that.parseMultipleGenes(data2);
         			if(ga){
 						ga('send','event','loadChartData',that.dataFile);
