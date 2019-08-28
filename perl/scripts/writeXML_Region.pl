@@ -187,7 +187,7 @@ sub createXMLFile
 	#
 
 	# Read in the arguments for the subroutine	
-	my($ucscDir, $outputDir, $folderName,$species,$type,$chromosome,$minCoord,$maxCoord,$arrayTypeID,$rnaDatasetID,$publicID,$genomeVer,$dsn,$usr,$passwd,$ucscDB,$ensHost,$ensPort,$ensUsr,$ensPasswd,$mdsn,$muser,$mpass)=@_;
+	my($ucscDir, $outputDir, $folderName,$species,$type,$chromosome,$minCoord,$maxCoord,$arrayTypeID,$rnaDatasetID,$publicID,$genomeVer,$dsn,$usr,$passwd,$ucscDB,$ensDB,$ensHost,$ensPort,$ensUsr,$ensPasswd,$mdsn,$muser,$mpass)=@_;
 	
 	my $scriptStart=time();
 	my $shortSpecies="";
@@ -1006,7 +1006,7 @@ sub createXMLFile
 		
 
     print "start read RefSeq\n";
-	my $ensDsn="DBI:mysql:database=".$ucscDB.";host=".$ensHost.";port=3306;";
+	my $ensDsn="DBI:mysql:database=".$ensDB.";host=".$ensHost.";port=3306;";
     my $refSeqRef=readRefSeqDataFromDB($chr,$species,$minCoord,$maxCoord,$ensDsn,$ensUsr,$ensPasswd);
     my %refSeqHOH=%$refSeqRef;
     createRefSeqXMLTrack(\%refSeqHOH,$outputDir."refSeq.xml");
@@ -1041,7 +1041,8 @@ sub createXMLFile
         my $arg21=$ARGV[20];
         my $arg22=$ARGV[21];
         my $arg23=$ARGV[22];
+	my $arg24=$ARGV[23];
 
-	createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9,$arg10,$arg11,$arg12,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18,$arg19,$arg20,$arg21,$arg22,$arg23);
+	createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9,$arg10,$arg11,$arg12,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18,$arg19,$arg20,$arg21,$arg22,$arg23,$arg24);
 
 exit 0;

@@ -127,7 +127,11 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                             int count = 0;
                             while (pItr.hasNext()) {
                                 Identifier tmpP = (Identifier) pItr.next();
-                                if(tmpP.getIdentifier().startsWith("PRN6")) {
+                                if( tmpP.getIdentifier().startsWith("PRN6")  &&
+                                        ( (tmpP.getIdentifier().startsWith("PRN6.4") && rnaDSIDs.equals("93,94")) ||
+                                                ( ! tmpP.getIdentifier().startsWith("PRN6.4") && rnaDSIDs.equals("21,23"))
+                                        )
+                                    ){
                                     if (count > 0) {
                                         phID = phID + ",";
                                     }else if(count==0){
