@@ -36,7 +36,6 @@ sub getFeatureInfo
 
 sub find
 {
-    
     my $lookForGene = shift;
     my $list=shift;
     my $ret=0;
@@ -1006,7 +1005,7 @@ sub createXMLFile
 		
 
     print "start read RefSeq\n";
-	my $ensDsn="DBI:mysql:database=".$ensDB.";host=".$ensHost.";port=3306;";
+	my $ensDsn="DBI:mysql:database=".$ucscDB.";host=".$ensHost.";port=3306;";
     my $refSeqRef=readRefSeqDataFromDB($chr,$species,$minCoord,$maxCoord,$ensDsn,$ensUsr,$ensPasswd);
     my %refSeqHOH=%$refSeqRef;
     createRefSeqXMLTrack(\%refSeqHOH,$outputDir."refSeq.xml");

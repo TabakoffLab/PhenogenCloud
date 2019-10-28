@@ -223,7 +223,7 @@ sub getFeatureInfo
 sub createXMLFile
 {
 	# Read in the arguments for the subroutine	
-	my($outputDir,$species,$type,$panel,$chromosome,$minCoord,$maxCoord,$publicID,$binSize,$tissue,$genomeVer,$dsn,$usr,$passwd,$ensDsn,$ensUsr,$ensPasswd,$ucscDsn,$ucscUsr,$ucscPasswd,$mongoDsn,$mongoUser,$mongoPasswd)=@_;
+	my($outputDir,$species,$type,$panel,$chromosome,$minCoord,$maxCoord,$publicID,$binSize,$tissue,$genomeVer,$dsn,$usr,$passwd,$ensDsn,$ensHost,$ensUsr,$ensPasswd,$ucscDsn,$ucscUsr,$ucscPasswd,$mongoDsn,$mongoUser,$mongoPasswd)=@_;
 	
 	my $scriptStart=time();
 	
@@ -233,7 +233,6 @@ sub createXMLFile
 		#$panel="BNLX/SHRH";
 		$arrayTypeID=22;
 	}
-	
 	if(index($type,"illumina")>-1 or index($type,"helicos")>-1 ){
 		unlink $outputDir."bincount.".$binSize.".".$type.".xml";
 		my $rnaCountStart=time();
@@ -310,7 +309,7 @@ sub createXMLFile
 			$chromosome=substr($chromosome,3);
 		}
                 open OUT,">".$outputDir.$minCoord."_".$maxCoord.".seq";
-		my $seq=readEnsemblSeqFromDB($chromosome,$species,$minCoord,$maxCoord,$ensDsn,$ensUsr,$ensPasswd);
+		my $seq=readEnsemblSeqFromDB($chromosome,$species,$minCoord,$maxCoord,$ensHost,$ensUsr,$ensPasswd);
 		print OUT $seq;
 		close OUT;
 	}elsif(index($type,"spliceJnct")>-1){
@@ -595,12 +594,12 @@ sub createXMLFile
 			my $ranEast=0;
 	
 			eval{
-			    print "trying local\n$ensDsn\n";
-			    my $tmpInd=index($ensDsn,"host=")+5;
-			    my $host=substr($ensDsn,$tmpInd,index($ensDsn,";",$tmpInd)-$tmpInd);
-			    print "$host\n";
+			    #print "trying local\n$ensDsn\n";
+			    #my $tmpInd=index($ensDsn,"host=")+5;
+			    #my $host=substr($ensDsn,$tmpInd,index($ensDsn,";",$tmpInd)-$tmpInd);
+			    #print "$host\n";
 			    $dbAdaptorNum =$registry->load_registry_from_db(
-				-host => $host, #'ensembldb.ensembl.org', # alternatively 'useastdb.ensembl.org'
+				-host => $ensHost, #'ensembldb.ensembl.org', # alternatively 'useastdb.ensembl.org'
 				-port => 3306,
 				-user => $ensUsr,
 				-pass => $ensPasswd
@@ -891,7 +890,8 @@ sub createXMLFile
     my $arg21=$ARGV[20];
     my $arg22=$ARGV[21];
     my $arg23=$ARGV[22];
+	my $arg24=$ARGV[23];
 
-	createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9,$arg10,$arg11,$arg12,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18,$arg19,$arg20,$arg21,$arg22,$arg23);
+	createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9,$arg10,$arg11,$arg12,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18,$arg19,$arg20,$arg21,$arg22,$arg23,$arg24);
 
 exit 0;
