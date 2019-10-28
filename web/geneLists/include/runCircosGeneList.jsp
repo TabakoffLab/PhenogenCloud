@@ -50,7 +50,7 @@
     }
     if(request.getParameter("version")!=null){
         HRDPversion = request.getParameter("version");
-        if(HRDPversion=="1"){
+        if(HRDPversion.equals("1")){
             rnaDSIDs="21,23";
         }
     }

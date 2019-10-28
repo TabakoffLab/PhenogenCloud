@@ -387,6 +387,7 @@ public class Resource {
                 List<Resource> pubResources5 = Arrays.asList(getPublicationResources5());
                 List<Resource> pubResources6 = Arrays.asList(getPublicationResources6());
                 List<Resource> pubResources7 = Arrays.asList(getPublicationResources7());
+                List<Resource> pubResources8 = Arrays.asList(getPublicationResources8());
                 List<Resource> gtfResources = Arrays.asList(getGTFResources());
 		List<Resource> allResources = new ArrayList<Resource>(expressionResources);
 		allResources.addAll(markerResources);
@@ -400,6 +401,7 @@ public class Resource {
                 allResources.addAll(pubResources5);
                 allResources.addAll(pubResources6);
                 allResources.addAll(pubResources7);
+                allResources.addAll(pubResources8);
                 allResources.addAll(gtfResources);
 		Resource[] allResourcesArray = myObjectHandler.getAsArray(allResources, Resource.class);
 		return allResourcesArray;
@@ -418,15 +420,16 @@ public class Resource {
 		Dataset myDataset = new Dataset();
 		Dataset BXDRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.BXDRI_DATASET_NAME);
 		Dataset HXBRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_DATASET_NAME);
-        	Dataset Inbred_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.INBRED_DATASET_NAME);
-        	Dataset LXSRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.LXSRI_DATASET_NAME);
-        	Dataset HXBRI_Brain_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_BRAIN_EXON_DATASET_NAME);
-        	Dataset HXBRI_Heart_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_HEART_EXON_DATASET_NAME);
-        	Dataset HXBRI_Liver_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_LIVER_EXON_DATASET_NAME);
-        	Dataset HXBRI_Brown_Adipose_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_BROWN_ADIPOSE_EXON_DATASET_NAME);
+		Dataset Inbred_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.INBRED_DATASET_NAME);
+		Dataset LXSRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.LXSRI_DATASET_NAME);
+		Dataset HXBRI_Brain_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_BRAIN_EXON_DATASET_NAME);
+		Dataset HXBRI_Heart_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_HEART_EXON_DATASET_NAME);
+		Dataset HXBRI_Liver_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_LIVER_EXON_DATASET_NAME);
+		Dataset HXBRI_Brown_Adipose_Exon_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_BROWN_ADIPOSE_EXON_DATASET_NAME);
 
 		// Setup the BXDRI stuff
 		String resourcesDir = BXDRI_Dataset.getResourcesDir();
+        log.debug("BXDRI"+resourcesDir);
 		resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
 		String datasetDir = BXDRI_Dataset.getPath();
 
@@ -444,7 +447,7 @@ public class Resource {
 		heritabilityFileList.add(new HeritabilityDataFile("Heritability file from RMA normalization plus probe mask", resourcesDir + "herits.BXD.zip","Mm9"));
 		HeritabilityDataFile[] heritabilityFileArray = myObjectHandler.getAsArray(heritabilityFileList, HeritabilityDataFile.class);
 
-                resourceList.add(new Resource(257, "Mouse", BXDRI_PANEL, BXDRI_Dataset, "Whole Brain", myArray.MOUSE430V2_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
+		resourceList.add(new Resource(257, "Mouse", BXDRI_PANEL, BXDRI_Dataset, "Whole Brain", myArray.MOUSE430V2_ARRAY_TYPE,  expressionFileArray, eQTLFileArray, heritabilityFileArray,null));
 
 		// Setup the LXSRI stuff
 		resourcesDir = LXSRI_Dataset.getResourcesDir();
@@ -508,6 +511,7 @@ public class Resource {
 
 		// Setup the Inbred stuff
 		resourcesDir =Inbred_Dataset.getResourcesDir();
+        log.debug("mice"+resourcesDir);
                 resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
 		datasetDir = Inbred_Dataset.getPath();
 
@@ -548,6 +552,7 @@ public class Resource {
 
 		// Setup the HXBRI Brain Exon stuff
 		resourcesDir = HXBRI_Brain_Exon_Dataset.getResourcesDir();
+        log.debug("HXBRIBrain:"+resourcesDir);
                 resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
 		datasetDir = HXBRI_Brain_Exon_Dataset.getPath();
 
@@ -618,6 +623,7 @@ public class Resource {
 
 		// Setup the HXBRI Heart Exon stuff
 		resourcesDir = HXBRI_Heart_Exon_Dataset.getResourcesDir();
+        log.debug("HXBRIHeart"+resourcesDir);
                 resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
 		datasetDir = HXBRI_Heart_Exon_Dataset.getPath();
 
@@ -691,7 +697,9 @@ public class Resource {
 
 		// Setup the HXBRI Liver Exon stuff
 		resourcesDir = HXBRI_Liver_Exon_Dataset.getResourcesDir();
-                resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
+		log.debug("HXBRILiver"+resourcesDir);
+		resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
+
 		datasetDir = HXBRI_Liver_Exon_Dataset.getPath();
 
 		expressionFileList = new ArrayList<ExpressionDataFile>();
@@ -760,6 +768,7 @@ public class Resource {
 
 		// Setup the HXBRI Brown Adipose Exon stuff
 		resourcesDir = HXBRI_Brown_Adipose_Exon_Dataset.getResourcesDir();
+        log.debug("HXBRIBAT"+resourcesDir);
                 resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
 		datasetDir = HXBRI_Brown_Adipose_Exon_Dataset.getPath();
 
@@ -847,6 +856,7 @@ public class Resource {
 
 		// Setup the BXDRI stuff
 		String resourcesDir = BXDRI_Dataset.getResourcesDir();
+        log.debug("BXD:"+resourcesDir);
                 resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
 		String datasetDir = BXDRI_Dataset.getPath();
 
@@ -1304,6 +1314,20 @@ public class Resource {
             Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
             return resourceArray;
         }
+
+    public Resource[] getPublicationResources8() {
+        log.debug("in getPublicationResources8");
+        String pubFilePath="/downloads/Publication/kordas/";
+        List<Resource> resourceList = new ArrayList<Resource>();
+
+        PublicationFile[] fileList = new PublicationFile[1];
+        fileList[0]=new PublicationFile("LXS Brain - miRNA eQTLs",pubFilePath+"full_mieqtl_table.csv");
+
+        resourceList.add(new Resource(210, "Mouse", "ILS/ISS(LXS)","miRNA eQTLs",fileList,"\"Insight into genetic regulation of miRNA in mouse brain\" by G. Kordas et. al."));
+
+        Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
+        return resourceArray;
+    }
          
 	/**
 	 * Returns one Resource object from an array of Resource objects

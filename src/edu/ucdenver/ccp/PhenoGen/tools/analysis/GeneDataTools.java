@@ -1583,7 +1583,6 @@ public class GeneDataTools {
                 genome="mm10";
             }*/
             log.debug("done properties");
-            
             //NEED TO MODIFY*************************
             String ensDsn="DBI:mysql:database="+source.get("ensembl")+";host="+ensHost+";port=3306;";
             String ucscDsn="DBI:mysql:database="+source.get("ucsc")+";host="+ucscHost+";port=3306;";
@@ -1598,7 +1597,7 @@ public class GeneDataTools {
             }
             
             //construct perl Args
-            String[] perlArgs = new String[25];
+            String[] perlArgs = new String[26];
             perlArgs[0] = "perl";
             perlArgs[1] = perlDir + "writeXML_Track.pl";
             perlArgs[2] = tmpOutputDir;
@@ -1620,14 +1619,15 @@ public class GeneDataTools {
             perlArgs[14] = dbUser;
             perlArgs[15] = dbPassword;
             perlArgs[16] = ensDsn;
-            perlArgs[17] = ensUser;
-            perlArgs[18] = ensPassword;
-            perlArgs[19] = ucscDsn;
-            perlArgs[20] = ucscUser;
-            perlArgs[21] = ucscPassword;
-            perlArgs[22] = mongoHost;
-            perlArgs[23] = mongoUser;
-            perlArgs[24] = mongoPassword;
+            perlArgs[17] = ensHost;
+            perlArgs[18] = ensUser;
+            perlArgs[19] = ensPassword;
+            perlArgs[20] = ucscDsn;
+            perlArgs[21] = ucscUser;
+            perlArgs[22] = ucscPassword;
+            perlArgs[23] = mongoHost;
+            perlArgs[24] = mongoUser;
+            perlArgs[25] = mongoPassword;
 
             //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list
             String[] envVar=perlEnvVar.split(",");
@@ -3208,15 +3208,13 @@ public class GeneDataTools {
             rs.close();
             ps.close();
             String qtlQuery="select aep.transcript_cluster_id,aep.chromosome_id,aep.strand,aep.psstart,aep.psstop,aep.pslevel,lse.snp_id, lse.pvalue " +
-                    "from location_specific_eqtl lse " +
-                    "inner join affy_exon_probeset aep on aep.probeset_id=lse.probe_id " +
-                    //"where lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
-                    //"where lse.pvalue between "+(-Math.log10(pvalue))+" and 5.0 " +
-                    "where lse.snp_id in ("+sb.toString()+") " +
-                    "and aep.genome_id='"+genomeVer+"' " +
+                    "from affy_exon_probeset aep " +
+                    "inner join location_specific_eqtl lse on lse.probe_id=aep.probeset_id " +
+                    "where  aep.genome_id='"+genomeVer+"' " +
                     "and aep.updatedlocation='Y' " +
                     "and aep.psannotation='transcript' " +
-                    "and aep.array_type_id="+arrayTypeID;
+                    "and aep.array_type_id="+arrayTypeID+" "+
+                    "and lse.snp_id in ( "+sb.toString()+")";
 
                 if(!level.equals("All")){
                     if(level.equals("core;extended;full")){

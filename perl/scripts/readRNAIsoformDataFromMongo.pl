@@ -37,7 +37,7 @@ sub addChr{
 
 sub getRNADatasetFromDB{
     my($organism,$publicUserID,$panel,$tissue,$genomeVer,$dsn,$usr,$passwd,$version)=@_;
-    my $ret=0;
+    my %ret;
     if($organism eq "Rat"){
         $organism="Rn";
     }elsif($organism eq "Mouse"){
@@ -54,10 +54,10 @@ sub getRNADatasetFromDB{
         $query=$query."and rd2.tissue = '".$tissue."' "; 
     }
     $query=$query." and rd2.strain_panel like '".$panel."' ";
-    if($$version==0 || $$version eq ""){
+    if($version==0 || $version eq ""){
             $query=$query." order by build_version DESC";
     }else{
-            $query=$query." and rd2.build_version='".$$version."'";
+            $query=$query." and rd2.build_version='".$version."'";
     }
 
     print $query." order by rd2.build_version\n";
@@ -71,28 +71,26 @@ sub getRNADatasetFromDB{
 	my %tissueVer;
     # BIND TABLE COLUMNS TO VARIABLES
     $query_handle->bind_columns(\$dsid,\$ver,\$dbtissue);
-    my $c=0;
     while($query_handle->fetch()){
-        print "DatasetID=$dsid\nver=$ver\n";
-		if(exists $tissueVer{$dbtissue}){
 
-		}else {
-			if ($c == 0) {
-				$ret = $dsid;
-				$$version = $ver;
+		if($version==-1){ ## return all versions
+			ret{$dsid}={ 'ver'=> $ver, 'tissue'=>$dbtissue };
+			print "DatasetID=$dsid\nver=$ver\n";
+		}else{ ## return the specific version or first version
+			if(exists $tissueVer{$dbtissue}){
+
+			}else{
+				$tissueVer{$dbtissue}=$ver;
+				$ret{$dsid}={ 'ver'=> $ver, 'tissue'=>$dbtissue };
+				print "DatasetID=$dsid\nver=$ver\n";
 			}
-			else {
-				$ret = $ret . "," . $dsid;
-			}
-			$c++;
 		}
     }
     $query_handle->finish();
 	$connect->disconnect();
-    return $ret;
+    return \%ret;
 }
 1;
-
 sub getSmallRNADatasetFromDB{
     my($organism,$publicUserID,$panel,$tissue,$genomeVer,$dsn,$usr,$passwd,$version)=@_;
     my $ret=0;
@@ -155,8 +153,19 @@ sub readRNAIsoformDataFromDB{
 	my($geneChrom,$organism,$publicUserID,$panel,$geneStart,$geneStop,$dsn,$usr,$passwd,$shortName, $tmpType,$tissue,$version,$genomeVer)=@_;   
 	
 
-    my $dsid=getRNADatasetFromDB($organism,$publicUserID,$panel,$tissue,$genomeVer,$dsn,$usr,$passwd,$version);
+    my $dsRef=getRNADatasetFromDB($organism,$publicUserID,$panel,$tissue,$genomeVer,$dsn,$usr,$passwd,$version);
+	my %ds=%$dsRef;
+	print (%ds."\n");
 	print "$organism:$publicUserID:$panel:$tissue:$genomeVer,$version\n";
+	my @dsIDs=keys %ds;
+	my $dsid="";
+	foreach my $rID (@dsIDs){
+		if($dsid eq ""){
+			$dsid=$rID;
+		}else{
+			$dsid=$dsid.",".$rID;
+		}
+	}
 	print "rnaDSID:$dsid\n";
 
 	#open PSFILE, $psOutputFileName;//Added to output for R but now not needed.  R will read in XML file
