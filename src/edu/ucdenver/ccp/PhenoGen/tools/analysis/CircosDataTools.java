@@ -70,7 +70,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
     File eqtlFile=new File(finalPathEQTL);
     File geneDirs=new File(path);
     long curTimeMinusOneWeek=(new Date()).getTime() - (7*24*60*60*1000);
-    if( ! geneFile.exists() || geneFile.lastModified() < curTimeMinusOneWeek || ! eqtlFile.exists() || eqtlFile.lastModified() < curTimeMinusOneWeek) {
+    if( ! geneFile.exists() || geneFile.lastModified() < curTimeMinusOneWeek || geneFile.length()==0 || ! eqtlFile.exists() || eqtlFile.lastModified() < curTimeMinusOneWeek || eqtlFile.length()==0 ) {
         log.debug("\nRunning GeneList code\n");
         if(!geneDirs.exists()){
             geneDirs.mkdirs();
@@ -127,7 +127,11 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                             int count = 0;
                             while (pItr.hasNext()) {
                                 Identifier tmpP = (Identifier) pItr.next();
-                                if(tmpP.getIdentifier().startsWith("PRN6")) {
+                                if( tmpP.getIdentifier().startsWith("PRN6") /* &&
+                                        ( (tmpP.getIdentifier().startsWith("PRN6.4") && rnaDSIDs.equals("93,94")) ||
+                                                ( ! tmpP.getIdentifier().startsWith("PRN6.4") && rnaDSIDs.equals("21,23"))
+                                        )*/
+                                    ){
                                     if (count > 0) {
                                         phID = phID + ",";
                                     }else if(count==0){
@@ -139,6 +143,8 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                                     }
                                     phID = phID + tmpP.getIdentifier();
                                     count++;
+                                }else{
+                                    log.debug("ID:"+tmpP.getIdentifier()+":rnads:"+rnaDSIDs);
                                 }
                             }
                             if (id.equals("")) {

@@ -57,6 +57,7 @@ public class AsyncBrowserRegion extends Thread {
         this.arrayTypeID=arrayTypeID;
         this.rnaDatasetID=rnaDS_ID;
         this.ucscDB=ucscDB;
+
         this.ensemblPath=ensemblPath;
         this.usageID=usageID;
         this.org=organism;
@@ -124,7 +125,7 @@ public class AsyncBrowserRegion extends Thread {
             String mongoPassword=myMongoProperties.getProperty("PASSWORD");
 
             //construct perl Args
-            String[] perlArgs = new String[25];
+            String[] perlArgs = new String[26];
             perlArgs[0] = "perl";
             perlArgs[1] = perlDir + "writeXML_Region.pl";
             perlArgs[2] = "blank";
@@ -150,13 +151,14 @@ public class AsyncBrowserRegion extends Thread {
             perlArgs[15] = dbUser;
             perlArgs[16] = dbPassword;
             perlArgs[17] = ucscDB;
-            perlArgs[18] = ensHost;
-            perlArgs[19] = ensPort;
-            perlArgs[20] = ensUser;
-            perlArgs[21] = ensPassword;
-            perlArgs[22] = mongoHost;
-            perlArgs[23] = mongoUser;
-            perlArgs[24] = mongoPassword;
+            perlArgs[18] = ensemblPath;
+            perlArgs[19] = ensHost;
+            perlArgs[20] = ensPort;
+            perlArgs[21] = ensUser;
+            perlArgs[22] = ensPassword;
+            perlArgs[23] = mongoHost;
+            perlArgs[24] = mongoUser;
+            perlArgs[25] = mongoPassword;
 
 
             //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list

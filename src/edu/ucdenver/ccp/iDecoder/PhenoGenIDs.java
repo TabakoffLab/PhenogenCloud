@@ -13,11 +13,11 @@ import org.apache.log4j.Logger;
 public class PhenoGenIDs{
 
   private Logger log=null;
-  private int datasetID;
+  private String datasetID;
   private String filename;
   private Connection conn;
 
-  public PhenoGenIDs (int datasetID,String filename, Connection conn) {
+  public PhenoGenIDs (String datasetID,String filename, Connection conn) {
 	log = Logger.getRootLogger();
         this.datasetID=datasetID;
         this.filename=filename;
@@ -30,9 +30,12 @@ public class PhenoGenIDs{
 	String query = "select gene_id,isoform_id,c.name,trstart,trstop,strand,rta.annotation "+
                 "from rna_transcripts rt "+
                 "inner join CHROMOSOMES c on c.CHROMOSOME_ID=rt.CHROMOSOME_ID "+
-                "left outer join RNA_TRANSCRIPTS_ANNOT rta on rta.RNA_TRANSCRIPT_ID=rt.RNA_TRANSCRIPT_ID and rta.SOURCE_ID=13 "+
-                "where rt.RNA_DATASET_ID="+datasetID; 
- 
+                "left outer join RNA_TRANSCRIPTS_ANNOT rta on rta.RNA_TRANSCRIPT_ID=rt.RNA_TRANSCRIPT_ID and rta.SOURCE_ID=13 ";
+	if(datasetID.indexOf(",")>0) {
+        query=query+"where rt.RNA_DATASET_ID in (" + datasetID+")";
+    } else{
+	    query=query+ "where rt.RNA_DATASET_ID=" + datasetID;
+    }
 	log.debug("in getIDs");
 	PreparedStatement pstmt = null;
         ResultSet rs=null;
@@ -54,7 +57,7 @@ public class PhenoGenIDs{
 
 	try {
 		String idFileName = "/data/iDecoder/InputFiles/PhenoGen/"+filename;
-		
+
 		PhenoGenIDs pgi = new PhenoGenIDs(datasetID,filename,conn);
 
         	ResultSet rs= pgi.getIDs(conn);

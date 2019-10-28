@@ -1572,7 +1572,7 @@ chart=function(params){
 			for(var k=0;k<list.length;k++){
 				//console.log(k);
 				id=list[k].GENEID;
-				
+				id=id.replace(/./g,"_")
 				tmp={"id":id};
 				if(typeof list[k].HERIT!=='undefined'){
 					tmp.herit=list[k].HERIT;

@@ -24,6 +24,7 @@
                         </div>
                         <H2 style="font-weight: bold;font-size:20px;">Rat Genomics Workshop 8/2-8/3</H2>
                         <div style="margin-left:5px;">
+                            <H3>Look for another workshop spring/summer 2020</H3>
                         <a href="/downloads/SuRGeFlyer_2019.pdf">Summer of Rat Genomics and Genetics Workshop - Aug 2nd-3rd, 2019 - Colorado - NIDA Center for Omics, Systems Genetics and the Addictome</a><BR>
                             Come to Colorado in August for a 2-day hands-on workshop on web-based tools for rat genetics/genomics including RGD, GeneNetwork2, PhenoGen, GeneWeaver, and several others.  Offered by the NIDA Center for Omics, Systems Genetics, and the Addictiome.<BR>
                             <a href="https://github.com/OSGA-OPAR/SuRGe_2019">More Info</a> <BR>

@@ -79,7 +79,7 @@ public class FileGetter extends HttpServlet {
 	files.add(new String[] {affyExonMain, mainDir + "Affymetrix/", "RaEx-1_0-st-v1.na31.rn4.probeset.csv.zip"});
 	files.add(new String[] {affyExonMain, mainDir + "Affymetrix/", "RaEx-1_0-st-v1.na31.rn4.probeset.csv.zip"});
 */
-	files.add(new String[] {flybaseMain, mainDir + "FlyBase/", "fbgn_NAseq_Uniprot_fb_2018_06.tsv.gz"});
+	/*files.add(new String[] {flybaseMain, mainDir + "FlyBase/", "fbgn_NAseq_Uniprot_fb_2018_06.tsv.gz"});
 	files.add(new String[] {flybaseMain, mainDir + "FlyBase/", "gene_map_table_fb_2018_06.tsv.gz"});
         
         //OLD Report - as of 4/13/2017 this no longer is available.
@@ -104,9 +104,9 @@ public class FileGetter extends HttpServlet {
 	System.out.println("getting MGIFile.txt");
 	new JacksonLab().run();
 	System.out.println("done getting MGIFile.txt");
-
+*/
 	System.out.println("getting PhenoGen_MergedIDs_rn6.txt");
-	new PhenoGenIDs(phenogenMergedDatasetID,phenogenFilename,dbConn).run();
+	new PhenoGenIDs("36,95",phenogenFilename,dbConn).run();
 	System.out.println("done getting PhenoGen_MergedIDs_rn6.txt");
         dbConn.close();
   } 

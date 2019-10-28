@@ -86,7 +86,8 @@ sub readTranscriptAnnotationDataFromDB{
                         }
                 }
                 $query=$query.") order by rta.rna_transcript_id";
-	
+
+	print ($query."\n");
 	my $query_handle = $connect->prepare($query) or die (" RNA annotation query prepare failed \n");
 
 # EXECUTE THE QUERY

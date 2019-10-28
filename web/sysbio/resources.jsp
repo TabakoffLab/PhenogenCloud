@@ -45,6 +45,8 @@
         Resource[] myPublicationResources5 = myResource.getPublicationResources5();
         Resource[] myPublicationResources6 = myResource.getPublicationResources6();
         Resource[] myPublicationResources7 = myResource.getPublicationResources7();
+		Resource[] myPublicationResources8 = myResource.getPublicationResources8();
+
         Resource[] myGTFResources=myResource.getGTFResources();
 	// Sort by organism first, dataset second (seems backwards!)
 	myExpressionResources = myResource.sortResources(myResource.sortResources(myExpressionResources, "dataset"), "organism");
@@ -102,14 +104,14 @@
 pageDescription="Data resources available for downloading includes Microarrays, Sequencing, and GWAS data";%>
 <%@ include file="/web/common/header_noBorder.jsp"  %>
 <% if(loggedIn && !(userLoggedIn.getUser_name().equals("anon")) ){%>
-<div style="width:100%;">
-        <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
-            <span id="detail1" class="detailMenu selected" name="public">Public Files</span>
-            
-            <span id="detail2" class="detailMenu" name="members">Members Files</span>
-            
-        </div>
-</div>
+	<div style="width:100%;">
+			<div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
+				<span id="detail1" class="detailMenu selected" name="public">Public Files</span>
+
+				<span id="detail2" class="detailMenu" name="members">Members Files</span>
+
+			</div>
+	</div>
 <%}%>
 <script>
     $("#wait1").hide();
@@ -505,7 +507,32 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 	<form	method="post" 
 		action="resources.jsp" 
 		enctype="application/x-www-form-urlencoded"
-		name="resources">   
+		name="resources">
+		<div class="title">Data Files for "Insight into genetic regulation of miRNA in mouse brain" by Kordas, G. et. al. (submitted, BMC Genomics)
+		</div>
+		<table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
+			<thead>
+			<tr class="col_title">
+				<th>Data</th>
+				<TH>Files</TH>
+			</tr>
+			</thead>
+			<tbody>
+			<% for (Resource resource: myPublicationResources8) { %>
+			<tr id="<%=resource.getID()%>">
+
+				<TD><%=resource.getDescription()%></TD>
+				<td class="actionIcons">
+					<div class="linkedImg download" type="pub"><div>
+				</td>
+			</tr>
+			<% } %>
+			<TR>
+				<TD><a href="https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE125953" target="_blank">Small RNA-Seq on Geo</a></TD>
+			</TR>
+			</tbody>
+		</table>
+		<BR><BR>
             <div class="title">Data Files for "Condition-adaptive fusion graphical lasso (CFGL): an adaptive procedure for inferring condition-specific gene co-expression network." by Lyu, Y., Xue, L., Zhang, F., Koch, H., Saba, L., Kechris, K., & Li, Q. (in press, PLoS Computational Biology)
                </div>
 		      <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
@@ -757,8 +784,10 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 		});
 		setupPage();
                 setTimeout("setupMain()", 100);
+				<% if(loggedIn && !(userLoggedIn.getUser_name().equals("anon")) ){%>
                 setTimeout(getMyFiles, 50);
                 setTimeout(getSharedFiles, 50);
+				<%}%>
                 $(".detailMenu").on("click",function(){
                     var prev=$(".detailMenu.selected").attr("name");
                     $(".detailMenu.selected").removeClass("selected");

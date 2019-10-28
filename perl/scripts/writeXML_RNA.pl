@@ -326,30 +326,30 @@ sub createXMLFile
 	    # Get all the genes.  Theoretically there should only be one, but possibly there might be more????
 	    my $genes = $tmpslice->get_all_Genes();
 	    while(my $tmpgene=shift @{$genes}){
-		my $curstart = $tmpgene->seq_region_start();
-		my $curstop = $tmpgene->seq_region_end();
-		if($firstGeneSymbol eq ""){
-			$firstGeneSymbol = $tmpgene->external_name();
-		}
-		$chr=$tmpgene->slice->seq_region_name();
-		print "on chromosome:".$chr."\n";
-		if($curstart<=$curstop){
-		    if($curstart<$minCoord){
-			$minCoord=$curstart;
-		    }
-		    if($curstop>$maxCoord){
-			$maxCoord=$curstop;
-		    }
-		}else{
-		    if($curstop<$minCoord){
-			$minCoord=$curstop;
-		    }
-		    if($curstart>$maxCoord){
-			$maxCoord=$curstart;
-		    }
-		}
-		push(@genelist, $tmpgene);
-		push(@slicelist, $tmpslice);
+			my $curstart = $tmpgene->seq_region_start();
+			my $curstop = $tmpgene->seq_region_end();
+			if($firstGeneSymbol eq ""){
+				$firstGeneSymbol = $tmpgene->external_name();
+			}
+			$chr=$tmpgene->slice->seq_region_name();
+			#print "on chromosome:".$chr."\n";
+			if($curstart<=$curstop){
+				if($curstart<$minCoord){
+				$minCoord=$curstart;
+				}
+				if($curstop>$maxCoord){
+				$maxCoord=$curstop;
+				}
+			}else{
+				if($curstop<$minCoord){
+				$minCoord=$curstop;
+				}
+				if($curstart>$maxCoord){
+				$maxCoord=$curstart;
+				}
+			}
+			push(@genelist, $tmpgene);
+			push(@slicelist, $tmpslice);
 	    }
 	    #print "gene size found:".@{$genes}."\n";
 	    print "gene list:".@genelist."\n";
@@ -359,7 +359,7 @@ sub createXMLFile
 	    $panel='ILS/ISS';
 	}
         if($prevMin!=$minCoord or $prevMax!=$maxCoord){
-	        $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,$panel,$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any","Any",0);
+	        $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,$panel,$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"Any","Any",0,$genomeVer);
 		my $tmpGeneArray=$$isoformHOH{Gene};
 		foreach my $tmpgene ( @$tmpGeneArray){
 		    my $tmpTransArray=$$tmpgene{TranscriptList}{Transcript};
@@ -397,7 +397,7 @@ sub createXMLFile
 
 	    
 	    
-	    my $refliverHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Liver",0);
+	    my $refliverHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Liver",0,$genomeVer);
 	    %liverHOH=%$refliverHOH;
 	    
 
@@ -480,7 +480,7 @@ sub createXMLFile
 		}
 	    }
 	    
-	    my $refheartHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Heart",0);
+	    my $refheartHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Heart",0,$genomeVer);
 	    %heartHOH=%$refheartHOH;
 
 	    #process RNA genes/transcripts and assign probesets.
@@ -558,7 +558,7 @@ sub createXMLFile
 	    }
 	    
 	    my $iTimeStart=time();
-	    my $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1," in ('PolyA+','NonPolyA+')","Brain",0);
+	    my $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1," in ('PolyA+','NonPolyA+')","Brain",0,$genomeVer);
             #my $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Brain");
 	    %brainHOH=%$isoformHOH;
 	    #$tmpGeneArray=$$isoformHOH{Gene};
@@ -640,7 +640,7 @@ sub createXMLFile
 		}
 	    }
 	}elsif($shortSpecies eq 'Mm'){
-	    my $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'ILS/ISS',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Brain",0);
+	    my $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'ILS/ISS',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Brain",0,$genomeVer);
 	    %brainHOH=%$isoformHOH;  
 	    #process RNA genes/transcripts and assign probesets.
 	    my $tmpGeneArray=$$isoformHOH{Gene};

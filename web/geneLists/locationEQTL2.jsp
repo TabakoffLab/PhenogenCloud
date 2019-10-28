@@ -196,6 +196,26 @@
         document.getElementById("wait2").style.display = 'none';
         //document.getElementById("circosError1").style.display = 'none';
     }
+    function geteQTLTable(){
+        $.ajax({
+            url: "/web/geneLists/include/getEQTLGeneListTable.jsp",
+            type: 'GET',
+            cache: false,
+            data: {cutoffValue:pval,tissues:tisList,chromosomes:chrList,path:path,genomeVer:genomeVer,source:source,version:HRDPversion},
+            dataType: 'html',
+            beforeSend: function(){
+
+            },
+            complete: function(){
+
+            },
+            success: function(data2) {
+                $('div#circosEQTLTable').html(data2);
+            },
+            error: function(xhr, status, error) {
+            }
+        });
+    }
     function runCircos(){
         $('#wait2').show();
         var chrList = "";
@@ -231,6 +251,9 @@
             },
             success: function(data2){
                 $("#forIframe").load(data2.path,{},function(){
+                    setTimeout(function(){
+                        geteQTLTable();
+                    },2000);
                     console.log(d3.selectAll(".circosGene"))
                     d3.selectAll(".circosGene").each(function() {
                         d3.select(this).on("mouseover", function () {
@@ -282,7 +305,8 @@
 
                         }).style("cursor","pointer");
                     });
-                    panZoom = svgPanZoom('#forIframe');
+                    //panZoom = svgPanZoom('#forIframe');
+
                 });
             },
             error: function(xhr, status, error) {
@@ -506,7 +530,7 @@
 %>
 
 
-<div style="text-align:center;">
+<div style="text-align:center;overflow: auto;">
 
     <div style="font-size:18px; font-weight:bold; background-color:#47c647; color:#FFFFFF;width:100%;text-align:left;">
         <span class="trigger less triggerEC" id="circosOption1" name="circosOption" >eQTL Image Options</span>
@@ -727,10 +751,12 @@
     </script>
     <div style="position:relative;top:-50px;width:100%;"><h2><span id="typeLabel">RNA-Seq</span> Based Gene Level eQTLs</h2></div>
     <div id="circosStatus"></div>
-    <div id="forIframe" style="display:inline-block;text-align:center;/*position:relative;top:-37px;left:50px;*/width:90%;height:950px;border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px; padding-bottom:75px;">
+    <div id="forIframe" style="display:inline-block;text-align:center;/*position:relative;top:-37px;left:50px;*/width:90%;height:950px;max-height: 950px;border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px; padding-bottom:75px;">
 
     </div>
+    <div id="circosEQTLTable">
 
+    </div>
 
 </div>
 
