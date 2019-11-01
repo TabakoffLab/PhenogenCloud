@@ -179,13 +179,13 @@ console.log("urlprefix:"+urlprefix);
         <div id="collapsableImage" class="geneimage" >
 
             <div id="geneImage" class="ucscImage"  style="display:inline-block;width:100%;">
-                <script src="javascript/gdb.2.8.0.min.js" type="text/javascript"></script>
+                <!--<script src="javascript/gdb.2.8.0.min.js" type="text/javascript"></script>-->
 
-            <!--<script src="javascript/GenomeDataBrowser2.8.0.js" type="text/javascript"></script>
+            <script src="javascript/GenomeDataBrowser2.8.0.js" type="text/javascript"></script>
             <script src="javascript/GenomeReport2.6.0.js" type="text/javascript"></script>
             <script src="javascript/GenomeViewMenu2.6.1.js" type="text/javascript"></script>
             <script src="javascript/GenomeTrackMenu2.6.1.js" type="text/javascript"></script>
-            <script src="javascript/wgcnaBrowser1.3.6.js" type="text/javascript"></script>-->
+            <script src="javascript/wgcnaBrowser1.3.6.js" type="text/javascript"></script>
            </div>
         </div>
 

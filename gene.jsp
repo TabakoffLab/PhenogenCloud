@@ -1,18 +1,19 @@
 <%@ include file="/web/common/anon_session_vars.jsp" %>
+
 <%
     log.debug("before extras");
 
 
     extrasList.add("jquery.dataTables.1.10.9.min.js");
+    extrasList.add("jquery-ui-1.12.1.min.js");
     extrasList.add("jquery.cookie.js");
     extrasList.add("fancyBox/helpers/jquery.fancybox-thumbs.js");
     extrasList.add("fancyBox/jquery.fancybox.js");
-
     extrasList.add("spectrum.js");
     extrasList.add("svg-pan-zoom.3.5.1.min.js");
     extrasList.add("jquery.twosidedmultiselect.js");
-
     //extrasList.add("d3.v3.5.16.min.js");
+    extrasList.add("jquery-ui-1.12.1.min.css");
     extrasList.add("tableExport/tableExport.js");
     extrasList.add("tableExport/jquery.base64.js");
     extrasList.add("tabs.css");
@@ -631,55 +632,11 @@
     for any inconvenience.
 </div>
 
-<div id="inst" style="text-align:left;color:#000000;margin-left:30px;">
 
-    1. Enter a gene identifier(e.g. gene symbol, probe set ID, Ensembl ID, etc.) in the gene field.<BR/>
-    or<BR/>
-    Enter a region such as
-    <div style="padding-left:20px;">
-        chr1:1-50000 is Chromosome 1 @ bp 1-50,000.<BR/>
-        chr1:5000+-2000 is Chromosome 1 @ bp 3,000-7,000.<BR/>
-        chr1:5000+2000 is Chromosome 1 @ bp 5,000-7,000.<BR/>
-        chr1:50.126-51.345 is Chromosome 1 @ 50,126,000-51,345,000<BR>
-        chr1:50.15+-100.0k is chromosome 1 @ 50,050,000-50,250,000<BR>
-    </div>
-    or<BR/>
-    Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat genome that correspond to a region of
-    interest in the Human/Mouse/Rat genome.<BR/>
-    2. Choose a species.<BR/>
-    3. Click Get Transcription Details.<BR/><BR/>
-    <BR/><BR/><BR/>
-</div>
 
 
 <div style="text-align:center">
 
-
-    <%if (genURL.size() > 1) {%>
-    <label><span style="font-weight:bold;">Multiple genes were returned please select the gene of Interest:</span>
-        <select name="geneSelectCBX" id="geneSelectCBX">
-            <%
-                for (int i = 0; i < firstEnsemblID.size(); i++) {
-            %>
-            <option value="<%=firstEnsemblID.get(i)%>"
-                    <%if((geneSymbol.get(i)!=null&&geneSymbol.get(i).toLowerCase().equals(myGene.toLowerCase()))){%>selected<%}%>>
-                <%if (geneSymbol.get(i) != null && !geneSymbol.get(i).startsWith("ERROR")) {%>
-                <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
-                <%} else if (geneSymbol.get(i).startsWith("ERROR")) {%>
-                <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
-                <%} else {%>
-                <%=firstEnsemblID.get(i)%>
-                <%}%>
-
-            </option>
-            <%}%>
-        </select>
-    </label>
-
-    <input type="submit" name="action" id="selGeneBTN" value="Go" onClick="enterSelectedGene()"><BR/>
-    Hint: Try other synonyms if the first ID that you enter is not found.
-    <BR/><BR/>
-    <%}%>
 
 
     <form method="post"
@@ -690,49 +647,106 @@
         <div style=" color:#FF0000;"><%=regionError%>
         </div>
         <%}%>
-        <label>Gene Identifier or Region:
-            <input type="text" name="geneTxt" id="geneTxt" size="35"
-                   value="<%= (myDisplayGene!=null)?myDisplayGene:"" %>">
-        </label>
+        <div class="widget">
 
+            <fieldset>
+                <legend>Specify a Gene or Region to get started:</legend>
 
-        <label>Species:
-            <select name="speciesCB" id="speciesCB">
-                <option value="Rn" <%if(myOrganism!=null && myOrganism.equals("Rn")){%>selected<%}%>>Rattus norvegicus
-                </option>
-                <option value="Mm" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>selected<%}%>>Mus musculus
-                </option>
-            </select>
-        </label>
-        <span class="tooltipster"
-              title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
-                src="<%=imagesDir%>/icons/info.gif"></span>
+            <label>Gene Identifier or Region:
+                <input type="text" name="geneTxt" id="geneTxt" size="35"
+                       value="<%= (myDisplayGene!=null)?myDisplayGene:"" %>">
+                <span class="tooltipster"
+                      title="1. Enter a gene identifier(e.g. gene symbol, probe set ID, Ensembl ID, etc.) in the gene field.
+OR
+Enter a region such as
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chr1:1-50000 is Chromosome 1 @ bp 1-50,000.
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chr1:5000+-2000 is Chromosome 1 @ bp 3,000-7,000.
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chr1:5000+2000 is Chromosome 1 @ bp 5,000-7,000.
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chr1:50.126-51.345 is Chromosome 1 @ 50,126,000-51,345,000
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chr1:50.15+-100.0k is chromosome 1 @ 50,050,000-50,250,000
+OR
+Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat genome that correspond to a region of interest in the Human/Mouse/Rat genome.
+2. Choose a species.
+3. Click Go.">
+                        <img src="<%=imagesDir%>/icons/info.gif"></span>
+                <BR>
+                ex. chr1:1-50000 or Agt
+            </label>
+            <BR><BR>
+            <label>Species:
+                <select name="speciesCB" id="speciesCB">
+                    <option value="Rn" <%if(myOrganism!=null && myOrganism.equals("Rn")){%>selected<%}%>>Rattus norvegicus
+                    </option>
+                    <option value="Mm" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>selected<%}%>>Mus musculus
+                    </option>
+                </select>
+            </label>
+            <span class="tooltipster"
+                  title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
+                    src="<%=imagesDir%>/icons/info.gif"></span>
+                    or <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
+                              onClick="openTranslateRegion()">
+                    <BR><BR>
+            <span style="padding-left:10px;"> <input type="submit" name="goBTN" id="goBTN" value="Go"
+                                                     onClick="return displayWorking()"></span>
 
-        <label>Initial View:
-            <select name="defaultView" id="defaultView">
-                <%
-                    for (int i = 0; i < views.size(); i++) {
-                        if (views.get(i).getGenomeVersion().equals(defaultGenomeVer) &&
-                                (views.get(i).getOrganism().toUpperCase().equals("AA") ||
-                                        myOrganism.toUpperCase().equals(views.get(i).getOrganism().toUpperCase()))
-                                ) {
-                            String display = views.get(i).getName();
-                            if (views.get(i).getUserID() == 0) {
-                                display = display + "   (Predefined)";
-                            } else {
-                                display = display + "   (Custom)";
-                            }
-                %>
-                <option value="<%=views.get(i).getID()%>"
-                        <%if(defView.equals(Integer.toString(views.get(i).getID()))){%>selected<%}%>><%=display%>
-                </option>
-                <%}%>
-                <%}%>
-            </select>
+            </fieldset>
 
-        </label>
-        <span style="padding-left:10px;"> <input type="submit" name="goBTN" id="goBTN" value="Go"
-                                                 onClick="return displayWorking()"></span>
+            <fieldset>
+                <legend>What data do you want to view?</legend>
+                <div class="controlgroup">
+            <label>Initial View:
+                <select name="defaultView" id="defaultView">
+                    <%
+                        for (int i = 0; i < views.size(); i++) {
+                            if (views.get(i).getGenomeVersion().equals(defaultGenomeVer) &&
+                                    (views.get(i).getOrganism().toUpperCase().equals("AA") ||
+                                            myOrganism.toUpperCase().equals(views.get(i).getOrganism().toUpperCase()))
+                                    ) {
+                                String display = views.get(i).getName();
+                                if (views.get(i).getUserID() == 0) {
+                                    display = display + "   (Predefined)";
+                                } else {
+                                    display = display + "   (Custom)";
+                                }
+                    %>
+                    <option value="<%=views.get(i).getID()%>"
+                            <%if(defView.equals(Integer.toString(views.get(i).getID()))){%>selected<%}%>><%=display%>
+                    </option>
+                    <%}%>
+                    <%}%>
+                </select>
+                </label>
+                    <span style="padding-left:10px;"> <input type="submit" name="goBTN" id="goBTN" value="Go"
+                                                             onClick="return displayWorking()"></span>
+                </div>
+                <!--Customize  View:
+                <div id="accordion">
+                    <h3>Tissues</h3>
+                    <div>
+                        <p>
+                            <label for="checkbox-1">Whole Brain</label>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
+                            <label for="checkbox-2">Liver</label>
+                            <input type="checkbox" name="checkbox-2" id="checkbox-2">
+                            <label for="checkbox-3">Heart</label>
+                            <input type="checkbox" name="checkbox-3" id="checkbox-3">
+                            <label for="checkbox-4">Brown Adipose (Array only)</label>
+                            <input type="checkbox" name="checkbox-4" id="checkbox-4">
+                        </p>
+                    </div>
+                    <h3>Data Source</h3>
+                    <div>
+                        <p></p>
+                    </div>
+                    <h3>Track Types</h3>
+                    <div>
+                        <p></p>
+                    </div>
+                </div>-->
+            </fieldset>
+        </div>
+
         <input type="hidden" name="pvalueCutoffInput" id="pvalueCutoffInput" value="<%=pValueCutoff%>"/>
         <input type="hidden" name="forwardPvalueCutoffInput" id="forwardPvalueCutoffInput"
                value="<%=forwardPValueCutoff%>"/>
@@ -747,11 +761,32 @@
         <input type="hidden" name="geneSelect" id="geneSelect" value="<%=selectedGene%>"/>
         <input type="hidden" name="genomeVer" id="genomeVer" value="<%=genomeVer%>"/>
     </form>
-    <BR>
-    <span style="display:inline-block;">
-    Or <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
-              onClick="openTranslateRegion()">
-    </span>
+    <%if (genURL.size() > 1) {%>
+    <BR><BR>
+        <label><span style="font-weight:bold;color:#FF0000;font-size: large;">Multiple genes were returned please select the gene of Interest:</span>
+            <select name="geneSelectCBX" id="geneSelectCBX">
+                <%
+                    for (int i = 0; i < firstEnsemblID.size(); i++) {
+                %>
+                <option value="<%=firstEnsemblID.get(i)%>"
+                        <%if((geneSymbol.get(i)!=null&&geneSymbol.get(i).toLowerCase().equals(myGene.toLowerCase()))){%>selected<%}%>>
+                    <%if (geneSymbol.get(i) != null && !geneSymbol.get(i).startsWith("ERROR")) {%>
+                    <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
+                    <%} else if (geneSymbol.get(i).startsWith("ERROR")) {%>
+                    <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
+                    <%} else {%>
+                    <%=firstEnsemblID.get(i)%>
+                    <%}%>
+
+                </option>
+                <%}%>
+            </select>
+        </label>
+
+        <input type="submit" name="action" id="selGeneBTN" value="Go" onClick="enterSelectedGene()"><BR/>
+        Hint: Try other synonyms if the first ID that you enter is not found.
+        <BR/><BR/>
+    <%}%>
 </div>
 
 <div class="translate">
@@ -1247,6 +1282,11 @@ Hint: Try other synonyms if the first ID that you enter is not found.
     $(window).ready(function () {
 
         getMainViewData(1);
+        //$( ".controlgroup" ).controlgroup()
+        /*$( ".controlgroup-vertical" ).controlgroup({
+            "direction": "vertical"
+        });*/
+        $( "div#accordion" ).accordion();
         $(".tooltipster").tooltipster({
             position: 'top-right',
             maxWidth: 250,
