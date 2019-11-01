@@ -157,7 +157,8 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                                 if(data2.length>0 && !(data2.length===1 && data2[0].ModuleID==="grey")){
                                 	setTimeout(function() {
 										for (var i = 0; i < data2.length; i++) {
-											if (data2[i].ModuleID !== "grey") {// && data2[i].ModuleID !=="turquoise"){
+											console.log("Mod:"+data2[i].ModuleID);
+											if (data2[i].ModuleID !== "grey"){ // && data2[i].ModuleID !=="turquoise"){
 												that.moduleList.push(data2[i].ModuleID);
 												//var isLast=data2.length-i;
 												that.requests++;
@@ -165,7 +166,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 												if (typeof data2[i].GeneList !== 'undefined') {
 													that.moduleGenes[data2[i].ModuleID] = data2[i].GeneList;
 												}
-												//console.log("after calling:"+that.requests+":"+data2[i].ModuleID);
+												console.log("after calling:"+that.requests+":"+data2[i].ModuleID);
 											}
 										}
 										that.refreshRegion(1000);
@@ -1243,7 +1244,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 			thatimg.dataList={};
 			var dataCount=0;
 			for(var j=0;j<that.moduleList.length;j++){
-				console.log("multiModView:"+that.moduleList[j]);
+				console.log("multiModView:"+that.moduleList.length+":"+that.moduleList[j]);
 				if(that.moduleList[j]!=="grey" || (that.moduleList[j]==="grey" && that.skipGrey===0 )){
                     if(typeof that.modules[that.moduleList[j]] !=='undefined'){
                         data[dataCount]=that.modules[that.moduleList[j]];
@@ -1298,6 +1299,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 					.attr("transform",function(d,i){ 
 						return "translate("+thatimg.calcX(d,i)+","+thatimg.calcY(d,i)+")";
 					});
+			console.log("before append to image");
 			//add new
 			mod.enter().append("g")
 				.attr("class","modules")
@@ -1402,6 +1404,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                                 return val;
                             });
 				} );
+			console.log("end of draw");
 		};
 
 		thatimg.backModule=function(){

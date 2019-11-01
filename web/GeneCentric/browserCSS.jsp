@@ -331,6 +331,24 @@ span.shrt-button:hover{
 span.shrt-button.gene:hover{
     background-color:#00790D;
 }
+legend{
+    font-weight: bold;
+    font-size:larger;
+}
+fieldset {
+    text-align: left;
+    border-width: 2px;
+    border-style: groove;
+    border-color: threedface;
+    padding: 10px;
+    min-width: 400px;
+    width:40%;
+    vertical-align: top;
+    position: relative;
+    display:inline-block;
+    min-height: 110px;
+}
+
 @media all and (max-width:30em){
     span.shrt-button{display:block;margin:0.2em auto;}
 }
