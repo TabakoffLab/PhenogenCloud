@@ -341,12 +341,19 @@ fieldset {
     border-style: groove;
     border-color: threedface;
     padding: 10px;
-    min-width: 400px;
-    width:40%;
+    min-width: 480px;
+    width:46%;
     vertical-align: top;
     position: relative;
     display:inline-block;
-    min-height: 110px;
+    min-height: 300px;
+}
+
+div.checkbox-choice input{
+    margin-left: 15px;
+}
+span.checkbox-l2 input{
+    margin-left: 25px;
 }
 
 @media all and (max-width:30em){
