@@ -314,7 +314,7 @@ public class IDecoderClient {
 
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearch");
-        String targetString = "(" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ")";
+        String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
         //
         // Match on organism if the target is not 'Homologene ID'
         //
@@ -388,7 +388,7 @@ public class IDecoderClient {
 
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearch");
-        String targetString = "(" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ")";
+        String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
         //
         // Match on organism if the target is not 'Homologene ID'
         //
@@ -740,7 +740,7 @@ public class IDecoderClient {
     private HashMap<Identifier, Set<Identifier>> doSearchAll(String geneIDString,String organism, DataSource pool) throws SQLException {
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearchAll");
-        String targetString = "(" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ")";
+        String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
         //
         // Match on organism if the target is not 'Homologene ID'
         //
