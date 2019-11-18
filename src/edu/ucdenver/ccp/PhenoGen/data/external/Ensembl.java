@@ -8,7 +8,9 @@ import edu.ucdenver.ccp.util.*;
 
 
 /* for logging messages */
-import org.apache.log4j.Logger;       
+import org.apache.log4j.Logger;
+
+import javax.sql.DataSource;
 
 
 /**
@@ -31,12 +33,42 @@ public class Ensembl{
          * @throws            SQLException if a database error occurs
          * @return            a Hashtable of Ensembl IDs mapped to transcript IDs 
          */
-	public Hashtable getTranscripts(Set<String> allEnsemblSet, Connection conn) throws SQLException {
+	public Hashtable getTranscripts(Set<String> allEnsemblSet, String org, DataSource pool, String properties) throws SQLException {
 
 		String query = "";
 		Hashtable<String, List<String>> ensemblHash = new Hashtable<String, List<String>>();
 		ObjectHandler myObjectHandler = new ObjectHandler();
-
+        File myPropertiesFile = new File(properties);
+        Properties myProp = new Properties();
+        try {
+            myProp.load(new FileInputStream(myPropertiesFile));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        Connection conn=pool.getConnection();
+        ResultSet rs=conn.getMetaData().getCatalogs();
+        String fullOrg="mus_musculus";
+        if(org.equals("Rn")){
+            fullOrg="rattus_norvegicus";
+        }else if(org.equals("Hs")){
+            fullOrg="homo_sapiens";
+        }
+        String selectedSchema="";
+        int curVer=0;
+        while(rs.next()){
+            if(rs.getString(1).startsWith(fullOrg)){
+                String[] words=rs.getString(1).split("_");
+                int ver=Integer.parseInt(words[words.length-1]);
+                if(ver>curVer){
+                    curVer=ver;
+                    selectedSchema=rs.getString(1);
+                }
+            }
+        }
+        Connection ensemblConn=DriverManager.getConnection(
+                myProp.getProperty("URL_PREFIX")+
+                        myProp.getProperty("HOST") +
+                        ":" + myProp.getProperty("PORT") + "/"+selectedSchema,myProp.getProperty("USER"),myProp.getProperty("PASSWORD"));
 		if (allEnsemblSet != null && allEnsemblSet.size() > 0) {
         		String[] allEnsemblArray = (String[]) allEnsemblSet.toArray(new String[allEnsemblSet.size()]);
 
@@ -73,14 +105,14 @@ public class Ensembl{
 			log.debug("instantiating a new Results object and setting the timeout to 5 seconds");
 			Results myResults = new Results();
 			myResults.setQuery(query);
-			myResults.setConnection(conn);
+			myResults.setConnection(ensemblConn);
 			//myResults.setTimeout(5);
 			myResults.execute();
-                	ensemblHash = myObjectHandler.getResultsAsHashtablePlusList(myResults);
+			ensemblHash = myObjectHandler.getResultsAsHashtablePlusList(myResults);
 
                 	//log.debug("ensemblHash = "); myDebugger.print(ensemblHash);
-                	myResults.close();
-
+            myResults.close();
+            ensemblConn.close();
 		}  
 		return ensemblHash;
 	}

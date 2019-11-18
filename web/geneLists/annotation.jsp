@@ -12,8 +12,6 @@
 --%>
 <%@ include file="/web/geneLists/include/geneListHeader.jsp"%>
 
-<%@ include file="/web/geneLists/include/dbutil_jackson.jsp"  %>
-
 <jsp:useBean id="myKnockOut" class="edu.ucdenver.ccp.PhenoGen.data.external.KnockOut"> </jsp:useBean>
 <jsp:useBean id="thisIDecoderClient" class="edu.ucdenver.ccp.PhenoGen.tools.idecoder.IDecoderClient"> </jsp:useBean>
 <jsp:useBean id="myQTL" class="edu.ucdenver.ccp.PhenoGen.data.QTL"> </jsp:useBean>
@@ -202,16 +200,15 @@
                 	Set allEnsemblSet = thisIDecoderClient.getValues(thisIDecoderClient.getIdentifiersForTarget(iDecoderSet, ensemblTargets));
 			//log.debug("allEnsemblSet = "); myDebugger.print(allEnsemblSet);
 
-                              	%><%@ include file="/web/common/dbutil_ensembl.jsp" %><%
 
-			if (ensemblConn != null && !ensemblConn.isClosed()) {
+
+			//if (ensemblConn != null && !ensemblConn.isClosed()) {
 				try {
-                               		ensemblHash = myEnsembl.getTranscripts(allEnsemblSet, ensemblConn);
-                               		ensemblConn.close();
+                               		ensemblHash = myEnsembl.getTranscripts(allEnsemblSet,organism,pool, propertiesDir+"ensembl_local.properties");
 				} catch (Exception e) {
-					log.error("got error retrieving stuff from Ensmbl", e);
+					log.error("got error retrieving stuff from Ensembl", e);
 				}
-			}
+			//}
 			while (itr.hasNext()) {
 				Identifier thisIdentifier = (Identifier) itr.next();
 				thisIdentifier.setCurrentIdentifier(thisIdentifier.getIdentifier());
@@ -272,7 +269,7 @@
 			// to the jacksonMutants array so that it can be included in the URL
 			// 
 
-			if (jacksonConn != null) {
+			/*if (jacksonConn != null) {
 				try {
 					jacksonMutantsArray = myKnockOut.getPhenotypicAlleleCount(
 								allOfficialSymbolArray, jacksonConn);
@@ -288,8 +285,7 @@
 				}
 				//log.debug("size of jacksonMutantsArray = "+jacksonMutantsArray.length);
 				//log.debug("jacksonMutantsArray = "); myDebugger.print(jacksonMutantsArray);
-			} 
-
+			} */
 			//
 			// Query the INIA West database (Koob) to see if any mutants exist
 			// for this gene identifier.  If they do, add the gene symbol
@@ -353,10 +349,7 @@
 		</div>
 	<% } %>
     
-    <% if (jacksonConn != null) {
-			jacksonConn.close();
-		}
-	%>
+
 	
 	<script type="text/javascript">
         $("div#wait1").hide();

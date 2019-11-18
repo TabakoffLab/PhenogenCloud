@@ -29,7 +29,7 @@
             optionsListModal.add("linkEmail");
         }
 	optionsList.add("basicAnnotation");
-
+	String organism = selectedGeneList.getOrganism();
 	String[] identifierTypes = thisIDecoderClient.getIdentifierTypes(pool);
 	String[] affyBoxes = thisIDecoderClient.getArraysForPlatform(new Dataset().AFFYMETRIX_PLATFORM, pool);
 	String[] codeLinkBoxes = thisIDecoderClient.getArraysForPlatform(new Dataset().CODELINK_PLATFORM, pool);
@@ -101,18 +101,10 @@
 					String[] ensemblTargets = {ensemblString};
 	        			Set allEnsemblSet = thisIDecoderClient.getValues(thisIDecoderClient.getIdentifiersForTarget(iDecoderValues, ensemblTargets));
 	
-       		 			%><%@ include file="/web/common/dbutil_ensembl.jsp" %><%
-	
-					if (ensemblConn != null && !ensemblConn.isClosed()) {
-						try {
-                               				Hashtable ensemblHash = myEnsembl.getTranscripts(allEnsemblSet, ensemblConn);
+
+							Hashtable ensemblHash = myEnsembl.getTranscripts(allEnsemblSet,organism,pool, propertiesDir+"ensembl_local.properties");
 							session.setAttribute("ensemblHash", ensemblHash);
-                               				ensemblConn.close();
-							//log.debug("ensemblHash = ");myDebugger.print(ensemblHash);
-						} catch (Exception e) {
-							log.error("got error retrieving stuff from Ensmbl", e);
-						}
-					}
+
 				}
 				
 			
@@ -186,8 +178,6 @@
 	</div>
 		  <div class="itemDetails"></div>
 
-	<script type="javascript">
-        $("div#wait1").hide();
-	</script>
+
 
 <%@ include file="/web/common/footer_adaptive.jsp" %>
