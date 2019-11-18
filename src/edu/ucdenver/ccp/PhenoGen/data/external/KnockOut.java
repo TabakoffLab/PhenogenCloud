@@ -288,24 +288,15 @@ public class KnockOut{
 		List<String> iniaKnockouts = new ArrayList<String>();
 
 		String[] dataRow;
-                Connection conn=null;
-                try{
-                    conn=pool.getConnection();
+
+                try(Connection conn=pool.getConnection()){
                     Results myResults = new Results(query, conn);
                     while((dataRow = myResults.getNextRow()) != null) {
                             iniaKnockouts.add(dataRow[0]);
                     }
                     myResults.close();
-                    conn.close();
                 }catch(SQLException e){
                     
-                }finally{
-                    if(conn!=null && !conn.isClosed()){
-                        try{
-                            conn.close();
-                            conn=null;
-                        }catch(SQLException e){}
-                    }
                 }
         	String[] iniaKnockoutArray = (String[]) iniaKnockouts.toArray(new String[iniaKnockouts.size()]);
 		Arrays.sort(iniaKnockoutArray);
@@ -322,7 +313,7 @@ public class KnockOut{
 	 * @return            a String array of official symbols that have knockouts 
 	 */   
 
-	public String[] getIniaKnockOutCount(String[] symbolList, Connection conn) throws SQLException {
+	/*public String[] getIniaKnockOutCount(String[] symbolList, Connection conn) throws SQLException {
 		//
 		// This builds a statement for each official symbol passed in the symbolList
 		// e.g., and (g.official_symbol = 'Cdx1' or g.official_symbol = 'CDX1')
@@ -368,7 +359,7 @@ public class KnockOut{
 		Arrays.sort(iniaKnockoutArray);
 
 		return iniaKnockoutArray;
-	}
+	}*/
 
         
         

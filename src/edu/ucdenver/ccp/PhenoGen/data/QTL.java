@@ -1373,17 +1373,17 @@ public class QTL {
                                     "eq.marker_mb, " +
                                     "ifnull(eq.upper_limit, eq.marker_mb), " +
                                     "ifnull(eq.lower_limit, eq.marker_mb), " +
-                                    "cnt.num_gene_symbols, " +
+                                    //"cnt.num_gene_symbols, " +
                                     "eq.tissue " +
                                     "from probesets p " +
                                     "left join gene_symbols gs " +
                                     "	on p.identifier = gs.identifier " +
                                     "left join expression_qtls eq " +
-                                    "	on eq.identifier = p.identifier, " +
-                                    "gene_symbol_count cnt " +
+                                    "	on eq.identifier = p.identifier "+//, " +
+                                    //"gene_symbol_count cnt " +
                                     "where " +
                                     typeClause +
-                                    "and p.identifier = cnt.identifier " +
+                                    //"and p.identifier = cnt.identifier " +
                                     "and eq.organism = ? ";
                     if (!tissue.equals("All")) {
                         query = query + " and eq.tissue = ? ";
@@ -1453,9 +1453,10 @@ public class QTL {
                 thisEQtl.setLower_limit(dataRow[11] != null ?
                         Double.parseDouble(dataRow[11]) :
                         new Double(Double.NaN).doubleValue());
-                thisEQtl.setNum_gene_symbols(dataRow[12] != null ?
-                        Integer.parseInt(dataRow[12]) : 1);
-                thisEQtl.setTissue(dataRow[13]);
+                thisEQtl.setNum_gene_symbols(1);
+                /*thisEQtl.setNum_gene_symbols(dataRow[12] != null ?
+                        Integer.parseInt(dataRow[12]) : 1);*/
+                thisEQtl.setTissue(dataRow[12]);
                 thisEQtl.setOrganism(organism);
                 myEQTLList.add(thisEQtl);
             }

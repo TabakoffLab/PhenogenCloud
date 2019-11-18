@@ -103,7 +103,7 @@
 				"cmd=show&amp;db=";
 
 	String mutantText = "<a href=\"" + geneListsDir + "allele.jsp?knockoutSource=";
-	String eQTLText = "<a href=\"" + qtlsDir + "eQTLResults.jsp?eQTLID=";
+	String eQTLText = "<a href=\"/gene.jsp?auto=Y&speciesCB="+selectedGeneList.getOrganism()+"&section=geneEQTL&geneTxt=";
 	String snpText = "<a href=\"http://www.ensembl.org/" +
 				snpOrganism + "/transcriptsnpview?db=core;transcript=";
 	String mgiSnpText = "<a href=\"http://www.informatics.jax.org/searches/snp_report.cgi?geneSymname=";
@@ -369,7 +369,7 @@
 			!thisIdentifier.getEQTLString().equals("()")//&&
 			//!selectedGeneList.getOrganism().equals("Mm")// ***************  REMOVE ONCE PUBLIC LXS DATASET is fixed TEMPORARY since LXS Dataset has problems.
 			) {
-				%> <%=eQTLText%><%=thisIdentifier.getEQTLString()%>&tissue=All" target="QTL Window">PhenoGen eQTL</a> <BR><%
+				%> <%=eQTLText%><%=officialSymbolList.get(0)%>" target="QTL Window">PhenoGen eQTL</a> <BR><%
 		} else {
 			%>&nbsp<%
 		}

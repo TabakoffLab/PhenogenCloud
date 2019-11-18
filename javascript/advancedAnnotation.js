@@ -4,6 +4,8 @@
  *
  * -------------------------------------------------------------------------------- */
 $(document).ready(function() {
+    $("div#wait1").css("display", "none");
+
 
    var itemDetails = createDialog(".itemDetails" , {width: 900, height: 500, title: "Download"});
    $("#downloadBtn").click(function(){
