@@ -21,7 +21,7 @@ sub readExprDataFromDB{
 	my($dsid,$geneList,$heritFile,$dsn,$usr,$passwd)=@_;   
 
 	my %exprHOH; # giant array of hashes and arrays containing gene/trx expr data
-
+    print "geneList:".$geneList."\n";
 	my $client = MongoDB::MongoClient->new(host => $dsn,username => $usr, password => $passwd, db_name=>'admin',  auth_mechanism => 'SCRAM-SHA-1');
 	my $database   = $client->get_database( 'RNASEQ_EXPR' );
 	my %herit;
@@ -51,9 +51,11 @@ sub readExprDataFromDB{
 	print "connect  strain_means_".$dsid."\n";
 	my $col = $database->get_collection( "strain_means_".$dsid );
 	my @glist=split(",",$geneList);
+	#my @glist= keys %herit;
 	my @updatedList=[];
 	foreach my $g(@glist){
-		push(@updatedList,"$g");
+	    print $g."\n";
+		push(@updatedList,$g);
 	}
 	print "initial:".$geneList."\n";
 	print "list:".@glist."\n";
@@ -70,34 +72,37 @@ sub readExprDataFromDB{
 		if( defined $exprHOH{$obj->{'GENEID'}} ){
 
 		}else{
-			$exprHOH{$obj->{'GENEID'}}{GENE}={};
+			$exprHOH{$obj->{'GENEID'}}{'GENE'}={};
 			
-			$exprHOH{$obj->{'GENEID'}}{TRXLIST}=[];
+			$exprHOH{$obj->{'GENEID'}}{'TRXLIST'}=[];
 		}
 
 		my %tmpH={};
-		$tmpH{GENEID}=$obj->{'GENEID'};
-		$tmpH{TRXID}=$obj->{'TRXID'};
-		#print $obj->{'TRXID'}.":".$herit{$obj->{'TRXID'}}."\n";
-		$tmpH{HERIT}=$herit{$obj->{'TRXID'}};
+		$tmpH{'GENEID'}=$obj->{'GENEID'};
+		$tmpH{'TRXID'}=$obj->{'TRXID'};
+		print $obj->{'TRXID'}.":".$herit{$obj->{'TRXID'}}."\n";
+		$tmpH{'HERIT'}=$herit{$obj->{'TRXID'}};
 		my @tmpArr;
 		foreach my $valKey(@keys){
 			my %val;
-			$val{STRAIN}=$valKey;
-			$val{CPM}=$obj->{$valKey};			
+			$val{'STRAIN'}=$valKey;
+			$val{'CPM'}=$obj->{$valKey};
 			push(@tmpArr,\%val);
 		}
-		$tmpH{VALUES}=\@tmpArr;
+		$tmpH{'VALUES'}=\@tmpArr;
 
-		if( $obj->{'TRXID'} == "" || $obj->{'GENEID'} eq $obj->{'TRXID'}){
-			$exprHOH{$obj->{'GENEID'}}{GENE}=\%tmpH;
+		if( $obj->{'GENEID'} eq $obj->{'TRXID'}){
+			$exprHOH{$obj->{'GENEID'}}{'GENE'}=\%tmpH;
 		}else{
-			#my $ref=$exprHOH{$obj->{'GENEID'}}{TRXLIST};
+			#my $ref=$exprHOH{$obj->{'GENEID'}}{'TRXLIST'};
 			#print "tx list:".$ref."\n";
 			#my @tmp=@$ref;
 			#print "Adding Trx:".@{$exprHOH{$obj->{'GENEID'}}{TRXLIST}}."\n";
-			push(@{$exprHOH{$obj->{'GENEID'}}{TRXLIST}},\%tmpH);
-			#print "after Adding Trx ".@{$exprHOH{$obj->{'GENEID'}}{TRXLIST}}."\n";
+			my $ref=$exprHOH{$obj->{'GENEID'}}{'TRXLIST'};
+			my @tArr=@$ref;
+			push(@tArr,\%tmpH);
+			$exprHOH{$obj->{'GENEID'}}{'TRXLIST'}=\@tArr;
+			print "after Adding Trx ".@{$exprHOH{$obj->{'GENEID'}}{'TRXLIST'}}."\n";
 		}
 		$listCount++;
 	}
@@ -121,13 +126,13 @@ sub writeExprDataJSON {
 		if($lc>0){
 			print $OUT ",";
 		}
-		my $tmpHerit=$h{$geneID}{GENE}{HERIT};
-		if(! defined $h{$geneID}{GENE}{HERIT}){
+		my $tmpHerit=$h{$geneID}{'GENE'}{'HERIT'};
+		if(! defined $h{$geneID}{'GENE'}{'HERIT'}){
 			$tmpHerit=0;
 		}
 		print $OUT "{\"GENEID\":\"".$geneID."\",\"HERIT\":".$tmpHerit.",";
 		print $OUT "\"VALUES\":[";
-		my $valRef=$h{$geneID}{GENE}{VALUES};
+		my $valRef=$h{$geneID}{'GENE'}{'VALUES'};
 		my @tmpValues=@$valRef;
 		my $vc=0;
 		foreach my $curVal(@tmpValues){
@@ -135,29 +140,31 @@ sub writeExprDataJSON {
 				print $OUT ",";
 			}
 			my %tmpH=%$curVal;
-			print $OUT "{ \"Strain\":\"".$tmpH{STRAIN}."\",\"CPM\":".$tmpH{CPM}."}";
+			print $OUT "{ \"Strain\":\"".$tmpH{'STRAIN'}."\",\"CPM\":".$tmpH{'CPM'}."}";
 			$vc++;
 		}
 		print $OUT "],\"TRXLIST\":[";
 		my $trc=0;
-		foreach my $trRef(@{$h{$geneID}{TRXLIST}}){
+		my $trRef=$h{$geneID}{'TRXLIST'};
+		my @trlist=@$trRef;
+		foreach my $trRef(@trlist){
 			my %trHOH=%$trRef;
 			if($trc>0){
 				print $OUT ",";
 			}
-			$tmpHerit=$trHOH{HERIT};
-			if(! defined $trHOH{HERIT}){
+			$tmpHerit=$trHOH{'HERIT'};
+			if(! defined $trHOH{'HERIT'}){
 				$tmpHerit=0;
 			}
-			print $OUT "{\"TRXID\":\"".$trHOH{"TRXID"}."\",\"HERIT\":".$tmpHerit.",";
+			print $OUT "{\"TRXID\":\"".$trHOH{'TRXID'}."\",\"HERIT\":".$tmpHerit.",";
 			print $OUT "\"VALUES\":[";
 			my $vc=0;
-			foreach my $curVal(@{$trHOH{VALUES}}){
+			foreach my $curVal(@{$trHOH{'VALUES'}}){
 				if($vc>0){
 					print $OUT ",";
 				}
 				my %tmpH=%$curVal;
-				print $OUT "{ \"Strain\":\"".$tmpH{STRAIN}."\",\"CPM\":".$tmpH{CPM}."}";
+				print $OUT "{ \"Strain\":\"".$tmpH{'STRAIN'}."\",\"CPM\":".$tmpH{'CPM'}."}";
 				
 				$vc++;
 			}
@@ -181,10 +188,13 @@ my $arg5 = $ARGV[4]; # dsn
 my $arg6 = $ARGV[5]; #usr
 my $arg7 = $ARGV[6]; #password
 
+print "1:".$arg1."\n";
+print "2:".$arg2."\n";
+print "3:".$arg3."\n";
 my $ref=readExprDataFromDB( $arg2, $arg3, $arg4, $arg5, $arg6, $arg7);
 my %exprData=%$ref;
 
-writeExprDataJSON(\%exprData,$arg1);
+writeExprDataJSON(\%exprData , $arg1);
 
 exit 0;
 
