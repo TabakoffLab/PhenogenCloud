@@ -271,7 +271,7 @@ sub readRNAIsoformDataFromDB{
 			}
 
 			if ($gene_id eq $previousGeneName and $gene_id ne "") {
-				print "\nchecking:$isoform_id\t:$previousTranscript:\n";
+				#print "\nchecking:$isoform_id\t:$previousTranscript:\n";
 				if ($isoform_id eq $previousTranscript) {
 					#print "adding exon $enumber\n";
 					$$exonArray[$cntExon]{ID} = $enumber;
@@ -295,7 +295,7 @@ sub readRNAIsoformDataFromDB{
 					$cntExon++;
 				}
 				else {
-					print "Adding transcript $trtmp_id::$cntTranscript\n";
+					#print "Adding transcript $trtmp_id::$cntTranscript\n";
 
 					$geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
 						ID         => $trtmp_id,
@@ -641,7 +641,7 @@ sub readSmallRNADataFromDB{
 		#}
 
 		if($gene_id eq $previousGeneName and $gene_id ne ""){
-			print "\nchecking:$isoform_id\t:$previousTranscript:\n";
+			#print "\nchecking:$isoform_id\t:$previousTranscript:\n";
 			if($isoform_id eq $previousTranscript){
 				#print "adding exon $enumber\n";
 				$$exonArray[$cntExon]{ID}=$enumber;
@@ -664,7 +664,7 @@ sub readSmallRNADataFromDB{
 				$cntIntron++;
 				$cntExon++;
 			}else{
-				print "Adding transcript $trtmp_id::$cntTranscript\n";
+				#print "Adding transcript $trtmp_id::$cntTranscript\n";
 				
 				$geneHOH{Gene}[$cntGene-1]{TranscriptList}{Transcript}[$cntTranscript] = {
 					ID => $trtmp_id,
@@ -954,8 +954,8 @@ sub readRNACountsDataFromMongo{
 	$connect->disconnect();
 	my %countHOH;
         print "mongohost:".$mongoHost."\n";
-        print "mongouser:".$mongoUsr."\n";
-        print "mongopassword:".$mongoPwd."\n";
+        #print "mongouser:".$mongoUsr."\n";
+        #print "mongopassword:".$mongoPwd."\n";
 	my $client = MongoDB::MongoClient->new(host => $mongoHost,username => $mongoUsr, password => $mongoPwd, db_name => 'admin');
 	my $database   = $client->get_database( 'shared' );
 	my $col = $database->get_collection( 'RNA_COUNTS_'.$dsid );
