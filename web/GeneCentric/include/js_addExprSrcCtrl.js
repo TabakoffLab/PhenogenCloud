@@ -71,10 +71,15 @@ PhenogenExpr=function(params){
 		var curPrefix="/tmpData/browserCache/"+genomeVer+"/regionData/"+that.gb.folderName;
 		if(that.dataPrefix!==""){
 			curPrefix=that.dataPrefix;
-			curPrefix=curPrefix.replace("http://","https://");
+			if (location.protocol == 'https:') {
+				curPrefix = curPrefix.replace("http://", "https://");
+			}else{
+				curPrefix = curPrefix.replace("https://", "http://");
+			}
 		}
 		that.brainURL=curPrefix+"/Brainexpr.json";
 		that.liverURL=curPrefix+"/Liverexpr.json";
+		console.log("brain:"+that.brainURL);
 		if(that.featureType==="Small"){
 			that.brainURL=curPrefix+"/Brain_sm_expr.json";
 			that.liverURL=curPrefix+"/Liver_sm_expr.json";
