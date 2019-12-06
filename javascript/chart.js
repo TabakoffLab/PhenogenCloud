@@ -26,6 +26,8 @@ chart=function(params){
 	that.display.herit=true;
 	that.display.controls=true;
 	that.filteredID="";
+	that.selectedGene="";
+	that.fadeOutRunning=0;
 
 	
 	that.parseOptions=function(params){
@@ -117,6 +119,7 @@ chart=function(params){
 			d3.select(that.select).append("br");
 		}
 		that.imgDiv=d3.select(that.select).append("div").attr("id","imgDiv");
+		that.legendDiv=that.imgDiv.append("div").attr("id","legendDiv").style("max-height","150px").style("overflow","scroll");
 		if(d3.select("#body_wrapper_plain").select("#legendSVGScaleDef").size()==0){
 			that.legendSVGScaleDef = d3.select("#body_wrapper_plain").append("svg").attr("id","legendSVGScaleDef").attr("height",0).attr("width",0);
 			grad=that.legendSVGScaleDef.append("defs").append("linearGradient")
@@ -126,7 +129,7 @@ chart=function(params){
 			grad.append("stop").attr("offset","0%").style("stop-color","rgb(0,0,0)");
 			grad.append("stop").attr("offset","100%").style("stop-color","rgb(255,0,0)");
 		}
-		that.legendSVGTop = that.imgDiv.append("svg").attr("id","legendSVG")
+		that.legendSVGTop = that.legendDiv.append("svg").attr("id","legendSVG")
 									.attr("width",that.curWidth+that.margin.left+that.margin.right);
 		that.legendSVG=that.legendSVGTop.append("g");
 		that.imgDiv.append("br");
@@ -455,8 +458,8 @@ chart=function(params){
 			that.filteredData=tmpData;
 		}else{
 			console.log("filterBy");
-			geneRE=/ENSRNOG/;
-			trxRE=/(ENS[A-Z]{3}|PRN[0-9]{1,2})T/;
+			geneRE=/(ENSRNO|PRN[0-9]{1,2}\.?[0-9]{1,2})G/;
+			trxRE=/(ENS[A-Z]{3}|PRN[0-9]{1,2}\.?[0-9]{1,2})T/;
 			
 
 			//filter all genes
@@ -541,10 +544,12 @@ chart=function(params){
 	      		.attr("transform","translate("+((that.curWidth-that.leftMarg-that.heritChartW)/2)+",-5)")
 	      		.append("text")
 	      		.text(that.titlePrefix+that.title);
+	      	console.log("filteredData");
+	      	console.log(that.filteredData);
 	      	that.svg.selectAll(".dot")
 	      		.data(that.filteredData)
 	    		.enter().append("circle")
-	    			.attr("class",function(d){return "dot "+d.id+" "+d.strain;})
+	    			.attr("class",function(d){return "dot "+d.id.replace(/\./g,"_")+" "+d.strain;})
 		      		.attr("r", 2.5)
 		      		.attr("cx", function(d) { return that.x(d.strain); })
 		      		.attr("cy", function(d) { return that.y(d.val); })
@@ -553,11 +558,11 @@ chart=function(params){
 		      			d3.selectAll(".dot").transition()
 	    					.duration(250)
 	    					.attr("r", 2.5);
-		      			d3.selectAll(".dot."+d.id)
+		      			d3.selectAll(".dot."+d.id.replace(/\./g,"_"))
 		      				.transition()
 	    					.duration(350)
 	    					.attr("r",4.5);
-		      			d3.selectAll(".dot."+d.id+"."+d.strain)
+		      			d3.selectAll(".dot."+d.id.replace(/\./g,"_")+"."+d.strain)
 		      				.transition()
 	    					.duration(350)
 	    					.attr("r",6.5);
@@ -634,18 +639,25 @@ chart=function(params){
 	      		return "translate("+xPos+","+yPos+")"; 
 	      	})
 	      	.on("mouseover",function(d){
-	      		d3.selectAll(".dot").transition()
-    					.duration(250)
-    					.attr("r", 2.5);
-	      		d3.selectAll(".dot."+d)
-	      				.transition()
-    					.duration(350)
-    					.attr("r",4.5);
+	      		if(that.fadeOutRunning===0) {
+					setTimeout(function () {
+						d3.selectAll(".dot")
+							.attr("r", 2.5);
+						d3.selectAll(".dot." + d.replace(/\./g, "_"))
+							.transition()
+							.duration(350)
+							.attr("r", 4.5);
+					}, 5);
+				}
     		})
     		.on("mouseout",function(){
-				d3.selectAll(".dot").transition()
-    					.duration(250)
-    					.attr("r", 2.5);
+				if(that.fadeOutRunning===0) {
+					setTimeout(function() {
+						d3.selectAll(".dot").transition()
+							.duration(250)
+							.attr("r", 2.5);
+					},5);
+				}
 			});
 
 	  	that.legend.append("rect")
@@ -658,21 +670,35 @@ chart=function(params){
 	      .style("stroke",that.color)
 	      .style("stroke-width","1px")
 	      .on("click",function(d){
-	      	if(d3.select(this).style("fill")==d3.rgb(255,255,255)){
-	      		d3.select(this).style("fill",that.color(d));
-	      		//that.svg.selectAll("#line"+d).style("opacity",100);
-	      		that.svg.selectAll(".dot."+d)
-	      			.transition()
-    				.duration(450)
-    				.style("opacity",100);
-	      	}else{
-	      		d3.select(this).style("fill","#FFFFFF");
-	      		//that.svg.selectAll("#line"+d).style("opacity",0);
-	      		that.svg.selectAll(".dot."+d)
-	      			.transition()
-    				.duration(450)
-    				.style("opacity",0);
-	      	}
+				if(d3.select(this).style("fill")==d3.rgb(255,255,255)){
+					d3.select(this).style("fill",that.color(d));
+					//that.svg.selectAll("#line"+d).style("opacity",100);
+					setTimeout(function(){
+						that.fadeOutRunning=1;
+						that.svg.selectAll(".dot."+d.replace(/\./g,"_"))
+							.transition()
+							.duration(200)
+							.style("opacity",100)
+							.on("end", function(){
+								that.fadeOutRunning=0;
+							});
+					},10);
+				}else{
+					d3.select(this).style("fill","#FFFFFF");
+					//that.svg.selectAll("#line"+d).style("opacity",0);
+					setTimeout(function(){
+						that.fadeOutRunning=1;
+						that.svg.selectAll(".dot."+d.replace(/\./g,"_"))
+							.transition()
+							.duration(200)
+							.style("opacity",0)
+							.on("end", function(){
+								that.fadeOutRunning=0;
+							});
+					},10);
+				}
+
+
 	      })
 	      .on("mouseout",function(){
 				that.help.html("Hover mouse over controls for a summary of their function.");
@@ -689,7 +715,7 @@ chart=function(params){
 	      .attr("font-size","1.0em")
 	      .style("cursor","pointer")
 	      //.style("text-anchor", "end")
-	      .text(function(d) { return d; })
+	      .text(function(d) { return d.replace(/_/g,"."); })
 	      .on("mousedown",function(d){
 	      	/*if(d3.select(".legend.box."+d).style("fill")==d3.rgb(255,255,255)){
 	      		d3.select(".legend.box."+d).style("fill",that.color(d));
@@ -1395,6 +1421,7 @@ chart=function(params){
 	}
 	//Data Functions
 	that.getData=function(retry){
+		console.log(retry+":"+that.dataFile);
 		$.ajax({
 				url: that.dataFile,
    				type: 'GET',
@@ -1572,7 +1599,7 @@ chart=function(params){
 			for(var k=0;k<list.length;k++){
 				//console.log(k);
 				id=list[k].GENEID;
-				id=id.replace(/./g,"_")
+				id=id.replace(/\./g,"_");
 				tmp={"id":id};
 				if(typeof list[k].HERIT!=='undefined'){
 					tmp.herit=list[k].HERIT;
