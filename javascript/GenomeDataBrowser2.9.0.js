@@ -85,7 +85,7 @@ mouseOnly.probeMouse=1;
 
 var mmVer="Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer="Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer="PhenoGen v3.5.2(2/4/2019)";
+var siteVer="PhenoGen v3.7.0(12/30/2019)";
 
 var trackBinCutoff=10000;
 var customTrackLevel=-1;
@@ -1858,6 +1858,9 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				var newTrack=CustomCountTrack(that,data,track,3,additionalOptions);
 				that.addTrackList(newTrack);
 			}
+		}else if(track.indexOf("cirRNA")>=0){
+			var newTrack= CircRNATrack(that,data,track,trackDetails.Name,3,additionalOptions);
+			that.addTrackList(newTrack);
 		}
 		$(".sortable"+that.levelNumber).sortable( "refresh" );	
 		if(ga){
@@ -3268,6 +3271,11 @@ function toolTipSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type){
 				that.addTrackList(newTrack);
 			}
 
+		}else if(track.indexOf("cirRNA")>=0){
+			var trackDetails=trackInfo[track];
+			var data=new Array();
+			var newTrack= CircRNATrack(that,data,track,trackDetails.Name,3,additionalOptions);
+			that.addTrackList(newTrack);
 		}
 		$(".sortable"+that.levelNumber).sortable( "refresh" );
 
@@ -12571,5 +12579,459 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 	};
 	return that;
 }
+
+function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
+	var that=GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOptions);
+	var opts=additionalOptions.split(",");
+	that.density=density;
+	if(opts.length>0){
+		that.dataFileName=opts[0].substr(9);
+	}
+	if(opts.length>1){
+		that.colorBy=opts[1];
+	}else{
+		that.colorBy="Score";
+	}
+	if(opts.length>2){
+		that.minValue=opts[2];
+	}
+	if(opts.length>3){
+		that.maxValue=opts[3];
+	}
+	if(opts.length>4){
+		that.minColor=opts[4];
+	}
+	if(opts.length>5){
+		that.maxColor=opts[5];
+	}
+	//that.dataFileName=trackClass.substr(6)+".bed";
+	that.colorValueField="score";
+	that.minFeatureWidth=1;
+	that.updateControl=0;
+
+	if(that.colorBy=="Score"){
+		that.createColorScale();
+	}
+
+	that.drawTrx=function (d,i){
+		var txG=d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).select("#"+that.idPrefix+"tx"+d.getAttribute("ID"));
+		exList=getAllChildrenByName(getFirstChildByName(d,that.xmlTagBlockElem+"List"),that.xmlTagBlockElem);
+		for(var m=0;m<exList.length;m++){
+			var curR=txG.append("rect")
+				.attr("x",function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+				.attr("rx",1)
+				.attr("ry",1)
+				.attr("height",10)
+				.attr("width",function(d){
+					var tmpW=that.xScale(exList[m].getAttribute("stop")) - that.xScale(exList[m].getAttribute("start"));
+					if(that.minFeatureWidth>0&&tmpW<that.minFeatureWidth){
+						tmpW=that.minFeatureWidth;
+					}
+					return  tmpW;
+				})
+				//.attr("title",function(d){ return exList[m].getAttribute("ID");})
+				.attr("id",function(d,i){
+					var id=that.idPrefix+"Ex"+exList[m].getAttribute("ID");
+					if(exList[m].getAttribute("ID")==null){
+						id=that.idPrefix+"Ex"+d.getAttribute("ID")+"_"+m;
+					}
+					return id;
+				})
+				.style("fill",that.color)
+				.style("cursor", "pointer");
+			if(m>0){
+				var intStart=that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start"));
+				var intStop=that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start"));
+				txG.append("line")
+					.attr("x1",intStart)//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
+					.attr("x2",intStop)//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+					.attr("y1",5)
+					.attr("y2",5)
+					.attr("stroke",that.color)
+					.attr("stroke-width","2")
+					.attr("id",function(d,i){
+						var id=that.idPrefix+"Int"+exList[m-1].getAttribute("ID")+"_"+exList[m].getAttribute("ID");
+						if(exList[m].getAttribute("ID")==null){
+							id=that.idPrefix+"Int"+d.getAttribute("ID")+"_"+(m-1)+"_"+m;
+						}
+						return id;
+					});
+				var strChar=">";
+				if(d.getAttribute("strand")=="-1"){
+					strChar="<";
+				}
+				var fullChar=strChar;
+
+				var rectW=intStop-intStart;
+				var alt=0;
+				var charW=7.0;
+				if(rectW<charW){
+					fullChar="";
+				}else{
+					rectW=rectW-charW;
+					while(rectW>(charW+1)){
+						if(alt==0){
+							fullChar=fullChar+" ";
+							alt=1;
+						}else{
+							fullChar=fullChar+strChar;
+							alt=0;
+						}
+						rectW=rectW-charW;
+					}
+				}
+				txG.append("svg:text").attr("id",function(d){
+					var id=that.idPrefix+"IntTxt"+exList[m-1].getAttribute("ID")+"_"+exList[m].getAttribute("ID");
+					if(exList[m].getAttribute("ID")==null){
+						id=that.idPrefix+"IntTxt"+d.getAttribute("ID")+"_"+(m-1)+"_"+m;
+					}
+					return id;
+				})
+					.attr("dx",intStart+1)
+					.attr("dy","11")
+					.style("pointer-events","none")
+					.style("opacity","0.5")
+					.style("fill",that.color)
+					.style("font-size","16px")
+					.text(fullChar);
+
+			}
+		}
+
+	};
+
+	that.redraw = function (){
+		if(that.prevDensity!=that.density){
+			that.draw(that.data);
+		}else{
+			that.yMaxArr=new Array();
+			that.yArr=new Array();
+			that.yArr[0]=new Array();
+			for(var p=0;p<that.gsvg.width;p++){
+				that.yMaxArr[p]=0;
+				that.yArr[0][p]=0;
+			}
+			that.trackYMax=0;
+			var txG=d3.select("#Level"+that.gsvg.levelNumber+that.trackClass)
+				.selectAll("g."+that.idPrefix+"trx"+that.gsvg.levelNumber)
+				.attr("transform",function(d,i){ return "translate("+that.xScale(d.getAttribute("start"))+","+that.calcY(parseInt(d.getAttribute("start"),10),parseInt(d.getAttribute("stop"),10),i)+")";});
+
+			txG.each(function(d,i){
+				var tmpD=d;
+				var tmpI=i;
+				var exList=getAllChildrenByName(getFirstChildByName(d,that.xmlTagBlockElem+"List"),that.xmlTagBlockElem);
+				for(var m=0;m<exList.length;m++){
+					var id=that.idPrefix+"Ex"+exList[m].getAttribute("ID");
+					if(exList[m].getAttribute("ID")==null){
+						id=that.idPrefix+"Ex"+tmpD.getAttribute("ID")+"_"+m;
+					}
+
+					//d3.select("#Level"+that.gsvg.levelNumber+that.trackClass+" g#"+that.idPrefix+"tx"+tmpD.getAttribute("ID")+" rect#"+id)
+					that.svg.select("g#"+that.idPrefix+"tx"+tmpD.getAttribute("ID")+" rect#"+id)
+						.attr("x",function(d){ return that.xScale(exList[m].getAttribute("start")) -that.xScale(tmpD.getAttribute("start")); })
+						.attr("width",function(d){ return that.xScale(exList[m].getAttribute("stop")) - that.xScale(exList[m].getAttribute("start")); });
+
+					if(m>0){
+						var strChar=">";
+						if(d.getAttribute("strand")=="-1"){
+							strChar="<";
+						}
+						var fullChar=strChar;
+						var intStart=that.xScale(exList[m-1].getAttribute("stop")) -that.xScale(tmpD.getAttribute("start"));
+						var intStop=that.xScale(exList[m].getAttribute("start")) -that.xScale(tmpD.getAttribute("start"));
+						var rectW=intStop-intStart;
+						var alt=0;
+						var charW=7.0;
+						if(rectW<charW){
+							fullChar="";
+						}else{
+							rectW=rectW-charW;
+							while(rectW>(charW+1)){
+								if(alt==0){
+									fullChar=fullChar+" ";
+									alt=1;
+								}else{
+									fullChar=fullChar+strChar;
+									alt=0;
+								}
+								rectW=rectW-charW;
+							}
+						}
+						var id=exList[m-1].getAttribute("ID")+"_"+exList[m].getAttribute("ID");
+						if(exList[m].getAttribute("ID")==null){
+							id=tmpD.getAttribute("ID")+"_"+(m-1)+"_"+m;
+						}
+						that.svg.select("g#"+that.idPrefix+"tx"+tmpD.getAttribute("ID")+" line#"+that.idPrefix+"Int"+id)
+							.attr("x1",intStart)
+							.attr("x2",intStop);
+
+						that.svg.select("g#"+that.idPrefix+"tx"+tmpD.getAttribute("ID")+" #"+that.idPrefix+"IntTxt"+id)
+							.attr("dx",intStart+1).text(fullChar);
+					}
+				}
+			});
+			if(that.density==1){
+				that.svg.attr("height", 30);
+			}else if(that.density==2){
+				that.svg.attr("height", (d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("g."+that.idPrefix+"trx"+that.gsvg.levelNumber).size()+1)*15);
+			}else if(that.density==3){
+				that.svg.attr("height", (that.trackYMax+1)*15);
+			}
+			that.redrawSelectedArea();
+		}
+	};
+
+	that.updateFullData = function(retry,force){
+		if(that.updateControl==retry){
+			that.updateControl=retry+1;
+			var tmpMin=that.xScale.domain()[0];
+			var tmpMax=that.xScale.domain()[1];
+			var file=dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.gsvg.folderName+"/"+that.trackClass+".xml";
+			var http="";
+
+			d3.xml(file,function (error,d){
+				//console.log("Handling retry:"+retry+"  force:"+force);
+				if(error){
+					//console.log("ERROR******");
+					console.log(error);
+					if(retry==0 || force==1){
+						var tmpContext="/"+ pathPrefix;
+						if(!pathPrefix){
+							tmpContext="";
+						}
+						$.ajax({
+							url: tmpContext +"generateTrackXML.jsp",
+							type: 'GET',
+							cache: false,
+							async:true,
+							data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,folder:that.gsvg.folderName,track:that.trackClass,myOrganism: organism,genomeVer:genomeVer,},
+							//data: {chromosome: chr,minCoord:minCoord,maxCoord:maxCoord,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism, track: that.trackClass, folder: folderName,binSize:that.bin},
+							dataType: 'json',
+							success: function(data2){
+								if(ga){
+									ga('send','event','browser','generateTrackCustomTranscript');
+								}
+							},
+							error: function(xhr, status, error) {
+								console.log(error);
+							}
+						});
+					}
+					if(retry<3){//wait before trying again
+						var time=10000;
+						if(retry==1){
+							time=15000;
+						}
+						setTimeout(function (){
+							that.updateFullData(retry+1,0);
+						},time);
+					}else{
+						d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).select("#trkLbl").text("An errror occurred loading Track:"+that.trackClass);
+						d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).attr("height", 15);
+						that.gsvg.addTrackErrorRemove(that.svg,"#Level"+that.gsvg.levelNumber+that.trackClass);
+						that.hideLoading();
+					}
+				}else{
+					//console.log("SUCCESS******");
+					//console.log(d);
+					/*if(d==null){
+                        console.log("D:NULL");
+                        if(retry>=4){
+                            data=new Array();
+                            that.draw(data);
+                            that.hideLoading();
+                        }else{
+                            setTimeout(function (){
+                                that.updateFullData(retry+1,0);
+                            },5000);
+                        }
+                    }else{*/
+					//console.log("SETUP TRACK");
+					var data=d.documentElement.getElementsByTagName(that.xmlTag);
+					//console.log(that.trackClass+" received the following:");
+					//console.log(data);
+					that.draw(data);
+					that.hideLoading();
+					that.updateControl=0;
+					//}
+				}
+			});
+		}
+	};
+
+	that.updateSettingsFromUI=function(){
+		if($("#"+that.trackClass+"Dense"+that.level+"Select").length>0){
+			that.density=$("#"+that.trackClass+"Dense"+that.level+"Select").val();
+		}
+		if($("#"+that.trackClass+that.level+"colorSelect").length>0){
+			that.colorBy=$("#"+that.trackClass+that.level+"colorSelect").val();
+		}
+		if(that.colorBy=="Score"){
+			//console.log("colorby:Score");
+			that.minValue=$("#"+that.trackClass+"minData"+that.level).val();
+			that.maxValue=$("#"+that.trackClass+"maxData"+that.level).val();
+			if(testIE||testSafari){
+				that.minColor=$("#"+that.trackClass+"minColor"+that.level).spectrum("get").toHexString();
+				that.maxColor=$("#"+that.trackClass+"maxColor"+that.level).spectrum("get").toHexString();
+				//console.log(that.minColor+":::"+that.maxColor);
+			}else{
+				that.minColor=$("#"+that.trackClass+"minColor"+that.level).val();
+				that.maxColor=$("#"+that.trackClass+"maxColor"+that.level).val();
+			}
+			that.createColorScale();
+		}
+	};
+
+	that.generateSettingsDiv=function(topLevelSelector){
+		var d=trackInfo[that.trackClass];
+		that.savePrevious();
+		d3.select(topLevelSelector).select("table").select("tbody").html("");
+		if(d.Controls.length>0 && d.Controls!="null"){
+			var controls=new String(d.Controls).split(",");
+			var table=d3.select(topLevelSelector).select("table").select("tbody");
+			table.append("tr").append("td").style("font-weight","bold").html("Track Settings: "+d.Name);
+			for(var c=0;c<controls.length;c++){
+				if( typeof controls[c]!=='undefined' && controls[c]!=""){
+					var params=controls[c].split(";");
+					var div=table.append("tr").append("td");
+					var lbl=params[0].substr(5);
+					var def="";
+					if(params.length>3  && params[3].indexOf("Default=")==0){
+						def=params[3].substr(8);
+					}
+					if(params[1].toLowerCase().indexOf("select")==0){
+						div.append("text").text(lbl+": ");
+						var selClass=params[1].split(":");
+						var opts=params[2].split("}");
+						var id=that.trackClass+"Dense"+that.level+"Select";
+						if(selClass[1]=="colorSelect"){
+							id=that.trackClass+that.level+"colorSelect";
+						}
+						var sel=div.append("select").attr("id",id)
+							.attr("name",selClass[1]);
+						for(var o=0;o<opts.length;o++){
+							var option=opts[o].substr(1).split(":");
+							if(option.length==2){
+								var tmpOpt=sel.append("option").attr("value",option[1]).text(option[0]);
+								if((id.indexOf("Dense")>-1 && option[1]==that.density)|| (id.indexOf("colorSelect")>-1&&option[1]==that.colorBy)){
+									tmpOpt.attr("selected","selected");
+								}
+							}
+						}
+						d3.select("select#"+id).on("change", function(){
+							if($(this).val()=="Score"){
+								$("div."+that.trackClass+"Scale"+that.level).show();
+							}else if($(this).val()=="Color"){
+								$("div."+that.trackClass+"Scale"+that.level).hide();
+							}
+							that.updateSettingsFromUI();
+							that.draw(that.data);
+						});
+					}else if(params[1].toLowerCase().indexOf("txt")==0){
+						if($("#colorTrack"+that.level).size()==0){
+							div=div.append("div").attr("class",that.trackClass+"Scale"+that.level).style("display","none");
+						}else{
+							div=d3.select("#"+that.trackClass+"Scale"+that.level);
+						}
+						div.append("text").text(lbl+": ");
+						var selClass=params[1].split(":");
+						var opts=params[2].split("}");
+						var txtType="Data";
+						var inputType="text";
+						var inputMin=that.minValue;
+						var inputMax=that.maxValue;
+						if(selClass[1]=="color"){
+							txtType="Color";
+							inputType="Color";
+							inputMin=that.minColor;
+							inputMax=that.maxColor;
+						}
+
+						div.append("input").attr("type",inputType).attr("id",that.trackClass+"min"+txtType+that.level)
+							.attr("class",selClass[1])
+							.style("margin-left","5px")
+							.attr("value",inputMin);
+						div.append("text").text(" - ");
+						div.append("input").attr("type",inputType).attr("id",that.trackClass+"max"+txtType+that.level)
+							.attr("class",selClass[1])
+							.style("margin-left","5px")
+							.attr("value",inputMax);
+
+
+						if(txtType=="Color" && (testIE||testSafari)){//Change for IE and Safari
+							$("#"+that.trackClass+"min"+txtType+that.level).spectrum({
+								change: function(color){
+									that.updateSettingsFromUI();
+									//that.createColorScale();
+									that.draw(that.data);
+								}
+							});
+							$("#"+that.trackClass+"max"+txtType+that.level).spectrum({
+								change: function(color){
+									//that.maxColor=color.toHexString();
+									that.updateSettingsFromUI();
+									//that.createColorScale();
+									that.draw(that.data);
+								}
+							});
+						}else{
+							$("input#"+that.trackClass+"min"+txtType+that.level).on("change",function(){
+								that.updateSettingsFromUI();
+								that.draw(that.data);
+							});
+
+							$("input#"+that.trackClass+"max"+txtType+that.level).on("change",function(){
+								that.updateSettingsFromUI();
+								that.draw(that.data);
+							});
+						}
+					}
+				}
+			}
+			if($("#"+that.trackClass+that.level+"colorSelect").val()=="Score"){
+				$("div."+that.trackClass+"Scale"+that.level).show();
+			}else if($("#"+that.trackClass+that.level+"colorSelect").val()=="Color"){
+				$("div."+that.trackClass+"Scale"+that.level).hide();
+			}
+			var buttonDiv=table.append("tr").append("td");
+			buttonDiv.append("input").attr("type","button").attr("value","Remove Track").style("float","left").style("margin-left","5px").on("click",function(){
+				$('#trackSettingDialog').fadeOut("fast");
+				that.gsvg.removeTrack(that.trackClass);
+				var viewID=svgList[that.gsvg.levelNumber].currentView.ViewID;
+				var track=viewMenu[that.gsvg.levelNumber].findTrackByClass(that.trackClass,viewID);
+				var indx=viewMenu[that.gsvg.levelNumber].findTrackIndexWithViewID(track.TrackID,viewID);
+				viewMenu[that.gsvg.levelNumber].removeTrackWithIDIdx(indx,viewID);
+			});
+			buttonDiv.append("input").attr("type","button").attr("value","Apply").style("float","right").style("margin-left","5px").on("click",function(){
+				$('#trackSettingDialog').fadeOut("fast");
+			});
+			buttonDiv.append("input").attr("type","button").attr("value","Cancel").style("float","right").style("margin-left","5px").on("click",function(){
+				that.revertPrevious();
+				that.draw(that.data);
+				$('#trackSettingDialog').fadeOut("fast");
+			});
+		}else{
+			var table=d3.select(topLevelSelector).select("table").select("tbody");
+			table.append("tr").append("td").style("font-weight","bold").html("Track Settings: "+d.Name);
+			table.append("tr").append("td").html("Sorry no settings for this track.");
+			var buttonDiv=table.append("tr").append("td");
+			buttonDiv.append("input").attr("type","button").attr("value","Remove Track").style("float","left").style("margin-left","5px").on("click",function(){
+				$('#trackSettingDialog').fadeOut("fast");
+			});
+			buttonDiv.append("input").attr("type","button").attr("value","Cancel").style("float","right").style("margin-left","5px").on("click",function(){
+				$('#trackSettingDialog').fadeOut("fast");
+			});
+		}
+	};
+
+	that.generateTrackSettingString=function(){
+		return that.trackClass+","+that.density+","+that.colorBy+","+that.minValue+","+that.maxValue+","+that.minColor+","+that.maxColor+";";
+	};
+
+	that.updateFullData(0,0);
+
+	return that;
+}
+
 
 window['GenomeSVG']=GenomeSVG;

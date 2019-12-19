@@ -1588,9 +1588,9 @@ public class GeneDataTools {
             String ucscDsn="DBI:mysql:database="+source.get("ucsc")+";host="+ucscHost+";port=3306;";
             //NEED TO MODIFY******************************************************************************************************
             String tissue="Brain";
-            if(track.startsWith("liver")){
+            if(track.startsWith("liver") || track.toLowerCase().endsWith("liver")){
                 tissue="Liver";
-            }else if(track.startsWith("heart")){
+            }else if(track.startsWith("heart") || track.toLowerCase().endsWith("heart")){
                 tissue="Heart";
             }else if(track.startsWith("merged")){
                 tissue="Merged";
@@ -1639,7 +1639,7 @@ public class GeneDataTools {
                 log.debug(i + " EnvVar::" + envVar[i]);
             }
             //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
-            myExec_session = new ExecHandler(perlDir, perlArgs, envVar, fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+folderName+"/");
+            myExec_session = new ExecHandler(perlDir, perlArgs, envVar, fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+folderName+"/"+track);
             boolean exception=false;
             try {
                 myExec_session.runExec();
