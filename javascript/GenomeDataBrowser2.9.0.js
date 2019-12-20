@@ -1859,6 +1859,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				that.addTrackList(newTrack);
 			}
 		}else if(track.indexOf("cirRNA")>=0){
+			var trackDetails=trackInfo[track];
 			var newTrack= CircRNATrack(that,data,track,trackDetails.Name,3,additionalOptions);
 			that.addTrackList(newTrack);
 		}
@@ -12608,15 +12609,121 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 	that.colorValueField="score";
 	that.minFeatureWidth=1;
 	that.updateControl=0;
+	that.xmlTag="Gene";
+	that.xmlTagBlockElem="Block";
+	that.idPrefix="cirRNA";
 
 	if(that.colorBy=="Score"){
 		that.createColorScale();
 	}
 
+	that.draw=function(data){
+		that.data=data;
+		that.prevDensity=that.density;
+		//that.setDensity();
+		that.trackYMax=0;
+		that.yArr=new Array();
+		that.yArr[0]=new Array();
+		for(var j=0;j<that.gsvg.width;j++){
+			that.yMaxArr[j]=0;
+			that.yArr[0][j]=0;
+		}
+
+		d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("."+that.idPrefix+"trx"+that.gsvg.levelNumber).remove();
+		that.redrawLegend();
+		if(data){
+			//d3.select("#Level"+that.gsvg.levelNumber+that.trackClass)
+			var tmp=d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("."+that.idPrefix+"trx"+that.gsvg.levelNumber)
+				.data(data,key);
+
+			tmp.enter().append("g")
+				.attr("class",that.idPrefix+"trx"+that.gsvg.levelNumber)
+				.attr("transform",function(d,i){ return "translate("+that.xScale(d.getAttribute("start"))+","+that.calcY(parseInt(d.getAttribute("start"),10),parseInt(d.getAttribute("stop"),10),i)+")";})
+				.attr("id",function(d){return that.idPrefix+"tx"+d.getAttribute("ID");})
+				//.attr("pointer-events", "all")
+				.style("cursor", "move")
+				.on("mouseover", function(d) {
+					if(that.gsvg.isToolTip==0&&that.trackClass.indexOf("custom")!=0){
+						d3.select(this).selectAll("line").style("stroke","green");
+						d3.select(this).selectAll("rect").style("fill","green");
+						d3.select(this).selectAll("text").style("opacity","0.3").style("fill","green");
+						tt.transition()
+							.duration(200)
+							.style("opacity", 1);
+						tt.html(that.createToolTip(d))
+							.style("left", function(){return that.positionTTLeft(d3.event.pageX);})
+							.style("top", function(){return that.positionTTTop(d3.event.pageY);});
+						if(that.ttSVG==1){
+							that.setupToolTipSVG(d,0.05);
+						}
+					}
+				})
+				.on("mouseout", function(d) {
+					//if(that.gsvg.isToolTip==0){
+					/*mouseTTOver=0;
+                    console.log("FEATURE MOUSEOUT");*/
+					//var tmpThis=this;
+					//ttHideHandle=setTimeout(function(){
+
+					//if(mouseTTOver==0){
+					//	console.log("MOUSE STILL NOT OVER TT");
+					d3.select(this).selectAll("line").style("stroke",that.color);
+					d3.select(this).selectAll("rect").style("fill",that.color);
+					d3.select(this).selectAll("text").style("opacity","0.6").style("fill",that.color);
+					tt.transition()
+						.delay(100)
+						.duration(200)
+						.style("opacity", 0);
+					/*}else{
+                        console.log("MOUSE IS NOW OVER TT")
+                    }*/
+					//			},2000);
+					//}
+				})
+				.merge(tmp)
+				.each(that.drawTrx);
+			//tmp.attr("transform",
+			//		function(d,i){ return "translate("+that.xScale(d.getAttribute("start"))+","+that.calcY(parseInt(d.getAttribute("start"),10),parseInt(d.getAttribute("stop"),10),i)+")";});
+
+			tmp.exit().remove();
+		}
+		if(that.density==1){
+			that.svg.attr("height", 30);
+		}else if(that.density==2){
+			that.svg.attr("height", (d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("g."+that.idPrefix+"trx"+that.gsvg.levelNumber).size()+1)*15);
+		}else if(that.density==3){
+			that.svg.attr("height", (that.trackYMax+2)*15);
+		}
+		that.redrawSelectedArea();
+	};
 	that.drawTrx=function (d,i){
 		var txG=d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).select("#"+that.idPrefix+"tx"+d.getAttribute("ID"));
 		exList=getAllChildrenByName(getFirstChildByName(d,that.xmlTagBlockElem+"List"),that.xmlTagBlockElem);
+		minStart=that.xScale(d.getAttribute("start"));
+		maxEnd=that.xScale(d.getAttribute("stop"));
+		txG.append("line")
+			.attr("x1",minStart)//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
+			.attr("x2",minStart)//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("y1",5)
+			.attr("y2",-1)
+			.attr("stroke","#00FF00")
+			.attr("stroke-width","2");
+		txG.append("line")
+			.attr("x1",maxEnd)//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
+			.attr("x2",maxEnd)//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("y1",5)
+			.attr("y2",-1)
+			.attr("stroke","#00FF00")
+			.attr("stroke-width","2");
+		txG.append("line")
+			.attr("x1",minStart)//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
+			.attr("x2",maxEnd)//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("y1",-1)
+			.attr("y2",-1)
+			.attr("stroke","#00FF00")
+			.attr("stroke-width","2");
 		for(var m=0;m<exList.length;m++){
+
 			var curR=txG.append("rect")
 				.attr("x",function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
 				.attr("rx",1)
@@ -12657,7 +12764,7 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 						return id;
 					});
 				var strChar=">";
-				if(d.getAttribute("strand")=="-1"){
+				if(d.getAttribute("strand")==="-"){
 					strChar="<";
 				}
 				var fullChar=strChar;
@@ -12733,7 +12840,7 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 
 					if(m>0){
 						var strChar=">";
-						if(d.getAttribute("strand")=="-1"){
+						if(d.getAttribute("strand")==="-"){
 							strChar="<";
 						}
 						var fullChar=strChar;
@@ -12771,11 +12878,11 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 				}
 			});
 			if(that.density==1){
-				that.svg.attr("height", 30);
+				that.svg.attr("height", 40);
 			}else if(that.density==2){
-				that.svg.attr("height", (d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("g."+that.idPrefix+"trx"+that.gsvg.levelNumber).size()+1)*15);
+				that.svg.attr("height", (d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("g."+that.idPrefix+"trx"+that.gsvg.levelNumber).size()+1)*25);
 			}else if(that.density==3){
-				that.svg.attr("height", (that.trackYMax+1)*15);
+				that.svg.attr("height", (that.trackYMax+1)*25);
 			}
 			that.redrawSelectedArea();
 		}
@@ -12848,8 +12955,6 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
                     }else{*/
 					//console.log("SETUP TRACK");
 					var data=d.documentElement.getElementsByTagName(that.xmlTag);
-					//console.log(that.trackClass+" received the following:");
-					//console.log(data);
 					that.draw(data);
 					that.hideLoading();
 					that.updateControl=0;

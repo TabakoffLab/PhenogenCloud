@@ -129,8 +129,8 @@ sub readCirRNA {
             'PhenoGenID'       => $phenID,
             'Name'             => $name,
             'Chromosome'       => $chr,
-            'Start'            => $start,
-            'End'              => $end,
+            'start'            => $start,
+            'stop'              => $end,
             'Strand'           => $strand,
             'Source'           => $source,
             'Ciri'             => $ciri,
@@ -163,23 +163,22 @@ sub readCirRNA {
     my $s3d;
 
     my $genePntr=0;
-    my $strain=0;
+    my $strainCnt=0;
 
     # BIND TABLE COLUMNS TO VARIABLES
     $query_handle->bind_columns(\$cfid,\$strain,\$source,\$mean,\$s1,\$s2,\$s3,\$s1v,\$s2v,\$s3v,\$s1d,\$s2d,\$s3d);
     while($query_handle->fetch()){
         while($geneHOH{'Gene'}[$genePntr]{'ID'} != $cfid){
             $genePntr+=1;
-
-            $strain=0;
+            $strainCnt=0;
         }
         if($geneHOH{'Gene'}[$genePntr]{'ID'} == $cfid){
-            $geneHOH{'Gene'}[$genePntr]{'ExpressionList'}{'Expression'}[$strain]={ 'Strain'=>$strain,'Source'=>$source,'Mean'=>$mean};
-            $geneHOH{'Gene'}[$genePntr]{'ExpressionList'}{'Expression'}[$strain]{'Sample'}[0]={'Sample'=>$s1,'Value'=>$s1v,'DABG'=>$s1d};
-            $geneHOH{'Gene'}[$genePntr]{'ExpressionList'}{'Expression'}[$strain]{'Sample'}[1]={'Sample'=>$s2,'Value'=>$s2v,'DABG'=>$s2d};
-            $geneHOH{'Gene'}[$genePntr]{'ExpressionList'}{'Expression'}[$strain]{'Sample'}[2]={'Sample'=>$s3,'Value'=>$s3v,'DABG'=>$s3d};
+            $geneHOH{'Gene'}[$genePntr]{'ExpressionList'}{'Expression'}[$strainCnt]={ 'Strain'=>$strain,'Source'=>$source,'Mean'=>$mean};
+            $geneHOH{'Gene'}[$genePntr]{'ExpressionList'}{'Expression'}[$strainCnt]{'Sample'}[0]={'Sample'=>$s1,'Value'=>$s1v,'DABG'=>$s1d};
+            $geneHOH{'Gene'}[$genePntr]{'ExpressionList'}{'Expression'}[$strainCnt]{'Sample'}[1]={'Sample'=>$s2,'Value'=>$s2v,'DABG'=>$s2d};
+            $geneHOH{'Gene'}[$genePntr]{'ExpressionList'}{'Expression'}[$strainCnt]{'Sample'}[2]={'Sample'=>$s3,'Value'=>$s3v,'DABG'=>$s3d};
         }
-        $strain+=1;
+        $strainCnt+=1;
     }
     $query_handle->finish();
 
@@ -205,8 +204,8 @@ sub readCirRNA {
         }
         if($geneHOH{'Gene'}[$genePntr]{'ID'} == $cfid){
             $geneHOH{'Gene'}[$genePntr]{'BlockList'}{'Block'}[$blkCnt] = {
-                'Start'=>$blkStart,
-                'End'=>$blkEnd,
+                'start'=>$blkStart,
+                'stop'=>$blkEnd,
                 'Source'=>$src,
                 'Ver'=>$structver
             };
