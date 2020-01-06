@@ -14,7 +14,7 @@ chart=function(params){
 	that.drawType="scatter";
 	that.maxHMHeight=35;
 	that.minHMHeight=10;
-	that.topMarg=45;
+	that.topMarg=60;
 	that.leftMarg=100;
 	that.sortBy={"col":"","dir":""};
 	that.display={"herit":true,"controls":true};
@@ -675,7 +675,7 @@ chart=function(params){
 					//that.svg.selectAll("#line"+d).style("opacity",100);
 					setTimeout(function(){
 						that.fadeOutRunning=1;
-						that.svg.selectAll(".dot."+d.replace(/\./g,"_"))
+						that.svg.selectAll(".dot."+(d.replace(/\./g,"_")))
 							.transition()
 							.duration(200)
 							.style("opacity",100)
@@ -688,7 +688,7 @@ chart=function(params){
 					//that.svg.selectAll("#line"+d).style("opacity",0);
 					setTimeout(function(){
 						that.fadeOutRunning=1;
-						that.svg.selectAll(".dot."+d.replace(/\./g,"_"))
+						that.svg.selectAll(".dot."+(d.replace(/\./g,"_")))
 							.transition()
 							.duration(200)
 							.style("opacity",0)
@@ -1647,6 +1647,8 @@ chart=function(params){
 			list=[];
 			that.data=[];
 		}
+		console.log("data before draw");
+		console.log(that.data);
 		that.draw();
 	};
 

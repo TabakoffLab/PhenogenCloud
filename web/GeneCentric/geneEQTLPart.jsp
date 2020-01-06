@@ -328,7 +328,7 @@
 						<%
 							selectName = "version";
 							if(version.equals("")){
-								selectedOption ="3";
+								selectedOption ="5";
 							}else{
 								selectedOption = version;
 							}
@@ -336,6 +336,7 @@
 							optionHash = new LinkedHashMap();
 							optionHash.put("1", "HRDP v3");
 							optionHash.put("3", "HRDP v4");
+							optionHash.put("5", "HRDP v5");
 						%><%@ include file="/web/common/selectBox.jsp" %>
 						</span>
                                 

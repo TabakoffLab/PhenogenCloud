@@ -127,7 +127,6 @@ public class GeneDataTools {
             }
             String atQuery="select Array_type_id from array_types "+
                         "where array_name like 'Affymetrix GeneChip "+organismLong+" Exon 1.0 ST Array'";
-            
             /*
             *  This does only look for the brain RNA dataset id.  Right now the tables link that RNA Dataset ID to
             *  the other datasets.  This means finding the right organism and genome version for now is sufficient without
@@ -135,13 +134,14 @@ public class GeneDataTools {
             */
             String rnaIDQuery="select rna_dataset_id from RNA_DATASET "+
                         "where organism = '"+organism+"' and tissue='Brain' and strain_panel='BNLX/SHRH' and visible=1 and genome_id='"+genomeVer+"' order by BUILD_VERSION DESC";
+            log.debug("\nRNAID Query:\n"+rnaIDQuery);
             Connection conn=null;
             PreparedStatement ps=null;
             try {
                 conn=pool.getConnection();
                 ps = conn.prepareStatement(atQuery);
                 ResultSet rs = ps.executeQuery();
-                while(rs.next()){
+                if(rs.next()){
                     ret[0]=rs.getInt(1);
                 }
                 ps.close();

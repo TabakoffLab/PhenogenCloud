@@ -907,7 +907,6 @@ public class AsyncGeneDataTools extends Thread {
                 rs=ps.executeQuery();
                 log.debug(rs.getStatement());
                 while (rs.next()){
-
                     String geneID=rs.getString(1);
                     String trxID=rs.getString(2);
                     double gHerit=rs.getDouble(3);
