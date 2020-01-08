@@ -28,7 +28,8 @@ chart=function(params){
 	that.filteredID="";
 	that.selectedGene="";
 	that.fadeOutRunning=0;
-
+	that.geneIDs=[];
+	that.maxYList=[];
 	
 	that.parseOptions=function(params){
 		//Initialize from Parameters
@@ -661,7 +662,7 @@ chart=function(params){
 			});
 
 	  	that.legend.append("rect")
-	  		.attr("class",function(d){ return "legend box "+d;})
+	  		.attr("class",function(d){ return "legend box "+(d.replace(/\./g,"_"));})
 	      .attr("x",0)
 	      .attr("width", 18)
 	      .attr("height", 18)
@@ -697,7 +698,15 @@ chart=function(params){
 							});
 					},10);
 				}
-
+				setTimeout(function(){
+					curYMax=that.findMaxDisplayed();
+					console.log("curMaxY:"+curYMax);
+					if(that.yMax!==curYMax) {
+						that.yMax=curYMax;
+						that.y.domain([that.yMin,that.yMax]).nice();
+						that.redrawScatterLine();
+					}
+				},1);
 
 	      })
 	      .on("mouseout",function(){
@@ -751,6 +760,19 @@ chart=function(params){
 	      		that.help.html("Click to sort strains by values of this gene/transcript.");
 	      });
 
+	};
+	that.findMaxDisplayed = function(){
+		tmpMax=-1;
+		console.log("findMax");
+		for(i=0;i<that.geneIDs.length;i++){
+			console.log(".legend.box."+that.geneIDs[i].id.replace(/\./g,"_"));
+			if(d3.selectAll(".legend.box."+that.geneIDs[i].id.replace(/\./g,"_")).style("fill")!=d3.rgb(255,255,255)) {
+					if(tmpMax<that.maxYList[i]){
+						tmpMax=that.maxYList[i];
+					}
+			}
+		}
+		return tmpMax;
 	};
 	that.redrawScatterLine=function(){
 		if(that.data && that.data.length>0){
@@ -1571,7 +1593,7 @@ chart=function(params){
 	//Parse results from multiple genes
 	that.parseMultipleGenes=function(d){
 		that.strains=[];
-		that.geneIDs=[];
+
 		that.data=[];
 		list=d.GENELIST;
 		that.seriesCount=0;
@@ -1607,11 +1629,15 @@ chart=function(params){
 					that.display.herit=false;
 				}
 				that.geneIDs.push(tmp);
-				
+				console.log("pushed:"+id);
 				//console.log(list[k].VALUES.length);
 				for(i=0;i<list[k].VALUES.length;i++){
 					if(k===0){
 						that.strains.push(list[k].VALUES[i].Strain);
+					}
+					if(i===0){
+						that.maxYList.push(list[k].VALUES[i][that.value]);
+						console.log("set initial value:"+list[k].VALUES[i][that.value]);
 					}
 					that.data.push({"id":id,"strain":list[k].VALUES[i].Strain,"val":list[k].VALUES[i][that.value]});
 					if(that.yMin>list[k].VALUES[i][that.value]){
@@ -1619,6 +1645,9 @@ chart=function(params){
 					}
 					if(that.yMax<list[k].VALUES[i][that.value]){
 						that.yMax=list[k].VALUES[i][that.value];
+					}
+					if(that.maxYList[that.maxYList.length-1]<list[k].VALUES[i][that.value]){
+						that.maxYList[that.maxYList.length-1]=list[k].VALUES[i][that.value];
 					}
 				}
 				for(j=0;j<list[k].TRXLIST.length;j++){
@@ -1628,7 +1657,12 @@ chart=function(params){
 						tmp.herit=list[k].TRXLIST[j].HERIT;
 					}
 					that.geneIDs.push(tmp);
+					console.log("parsed:"+id);
 					for(i=0;i<list[k].TRXLIST[j].VALUES.length;i++){
+						if(i===0){
+							that.maxYList.push(list[k].TRXLIST[j].VALUES[i][that.value]);
+							console.log("set initial value"+list[k].TRXLIST[j].VALUES[i][that.value]);
+						}
 						that.data.push({"id":id,"strain":list[k].TRXLIST[j].VALUES[i].Strain,"val":list[k].TRXLIST[j].VALUES[i][that.value]});
 						if(that.yMin>list[k].TRXLIST[j].VALUES[i][that.value]){
 							that.yMin=list[k].TRXLIST[j].VALUES[i][that.value];
@@ -1636,9 +1670,15 @@ chart=function(params){
 						if(that.yMax<list[k].TRXLIST[j].VALUES[i][that.value]){
 							that.yMax=list[k].TRXLIST[j].VALUES[i][that.value];
 						}
+						if(that.maxYList[that.maxYList.length-1]<list[k].TRXLIST[j].VALUES[i][that.value]){
+							that.maxYList[that.maxYList.length-1]=list[k].TRXLIST[j].VALUES[i][that.value];
+						}
 					}
 				}
 			}
+			console.log("parsedData");
+			console.log(that.geneIDs);
+			console.log(that.maxYList);
 			if(that.seriesCount>20){
 				that.drawType="heatmap";
 			}
