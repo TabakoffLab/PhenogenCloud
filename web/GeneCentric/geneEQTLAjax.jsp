@@ -17,10 +17,12 @@
 	String gcPath="";
         String source="seq";
         String version="";
+        String trxID="";
 	int selectedGene=0;
 	ArrayList<String>geneSymbol=new ArrayList<String>();
+	ArrayList<String>trxList=new ArrayList<String>();
 	
-	
+
 	
 	if(request.getParameter("levels")!=null && !request.getParameter("levels").equals("")){			
 				String tmpSelectedLevels = FilterInput.getFilteredInput(request.getParameter("levels"));
@@ -67,7 +69,14 @@
 		genomeVer=request.getParameter("genomeVer");
 	}
 	if(request.getParameter("version")!=null){
-		version=request.getParameter("version");
+		version=FilterInput.getFilteredInput(request.getParameter("version"));
+	}
+	if(request.getParameter("trxCB")!=null){
+		trxID=FilterInput.getFilteredInput(request.getParameter("trxCB"));
+	}
+
+	if(source.equals("seq")) {
+		trxList = gdt.getTranscriptList(id, myOrganism, "Merged", genomeVer,version);
 	}
 
 	gcPath=applicationRoot + contextRoot+"tmpData/browserCache/"+genomeVer+"/geneData/" +id+"/";

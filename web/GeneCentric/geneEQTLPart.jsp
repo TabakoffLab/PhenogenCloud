@@ -57,6 +57,10 @@
 			var path="<%=gcPath%>";
 			var version=$('#version').val();
 			var geneSymbol="<%=geneSymbol.get(selectedGene)%>";
+			if($('#trxCB').val()!=="gene"){
+				geneSymbol=$('#trxCB').val();
+				tcID=$('#trxCB').val();
+			}
 			$.ajax({
 				url: "/web/GeneCentric/runCircos.jsp",
    				type: 'GET',
@@ -338,8 +342,24 @@
 							optionHash.put("3", "HRDP v4");
 							optionHash.put("5", "HRDP v5");
 						%><%@ include file="/web/common/selectBox.jsp" %>
+
+							<BR><strong>Gene/Transcript:</strong>
+						<span class="eQTLtooltip" title="Select Gene level or individual transcripts."><img src="<%=imagesDir%>icons/info.gif"></span>
+						<%
+							selectName = "trxCB";
+							if(trxID.equals("")){
+								selectedOption ="gene";
+							}else{
+								selectedOption =trxID;
+							}
+							style = "";
+							optionHash = new LinkedHashMap();
+							optionHash.put("gene", geneSymbol+" - Gene level");
+							for(int i=0;i<trxList.size();i++){
+								optionHash.put(trxList.get(i), trxList.get(i));
+							}
+						%><%@ include file="/web/common/selectBox.jsp" %>
 						</span>
-                                
                     </td>
 			<td style="text-align:center;">
 				<strong>P-value Threshold for Highlighting:</strong> 

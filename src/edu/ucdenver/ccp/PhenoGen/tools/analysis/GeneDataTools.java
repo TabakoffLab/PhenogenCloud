@@ -305,7 +305,7 @@ public class GeneDataTools {
     public String translateENStoPRN(String rnaDS,String ens){
         String ret="";
 
-        String rnaIDQuery="select merge_gene_id from rna_transcripts rt " +
+        String rnaIDQuery="select distinct merge_gene_id from rna_transcripts rt " +
                 "where rt.rna_dataset_id="+rnaDS +" "+
                 "and rt.rna_transcript_id in (select rna_transcript_id from rna_transcripts_annot where annotation like '"+ens+":%')";
 
@@ -328,6 +328,35 @@ public class GeneDataTools {
 
         }
 
+        return ret;
+    }
+
+    public ArrayList<String> getTranscriptList(String geneID,String organism,String tissue,String genomeVer,String version){
+        ArrayList<String> ret=new ArrayList<>();
+
+        int[] rnaDS=getOrganismSpecificIdentifiers(organism,tissue,genomeVer,version);
+        if(geneID.startsWith("ENS")){
+            geneID=translateENStoPRN(Integer.toString(rnaDS[1]),geneID);
+            geneID=geneID.substring(1,geneID.length()-1);
+        }
+        String trxQuery="select isoform_id,merge_isoform_id from rna_transcripts rt " +
+                "where rt.rna_dataset_id="+rnaDS[1] +" "+
+                "and rt.gene_id='"+geneID+"' or rt.merge_gene_id='"+geneID+"'";
+        log.debug("\ntrx ID list Query:\n"+trxQuery);
+        try(Connection conn=pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(trxQuery);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String tmp=rs.getString(1);
+                if(!tmp.startsWith("PRN")){
+                    tmp=rs.getString(2);
+                }
+                ret.add(tmp);
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            log.error("SQL Exception retreiving ENS ID" ,ex);
+        }
         return ret;
     }
     
