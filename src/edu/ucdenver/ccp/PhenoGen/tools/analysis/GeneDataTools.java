@@ -127,7 +127,6 @@ public class GeneDataTools {
             }
             String atQuery="select Array_type_id from array_types "+
                         "where array_name like 'Affymetrix GeneChip "+organismLong+" Exon 1.0 ST Array'";
-            
             /*
             *  This does only look for the brain RNA dataset id.  Right now the tables link that RNA Dataset ID to
             *  the other datasets.  This means finding the right organism and genome version for now is sufficient without
@@ -135,13 +134,14 @@ public class GeneDataTools {
             */
             String rnaIDQuery="select rna_dataset_id from RNA_DATASET "+
                         "where organism = '"+organism+"' and tissue='Brain' and strain_panel='BNLX/SHRH' and visible=1 and genome_id='"+genomeVer+"' order by BUILD_VERSION DESC";
+            log.debug("\nRNAID Query:\n"+rnaIDQuery);
             Connection conn=null;
             PreparedStatement ps=null;
             try {
                 conn=pool.getConnection();
                 ps = conn.prepareStatement(atQuery);
                 ResultSet rs = ps.executeQuery();
-                while(rs.next()){
+                if(rs.next()){
                     ret[0]=rs.getInt(1);
                 }
                 ps.close();
@@ -305,7 +305,7 @@ public class GeneDataTools {
     public String translateENStoPRN(String rnaDS,String ens){
         String ret="";
 
-        String rnaIDQuery="select merge_gene_id from rna_transcripts rt " +
+        String rnaIDQuery="select distinct merge_gene_id from rna_transcripts rt " +
                 "where rt.rna_dataset_id="+rnaDS +" "+
                 "and rt.rna_transcript_id in (select rna_transcript_id from rna_transcripts_annot where annotation like '"+ens+":%')";
 
@@ -328,6 +328,35 @@ public class GeneDataTools {
 
         }
 
+        return ret;
+    }
+
+    public ArrayList<String> getTranscriptList(String geneID,String organism,String tissue,String genomeVer,String version){
+        ArrayList<String> ret=new ArrayList<>();
+
+        int[] rnaDS=getOrganismSpecificIdentifiers(organism,tissue,genomeVer,version);
+        if(geneID.startsWith("ENS")){
+            geneID=translateENStoPRN(Integer.toString(rnaDS[1]),geneID);
+            geneID=geneID.substring(1,geneID.length()-1);
+        }
+        String trxQuery="select isoform_id,merge_isoform_id from rna_transcripts rt " +
+                "where rt.rna_dataset_id="+rnaDS[1] +" "+
+                "and rt.gene_id='"+geneID+"' or rt.merge_gene_id='"+geneID+"'";
+        log.debug("\ntrx ID list Query:\n"+trxQuery);
+        try(Connection conn=pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(trxQuery);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String tmp=rs.getString(1);
+                if(!tmp.startsWith("PRN")){
+                    tmp=rs.getString(2);
+                }
+                ret.add(tmp);
+            }
+            ps.close();
+        } catch (SQLException ex) {
+            log.error("SQL Exception retreiving ENS ID" ,ex);
+        }
         return ret;
     }
     
@@ -1588,9 +1617,9 @@ public class GeneDataTools {
             String ucscDsn="DBI:mysql:database="+source.get("ucsc")+";host="+ucscHost+";port=3306;";
             //NEED TO MODIFY******************************************************************************************************
             String tissue="Brain";
-            if(track.startsWith("liver")){
+            if(track.startsWith("liver") || track.toLowerCase().endsWith("liver")){
                 tissue="Liver";
-            }else if(track.startsWith("heart")){
+            }else if(track.startsWith("heart") || track.toLowerCase().endsWith("heart")){
                 tissue="Heart";
             }else if(track.startsWith("merged")){
                 tissue="Merged";
@@ -1639,7 +1668,7 @@ public class GeneDataTools {
                 log.debug(i + " EnvVar::" + envVar[i]);
             }
             //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
-            myExec_session = new ExecHandler(perlDir, perlArgs, envVar, fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+folderName+"/");
+            myExec_session = new ExecHandler(perlDir, perlArgs, envVar, fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/"+folderName+"/"+track);
             boolean exception=false;
             try {
                 myExec_session.runExec();

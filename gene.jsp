@@ -635,22 +635,22 @@
 
 
 
-<div style="text-align:center">
+<div style="text-align:center;width:100%;">
 
 
 
     <form method="post"
           action="gene.jsp"
           enctype="application/x-www-form-urlencoded"
-          name="geneCentricForm" id="geneCentricForm" style="display:inline-block;">
+          name="geneCentricForm" id="geneCentricForm" style="display:inline-block;width:100%;">
         <%if (!regionError.equals("")) {%>
-        <div style=" color:#FF0000;"><%=regionError%>
+        <div style="color:#FF0000;width:90%"><%=regionError%>
         </div>
         <%}%>
-        <div class="widget">
+        <div class="widget" style="width:98%" >
 
             <fieldset>
-                <legend>Specify a Gene or Region to get started:</legend>
+                <legend>1. Specify a Gene or Region to get started:</legend>
 
             <label>Gene Identifier or Region:
                 <input type="text" name="geneTxt" id="geneTxt" size="35"
@@ -693,7 +693,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
             </fieldset>
 
             <fieldset>
-                <legend>What data do you want to view?</legend>
+                <legend>2. What data do you want to view?</legend>
                 <div class="controlgroup">
             <label>Initial View:
                 <select name="defaultView" id="defaultView">
@@ -723,25 +723,231 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                 <!--Customize  View:
                 <div id="accordion">
                     <h3>Tissues</h3>
-                    <div>
+                    <div class="checkbox-choice">
                         <p>
-                            <label for="checkbox-1">Whole Brain</label>
                             <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-2">Liver</label>
+                            <label for="checkbox-1">Whole Brain (HRDP RNA-Seq, HXB Arrays)</label><BR>
                             <input type="checkbox" name="checkbox-2" id="checkbox-2">
-                            <label for="checkbox-3">Heart</label>
+                            <label for="checkbox-2">Liver (HRDP RNA-Seq, HXB Arrays)</label><BR>
                             <input type="checkbox" name="checkbox-3" id="checkbox-3">
-                            <label for="checkbox-4">Brown Adipose (Array only)</label>
+                            <label for="checkbox-3">Heart (BNLx/SHR RNA-Seq, HXB Arrays) </label><BR>
                             <input type="checkbox" name="checkbox-4" id="checkbox-4">
+                            <label for="checkbox-4">Brown Adipose (HXB Arrays)</label>
                         </p>
                     </div>
                     <h3>Data Source</h3>
                     <div>
-                        <p></p>
+                        <p>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
+                            <label for="checkbox-1">Total RNA-Seq (Ribosome depleted)</label><BR>
+                            <input type="checkbox" name="checkbox-2" id="checkbox-2">
+                            <label for="checkbox-2">Small RNA-Seq</label><BR>
+                            <input type="checkbox" name="checkbox-2" id="checkbox-2">
+                            <label for="checkbox-2">Affymetrix Exon Arrays</label><BR>
+                            <input type="checkbox" name="checkbox-2" id="checkbox-2">
+                            <label for="checkbox-2">Circular RNAs (Predicted Circular RNAs / Array cirRNA expression - BNLx/SHR Heart) </label><BR>
+                            <span class="checkbox-l2">
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">Predicted Circular RNAs (BNLx/SHR Brain/Heart/Liver) </label><BR>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">Array cirRNA Expression (BNLx/SHR Heart) </label>
+                            </span>
+                        </p>
                     </div>
                     <h3>Track Types</h3>
                     <div>
-                        <p></p>
+                        <p>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
+                            <label for="checkbox-1">Reconstructed Transcriptome</label><BR>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
+                            <label for="checkbox-1">Splice Junctions</label><BR>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
+                            <label for="checkbox-1">Strain Read counts(Total)</label><BR>
+                            <span class="checkbox-l2">
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                BNLx</label>
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                SHR</label>
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                BXH2</label>
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                BXH3</label>
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                BXH5</label>
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                BXH6</label>
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                BXH8</label>
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                BXH9</label>
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                BXH10</label>
+                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                                BXH11</label>
+                                 <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
+                               BXH12</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH13</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB1</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB2</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB3</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB4</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB5</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB7</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB10</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB13</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB15</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB17</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB18</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB20</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB21</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB22</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB23</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB24</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB25</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB27</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB29</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB31</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">F344/Stm</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">LE/Stm</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">ACI</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">Cop</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">DA</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">LEW/Crl</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">LEW/SsNHsd</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">SHRSP</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">SR</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">SS</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">WKY</label>
+                            </span><BR>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
+                            <label for="checkbox-1">Strain Read counts(Sampled)</label><BR>
+                            <span class="checkbox-l2">
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BNLx</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">SHR</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH2</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH3</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH5</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH6</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH8</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH9</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH10</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH11</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH12</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">BXH13</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB1</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB2</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB3</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB4</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB5</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB7</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB10</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB13</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB15</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB17</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB18</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB20</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB21</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB22</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB23</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB24</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB25</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB27</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB29</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">HXB31</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">F344/Stm</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">LE/Stm</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">ACI</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">Cop</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">DA</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">LEW/Crl</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">LEW/SsNHsd</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">SHRSP</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">SR</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">SS</label>
+                                <input type="checkbox" name="checkbox-2" id="">
+                                <label for="checkbox-2">WKY</label>
+                            </span>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
+                            <label for="checkbox-1">Small RNA-Seq Features</label><BR>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
+                            <label for="checkbox-1">Circular RNA Features</label><BR>
+                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
+                            <label for="checkbox-1">Array Probe Sets</label><BR>
+                        </p>
                     </div>
                 </div>-->
             </fieldset>

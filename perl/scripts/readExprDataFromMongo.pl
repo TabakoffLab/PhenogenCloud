@@ -21,6 +21,7 @@ sub readExprDataFromDB{
 	my($dsid,$geneList,$heritFile,$dsn,$usr,$passwd)=@_;   
 
 	my %exprHOH; # giant array of hashes and arrays containing gene/trx expr data
+	#print "ds:$dsid\ngl:$geneList\nherit:$heritFile\n$dsn\n";
     print "geneList:".$geneList."\n";
 	my $client = MongoDB::MongoClient->new(host => $dsn,username => $usr, password => $passwd, db_name=>'admin',  auth_mechanism => 'SCRAM-SHA-1');
 	my $database   = $client->get_database( 'RNASEQ_EXPR' );
@@ -188,9 +189,7 @@ my $arg5 = $ARGV[4]; # dsn
 my $arg6 = $ARGV[5]; #usr
 my $arg7 = $ARGV[6]; #password
 
-print "1:".$arg1."\n";
-print "2:".$arg2."\n";
-print "3:".$arg3."\n";
+
 my $ref=readExprDataFromDB( $arg2, $arg3, $arg4, $arg5, $arg6, $arg7);
 my %exprData=%$ref;
 

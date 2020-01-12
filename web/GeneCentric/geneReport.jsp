@@ -819,9 +819,14 @@ Add report here.
         <%@ include file="include/linkGN.js" %>
         var peGR;
         setTimeout(function(){
-                console.log("EXPR_URL:<%=genURL%>");
+                var tmpURL="<%=genURL%>";
+                console.log(location.protocol);
+                if (location.protocol == 'http:') {
+                    tmpURL = tmpURL.replace("https://", "http://");
+                }
+                console.log("tmpURL:"+tmpURL);
                 peGR=PhenogenExpr({
-                    "dataPrefix":"<%=genURL%>",
+                    "dataPrefix":tmpURL,
                     "div":"geneApp",
                     "genomeBrowser":gs,
                     "type":"scatter",
