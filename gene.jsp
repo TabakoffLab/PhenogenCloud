@@ -720,7 +720,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                     <span style="padding-left:10px;"> <input type="submit" name="goBTN" id="goBTN" value="Go"
                                                              onClick="return displayWorking()"></span>
                 </div>
-                Customize  View:
+                <!--Customize  View:
                 <div id="accordion">
                     <h3>Tissues</h3>
                     <div class="checkbox-choice">
@@ -949,7 +949,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                             <label for="checkbox-1">Array Probe Sets</label><BR>
                         </p>
                     </div>
-                </div>
+                </div>-->
             </fieldset>
         </div>
 

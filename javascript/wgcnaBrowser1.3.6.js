@@ -64,6 +64,13 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
         	that.panel="BNLx/SHR";
             that.chrLen=20;
             if(that.selSource==="seq"){
+				if(that.version==="5") {
+					if (tissue === "Whole Brain") {
+						that.wDSID = 11;
+					} else if (tissue === "Liver") {
+						that.wDSID = 12;
+					}
+				}else
             	if(that.version==="2") {
 					if (tissue === "Whole Brain") {
 						that.wDSID = 8;
@@ -557,7 +564,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
         that.viewBar.append("span").attr("class","wgcnaControltooltip").attr("title","View Circos plot of the module Eigengene eQTLs.<BR><BR>Have a question about this view click the <img src=\""+contextRoot+"web/images/icons/help.png\"> above for a detailed description of each view.").style("margin-left","5px").append("img").attr("src","/web/images/icons/info.gif");
 
         that.viewBar.append("br");
-        that.viewBar.append("input").attr("type","radio").attr("id","wgcnaGOViewRB").attr("name","wgcnaViewRB").attr("value","go").style("margin-left","7px").style("margin-right","3px")//.attr('disabled',true)
+        that.viewBar.append("input").attr("type","radio").attr("id","wgcnaGOViewRB").attr("name","wgcnaViewRB").attr("value","go").style("margin-left","7px").style("margin-right","3px").attr('disabled',function(){if(that.wDSID>10){return true;}else{return false;}})
         	.on("click",function(){
 	            that.viewType="go";
 	            that.createSingleWGCNAImage();
@@ -586,7 +593,8 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
         
         
         that.viewBar.append("br");
-        that.viewBar.append("input").attr("type","radio").attr("id","wgcnaMetaViewRB").attr("name","wgcnaViewRB").attr("value","meta").style("margin-left","7px").style("margin-right","3px").on("click",function(){
+        that.viewBar.append("input").attr("type","radio").attr("id","wgcnaMetaViewRB").attr("name","wgcnaViewRB").attr("value","meta").style("margin-left","7px").style("margin-right","3px").attr('disabled',function(){if(that.wDSID>10){return true;}else{return false;}})
+			.on("click",function(){
             that.viewType="meta";
             that.createSingleWGCNAImage();
             if(ga){
@@ -635,18 +643,22 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
        		}else if(that.selSource==="seq"){
 				$('span#spanVersion').show();
        			if(that.tissue==="Whole Brain"){
-	            	that.wDSID=8;
-	            	if(that.version==="1"){
+	            	that.wDSID=11;
+	            	if(that.version==="2"){
+						that.wDSID=8;
+					}else if(that.version==="1"){
 						that.wDSID=6;
 					}
 	            }else if(that.tissue==="Liver"){
-					that.wDSID=9;
-					if(that.version==="1"){
+					that.wDSID=12;
+					if(that.version==="2"){
+						that.wDSID=9;
+					}else if(that.version==="1"){
 						that.wDSID=7;
 					}
 	            }else{
-	            	that.wDSID=8;
-	            	that.version="2";
+	            	that.wDSID=11;
+	            	that.version="5";
 	            	d3.select("#wgcnaTissueSelect").select("option[value=\"Brain\"]").attr("selected","selected");
 					d3.select("#wgcnaVersionSelect").select("option[value=\"2\"]").attr("selected","selected");
 	            }
@@ -690,13 +702,17 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 	            }
        		}else if(that.selSource==="seq"){
        			if(that.tissue==="Whole Brain"){
-	            	that.wDSID=8;
-					if(that.version==="1"){
+	            	that.wDSID=11;
+					if(that.version==="2"){
+						that.wDSID=8;
+					}else if(that.version==="1"){
 						that.wDSID=6;
 					}
 	            }else if(that.tissue==="Liver"){
-					that.wDSID=9;
-					if(that.version==="1"){
+					that.wDSID=12;
+					if(that.version==="2"){
+						that.wDSID=9;
+					}else if(that.version==="1"){
 						that.wDSID=7;
 					}
 	            }
@@ -725,20 +741,24 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 		var sel=spanV.append("select").attr("id","wgcnaVersionSelect").on("change",function(){
 			that.version=$('#wgcnaVersionSelect').val();
 			if(that.tissue==="Whole Brain"){
-				that.wDSID=8;
-				if(that.version==="1"){
+				that.wDSID=11;
+				if(that.version==="2"){
+					that.wDSID=8;
+				}else if(that.version==="1"){
 					that.wDSID=6;
 				}
 			}else if(that.tissue==="Liver"){
-				that.wDSID=9;
-				if(that.version==="1"){
+				that.wDSID=12;
+				if(that.version==="2"){
+					that.wDSID=9;
+				}else if(that.version==="1"){
 					that.wDSID=7;
 				}
 			}
 			that.requestModuleList();
 		});
-		that.ver=["2","1"];
-		that.dispVer=["HRDP v4","HRDP v3"];
+		that.ver=["5","2","1"];
+		that.dispVer=["HRDP v5","HRDP v4","HRDP v3"];
 		for(var i=0;i<that.ver.length;i++){
 			sel.append("option").attr("value",that.ver[i]).text(that.dispVer[i]);
 		}
