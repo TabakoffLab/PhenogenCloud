@@ -346,7 +346,7 @@ fieldset {
     vertical-align: top;
     position: relative;
     display:inline-block;
-    min-height: 300px;
+    min-height: 112px;
 }
 
 div.checkbox-choice input{
