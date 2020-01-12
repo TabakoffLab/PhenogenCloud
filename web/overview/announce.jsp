@@ -12,6 +12,19 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7</H2>
+                        <div style="margin-left:5px;">
+                            <UL>
+                                <LI>Version 3.7 has been released with HRDP v5.
+                                    <ul><LI>Transcriptomes are now based on the full HXB/BXH RI panel in brain and liver and available inbred strains now including the F344/Stm and LE/Stm strains. </LI>
+                                        <LI>Updated WGCNA, expression values, eQTLs, and transcriptomes are available.</LI>
+                                        <LI>Transcript level expression is available for the full panel.</LI>
+                                        <LI>Transcript level eQTLs are now available once you've selected a gene.</LI>
+                                    <LI> Transcript level WGCNA is coming in the next 1-2 months. </LI>
+                                    </ul>
+                                <LI>CircularRNA data is availble now. This includes predictions from BNLx/SHR in Brain/Heart/Liver using CIRI 2.0 and CircExplorer2.  Also Heart left ventricle includes data from more than 12,000 previously described cirRNAs using cirRNA arrays.  Full reports are coming soon but the browser includes tracks with annotation and structure all available data.</LI>
+                            </UL>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.6</H2>
                         <div style="margin-left:5px;">
                             <UL>
