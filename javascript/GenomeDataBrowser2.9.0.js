@@ -12616,6 +12616,111 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 	if(that.colorBy=="Score"){
 		that.createColorScale();
 	}
+	that.color=function(d){
+		var color=d3.rgb("#000000");
+		if(d.getAttribute("Array")==="1" && d.getAttribute("Ciri")==="1" && d.getAttribute("Circexplorer")==="1"){
+			color=d3.rgb("#ffba5a");
+		}else if(d.getAttribute("Array")==="0" && d.getAttribute("Ciri")==="1" && d.getAttribute("Circexplorer")==="1"){
+			color=d3.rgb("#0f4c75");
+		}else if(d.getAttribute("Array")==="0" && (d.getAttribute("Ciri")==="1" || d.getAttribute("Circexplorer")==="1")){
+			color=d3.rgb("#3282b8");
+		}else if(d.getAttribute("Array")==="1" && d.getAttribute("Ciri")==="0" && d.getAttribute("Circexplorer")==="0"){
+			color=d3.rgb("#5D576B");
+		}else if(d.getAttribute("Array")==="1" && (d.getAttribute("Ciri")==="1" || d.getAttribute("Circexplorer")==="1")){
+			color=d3.rgb("#8AADA8");
+		}
+		return color;
+	};
+
+	that.calcY = function (start,end,i){
+		var tmpY=0;
+		if(that.density===3 || that.density==='3'){
+			tmpY=that.calcYPack(start,end,i);
+		}else if(that.density===2 || that.density==='2'){
+			tmpY=that.calcYFull(i);
+		}else{
+			tmpY=that.calcYDense();
+		}
+		if(that.trackYMax<(tmpY/30)){
+			that.trackYMax=(tmpY/30);
+		}
+		return tmpY;
+	};
+
+	that.calcYPack = function(start, end, i){
+		var tmpY=0;
+		if((start>=that.xScale.domain()[0]&&start<=that.xScale.domain()[1])||
+			(end>=that.xScale.domain()[0]&&end<=that.xScale.domain()[1])||
+			(start<=that.xScale.domain()[0]&&end>=that.xScale.domain()[1])){
+			var pStart=Math.round(that.xScale(start));
+			if(pStart<0){
+				pStart=0;
+			}
+			var pEnd=Math.round(that.xScale(end));
+			if(pEnd>=that.gsvg.width){
+				pEnd=that.gsvg.width-1;
+			}
+			var pixStart=pStart-that.xPadding;
+			if(pixStart<0){
+				pixStart=0;
+			}
+			var pixEnd=pEnd+that.xPadding;
+			if(pixEnd>=that.gsvg.width){
+				pixEnd=that.gsvg.width-1;
+			}
+			//find yMax that is clear this is highest line that is clear
+			var yMax=0;
+			for(var pix=pixStart;pix<=pixEnd;pix++){
+				if(that.yMaxArr[pix]>yMax){
+					yMax=that.yMaxArr[pix];
+				}
+			}
+			yMax++;
+			//may need to extend yArr for a new line
+			var addLine=yMax;
+			if(that.yArr.length<=yMax){
+				that.yArr[addLine]=new Array();
+				for(var j=0;j<that.gsvg.width;j++){
+					that.yArr[addLine][j]=0;
+				}
+			}
+			//check a couple lines back to see if it can be squeezed in
+			var startLine=yMax-that.scanBackYLines;
+			if(startLine<1){
+				startLine=1;
+			}
+			var prevLine=-1;
+			var stop=0;
+			for(var scanLine=startLine;scanLine<yMax&&stop==0;scanLine++){
+				var available=0;
+				for(var pix=pixStart;pix<=pixEnd&&available==0;pix++){
+					if(that.yArr[scanLine][pix]>available){
+						available=1;
+					}
+				}
+				if(available==0){
+					yMax=scanLine;
+					stop=1;
+				}
+			}
+			if(yMax>that.trackYMax){
+				that.trackYMax=yMax;
+			}
+			for(var pix=pStart;pix<=pEnd;pix++){
+				if(that.yMaxArr[pix]<yMax){
+					that.yMaxArr[pix]=yMax;
+				}
+				that.yArr[yMax][pix]=1;
+			}
+			tmpY=yMax*30;
+		}else{
+			tmpY=30;
+		}
+		return tmpY;
+	};
+	that.calcYFull = function(i){
+		return (i+1)*30;
+	};
 
 	that.draw=function(data){
 		that.data=data;
@@ -12692,7 +12797,7 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 		}else if(that.density==2){
 			that.svg.attr("height", (d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("g."+that.idPrefix+"trx"+that.gsvg.levelNumber).size()+1)*15);
 		}else if(that.density==3){
-			that.svg.attr("height", (that.trackYMax+2)*15);
+			that.svg.attr("height", (that.trackYMax+2)*30);
 		}
 		that.redrawSelectedArea();
 	};
@@ -12702,30 +12807,45 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 		minStart=that.xScale(d.getAttribute("start"));
 		maxEnd=that.xScale(d.getAttribute("stop"));
 		txG.append("line")
-			.attr("x1",minStart)//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
-			.attr("x2",minStart)//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("x1",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start"))-4; })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
+			.attr("x2",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start"))-4; })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
 			.attr("y1",5)
-			.attr("y2",-1)
-			.attr("stroke","#00FF00")
-			.attr("stroke-width","2");
+			.attr("y2",20)
+			.attr("stroke",that.color)
+			.attr("stroke-width","1");
 		txG.append("line")
-			.attr("x1",maxEnd)//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
-			.attr("x2",maxEnd)//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("x1",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start"))+4; })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
+			.attr("x2",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start"))+4; })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
 			.attr("y1",5)
-			.attr("y2",-1)
-			.attr("stroke","#00FF00")
-			.attr("stroke-width","2");
+			.attr("y2",20)
+			.attr("stroke",that.color)
+			.attr("stroke-width","1");
 		txG.append("line")
-			.attr("x1",minStart)//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
-			.attr("x2",maxEnd)//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
-			.attr("y1",-1)
-			.attr("y2",-1)
-			.attr("stroke","#00FF00")
-			.attr("stroke-width","2");
-		for(var m=0;m<exList.length;m++){
+			.attr("x1",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start"))-4; })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
+			.attr("x2",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start"))+4; })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("y1",5)
+			.attr("y2",5)
+			.attr("stroke",that.color)
+			.attr("stroke-width","1");
+		txG.append("line")
+			.attr("x1",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start"))-4; })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
+			.attr("x2",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start")); })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("y1",20)
+			.attr("y2",20)
+			.attr("stroke",that.color)
+			.attr("stroke-width","1");
+		txG.append("line")
+			.attr("x1",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
+			.attr("x2",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start"))+4; })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("y1",20)
+			.attr("y2",20)
+			.attr("stroke",that.color)
+			.attr("stroke-width","1");
 
+		for(var m=0;m<exList.length;m++){
 			var curR=txG.append("rect")
 				.attr("x",function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+				.attr("y",15)
 				.attr("rx",1)
 				.attr("ry",1)
 				.attr("height",10)
@@ -12752,8 +12872,8 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 				txG.append("line")
 					.attr("x1",intStart)//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
 					.attr("x2",intStop)//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
-					.attr("y1",5)
-					.attr("y2",5)
+					.attr("y1",20)
+					.attr("y2",20)
 					.attr("stroke",that.color)
 					.attr("stroke-width","2")
 					.attr("id",function(d,i){
@@ -12793,7 +12913,7 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 						id=that.idPrefix+"IntTxt"+d.getAttribute("ID")+"_"+(m-1)+"_"+m;
 					}
 					return id;
-				})
+				}).attr("y",15)
 					.attr("dx",intStart+1)
 					.attr("dy","11")
 					.style("pointer-events","none")
@@ -13134,6 +13254,13 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 	};
 
 	that.updateFullData(0,0);
+
+	that.redrawLegend=function (){
+		var legend=[];
+		var curPos=0;
+		legend=[{color:"#ffba5a",label:"All"},{color:"#0f4c75",label:"Predicted(Multi)"},{color:"#3282b8",label:"Predicted(Single)"},{color:"#5D576B",label:"Array"},{color:"#8AADA8",label:"Array/Predicted"}];
+		that.drawLegend(legend);
+	};
 
 	return that;
 }
