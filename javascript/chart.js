@@ -381,9 +381,9 @@ chart=function(params){
 			if(that.drawType==="scatter" && that.curHeight>that.maxScatterHeight){
 				that.curHeight=that.maxScatterHeight;
 			}
-			console.log("calcSize() win height:"+$(window).height());
-			console.log("calcSize() win width:"+$(window).width());
-			console.log("chart height:"+that.curHeight);
+			//console.log("calcSize() win height:"+$(window).height());
+			//console.log("calcSize() win width:"+$(window).width());
+			//console.log("chart height:"+that.curHeight);
 		}else{
 			if(that.curWidth===0 && that.curHeight===0){
 				that.curHeight=Math.floor(($(window).height()*that.heightPerc)-that.margin.top-that.margin.bottom);
@@ -432,7 +432,7 @@ chart=function(params){
 		that.filteredGeneIDs=that.geneIDs;
 		that.filteredStrains=that.strains;
 		if(that.filteredID && that.filteredID.length>0){
-			console.log("filter by ID:"+that.filteredID);
+			//console.log("filter by ID:"+that.filteredID);
 			that.yMin=9999999;
 			that.yMax=0;
 			tmpGenes=[];
@@ -458,7 +458,7 @@ chart=function(params){
 			}
 			that.filteredData=tmpData;
 		}else{
-			console.log("filterBy");
+			//console.log("filterBy");
 			geneRE=/(ENSRNO|PRN[0-9]{1,2}\.?[0-9]{1,2})G/;
 			trxRE=/(ENS[A-Z]{3}|PRN[0-9]{1,2}\.?[0-9]{1,2})T/;
 			
@@ -545,8 +545,8 @@ chart=function(params){
 	      		.attr("transform","translate("+((that.curWidth-that.leftMarg-that.heritChartW)/2)+",-5)")
 	      		.append("text")
 	      		.text(that.titlePrefix+that.title);
-	      	console.log("filteredData");
-	      	console.log(that.filteredData);
+	      	//console.log("filteredData");
+	      	//console.log(that.filteredData);
 	      	that.svg.selectAll(".dot")
 	      		.data(that.filteredData)
 	    		.enter().append("circle")
@@ -700,7 +700,7 @@ chart=function(params){
 				}
 				setTimeout(function(){
 					curYMax=that.findMaxDisplayed();
-					console.log("curMaxY:"+curYMax);
+					//console.log("curMaxY:"+curYMax);
 					if(that.yMax!==curYMax) {
 						that.yMax=curYMax;
 						that.y.domain([that.yMin,that.yMax]).nice();
@@ -763,7 +763,7 @@ chart=function(params){
 	};
 	that.findMaxDisplayed = function(){
 		tmpMax=-1;
-		console.log("findMax");
+		//console.log("findMax");
 		for(i=0;i<that.geneIDs.length;i++){
 			console.log(".legend.box."+that.geneIDs[i].id.replace(/\./g,"_"));
 			if(d3.selectAll(".legend.box."+that.geneIDs[i].id.replace(/\./g,"_")).style("fill")!=d3.rgb(255,255,255)) {
@@ -1403,7 +1403,7 @@ chart=function(params){
 	    	heritDiv=d3.select("span#ttsingleHerit");
 	    	//console.log(heritDiv);
 	    	//if(heritDiv && heritDiv.size()>0){
-	    		console.log(that.filteredGeneIDs);
+	    		//console.log(that.filteredGeneIDs);
 	    		heritDiv.html("");
 	    		//heritDiv.html(that.filteredGeneIDs[0].herit);
 	    	//}
@@ -1443,7 +1443,7 @@ chart=function(params){
 	}
 	//Data Functions
 	that.getData=function(retry){
-		console.log(retry+":"+that.dataFile);
+		//console.log(retry+":"+that.dataFile);
 		$.ajax({
 				url: that.dataFile,
    				type: 'GET',
@@ -1629,7 +1629,7 @@ chart=function(params){
 					that.display.herit=false;
 				}
 				that.geneIDs.push(tmp);
-				console.log("pushed:"+id);
+				//console.log("pushed:"+id);
 				//console.log(list[k].VALUES.length);
 				for(i=0;i<list[k].VALUES.length;i++){
 					if(k===0){
@@ -1637,7 +1637,7 @@ chart=function(params){
 					}
 					if(i===0){
 						that.maxYList.push(list[k].VALUES[i][that.value]);
-						console.log("set initial value:"+list[k].VALUES[i][that.value]);
+						//console.log("set initial value:"+list[k].VALUES[i][that.value]);
 					}
 					that.data.push({"id":id,"strain":list[k].VALUES[i].Strain,"val":list[k].VALUES[i][that.value]});
 					if(that.yMin>list[k].VALUES[i][that.value]){
@@ -1657,11 +1657,11 @@ chart=function(params){
 						tmp.herit=list[k].TRXLIST[j].HERIT;
 					}
 					that.geneIDs.push(tmp);
-					console.log("parsed:"+id);
+					//console.log("parsed:"+id);
 					for(i=0;i<list[k].TRXLIST[j].VALUES.length;i++){
 						if(i===0){
 							that.maxYList.push(list[k].TRXLIST[j].VALUES[i][that.value]);
-							console.log("set initial value"+list[k].TRXLIST[j].VALUES[i][that.value]);
+							//console.log("set initial value"+list[k].TRXLIST[j].VALUES[i][that.value]);
 						}
 						that.data.push({"id":id,"strain":list[k].TRXLIST[j].VALUES[i].Strain,"val":list[k].TRXLIST[j].VALUES[i][that.value]});
 						if(that.yMin>list[k].TRXLIST[j].VALUES[i][that.value]){
@@ -1676,9 +1676,9 @@ chart=function(params){
 					}
 				}
 			}
-			console.log("parsedData");
-			console.log(that.geneIDs);
-			console.log(that.maxYList);
+			//console.log("parsedData");
+			//console.log(that.geneIDs);
+			//console.log(that.maxYList);
 			if(that.seriesCount>20){
 				that.drawType="heatmap";
 			}
@@ -1687,8 +1687,8 @@ chart=function(params){
 			list=[];
 			that.data=[];
 		}
-		console.log("data before draw");
-		console.log(that.data);
+		//console.log("data before draw");
+		//console.log(that.data);
 		that.draw();
 	};
 

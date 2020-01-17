@@ -3876,9 +3876,9 @@ function Track(gsvgP,dataP,trackClassP,labelP){
 
 	that.drawLegend = function (legendList){
 		var lblStr=new String(that.label);
-		var x=that.gsvg.width/2+(lblStr.length/2)*7.5+16;
+		var x=that.gsvg.width/2+(lblStr.length/2)*6.5;
 		if(that.gsvg.width<500){
-			x=(lblStr.length)*7.5;
+			x=(lblStr.length)*7;
 		}
 		d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll(".legend").remove();
 		for(var i=0;i<legendList.length;i++){
@@ -3894,7 +3894,7 @@ function Track(gsvgP,dataP,trackClassP,labelP){
 				.attr("stroke",legendList[i].color);
 			lblStr=new String(legendList[i].label);
 			that.svg.append("text").text(lblStr).attr("class","legend").attr("x",x+18).attr("y",12);
-			x=x+25+lblStr.length*8;
+			x=x+25+lblStr.length*7;
 		}
 	};
 
@@ -12612,6 +12612,9 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 	that.xmlTag="Gene";
 	that.xmlTagBlockElem="Block";
 	that.idPrefix="cirRNA";
+	that.xCirLineWidth=4;
+	that.xPadding=7;
+	that.featureHeight=30;
 
 	if(that.colorBy=="Score"){
 		that.createColorScale();
@@ -12619,7 +12622,7 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 	that.color=function(d){
 		var color=d3.rgb("#000000");
 		if(d.getAttribute("Array")==="1" && d.getAttribute("Ciri")==="1" && d.getAttribute("Circexplorer")==="1"){
-			color=d3.rgb("#ffba5a");
+			color=d3.rgb("#DD9C56");
 		}else if(d.getAttribute("Array")==="0" && d.getAttribute("Ciri")==="1" && d.getAttribute("Circexplorer")==="1"){
 			color=d3.rgb("#0f4c75");
 		}else if(d.getAttribute("Array")==="0" && (d.getAttribute("Ciri")==="1" || d.getAttribute("Circexplorer")==="1")){
@@ -12627,7 +12630,7 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 		}else if(d.getAttribute("Array")==="1" && d.getAttribute("Ciri")==="0" && d.getAttribute("Circexplorer")==="0"){
 			color=d3.rgb("#5D576B");
 		}else if(d.getAttribute("Array")==="1" && (d.getAttribute("Ciri")==="1" || d.getAttribute("Circexplorer")==="1")){
-			color=d3.rgb("#8AADA8");
+			color=d3.rgb("#7A9D98");
 		}
 		return color;
 	};
@@ -12641,8 +12644,8 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 		}else{
 			tmpY=that.calcYDense();
 		}
-		if(that.trackYMax<(tmpY/30)){
-			that.trackYMax=(tmpY/30);
+		if(that.trackYMax<(tmpY/that.featureHeight)){
+			that.trackYMax=(tmpY/that.featureHeight);
 		}
 		return tmpY;
 	};
@@ -12712,14 +12715,14 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 				}
 				that.yArr[yMax][pix]=1;
 			}
-			tmpY=yMax*30;
+			tmpY=yMax*that.featureHeight;
 		}else{
-			tmpY=30;
+			tmpY=that.featureHeight;
 		}
 		return tmpY;
 	};
 	that.calcYFull = function(i){
-		return (i+1)*30;
+		return (i+1)*that.featureHeight;
 	};
 
 	that.draw=function(data){
@@ -12807,36 +12810,41 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 		minStart=that.xScale(d.getAttribute("start"));
 		maxEnd=that.xScale(d.getAttribute("stop"));
 		txG.append("line")
-			.attr("x1",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start"))-4; })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
-			.attr("x2",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start"))-4; })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("id",function(){return "l"+d.getAttribute("ID")+"_x1"})
+			.attr("x1",function(){return that.calcXLine(exList,0,-1,"start",minStart);})
+			.attr("x2",function(){return that.calcXLine(exList,0,-1,"start",minStart);})
 			.attr("y1",5)
 			.attr("y2",20)
 			.attr("stroke",that.color)
 			.attr("stroke-width","1");
 		txG.append("line")
-			.attr("x1",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start"))+4; })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
-			.attr("x2",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start"))+4; })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("id",function(){return "l"+d.getAttribute("ID")+"_x2"})
+			.attr("x1",function(){return that.calcXLine(exList,exList.length-1,1,"stop",minStart);})
+			.attr("x2",function(){return that.calcXLine(exList,exList.length-1,1,"stop",minStart);})
 			.attr("y1",5)
 			.attr("y2",20)
 			.attr("stroke",that.color)
 			.attr("stroke-width","1");
 		txG.append("line")
-			.attr("x1",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start"))-4; })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
-			.attr("x2",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start"))+4; })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("id",function(){return "l"+d.getAttribute("ID")+"_x3"})
+			.attr("x1",function(){return that.calcXLine(exList,0,-1,"start",minStart);})
+			.attr("x2",function(){return that.calcXLine(exList,exList.length-1,1,"stop",minStart);})
 			.attr("y1",5)
 			.attr("y2",5)
 			.attr("stroke",that.color)
 			.attr("stroke-width","1");
 		txG.append("line")
-			.attr("x1",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start"))-4; })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
-			.attr("x2",function(){ return that.xScale(exList[0].getAttribute("start"))-that.xScale(d.getAttribute("start")); })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("id",function(){return "l"+d.getAttribute("ID")+"_x4"})
+			.attr("x1",function(){return that.calcXLine(exList,0,-1,"start",minStart);})
+			.attr("x2",function(){return that.calcXLine(exList,0,0,"start",minStart);})
 			.attr("y1",20)
 			.attr("y2",20)
 			.attr("stroke",that.color)
 			.attr("stroke-width","1");
 		txG.append("line")
-			.attr("x1",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })//function(d){ return that.xScale(exList[m-1].getAttribute("stop"))-that.xScale(d.getAttribute("start")); })
-			.attr("x2",function(){ return that.xScale(exList[exList.length-1].getAttribute("stop"))-that.xScale(d.getAttribute("start"))+4; })//function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
+			.attr("id",function(){return "l"+d.getAttribute("ID")+"_x5"})
+			.attr("x1",function(){return that.calcXLine(exList,exList.length-1,0,"stop",minStart);})
+			.attr("x2",function(){return that.calcXLine(exList,exList.length-1,1,"stop",minStart);})
 			.attr("y1",20)
 			.attr("y2",20)
 			.attr("stroke",that.color)
@@ -12926,6 +12934,17 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 		}
 
 	};
+	that.calcXLine=function(exList,ind,plusMinus,attr,xStart){
+		var val=0;
+		var adjust=that.xCirLineWidth*plusMinus;
+		if(exList.length>0){
+			val=that.xScale(exList[ind].getAttribute(attr))-xStart+adjust;
+		}else{
+			val=0+adjust;
+		}
+		return val;
+	};
+
 
 	that.redraw = function (){
 		if(that.prevDensity!=that.density){
@@ -12945,8 +12964,28 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 
 			txG.each(function(d,i){
 				var tmpD=d;
+				minStart=that.xScale(tmpD.getAttribute("start"));
+				maxEnd=that.xScale(tmpD.getAttribute("stop"));
+
+
 				var tmpI=i;
 				var exList=getAllChildrenByName(getFirstChildByName(d,that.xmlTagBlockElem+"List"),that.xmlTagBlockElem);
+				//update backsplice lines
+				that.svg.select("#l"+tmpD.getAttribute("ID")+"_x1")
+					.attr("x1",function(){return that.calcXLine(exList,0,-1,"start",minStart);})
+					.attr("x2",function(){return that.calcXLine(exList,0,-1,"start",minStart);});
+				that.svg.select("#l"+tmpD.getAttribute("ID")+"_x2")
+					.attr("x1",function(){return that.calcXLine(exList,exList.length-1,1,"stop",minStart);})
+					.attr("x2",function(){return that.calcXLine(exList,exList.length-1,1,"stop",minStart);});
+				that.svg.select("#l"+tmpD.getAttribute("ID")+"_x3")
+					.attr("x1",function(){return that.calcXLine(exList,0,-1,"start",minStart);})
+					.attr("x2",function(){return that.calcXLine(exList,exList.length-1,1,"stop",minStart);});
+				that.svg.select("#l"+tmpD.getAttribute("ID")+"_x4")
+					.attr("x1",function(){return that.calcXLine(exList,0,-1,"start",minStart);})
+					.attr("x2",function(){return that.calcXLine(exList,0,0,"start",minStart);});
+				that.svg.select("#l"+tmpD.getAttribute("ID")+"_x5")
+					.attr("x1",function(){return that.calcXLine(exList,exList.length-1,0,"stop",minStart);})
+					.attr("x2",function(){return that.calcXLine(exList,exList.length-1,1,"stop",minStart);});
 				for(var m=0;m<exList.length;m++){
 					var id=that.idPrefix+"Ex"+exList[m].getAttribute("ID");
 					if(exList[m].getAttribute("ID")==null){
@@ -13091,7 +13130,7 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 		if($("#"+that.trackClass+that.level+"colorSelect").length>0){
 			that.colorBy=$("#"+that.trackClass+that.level+"colorSelect").val();
 		}
-		if(that.colorBy=="Score"){
+		/*if(that.colorBy=="Score"){
 			//console.log("colorby:Score");
 			that.minValue=$("#"+that.trackClass+"minData"+that.level).val();
 			that.maxValue=$("#"+that.trackClass+"maxData"+that.level).val();
@@ -13104,7 +13143,7 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 				that.maxColor=$("#"+that.trackClass+"maxColor"+that.level).val();
 			}
 			that.createColorScale();
-		}
+		}*/
 	};
 
 	that.generateSettingsDiv=function(topLevelSelector){
@@ -13258,7 +13297,11 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 	that.redrawLegend=function (){
 		var legend=[];
 		var curPos=0;
-		legend=[{color:"#ffba5a",label:"All"},{color:"#0f4c75",label:"Predicted(Multi)"},{color:"#3282b8",label:"Predicted(Single)"},{color:"#5D576B",label:"Array"},{color:"#8AADA8",label:"Array/Predicted"}];
+		legend=[{color:"#DD9C56",label:"All"},
+			{color:"#0f4c75",label:"Predicted(Multi)"},
+			{color:"#3282b8",label:"Predicted(Single)"},
+			{color:"#5D576B",label:"Array"},
+			{color:"#7A9D98",label:"Array/Predicted"}];
 		that.drawLegend(legend);
 	};
 
