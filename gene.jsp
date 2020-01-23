@@ -1461,6 +1461,9 @@ Hint: Try other synonyms if the first ID that you enter is not found.
 </div>
 
 <%@ include file="/javascript/customView.js" %>
+<script>
+    <%@ include file="/javascript/Anon_session.js" %>
+</script>
 
 <%@ include file="/web/common/footer_adaptive.jsp" %>
 
