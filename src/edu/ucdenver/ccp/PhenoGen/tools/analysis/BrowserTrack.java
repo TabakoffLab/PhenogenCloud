@@ -38,7 +38,15 @@ public class BrowserTrack{
     
     public BrowserTrack(){
     }
-    
+
+    public BrowserTrack( int userid,  String trackclass,
+                        String trackname, String description, String organism,String settings, int order,
+                        String genCat,String category,String controls,Boolean vis,String location,
+                        String fileName,String fileType,Timestamp ts,String genomeVer){
+        this(-1,userid, trackclass, trackname,description, organism,settings, order, genCat,category,controls,vis,location,
+                fileName,fileType,ts,genomeVer);
+
+    }
     public BrowserTrack(int id, int userid,  String trackclass, 
                 String trackname, String description, String organism,String settings, int order,
                 String genCat,String category,String controls,Boolean vis,String location,
@@ -74,10 +82,9 @@ public class BrowserTrack{
             }
             query=query+" gbt.TRACKID=bt.TRACKID "+
                         "and bt.user_id="+userid+" and bt.visible=1";
-            Connection conn=null;
+
             PreparedStatement ps=null;
-            try {
-                conn=pool.getConnection();
+            try(Connection conn=pool.getConnection();) {
                 ps = conn.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 //int count=0;
@@ -102,24 +109,12 @@ public class BrowserTrack{
                 }
                 
                 ps.close();
-                conn.close();
-                conn=null;
             } catch (SQLException ex) {
                 log.error("SQL Exception retreiving browser views:" ,ex);
                 try {
                     ps.close();
                 } catch (Exception ex1) {
                    
-                }
-            } finally{
-                if(conn!=null){
-                    try{
-                        conn.close();
-                        conn=null;
-                    }catch(SQLException e){
-                        
-                    }
-                    conn=null;
                 }
             }
             
@@ -133,10 +128,8 @@ public class BrowserTrack{
         
         String query="select * from BROWSER_TRACKS "+
                         "where trackid="+trackid;
-            Connection conn=null;
             PreparedStatement ps=null;
-            try {
-                conn=pool.getConnection();
+            try(Connection conn=pool.getConnection()) {
                 ps = conn.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 //int count=0;
@@ -159,8 +152,7 @@ public class BrowserTrack{
                 }
                 
                 ps.close();
-                conn.close();
-                conn=null;
+
             } catch (SQLException ex) {
                 log.error("SQL Exception retreiving browser views:" ,ex);
                 try {
@@ -168,19 +160,7 @@ public class BrowserTrack{
                 } catch (Exception ex1) {
                    
                 }
-            } finally{
-                if(conn!=null){
-                    try{
-                        conn.close();
-                        conn=null;
-                    }catch(SQLException e){
-                        
-                    }
-                    conn=null;
-                }
             }
-            
-            
         return ret;
     }
     
@@ -318,7 +298,7 @@ public class BrowserTrack{
     
     
     
-    public int getNextID(DataSource pool){
+    /*public int getNextID(DataSource pool){
         int id=-1;
         String query="select Browser_Track_ID_SEQ.nextVal from dual";
         Connection conn=null;
@@ -347,45 +327,43 @@ public class BrowserTrack{
             }
         }
         return id;
-    }
+    }*/
     
-    public boolean saveToDB(String genomeVer,DataSource pool){
+    public int saveToDB(String genomeVer,DataSource pool){
         boolean success=false;
         String insertGV2Track="insert into browser_GV2TRACK (genome_id,trackid) values (?,?)";
-        String insertUsage="insert into browser_tracks (TRACKID,USER_ID,TRACK_CLASS,"
+        String insertUsage="insert into browser_tracks (USER_ID,TRACK_CLASS,"
                 + "TRACK_NAME,TRACK_DESC,ORGANISM,CATEGORY_GENERIC,CATEGORY,DISPLAY_OPTS,"
-                + "VISIBLE,CUSTOM_LOCATION,CUSTOM_DATE,CUSTOM_FILE_ORIGINAL,CUSTOM_TYPE) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-        Connection conn=null;
-        try{
-            conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(insertUsage, 
-						ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);
+                + "VISIBLE,CUSTOM_LOCATION,CUSTOM_DATE,CUSTOM_FILE_ORIGINAL,CUSTOM_TYPE) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        try(Connection conn=pool.getConnection();){
+            PreparedStatement ps=conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
+            //ps.setInt(1, this.id);
+            ps.setInt(1,this.userid);
+            ps.setString(2, this.trackClass);
+            ps.setString(3, this.trackName);
+            ps.setString(4, this.trackDescription);
+            ps.setString(5, this.organism.toUpperCase());
+            ps.setString(6, this.genericCategory);
+            ps.setString(7, this.category);
+            ps.setString(8, this.controls);
+            ps.setBoolean(9, this.visible);
+            ps.setString(10, this.location);
+            ps.setTimestamp(11,this.ts);
+            ps.setString(12, this.originalFile);
+            ps.setString(13, this.type);
+            ps.executeUpdate();
+            ResultSet rsID = ps.getGeneratedKeys();
+            if (rsID.next()) {
+                this.id = rsID.getInt(1);
+            }
+            ps.close();
+            ps=conn.prepareStatement(insertGV2Track,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
             ps.setString(1, genomeVer);
             ps.setInt(2,this.id);
             ps.execute();
             ps.close();
-            ps=conn.prepareStatement(insertUsage, 
-						ResultSet.TYPE_SCROLL_INSENSITIVE,
-						ResultSet.CONCUR_UPDATABLE);
-            ps.setInt(1, this.id);
-            ps.setInt(2,this.userid);
-            ps.setString(3, this.trackClass);
-            ps.setString(4, this.trackName);
-            ps.setString(5, this.trackDescription);
-            ps.setString(6, this.organism.toUpperCase());
-            ps.setString(7, this.genericCategory);
-            ps.setString(8, this.category);
-            ps.setString(9, this.controls);
-            ps.setBoolean(10, this.visible);
-            ps.setString(11, this.location);
-            ps.setTimestamp(12,this.ts);
-            ps.setString(13, this.originalFile);
-            ps.setString(14, this.type);
-            ps.execute();
-            ps.close();
-            conn.close();
-            conn=null;
             success=true;
         }catch(SQLException e){
             e.printStackTrace(System.err);
@@ -405,18 +383,9 @@ public class BrowserTrack{
                     log.error("error sending message", mailException);
                     throw new RuntimeException();
             }
-        }finally{
-            try{
-            if(conn!=null&&!conn.isClosed()){
-                conn.close();
-                conn=null;
-            }
-            }catch(SQLException er){
-                
-            }
         }
         
-        return success;
+        return this.id;
     }
     
     public boolean deleteTrack(int trackid,DataSource pool){
