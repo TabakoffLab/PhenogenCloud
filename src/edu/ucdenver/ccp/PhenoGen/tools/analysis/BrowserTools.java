@@ -6,11 +6,7 @@ import edu.ucdenver.ccp.PhenoGen.tools.analysis.BrowserView;
 import edu.ucdenver.ccp.PhenoGen.web.SessionHandler;
 import edu.ucdenver.ccp.PhenoGen.web.mail.*;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.servlet.http.HttpSession;
@@ -83,6 +79,18 @@ public class BrowserTools{
         viewID=newView.saveToDB(genomeVer,pool);
         return viewID;
     }
+
+    public int createBlankView(String UUID,String name,String description,String organism,String genomeVer,String imgDisp){
+        BrowserView bv= new BrowserView();
+        int viewID=-1;
+        int userID=((User)session.getAttribute("userLoggedIn")).getUser_id();
+        BrowserView newView=new BrowserView(userID,name,description,organism.toUpperCase(),true,imgDisp,genomeVer);
+        newView.setUUID(UUID);
+        newView.setCreatedDate(new Timestamp( (new Date()).getTime()));
+        viewID=newView.saveToDB(genomeVer,pool);
+        return viewID;
+    }
+
     public int createCopiedView(String name,String description,String organism,String genomeVer,String imgDisp,int copyFrom){
         BrowserView bv= new BrowserView();
         int ret=-1;

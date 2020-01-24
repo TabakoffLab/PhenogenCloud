@@ -351,6 +351,7 @@ fieldset.top{
 }
 fieldset.customFieldSet{
     width:94%;
+
 }
 fieldset {
     text-align: left;
@@ -364,6 +365,7 @@ fieldset {
     position: relative;
     display:inline-block;
     /*min-height: 450px;*/
+
 }
 div.checkbox-choice label{
     display:inline-block;

@@ -4,11 +4,8 @@ package edu.ucdenver.ccp.PhenoGen.tools.analysis;
 import edu.ucdenver.ccp.PhenoGen.tools.analysis.BrowserTrack;
 import edu.ucdenver.ccp.PhenoGen.web.SessionHandler;
 import edu.ucdenver.ccp.PhenoGen.web.mail.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,6 +23,9 @@ public class BrowserView{
     private boolean visible=false;
     private String imageSettings="";
     private String bvGenomeVer="";
+    private String UUID="";
+    private Timestamp created=null;
+    private Timestamp lastAccessed=null;
     private ArrayList<BrowserTrack> btList=new ArrayList<BrowserTrack>();
     
     public BrowserView(){
@@ -364,8 +364,31 @@ public class BrowserView{
     public void setTracks(ArrayList<BrowserTrack> btList) {
         this.btList = btList;
     }
-    
-    
+
+    public String getUUID() {
+        return UUID;
+    }
+
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
+    }
+
+    public Timestamp getCreatedDate() {
+        return created;
+    }
+
+    public void setCreatedDate(Timestamp created) {
+        this.created = created;
+    }
+
+    public Timestamp getLastAccessed() {
+        return lastAccessed;
+    }
+
+    public void setLastAccessed(Timestamp lastAccessed) {
+        this.lastAccessed = lastAccessed;
+    }
+
     /*public int getNextID(DataSource pool){
         int id=-1;
         String query="select Browser_View_ID_SEQ.nextVal from dual";
@@ -430,9 +453,15 @@ public class BrowserView{
     public int saveToDB(String genomeVer,DataSource pool){
         boolean success=false;
         String insertVersion="insert into browser_GV2VIEW (GENOME_ID,BVID) values(?,?)";
+        String extraColumns="";
+        String extraValues="";
+        if(! this.UUID.equals("")){
+            extraColumns=", UUID, CREATED,LAST_ACCESS ";
+            extraValues=",?,?,?";
+        }
         String insertUsage="insert into browser_views ("
                 + "USER_ID,NAME,DESCRIPTION,ORGANISM,"
-                + "VISIBLE,IMAGE_SETTINGS) values (?,?,?,?,?,?)";
+                + "VISIBLE,IMAGE_SETTINGS"+extraColumns+") values (?,?,?,?,?,?"+extraValues+")";
          String insertCount="insert into browser_view_counts (BVID,COUNTER) values (?,?)";
 
         try(Connection conn=pool.getConnection();){
@@ -445,6 +474,11 @@ public class BrowserView{
             ps.setString(4, this.organism);
             ps.setBoolean(5,this.visible);
             ps.setString(6, this.imageSettings);
+            if(! this.UUID.equals("")){
+                ps.setString(7, this.UUID);
+                ps.setTimestamp(8,this.created);
+                ps.setTimestamp(9,this.created);
+            }
             ps.executeUpdate();
             ResultSet rsID = ps.getGeneratedKeys();
             if (rsID.next()) {
