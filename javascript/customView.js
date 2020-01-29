@@ -1,6 +1,10 @@
 <script>
     var GDBCustomView=function(params){
         var that={};
+        that.curTimeout=-1;
+        that.include={};
+        that.viewID=-1;
+
         that.createView=function(){
             setTimeout(function(){
                 var organism=$("#speciesCB").val();
@@ -16,8 +20,10 @@
                         that.toggleGO();
                     },
                     success: function(data2){
+                        that.viewID=data2.viewID;
                         that.setStatus("");
                         that.toggleGO();
+
                     },
                     error: function(xhr, status, error) {
                         that.setError(error);
@@ -36,7 +42,46 @@
         };
 
         that.submitChanges=function(){
-
+            if(that.curTimeout>0){
+                clearTimeout(that.curTimeout);
+            }
+            that.curTimeout=setTimeout( function(){
+                includeString="";
+                includeKey=Object.keys(that.include);
+                for( k in includeKey ){
+                    includeString=includeString+","+includeKey[k];
+                }
+                includeString=includeString.substr(1);
+                genomeVer=$("#custGenomeVer").val();
+                name=$("#viewName").val();
+                email=$("#assocEmail").val();
+                dsVer=$("#selDataTotalVer").val();
+                $.ajax({
+                    url: "/web/GeneCentric/addRemoveViewTracks.jsp",
+                    type: 'GET',
+                    cache: false,
+                    data: {tracks:includeString,viewID:that.viewID,genomeVer: genomeVer,name:name,email: email,version:dsVer},
+                    dataType: 'json',
+                    beforeSend: function () {
+                        that.curTimeout = -1;
+                        that.toggleGO();
+                        that.setStatus("Updating Tracks...");
+                    },
+                    success: function(){
+                        if(that.curTimeout==-1){
+                            that.toggleGO();
+                        }
+                        that.setStatus("Updating Tracks...Done");
+                        setTimeout(function(){that.setStatus("")},5000);
+                    },
+                    error: function(xhr, status, error){
+                        if(that.curTimeout==-1){
+                            that.toggleGO();
+                        }
+                        that.setError(" You can try to proceed but some tracks may not be correct."+ error);
+                    }
+                });
+            },1000);
         };
         //Utility Functions
         that.setup=function(){
@@ -57,7 +102,15 @@
                     }
                 }
                 //add/delete tracks
-
+                var id=$(this).attr("id");
+                if($(this).prop("checked")){
+                    that.include[id]=1;
+                }else{
+                    if(that.include[id]){
+                        delete that.include[id];
+                    }
+                }
+                that.submitChanges();
             });
         }
         that.selectAllStrains=function(){

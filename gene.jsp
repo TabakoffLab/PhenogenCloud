@@ -733,9 +733,9 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                 <fieldset class="customFieldSet">
                     <legend>3. What data should be included in the custom view?</legend>
                     <div class="controlgroup">
-                        Customize View:
-                        <span><input type="submit" class="goBTN" id="goBTN3" value="Go"
-                                                                      onClick="return displayWorking()"></span><span class="custViewStatus"></span>
+
+                        <span style="float: right;"><span class="custViewStatus"></span><input type="submit" class="goBTN" id="goBTN3" value="Go"
+                                                                      onClick="return displayWorking()"></span>
                         <BR>
                         Genome Version:
                         <select id="custGenomeVer">
@@ -747,7 +747,9 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                             <%}%>
                         </select>
                         <BR>
-
+                        Optional:
+                        <span style="margin-left:45px;">View Name:<input type="text" id="viewName"></span><span style="margin-left:45px;">Email for later retreival:<input type="text" id="assocEmail"></span>
+                        <BR>
                         <div id="accordion" >
                             <h3>Tissues</h3>
                             <div class="checkbox-choice">
@@ -877,8 +879,8 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                             </div>
 
                         </div>
-                        <span><input type="submit" class="goBTN" id="goBTN4" value="Go"
-                                     onClick="return displayWorking()"></span></span><span class="custViewStatus"></span>
+                        <span style="float: right;"><span class="custViewStatus"></span><input type="submit" class="goBTN" id="goBTN4" value="Go"
+                                     onClick="return displayWorking()"></span></span>
                     </div>
                 </fieldset>
             </div>
@@ -1403,6 +1405,7 @@ Hint: Try other synonyms if the first ID that you enter is not found.
 <script type="text/javascript">
     var custView;
     var PhenogenAnonSession;
+    var contextRoot="/";
     $("div#wait1").hide();
     $('.fancybox').fancybox({
         helpers: {
