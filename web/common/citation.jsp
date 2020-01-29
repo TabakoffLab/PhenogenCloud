@@ -22,7 +22,10 @@ pageDescription="Citation information for PhenoGen and additional software";%>
         <div id="welcome" style="height:780px; width:946px; overflow:auto;">
 
 	<h2>If you use this website in your research, please cite the following references:</h2>
-	<p>Website:</p>
+			<p> Resource ID:<BR>RRID:SCR_001613</p>
+			<BR>
+
+			<p>Website:</p>
 	<p class="indent"> Please cite both of the following sources for this website: </p>
 	<p class="indent">(1) The PhenoGen informatics website: Tools for analyses of complex traits.<BR>
 		Sanjiv V Bhave, Cheryl Hornbaker, Tzu L Phang, Laura Saba, Razvan Lapadat, Katherina Kechris, Jeanette Gaydos, 
@@ -30,10 +33,10 @@ pageDescription="Citation information for PhenoGen and additional software";%>
 		Jonathan Mangion, John K Belknap, Robert W Williams, Lawrence E Hunter, Paula L Hoffman, and Boris Tabakoff, 
 		BMC Genetics Aug, 2007&nbsp;&nbsp;&nbsp;<a href="http://www.biomedcentral.com/1471-2156/8/59" target="Citation">BioMed Central</a></p> 
 
-	<p class="indent">(2) PhenoGen Website [Internet]. Aurora (CO): University of Colorado and Denver Health Sciences Center. 
+	<p class="indent">(2) PhenoGen Website [Internet]. Aurora (CO): University of Colorado Denver Anschutz Medical Campus.
 		PhenoGen Informatics, 2005 - [cited (insert date of access)].  
-		Available from <a href="http://phenogen.ucdenver.edu"> http://phenogen.ucdenver.edu</a> 
-	</p>. 
+		Available from <a href="https://phenogen.org"> https://phenogen.org</a>
+	</p><BR>
 
 	<p>Promoter (oPOSSUM):</p> 
 	<p class="indent">oPOSSUM: Identification of over-represented transcription factor binding sites in co-expressed genes. <BR>
@@ -42,7 +45,7 @@ pageDescription="Citation information for PhenoGen and additional software";%>
 		<a href="http://www.ncbi.nlm.nih.gov/pubmed/15933209" target="Citation">PubMed </a>
 	</p> <BR>
 	<p class="indent">JASPAR: an open access database for eukaryotic transcription factor binding profiles. <BR>
-		Albin Sandelin, Wynand Alkema, Pär Engström, Wyeth Wasserman and Boris Lenhard
+		Albin Sandelin, Wynand Alkema, Pï¿½r Engstrï¿½m, Wyeth Wasserman and Boris Lenhard
 		Nucleic Acids Res. 2004 Jan; 32(1) Database Issue&nbsp;
 		<a href="http://www.ncbi.nlm.nih.gov/pubmed/14681366" target="Citation">PubMed </a>
 	</p><BR>
@@ -99,8 +102,8 @@ Genome Res. Published in Advance June 18, 2009.&nbsp;
 	</p><BR>
 
 	<p class="indent">If you download specific materials from the website, please add the following citation:</p>
-	<p class="indent">(2) Allen Brain Atlas [Internet] Seattle (WA):Allen Institute for Brain Science. © 
+	<p class="indent">(2) Allen Brain Atlas [Internet] Seattle (WA):Allen Institute for Brain Science. ï¿½ 
 		2004-[cited insert date of access]. <BR>Available from: <a href="http://www.brain-map.org">http://www.brain-map.org</a>
-	</p><BR> 
+	</p><BR> <BR>
 	
 <%@ include file="/web/common/footer.jsp" %>
