@@ -108,6 +108,13 @@ public class BrowserTools{
         }
         return ret;
     }
+
+    public void editCustomView(String trackString, int viewID, int userID, String name, String email,String genomeVer,int datasetVer){
+        //Get BrowserTracks that fit trackString
+        //Add BrowserTracks to view
+        //Remove Extra BrowserTracks
+        //Update Name/Email
+    }
     
     public String updateView(int id,String tracks){
         String ret="";
