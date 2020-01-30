@@ -50,9 +50,10 @@ function ViewMenu(level){
 		var index=that.findTrackIndex(id);
 		var viewID=that.findSelectedView().ViewID;
 		that.removeTrackWithIDIdx(index,viewID);
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserViews','deleteTrack');
-		}
+		}*/
+		gtag('event','deleteTrack',{'event_category':'BrowserViews'});
 	};
 	that.removeTrackWithIDIdx=function(indx,vwID){
 		var d=that.findViewWithID(vwID);
@@ -191,9 +192,10 @@ function ViewMenu(level){
 			interactive: true,
 			interactiveTolerance: 350
 		});
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserViews','generateTrackList');
-		}
+		}*/
+		gtag('event','generateTrackList',{'event_category':'BrowserViews'});
 	};
 
 
@@ -224,9 +226,10 @@ function ViewMenu(level){
 	    			async: true
 				});	
 		}
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserViews','applyView');
-		}
+		}*/
+		gtag('event','applyView',{'event_category':'BrowserViews'});
 	};
 	that.applySelectedView=function(viewID){
 		var d=NaN;
@@ -244,9 +247,10 @@ function ViewMenu(level){
 		that.setupImage(settingString,d);
 		$("#viewSelect"+that.level).prop("selectedIndex",ind);
 		that.selectChange();
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserViews','applySelectedView');
-		}
+		}*/
+		gtag('event','applySelectedView',{'event_category':'BrowserViews'});
 	};
 	
 	that.setupImage=function(settingString,d){
@@ -341,9 +345,10 @@ function ViewMenu(level){
 						that.initialized=1;
 						that.applySelectedView(svgViewIDList[that.level]);
 					}
-			if(ga){
-				ga('send','event','BrowserViews','getViews');
-			}
+					/*if(ga){
+						ga('send','event','BrowserViews','getViews');
+					}*/
+					gtag('event','getViews',{'event_category':'BrowserViews'});
                 },
                 error: function(xhr, status, error) {
                         
@@ -866,9 +871,10 @@ function ViewMenu(level){
 		$("#viewDescTxt"+that.level).val("");
 		$("input#createType"+that.level).val("blank");
 		getMainViewData(1);
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserViews','createView');
-		}
+		}*/
+		gtag('event','createView',{'event_category':'BrowserViews'});
 	};
 
 	that.saveView= function(viewID,svgImage,async){
@@ -929,9 +935,10 @@ function ViewMenu(level){
 			that.getViewData();
 		}
 		getMainViewData(1);
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserViews','saveView');
-		}
+		}*/
+		gtag('event','saveView',{'event_category':'BrowserViews'});
 	};
 
 	that.saveAsView=function(viewCopy,img){
@@ -942,9 +949,10 @@ function ViewMenu(level){
 		$("span#viewMenuLbl"+that.level).text("Save As...");
 		$("input#createType"+that.level).val("blank");
 		$("input#function"+that.level).val("saveAs");
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserViews','saveAsView');
-		}
+		}*/
+		gtag('event','saveAsView',{'event_category':'BrowserViews'});
 	};
 
 	that.confirmDeleteView = function(toDelete){
@@ -1035,9 +1043,10 @@ function ViewMenu(level){
 
 		//update main menu on the browser form
 		getMainViewData(1);
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserViews','deleteView');
-		}
+		}*/
+		gtag('event','deleteView',{'event_category':'BrowserViews'});
 	};
         
     that.cancelView = function(){

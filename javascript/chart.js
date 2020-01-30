@@ -167,9 +167,10 @@ chart=function(params){
 					that.reset();
 					that.functionBar.select("span#hmBtn img").attr("src","/web/images/icons/hm_dark.png");
 					that.functionBar.select("span#hmBtn").style("background","#DCDCDC");
-					if(ga){
+					/*if(ga){
 						ga('send','event','clickDragZoom','');
-					}
+					}*/
+					gtag('event','',{'event_category':'clickDragZoom'});
 				})
 				.on("mouseout",function(){
 					if(that.drawType!="scatter"){
@@ -197,9 +198,11 @@ chart=function(params){
 					that.reset();
 					that.functionBar.select("span#plotBtn img").attr("src","/web/images/icons/plot_dark.png");
 					that.functionBar.select("span#plotBtn").style("background","#DCDCDC");
-					if(ga){
+					/*if(ga){
 						ga('send','event','clickPan','');
-					}
+
+					}*/
+					gtag('event','',{'event_category':'clickPan'});
 				})
 				.on("mouseout",function(){
 					if(that.drawType!="heatmap"){
@@ -277,18 +280,19 @@ chart=function(params){
 										delete a;
 									    return true;
 									}
-									if(ga){
+									/*if(ga){
 											ga('send','event','browser','saveExpressionImage');
-									}
-								  
+									}*/
+									gtag('event','saveExpressionImage',{'event_category':'browser'});
 			    			},
 			    			error: function(xhr, status, error) {
 			        			console.log(error);
 			    			}
 						});
-					if(ga){
+					/*if(ga){
 						ga('send','event','saveImage','');
-					}
+					}*/
+					gtag('event','',{'event_category':'saveImage'});
 					})
 				.on("mouseover",function(){
 					d3.select(this).attr("src","/web/images/icons/savePic_white.png");
@@ -1453,9 +1457,10 @@ chart=function(params){
 					$('div#brainExprLoading').hide();
 					$('div#liverExprLoading').hide();
         			that.parseMultipleGenes(data2);
-        			if(ga){
+        			/*if(ga){
 						ga('send','event','loadChartData',that.dataFile);
-					}
+					}*/
+					gtag('event',that.dataFile,{'event_category':'loadChartData'});
     			},
     			error: function(xhr, status, error) {
         			console.log(error);

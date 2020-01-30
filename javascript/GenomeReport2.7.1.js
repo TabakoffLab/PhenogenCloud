@@ -83,9 +83,10 @@ function loadRegionReport(reportName,chromosome,rptmin,rptmax){
                     tblFrom.fnAdjustColumnSizing();
             }
     }
-    if(ga){
+    /*if(ga){
 						ga('send','event','loadRegionReport',reportName);
-	}
+	}*/
+    gtag('event',reportName,{'event_category':'loadRegionReport'});
 }
 
 function loadTrackTable(){
@@ -168,9 +169,10 @@ function loadTrackTable(){
 						"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
 		}
 	}
-	if(ga){
+	/*if(ga){
 		ga('send','event','loadTrackTable',reportSelectedTrack.trackClass);
-	}
+	}*/
+	gtag('event',reportSelectedTrack.trackClass,{'event_category':'loadTrackTable'});
 }
 
 function loadEQTLTable(){
@@ -190,9 +192,10 @@ function loadEQTLTable(){
 		};
 	loadDivWithPage("div#regionEQTLTable",jspPage,false,params,
 		"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
-	if(ga){
+	/*if(ga){
 		ga('send','event','loadEQTLTable','eQTLTable');
-	}
+	}*/
+	gtag('event','eQTLTable',{'event_category':'loadEQTLTable'});
 }
 
 
@@ -206,9 +209,10 @@ function loadRegionWGCNA(){
 		};
 	loadDivWithPage("div#regionWGCNAEQTL",jspPage,true,params,
 		"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
-	if(ga){
+	/*if(ga){
 		ga('send','event','loadWGCNA','wgcna');
-	}
+	}*/
+	gtag('event','wgcna',{'event_category':'loadWGCNA'});
 }
 
 function loadEQTLTableWParams(levelList,chrList,tisList,pval){
@@ -228,9 +232,10 @@ function loadEQTLTableWParams(levelList,chrList,tisList,pval){
 		};
 	loadDivWithPage("div#regionEQTLTable",jspPage,false,params,
 		"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
-	if(ga){
+	/*if(ga){
 		ga('send','event','loadEQTLTableWParams','eqtlwparams');
-	}
+	}*/
+	gtag('event','eqtlwparams',{'event_category':'loadEQTLTableWParams'});
 }
 
 
@@ -321,9 +326,10 @@ function DisplayRegionReport(){
 	var curmin=svgList[0].xScale.domain()[0];
     var curmax=svgList[0].xScale.domain()[1];
     loadRegionReport(selectedTab,chr,curmin,curmax);
-    if(ga){
+    /*if(ga){
 		ga('send','event','loadRegionReport','regionReport');
-	}
+	}*/
+    gtag('event','regionReport',{'event_category':'loadRegionReport'});
 }
 
 function displayDetailedView(track){
@@ -351,9 +357,10 @@ function displayDetailedView(track){
 		//console.log("loading track table");
 		loadTrackTable();
 	}
-	if(ga){
+	/*if(ga){
 		ga('send','event','loaddetailedView',track);
-	}
+	}*/
+	gtag('event',track,{'event_category':'loaddetailedView'});
 }
 
 

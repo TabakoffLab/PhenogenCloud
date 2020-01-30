@@ -343,9 +343,10 @@ function TrackMenu(level){
 		
 		var info="Name: <B>"+d.Name+"</B><BR>Description: <B>"+d.Description+"</B><BR>Original File: <B>"+d.OriginalFile+"</B><BR>Setup Date: <B>"+d.SetupDate+"</b>";
 		$("span#customTrackInfo"+that.level).html(info);
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserTracks','deleteCustomTrack');
-		}
+		}*/
+		gtag('event','deleteCustomTrack',{'event_category':'BrowserTracks'});
 	};
 
 	that.cancelDeleteTrack=function(){
@@ -429,9 +430,10 @@ function TrackMenu(level){
 		$("#deleteUsrTrack"+that.level).hide();
 		$("#selectTrack"+that.level).show();
 		that.generateTrackTable();
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserTracks','deleteTrack');
-		}
+		}*/
+		gtag('event','deleteTrack',{'event_category':'BrowserTracks'});
 	};
 
 	that.confirmUpload=function(){
@@ -459,9 +461,10 @@ function TrackMenu(level){
 		}else if(type==="bb"||type==="bw"){
 			that.createRemoteCustomTrack();
 		}
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserTracks','createCustomTrack');
-		}
+		}*/
+		gtag('event','createCustomTrack',{'event_category':'BrowserTracks'});
 	};
 
 	that.createUploadedCustomTrack=function(){
@@ -639,9 +642,10 @@ function TrackMenu(level){
 		$("#customFileURL"+that.level).val("");
 		
 		that.getTrackData();
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserTracks','saveTrack');
-		}
+		}*/
+		gtag('event','saveTrack',{'event_category':'BrowserTracks'});
 	};
 
 
@@ -675,9 +679,10 @@ function TrackMenu(level){
 	        			var track=data2.trackFile;
 	        			var file=data2.trackFile;
 	        			that.saveTrack(track,file);
-	        			if(ga){
+	        			/*if(ga){
 							ga('send','event','BrowserTracks','customTrackUploaded');
-						}
+						}*/
+	        			gtag('event','customTrackUploaded',{'event_category':'BrowserTracks'});
 	    			},
 	    			error: function(xhr, status, error) {
 	        			console.log(error);
