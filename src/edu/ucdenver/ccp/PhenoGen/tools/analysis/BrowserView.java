@@ -46,7 +46,7 @@ public class BrowserView{
         this.bvGenomeVer=bvGenomeVer;
     }
     
-    public ArrayList<BrowserView> getBrowserViews(int userid,String genomeVer,DataSource pool){
+    public ArrayList<BrowserView> getBrowserViews(int userid,String genomeVer,String uuid,DataSource pool){
         Logger log=Logger.getRootLogger();
         ArrayList<BrowserView> ret=new ArrayList<BrowserView>();
         
@@ -55,6 +55,11 @@ public class BrowserView{
         String query="select bv.BVID,bv.USER_ID,bv.NAME,bv.DESCRIPTION,bv.ORGANISM,bv.VISIBLE,bv.IMAGE_SETTINGS,gbv.genome_id ";
         String queryP2="from BROWSER_VIEWS bv, BROWSER_GV2VIEW gbv "+
                         "where bv.user_id="+userid;
+        if(uuid.equals("")){
+            queryP2=queryP2+" and UUID is null ";
+        }else{
+            queryP2=queryP2+" and UUID='"+uuid+"' ";
+        }
         /*if(genomeVer.indexOf(",")>-1){
             String[] genomes=genomeVer.split(",");
             queryP2=queryP2+" and ( gbv.genome_id = '"+genomes[0]+"' or "+

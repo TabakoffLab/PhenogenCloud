@@ -42,12 +42,12 @@ public class BrowserTools{
         this.fullPath = appRoot + contextRoot;
     }
     
-    public ArrayList<BrowserView> getBrowserViews(String genomeVer){
+    public ArrayList<BrowserView> getBrowserViews(String genomeVer,String uuid){
         BrowserView bv=new BrowserView();
-        ArrayList<BrowserView> ret=bv.getBrowserViews(0,genomeVer,pool);
+        ArrayList<BrowserView> ret=bv.getBrowserViews(0,genomeVer,"",pool);
         int userID=((User)session.getAttribute("userLoggedIn")).getUser_id();
         if(userID>0){
-            ArrayList<BrowserView> tmp=bv.getBrowserViews(userID,genomeVer,pool);
+            ArrayList<BrowserView> tmp=bv.getBrowserViews(userID,genomeVer,uuid,pool);
             if(tmp.size()>0){
                 ret.addAll(tmp);
             }

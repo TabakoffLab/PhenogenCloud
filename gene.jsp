@@ -163,7 +163,7 @@
         defView = Integer.toString(val + 10);
     }
     log.debug("*****\ncurGenome:" + genomeVer);
-    ArrayList<BrowserView> views = bt.getBrowserViews(genomeVer);
+    ArrayList<BrowserView> views = bt.getBrowserViews(genomeVer,"");
     log.debug("*****\nView length:" + views.size());
     String[] tissuesList1 = new String[1];
     String[] tissuesList2 = new String[1];
