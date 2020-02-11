@@ -33,13 +33,13 @@
             },5);
         };
 
-        that.addTracks=function(){
+        /*that.addTracks=function(){
 
         };
 
         that.removeTracks=function(){
 
-        };
+        };*/
 
         that.submitChanges=function(){
             if(that.curTimeout>0){

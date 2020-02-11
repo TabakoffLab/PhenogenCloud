@@ -75,7 +75,7 @@ public class BrowserTrack{
         Logger log=Logger.getRootLogger();
         ArrayList<BrowserTrack> ret=new ArrayList<BrowserTrack>();
         
-        String query="select bt.*,gbt.genome_id from BROWSER_TRACKS bt, BROWSER_GV2TRACK gbt "+
+        String query="select bt.TRACKID, bt.USER_ID, bt.TRACK_CLASS, bt.TRACK_NAME, bt.TRACK_DESC, bt.ORGANISM, bt.CATEGORY_GENERIC, bt.CATEGORY, bt.DISPLAY_OPTS, bt.VISIBLE, bt.CUSTOM_LOCATION, bt.CUSTOM_DATE, bt.CUSTOM_FILE_ORIGINAL, bt.CUSTOM_TYPE,gbt.genome_id from BROWSER_TRACKS bt, BROWSER_GV2TRACK gbt "+
                         "where ";
             if(!genomeVer.equals("all")){
                 query=query+" gbt.genome_id= '"+genomeVer+"' and ";
@@ -161,6 +161,58 @@ public class BrowserTrack{
                    
                 }
             }
+        return ret;
+    }
+
+    public ArrayList<BrowserTrack> getBrowserTracks(String[] tracks,String genomeVer,String datasetVer,DataSource pool){
+        Logger log=Logger.getRootLogger();
+        ArrayList<BrowserTrack> ret=new ArrayList<BrowserTrack>();
+
+        String query="select bt.*,gbt.genome_id from BROWSER_TRACKS bt, BROWSER_GV2TRACK gbt where ";
+        if(!genomeVer.equals("all")){
+            query=query+" gbt.genome_id= '"+genomeVer+"' and ";
+        }
+
+
+
+
+        query = query +" bt.visible=1 ";
+
+
+        PreparedStatement ps=null;
+        try(Connection conn=pool.getConnection();) {
+            ps = conn.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            //int count=0;
+            while(rs.next()){
+                int tid=rs.getInt(1);
+                int uid=rs.getInt(2);
+                String tclass=rs.getString(3);
+                String name=rs.getString(4);
+                String desc=rs.getString(5);
+                String org=rs.getString(6);
+                String genCat=rs.getString(7);
+                String cat=rs.getString(8);
+                String controls=rs.getString(9);
+                boolean vis=rs.getBoolean(10);
+                String location=rs.getString(11);
+                Timestamp t=rs.getTimestamp(12);
+                String file=rs.getString(13);
+                String type=rs.getString(14);
+                String gV=rs.getString(15);
+                BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,"",0,genCat,cat,controls,vis,location,file,type,t,gV);
+                ret.add(tmpBT);
+            }
+
+            ps.close();
+        } catch (SQLException ex) {
+            log.error("SQL Exception retreiving browser views:" ,ex);
+            try {
+                ps.close();
+            } catch (Exception ex1) {
+
+            }
+        }
         return ret;
     }
     

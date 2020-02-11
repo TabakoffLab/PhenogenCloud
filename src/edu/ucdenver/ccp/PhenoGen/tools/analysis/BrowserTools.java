@@ -109,11 +109,23 @@ public class BrowserTools{
         return ret;
     }
 
-    public void editCustomView(String trackString, int viewID, int userID, String name, String email,String genomeVer,int datasetVer){
+    public boolean editCustomView(String trackString, int viewID, int userID, String name, String email,String genomeVer,int datasetVer){
+        boolean success=false;
+        BrowserView bv=new BrowserView();
+        BrowserTrack bt=new BrowserTrack();
+
+        BrowserView curView=bv.getBrowserView(viewID,pool);
+        String[] checkBoxes=trackString.split(",");
         //Get BrowserTracks that fit trackString
-        //Add BrowserTracks to view
-        //Remove Extra BrowserTracks
-        //Update Name/Email
+        ArrayList<BrowserTrack> tracks=bt.getBrowserTracks(checkBoxes,genomeVer,datasetVer,pool);
+
+        curView.updateTracks(tracks);
+        curView.setName(name);
+        curView.setEmail(email);
+        curView.updateView(pool);
+        success=true;
+
+        return success;
     }
     
     public String updateView(int id,String tracks){

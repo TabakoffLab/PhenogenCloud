@@ -46,7 +46,11 @@
         assocEmail=FilterInput.getFilteredInput(request.getParameter("email"));
     }
 
+    //getCurrentView
+    boolean updated=bt.editCustomView(trackString,viewID,tmpuserID,viewName,assocEmail,genomeVer,dsVer);
+
     response.setContentType("application/json");
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setDateHeader("Expires", 0);
 %>
+{"Success":"<%=updated%>"}

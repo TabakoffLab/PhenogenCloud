@@ -24,6 +24,7 @@ public class BrowserView{
     private String imageSettings="";
     private String bvGenomeVer="";
     private String UUID="";
+    private String email="";
     private Timestamp created=null;
     private Timestamp lastAccessed=null;
     private ArrayList<BrowserTrack> btList=new ArrayList<BrowserTrack>();
@@ -387,6 +388,14 @@ public class BrowserView{
 
     public void setLastAccessed(Timestamp lastAccessed) {
         this.lastAccessed = lastAccessed;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     /*public int getNextID(DataSource pool){
@@ -823,4 +832,5 @@ class TrackSettings{
     public void markProcessed(){
         this.processed=true;
     }
+
 }

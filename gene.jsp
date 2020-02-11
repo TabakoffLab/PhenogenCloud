@@ -766,6 +766,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                             </div>
                             <h3>Data / Tracks</h3>
                             <div class="checkbox-choice">
+                                <H3>PhenoGen Data</H3>
                                 <p>
                                     <input type="checkbox" class="custviewCbx" checked="checked" id="cbxDatatotal">
                                     <label>Total RNA-Seq (Ribosome depleted)</label><BR>
@@ -798,49 +799,49 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                                    onClick="return custView.selectAllStrains()">
                                             <input type="button"  id="deselectAll" value="Deselect All"
                                                    onClick="return custView.deselectAllStrains()"><BR>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BNLx</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">SHR</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BXH2</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BXH3</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BXH5</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BXH6</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BXH8</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BXH9</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BXH10</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BXH11</label>
-                                             <label ><input type="checkbox" class="custviewCbx strainCbx" id="">BXH12</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">BXH13</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB1</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB2</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB3</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB4</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB5</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB7</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB10</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB13</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB15</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB17</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB18</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB20</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB21</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB22</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB23</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB24</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB25</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB27</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB29</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">HXB31</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">F344/Stm</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="">LE/Stm</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="">ACI</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="">Cop</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="">DA</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="">LEW/Crl</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="">LEW/SsNHsd</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="">SHRSP</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="">SR</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="">SS</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="">WKY</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBNLx">BNLx</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainSHR">SHR</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH2">BXH2</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH3">BXH3</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH5">BXH5</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH6">BXH6</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH8">BXH8</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH9">BXH9</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH10">BXH10</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH11">BXH11</label>
+                                             <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH12">BXH12</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH13">BXH13</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB1">HXB1</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB2">HXB2</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB3">HXB3</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB4">HXB4</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB5">HXB5</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB7">HXB7</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB10">HXB10</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB13">HXB13</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB15">HXB15</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB17">HXB17</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB18">HXB18</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB20">HXB20</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB21">HXB21</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB22">HXB22</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB23">HXB23</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB24">HXB24</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB25">HXB25</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXH27">HXB27</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB29">HXB29</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB31">HXB31</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainF344Stm">F344/Stm</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainLEStm">LE/Stm</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainACI">ACI</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainCOP">Cop</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainDA">DA</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainLEWCrl">LEW/Crl</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainLEWSsnhsd">LEW/SsNHsd</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainSHRP">SHRSP</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainSR">SR</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainSS">SS</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainWKY">WKY</label>
                                         </div>
                                     </div>
                                     <input type="checkbox" class="custviewCbx" id="cbxDatasmall">
@@ -875,6 +876,19 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                         <input type="checkbox" class="custviewCbx" id="cbxDataCirRNAArray">
                                         <label>Array cirRNA Expression (BNLx/SHR Heart) </label>
                                     </div>
+                                    <input type="checkbox" class="custviewCbx" id="cbxDatacirRNA">
+                                    <label>Strain Variants</label><BR>
+                                </p>
+                                <H3>Annotation</H3>
+                                <p>
+                                    <input type="checkbox" class="custviewCbx" checked="checked" id="cbxEnsembl">
+                                    <label>Ensembl</label><BR>
+                                    <input type="checkbox" class="custviewCbx"  id="cbxRefSeq">
+                                    <label>RefSeq</label><BR>
+                                    <input type="checkbox" class="custviewCbx"  id="cbxRepeatMask">
+                                    <label>Repeat Masker</label><BR>
+                                    <input type="checkbox" class="custviewCbx"  id="cbxQTL">
+                                    <label>QTLs</label><BR>
                                 </p>
                             </div>
 
