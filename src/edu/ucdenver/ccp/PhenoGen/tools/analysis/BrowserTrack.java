@@ -75,7 +75,7 @@ public class BrowserTrack{
         Logger log=Logger.getRootLogger();
         ArrayList<BrowserTrack> ret=new ArrayList<BrowserTrack>();
         
-        String query="select bt.*,gbt.genome_id from BROWSER_TRACKS bt, BROWSER_GV2TRACK gbt "+
+        String query="select bt.TRACKID, bt.USER_ID, bt.TRACK_CLASS, bt.TRACK_NAME, bt.TRACK_DESC, bt.ORGANISM, bt.CATEGORY_GENERIC, bt.CATEGORY, bt.DISPLAY_OPTS, bt.VISIBLE, bt.CUSTOM_LOCATION, bt.CUSTOM_DATE, bt.CUSTOM_FILE_ORIGINAL, bt.CUSTOM_TYPE,gbt.genome_id from BROWSER_TRACKS bt, BROWSER_GV2TRACK gbt "+
                         "where ";
             if(!genomeVer.equals("all")){
                 query=query+" gbt.genome_id= '"+genomeVer+"' and ";
@@ -126,7 +126,7 @@ public class BrowserTrack{
         Logger log=Logger.getRootLogger();
         BrowserTrack ret=null;
         
-        String query="select * from BROWSER_TRACKS "+
+        String query="select TRACKID, USER_ID, TRACK_CLASS, TRACK_NAME, TRACK_DESC, ORGANISM, CATEGORY_GENERIC, CATEGORY, DISPLAY_OPTS, VISIBLE, CUSTOM_LOCATION, CUSTOM_DATE, CUSTOM_FILE_ORIGINAL, CUSTOM_TYPE from BROWSER_TRACKS "+
                         "where trackid="+trackid;
             PreparedStatement ps=null;
             try(Connection conn=pool.getConnection()) {

@@ -23,11 +23,16 @@ import="org.json.*" %>
 
 bt.setSession(session);
 String genomeVer="";
+String uuid="";
+
 if(request.getParameter("genomeVer")!=null){
-    genomeVer=request.getParameter("genomeVer");
+    genomeVer=FilterInput.getFilteredInput(request.getParameter("genomeVer"));
+}
+if(request.getParameter("UUID")!=null){
+        uuid=FilterInput.getFilteredInput(request.getParameter("UUID"));
 }
 
-ArrayList<BrowserView> views=bt.getBrowserViews(genomeVer);
+ArrayList<BrowserView> views=bt.getBrowserViews(genomeVer,uuid);
 
 response.setContentType("application/json");
 response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
