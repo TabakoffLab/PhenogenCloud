@@ -133,8 +133,9 @@
                         <BR /><textarea rows="5" cols="65" name="usrtrkDescTxt" id="usrtrkDescTxt<%=level%>" ></textarea>
                         <BR /><BR />
                          Organism:<select name="usrtrkOrg" class="usrtrkOrg" id="usrtrkOrgSelect<%=level%>">
-                                    <option value="Rn" >Rat (Rn5)</option>
-                                    <option value="Mm" >Mouse (Mm10)</option>
+                                    <option value="Rn6" >Rat (Rn6)</option>
+                                    <option value="Rn5" >Rat (Rn5)</option>
+                                    <option value="Mm10" >Mouse (Mm10)</option>
                                 </select>
                         <BR /><BR />
                         Generic Category:<select name="usrtrkGenCat" class="usrtrkGenCat" id="usrtrkGenCatSelect<%=level%>">

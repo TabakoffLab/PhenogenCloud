@@ -1874,6 +1874,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 			additionalOptions=additionalOptions+",Name="+trackDetails.Name;
 			additionalOptions="DataFile="+trackDetails.Location+","+additionalOptions;
 			if(trackDetails.Type=="bed"||trackDetails.Type=="bb"){
+				//console.log("ADDED CUSTOM TRANSCRIPT TRACK");
 				var data=new Array();
 				var newTrack=CustomTranscriptTrack(that,data,track,trackDetails.Name,3,additionalOptions);
 				that.addTrackList(newTrack);
@@ -3612,6 +3613,7 @@ function selectionSVG(div,imageWidth,levelNumber,parent){
 	};
 
 	that.draw=function(){
+		console.log("selectionSVG.draw"+that.trackClass);
 		if(that.visible){
 			var w=that.xScale(that.stop)-that.xScale(that.start);
 			that.parent.updateTrackSelectedArea(that.start,that.stop);
@@ -11491,7 +11493,12 @@ function PolyATrack(gsvg,data,trackClass,label,density,additionalOptions){
 function CustomTranscriptTrack(gsvg,data,trackClass,label,density,additionalOptions){
 	var that=GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOptions);
 	var opts=additionalOptions.split(",");
+	that.xmlTag="Feature";
+	that.xmlTagBlockElem="block";
 	that.density=density;
+	if(that.density!==1 && that.density!==2 && that.density!==3){
+		that.density=3;
+	}
 	if(opts.length>0){
 		that.dataFileName=opts[0].substr(9);
 	}
@@ -12304,6 +12311,8 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 	that.drawTrx=function (d,i){
 		var txG=d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).select("#"+that.idPrefix+"tx"+d.getAttribute("ID"));
 		exList=getAllChildrenByName(getFirstChildByName(d,that.xmlTagBlockElem+"List"),that.xmlTagBlockElem);
+		//console.log("DRAW TRX:");
+		//console.log(exList);
 		for(var m=0;m<exList.length;m++){
 			var curR=txG.append("rect")
 			.attr("x",function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
@@ -12553,7 +12562,7 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 
 
 	that.draw=function(data){
-		
+		//console.log("DRAW"+that.trackClass);
 		that.data=data;
 		that.prevDensity=that.density;
 		//that.setDensity();
@@ -12564,14 +12573,16 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 				that.yMaxArr[j]=0;
 				that.yArr[0][j]=0;
 		}
-
+		//console.log("#Level"+that.gsvg.levelNumber+that.trackClass);
+		//console.log("."+that.idPrefix+"trx"+that.gsvg.levelNumber);
 		d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("."+that.idPrefix+"trx"+that.gsvg.levelNumber).remove();
 		that.redrawLegend();
 		if(data){
+			//console.log(data);
 			//d3.select("#Level"+that.gsvg.levelNumber+that.trackClass)
 			var tmp=d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("."+that.idPrefix+"trx"+that.gsvg.levelNumber)
 		   			.data(data,key);
-		   	
+			//console.log(tmp);
 		  	tmp.enter().append("g")
 					.attr("class",that.idPrefix+"trx"+that.gsvg.levelNumber)
 					.attr("transform",function(d,i){ return "translate("+that.xScale(d.getAttribute("start"))+","+that.calcY(parseInt(d.getAttribute("start"),10),parseInt(d.getAttribute("stop"),10),i)+")";})
