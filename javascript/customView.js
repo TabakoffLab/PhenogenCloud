@@ -23,7 +23,8 @@
                         that.viewID=data2.viewID;
                         that.setStatus("");
                         that.toggleGO();
-
+                        $("#defaultView").append('<option value="'+that.viewID+'" selected="selected">Custom View</option>');
+                        //$('defaultView').
                     },
                     error: function(xhr, status, error) {
                         that.setError(error);
@@ -135,7 +136,6 @@
         };
         that.displayCustom=function(){
             $("#createCustomView").show();
-            $("#defaultView").append('<option value="0" selected="selected">Custom View</option>');
             $( "div#accordion" ).accordion();
             $("#custGenomeVer").val("<%=genomeVer%>");
             that.createView();

@@ -115,14 +115,18 @@ public class BrowserTools{
         BrowserTrack bt=new BrowserTrack();
 
         BrowserView curView=bv.getBrowserView(viewID,pool);
+        log.debug("GOT curView");
         String[] checkBoxes=trackString.split(",");
         //Get BrowserTracks that fit trackString
         ArrayList<BrowserTrack> tracks=bt.getBrowserTracks(checkBoxes,genomeVer,datasetVer,pool);
+        log.debug("got tracks");
 
         curView.updateTracks(tracks);
+        log.debug("update tracks");
         curView.setName(name);
         curView.setEmail(email);
         curView.updateView(pool);
+        log.debug("update view");
         success=true;
 
         return success;

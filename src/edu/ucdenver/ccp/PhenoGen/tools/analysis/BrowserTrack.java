@@ -35,6 +35,7 @@ public class BrowserTrack{
     private String type="";
     private Timestamp ts=null;
     private String gV="";
+    private String dbStatus="";
     
     public BrowserTrack(){
     }
@@ -164,21 +165,58 @@ public class BrowserTrack{
         return ret;
     }
 
-    public ArrayList<BrowserTrack> getBrowserTracks(String[] tracks,String genomeVer,String datasetVer,DataSource pool){
+    public ArrayList<BrowserTrack> getBrowserTracks(String[] tracks,String genomeVer,int datasetVer,DataSource pool){
         Logger log=Logger.getRootLogger();
         ArrayList<BrowserTrack> ret=new ArrayList<BrowserTrack>();
 
         String query="select bt.*,gbt.genome_id from BROWSER_TRACKS bt, BROWSER_GV2TRACK gbt where ";
         if(!genomeVer.equals("all")){
-            query=query+" gbt.genome_id= '"+genomeVer+"' and ";
+            query=query+" gbt.genome_id= '"+genomeVer+"' ";
         }
 
+        query = query +"and  bt.visible=1 ";
 
+        String tissueSelection="";
+        String trackType="";
+        String strains="";
+        HashMap<String,String> settingHM=new HashMap<>();
+        for(int i=0;i<tracks.length;i++){
+            if(tracks[i].startsWith("cbxTissue")){
+                tissueSelection=tissueSelection+","+tracks[i].substring(9);
+            }else if(tracks[i].startsWith("cbxTrack")){
+                trackType=trackType+","+tracks[i].substring(8);
+            }else if(tracks[i].startsWith("strain")){
+                strains=strains+","+tracks[i].substring(6);
+            }
+        }
 
+        if(!tissueSelection.equals("")){
+            tissueSelection=tissueSelection.substring(1);
+            if(tissueSelection.indexOf(",")>0){
+                query = query +"and bt.tissue in ("+tissueSelection+") ";
+            }else{
+                query = query +"and bt.tissue = '"+tissueSelection+"' ";
+            }
 
-        query = query +" bt.visible=1 ";
-
-
+        }
+        if(!trackType.equals("")){
+            trackType=trackType.substring(1);
+            if(trackType.indexOf(",")>0) {
+                query = query +"and bt.track_Type in (" + trackType + ") ";
+            }else{
+                query = query +"and bt.track_type = '" + trackType + "' ";
+            }
+        }
+        if(!strains.equals("")){
+            strains=strains.substring(1);
+            if(strains.indexOf(",")>0) {
+                query = query + "and bt.strain in (" + strains + ") ";
+            }else{
+                query = query +"and bt.strain = '" + strains + "' ";
+            }
+        }
+        log.debug("find Tracks for trackString:\n");
+        log.debug(query);
         PreparedStatement ps=null;
         try(Connection conn=pool.getConnection();) {
             ps = conn.prepareStatement(query);
@@ -347,9 +385,28 @@ public class BrowserTrack{
     public void setSetupTime(Timestamp ts) {
         this.ts = ts;
     }
-    
-    
-    
+
+    public String getDBStatus() {
+        return dbStatus;
+    }
+
+    public void setDBStatus(String dbStatus) {
+        this.dbStatus = dbStatus;
+    }
+
+    public String getDefaultSettings(){
+        String ret="";
+        if(this.controls!=null) {
+            String[] list = this.controls.split(",");
+            for (int i = 0; i < list.length; i++) {
+                String tmp = list[i].substring(list[i].indexOf("Default=") + 8);
+                ret = ret + "," + tmp;
+            }
+            ret = ret.substring(1);
+        }
+        return ret;
+    }
+
     /*public int getNextID(DataSource pool){
         int id=-1;
         String query="select Browser_Track_ID_SEQ.nextVal from dual";
@@ -489,8 +546,6 @@ public class BrowserTrack{
                     conn=null;
                 }
             }
-            
-            
         return ret;
     }
 }
