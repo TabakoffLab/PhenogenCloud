@@ -12,6 +12,42 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">SuRGe 2020</H2>
+                        <div style="margin-left:5px;">
+                            OSGA Training - Summer of Rat Genetics/Genomics<BR>
+                            When: May 19th and 20th, 2020<BR>
+                            Quantitative Trait Loci Mapping in Model Organisms<BR>
+                            Workshop Objectives: By the end of the workshop participants will
+                            <OL>
+                                <li>Understand the genetic concepts behind QTL mapping</li>
+                                <li>Be able to map a phenotype using GeneNetwork2</li>
+                                <li>Be able map a phenotype from a complex population using software such as R/qtl2</li>
+                                <li>Practice reproducible research using a Jupyter Lab Notebook</li>
+                            </OL>
+                            <span style="font-size:large;"><a href="/downloads/SuRGe_flyer_2020-01-10.pdf" target="_blank">Flyer</a>
+                            <BR>
+                            <a href="http://opar.io/surge2020/" target="_blank">Registration</a></span>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.1</H2>
+                        <div style="margin-left:5px;">
+                            <UL>
+                                <LI>Version 3.7.1 has been released with the following updates.
+                                    <ul><LI>Downloads
+                                        <UL>
+                                            <LI>Tissue Specific/Merged Reconstruction GTFs</LI>
+                                            <LI>Normalized Expression Values for Ensembl/Reconstruction, Gene/Transcript, Strain Means/Individual values</LI>
+                                        </UL>
+                                        </LI>
+                                        <LI>Custom Views
+                                            <UL>
+                                                <LI>Build a custom view on the fly by selecting a few check boxes simply select sissue and track types.</LI>
+                                                <LI>Views can be named and saved for future use</LI>
+                                            </UL>
+                                        </LI>
+
+                                    </ul>
+                            </UL>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7</H2>
                         <div style="margin-left:5px;">
                             <UL>
