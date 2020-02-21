@@ -275,6 +275,13 @@ public class Resource {
         public MarkerDataFile[] getMarkerDataFiles() {
                 return this.markerDataFiles;
         }
+
+        /*public SAMDataFile[] getRNASeqExpressionDataFiles() {
+            return this.rnaSeqExpressionDataFiles;
+        }
+        public void setRNASeqExpressionDataFiles(SAMDataFile[] inSAMDataFiles) {
+            this.rnaSeqExpressionDataFiles = inSAMDataFiles;
+        }*/
         
         public void setSAMDataFiles(SAMDataFile[] inSAMDataFiles) {
                 this.samDataFiles = inSAMDataFiles;
@@ -1084,29 +1091,29 @@ public class Resource {
 
     public Resource[] getRNASeqExpressionResources() {
         log.debug("in getRNASeqResources");
-        String seqFilePath="/downloads/RNASeq/";
+        String seqFilePath="/downloads/RNASeq/RSEM/";
         List<Resource> resourceList = new ArrayList<Resource>();
 
         SAMDataFile[] brainGTFList = new SAMDataFile[8];
-        brainGTFList[0]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Gene Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Brain.gene.v5.ensembl96.strainMeans.csv.gz","Rn6");
-        brainGTFList[1]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Brain.transcript.v5.ensembl96.strainMeans.csv.gz","Rn6");
-        brainGTFList[2]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Gene Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Brain.gene.v5.strainMeans.csv.gz","Rn6");
-        brainGTFList[3]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Brain.transcript.v5.strainMeans.csv.gz","Rn6");
-        brainGTFList[4]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.totalRNA.Brain.gene.v5.ensembl96.csv.gz","Rn6");
-        brainGTFList[5]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Transcript Individual Samples",seqFilePath+"PhenoGen.HRDP.totalRNA.Brain.transcript.v5.ensembl96.csv.gz","Rn6");
-        brainGTFList[6]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.totalRNA.Brain.gene.v5.csv.gz","Rn6");
-        brainGTFList[7]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Transcript Individual Sampless",seqFilePath+"PhenoGen.HRDP.totalRNA.Brain.transcript.v5.csv.gz","Rn6");
+        brainGTFList[0]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Gene Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.gene.ensembl96.strainMeans.txt.gz","Rn6");
+        brainGTFList[1]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.transcript.ensembl96.strainMeans.txt.gz","Rn6");
+        brainGTFList[2]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Gene Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.gene.reconstruction.strainMeans.txt.gz","Rn6");
+        brainGTFList[3]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.transcript.reconstruction.strainMeans.txt.gz","Rn6");
+        brainGTFList[4]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.gene.ensembl96.txt.gz","Rn6");
+        brainGTFList[5]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Transcript Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.transcript.ensembl96.txt.gz","Rn6");
+        brainGTFList[6]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.gene.reconstruction.txt.gz","Rn6");
+        brainGTFList[7]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Transcript Individual Sampless",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.transcript.reconstruction.txt.gz","Rn6");
         resourceList.add(new Resource(500, "Rat", "HRDP v5","Whole Brain", brainGTFList, "RSEM" ));
 
         SAMDataFile[] liverGTFList = new SAMDataFile[8];
-        liverGTFList[0]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Gene Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.gene.v5.ensembl96.strainMeans.csv.gz","Rn6");
-        liverGTFList[1]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.transcript.v5.ensembl96.strainMeans.csv.gz","Rn6");
-        liverGTFList[2]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Gene Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.gene.v5.strainMeans.csv.gz","Rn6");
-        liverGTFList[3]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.transcript.v5.strainMeans.csv.gz","Rn6");
-        liverGTFList[4]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.gene.v5.ensembl96.csv.gz","Rn6");
-        liverGTFList[5]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Transcript Individual Samples",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.transcript.v5.ensembl96.csv.gz","Rn6");
-        liverGTFList[6]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.gene.v5.csv.gz","Rn6");
-        liverGTFList[7]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Transcript Individual Sampless",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.transcript.v5.csv.gz","Rn6");
+        liverGTFList[0]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Gene Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.gene.ensembl96.strainMeans.txt.gz","Rn6");
+        liverGTFList[1]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.transcript.ensembl96.strainMeans.txt.gz","Rn6");
+        liverGTFList[2]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Gene Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.gene.reconstruction.strainMeans.txt.gz","Rn6");
+        liverGTFList[3]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.transcript.reconstruction.strainMeans.txt.gz","Rn6");
+        liverGTFList[4]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.gene.ensembl96.txt.gz","Rn6");
+        liverGTFList[5]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Transcript Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.transcript.ensembl96.txt.gz","Rn6");
+        liverGTFList[6]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.gene.reconstruction.txt.gz","Rn6");
+        liverGTFList[7]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Transcript Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.transcript.reconstruction.txt.gz","Rn6");
         resourceList.add(new Resource(501, "Rat", "HRDP v5","Liver", liverGTFList, "RSEM" ));
 
         /*SAMDataFile[] heartGTFList = new SAMDataFile[8];

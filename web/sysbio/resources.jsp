@@ -299,7 +299,7 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 						<TD><%=resource.getSource()%></TD>
 						<TD><%=resource.getTechType()%></TD>
 						<td class="actionIcons">
-							<div class="linkedImg download" type="gtf"><div>
+							<div class="linkedImg download" type="rsem"><div>
 						</td>
 					</tr>
 					<% } %>
