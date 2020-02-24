@@ -864,18 +864,18 @@ public class Resource {
         	Dataset HXBRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_DATASET_NAME);
         	Dataset LXSRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.LXSRI_DATASET_NAME);
 
-
-        // Setup the HXBRI stuff
-        String resourcesDir = HXBRI_Dataset.getResourcesDir();
-        resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
-
+        String markerFilePath="/downloads/Markers/";
         List<MarkerDataFile> markerFileList = new ArrayList<MarkerDataFile>();
-        markerFileList.add(new MarkerDataFile("HRDPv4 Markers", resourcesDir + "HRDP_v4_Markers.txt","HRDPv4"));
+        markerFileList.add(new MarkerDataFile("HRDPv4 Markers", markerFilePath + "HRDP_v4_Markers.txt","HRDPv4"));
         MarkerDataFile[] markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
 
         EQTLDataFile[] eQTLFileArray = new EQTLDataFile[0];
 
         resourceList.add(new Resource(13, "Rat", "<a href='http://oct2012.archive.ensembl.org/Rattus_norvegicus/Info/Content?file=star.html' target='_blank'>STAR consortium</a>", null, markerFileArray,eQTLFileArray,"HRDPv4"));
+
+        // Setup the HXBRI stuff
+        String resourcesDir = HXBRI_Dataset.getResourcesDir();
+        resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
 
         String datasetDir = HXBRI_Dataset.getPath();
         markerFileList = new ArrayList<MarkerDataFile>();
