@@ -908,7 +908,7 @@ public class BrowserView{
         log.debug("after update tracks to DB");
         if(!this.name.equals("") || !this.email.equals("")){
             try(Connection conn=pool.getConnection();){
-                String update="update browser_views set name=?, email=? where bvid=?";
+                String update="update browser_views set name=?, ANON_email=? where bvid=?";
                 PreparedStatement ips = conn.prepareStatement(update);
                 ips.setString(1,this.name);
                 ips.setString(2,this.email);

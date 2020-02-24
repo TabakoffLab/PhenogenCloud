@@ -36,6 +36,9 @@ public class BrowserTrack{
     private Timestamp ts=null;
     private String gV="";
     private String dbStatus="";
+
+
+
     
     public BrowserTrack(){
     }
@@ -127,7 +130,7 @@ public class BrowserTrack{
         Logger log=Logger.getRootLogger();
         BrowserTrack ret=null;
         
-        String query="select * from BROWSER_TRACKS "+
+        String query="select TRACKID, USER_ID, TRACK_CLASS, TRACK_NAME, TRACK_DESC, ORGANISM, CATEGORY_GENERIC, CATEGORY, DISPLAY_OPTS, VISIBLE, CUSTOM_LOCATION, CUSTOM_DATE, CUSTOM_FILE_ORIGINAL, CUSTOM_TYPE from BROWSER_TRACKS "+
                         "where trackid="+trackid;
             PreparedStatement ps=null;
             try(Connection conn=pool.getConnection()) {
@@ -169,12 +172,13 @@ public class BrowserTrack{
         Logger log=Logger.getRootLogger();
         ArrayList<BrowserTrack> ret=new ArrayList<BrowserTrack>();
 
-        String query="select bt.*,gbt.genome_id from BROWSER_TRACKS bt, BROWSER_GV2TRACK gbt where ";
+        String query="select bt.TRACKID, bt.USER_ID, bt.TRACK_CLASS, bt.TRACK_NAME, bt.TRACK_DESC, bt.ORGANISM, bt.CATEGORY_GENERIC, bt.CATEGORY, bt.DISPLAY_OPTS, bt.VISIBLE, bt.CUSTOM_LOCATION, bt.CUSTOM_DATE, bt.CUSTOM_FILE_ORIGINAL, bt.CUSTOM_TYPE,bt.Tissue,bt.track_type,bt.strain,gbt.genome_id from BROWSER_TRACKS bt, BROWSER_GV2TRACK gbt where ";
+        query = query +"bt.TRACKID=gbt.TRACKID and  bt.visible=1 ";
         if(!genomeVer.equals("all")){
-            query=query+" gbt.genome_id= '"+genomeVer+"' ";
+            query=query+" and gbt.genome_id= '"+genomeVer+"' ";
         }
 
-        query = query +"and  bt.visible=1 ";
+
 
         String tissueSelection="";
         String trackType="";
@@ -182,37 +186,47 @@ public class BrowserTrack{
         HashMap<String,String> settingHM=new HashMap<>();
         for(int i=0;i<tracks.length;i++){
             if(tracks[i].startsWith("cbxTissue")){
-                tissueSelection=tissueSelection+","+tracks[i].substring(9);
+                tissueSelection=tissueSelection+",'"+tracks[i].substring(9)+"'";
             }else if(tracks[i].startsWith("cbxTrack")){
-                trackType=trackType+","+tracks[i].substring(8);
+                trackType=trackType+",'"+tracks[i].substring(8)+"'";
             }else if(tracks[i].startsWith("strain")){
-                strains=strains+","+tracks[i].substring(6);
+                strains=strains+",'"+tracks[i].substring(6)+"'";
             }
         }
-
+        String tissueQuery="";
+        String trackQuery="";
         if(!tissueSelection.equals("")){
             tissueSelection=tissueSelection.substring(1);
             if(tissueSelection.indexOf(",")>0){
-                query = query +"and bt.tissue in ("+tissueSelection+") ";
+                tissueQuery = tissueQuery +" bt.tissue in ("+tissueSelection+") ";
             }else{
-                query = query +"and bt.tissue = '"+tissueSelection+"' ";
+                tissueQuery = tissueQuery +" bt.tissue = "+tissueSelection+" ";
             }
 
         }
         if(!trackType.equals("")){
             trackType=trackType.substring(1);
             if(trackType.indexOf(",")>0) {
-                query = query +"and bt.track_Type in (" + trackType + ") ";
+                trackQuery = trackQuery +" bt.track_Type in (" + trackType + ") ";
             }else{
-                query = query +"and bt.track_type = '" + trackType + "' ";
+                trackQuery = trackQuery +" bt.track_type = " + trackType + " ";
             }
         }
+
+        if( !tissueQuery.equals("") && !trackQuery.equals("")) {
+            query = query + " and (( " + tissueQuery + " and " + trackQuery + " ) or ( bt.tissue is null and " + trackQuery + " ) )";
+        }else if(!trackQuery.equals("")){
+            query = query + " and  bt.tissue is null and "+trackQuery;
+        }else if(!tissueQuery.equals("")){
+            query = query + " and "+tissueQuery;
+        }
+
         if(!strains.equals("")){
             strains=strains.substring(1);
             if(strains.indexOf(",")>0) {
-                query = query + "and bt.strain in (" + strains + ") ";
+                query = query + "or ( bt.track_type='ReadCounts' and bt.strain in (" + strains + ") ) ";
             }else{
-                query = query +"and bt.strain = '" + strains + "' ";
+                query = query +"or ( bt.track_type='ReadCounts' and bt.strain = " + strains + ") ";
             }
         }
         log.debug("find Tracks for trackString:\n");
@@ -237,7 +251,7 @@ public class BrowserTrack{
                 Timestamp t=rs.getTimestamp(12);
                 String file=rs.getString(13);
                 String type=rs.getString(14);
-                String gV=rs.getString(15);
+                String gV=rs.getString(18);
                 BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,"",0,genCat,cat,controls,vis,location,file,type,t,gV);
                 ret.add(tmpBT);
             }

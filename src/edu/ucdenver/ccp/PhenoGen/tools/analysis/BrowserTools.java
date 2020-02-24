@@ -116,6 +116,7 @@ public class BrowserTools{
 
         BrowserView curView=bv.getBrowserView(viewID,pool);
         log.debug("GOT curView");
+        log.debug(trackString);
         String[] checkBoxes=trackString.split(",");
         //Get BrowserTracks that fit trackString
         ArrayList<BrowserTrack> tracks=bt.getBrowserTracks(checkBoxes,genomeVer,datasetVer,pool);

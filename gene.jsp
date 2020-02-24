@@ -760,6 +760,8 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                     <label for="cbxTissueLiver">Liver (HRDP RNA-Seq, HXB Arrays)</label><BR>
                                     <input type="checkbox" class="custviewCbx" id="cbxTissueHeart">
                                     <label for="cbxTissueHeart">Heart (BNLx/SHR RNA-Seq, HXB Arrays) </label><BR>
+                                    <input type="checkbox" class="custviewCbx" id="cbxTissueMerged">
+                                    <label for="cbxTissueMerged">Merged (HRDP RNA-Seq merged across tissues and strains) </label><BR>
                                     <input type="checkbox" class="custviewCbx" id="cbxTissueBAT">
                                     <label for="cbxTissueBAT">Brown Adipose (HXB Arrays)</label>
                                 </p>
@@ -779,21 +781,21 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                             <option value="1">HRDP v3</option>
                                         </select><BR>
                                         Tracks:<BR>
-                                        <input type="checkbox" class="custviewCbx" id="cbxTrackReconst" checked="checked">
+                                        <input type="checkbox" class="custviewCbx" id="cbxTrackReconstruction" checked="checked">
                                         <label >Reconstructed Transcriptome</label><BR>
-                                        <input type="checkbox" class="custviewCbx" id="cbxTrackSplice">
+                                        <input type="checkbox" class="custviewCbx" id="cbxTrackSpliceJunction">
                                         <label >Splice Junctions</label><BR>
-                                        <input type="checkbox" class="custviewCbx" id="cbxTrackReadCnt">
+                                        <input type="checkbox" class="custviewCbx" id="cbxTrackReadCounts">
                                         <label >Strain Read counts</label><BR>
-                                        <div class="checkbox-l3" style="display:none;" id="strainList">
+                                        <div class="checkbox-l3" style="display:none;" id="ReadCountsOpts">
 
                                             Select Count type:
                                                 <select>
                                                     <option value="total">Total Read Counts</option>
                                                     <option value="sampled">Sampled Read Counts</option>
                                                 </select><BR>
-                                            <input type="checkbox" class="custviewCbx" id="cbxTrackOptConstScale">
-                                            <label >Use same Y-axis scale for all</label><BR>
+                                            <!--<input type="checkbox" class="custviewCbx" id="cbxTrackOptConstScale">
+                                            <label >Use same Y-axis scale for all</label><BR>-->
                                             Select Strians to display:<BR>
                                             <input type="button"  id="selectAll" value="Select All"
                                                    onClick="return custView.selectAllStrains()">
@@ -844,22 +846,22 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainWKY">WKY</label>
                                         </div>
                                     </div>
-                                    <input type="checkbox" class="custviewCbx" id="cbxDatasmall">
+                                    <input type="checkbox" class="custviewCbx" id="cbxDataSmallRNA">
                                     <label>Small RNA-Seq</label><BR>
-                                    <div class="checkbox-l3" style="display:none;" id="smallOpts">
+                                    <div class="checkbox-l3" style="display:none;" id="SmallRNAOpts">
                                         Tracks:<BR>
-                                        <input type="checkbox" class="custviewCbx"  id="">
+                                        <input type="checkbox" class="custviewCbx"  id="cbxTrackSmallRNA">
                                         <label >Small RNA-Seq Features</label><BR>
-                                        <input type="checkbox" class="custviewCbx"  id="">
+                                        <input type="checkbox" class="custviewCbx"  id="cbxTrackReadCountsSmall">
                                         <label >Small RNA-Seq Read Counts</label><BR>
-                                        <div class="checkbox-l3" style="display:none;" id="smallStrainList">
+                                        <div class="checkbox-l3" style="display:none;" id="ReadCountsSmallOpts">
                                             <label ><input type="checkbox" class="custviewCbx" id="">BNLx</label>
                                             <label ><input type="checkbox" class="custviewCbx" id="">SHR</label>
                                         </div>
                                     </div>
-                                    <input type="checkbox" class="custviewCbx" id="cbxDataarray">
+                                    <input type="checkbox" class="custviewCbx" id="cbxTrackArray">
                                     <label>Affymetrix Exon Arrays</label><BR>
-                                    <div class="checkbox-l3" style="display:none;" id="arrayOpts">
+                                    <div class="checkbox-l3" style="display:none;" id="ArrayOpts">
                                         Color By:
                                         <select id="selArrayColorBy">
                                             <option value="">Annotation</option>
@@ -867,25 +869,25 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                             <option value="">Heritiblity</option>
                                         </select><BR>
                                     </div>
-                                    <input type="checkbox" class="custviewCbx" id="cbxDatacirRNA">
+                                    <input type="checkbox" class="custviewCbx" id="cbxTrackCirRNA">
                                     <label>Circular RNAs</label><BR>
-                                    <div class="checkbox-l3" style="display:none;" id="cirRNAOpts">
+                                    <div class="checkbox-l3" style="display:none;" id="CirRNAOpts">
                                         Display:<BR>
-                                        <input type="checkbox" class="custviewCbx" id="cbxDataCirRNAPred">
+                                        <input type="checkbox" class="custviewCbx" id="cbxOptsCirRNAPred">
                                         <label>Predicted Circular RNAs (BNLx/SHR Brain/Heart/Liver) </label><BR>
-                                        <input type="checkbox" class="custviewCbx" id="cbxDataCirRNAArray">
+                                        <input type="checkbox" class="custviewCbx" id="cbxOptsCirRNAArray">
                                         <label>Array cirRNA Expression (BNLx/SHR Heart) </label>
                                     </div>
-                                    <input type="checkbox" class="custviewCbx" id="cbxDatacirRNA">
+                                    <input type="checkbox" class="custviewCbx" id="cbxTrackVariant">
                                     <label>Strain Variants</label><BR>
                                 </p>
                                 <H3>Annotation</H3>
                                 <p>
-                                    <input type="checkbox" class="custviewCbx" checked="checked" id="cbxEnsembl">
+                                    <input type="checkbox" class="custviewCbx" checked="checked" id="cbxEnsemblAnnotation">
                                     <label>Ensembl</label><BR>
                                     <input type="checkbox" class="custviewCbx"  id="cbxRefSeq">
                                     <label>RefSeq</label><BR>
-                                    <input type="checkbox" class="custviewCbx"  id="cbxRepeatMask">
+                                    <input type="checkbox" class="custviewCbx"  id="cbxRepeat">
                                     <label>Repeat Masker</label><BR>
                                     <input type="checkbox" class="custviewCbx"  id="cbxQTL">
                                     <label>QTLs</label><BR>

@@ -2,7 +2,7 @@
     var GDBCustomView=function(params){
         var that={};
         that.curTimeout=-1;
-        that.include={};
+        that.include={'cbxDatatotal':1,'cbxTrackReconstruction':1,'cbxEnsemblAnnotation':1,'cbxRefSeq':1,'cbxRepeat':1};
         that.viewID=-1;
 
         that.createView=function(){
@@ -70,7 +70,7 @@
                     },
                     success: function(){
                         if(that.curTimeout==-1){
-                            that.toggleGO();
+                            $(".goBTN").prop('disabled', false);
                         }
                         that.setStatus("Updating Tracks...Done");
                         setTimeout(function(){that.setStatus("")},5000);
@@ -95,11 +95,13 @@
                     }else{
                         $("div#"+divName+"Opts").hide();
                     }
-                }else if($(this).attr("id")=="cbxTrackReadCnt"){
+                }else if($(this).attr("id").indexOf("cbxTrack")==0){
+                    divName=$(this).attr("id").substr(8);
+                    console.log(divName);
                     if($(this).prop("checked")){
-                        $("div#strainList").show();
+                        $("div#"+divName+"Opts").show();
                     }else{
-                        $("div#strainList").hide();
+                        $("div#"+divName+"Opts").hide();
                     }
                 }
                 //add/delete tracks
