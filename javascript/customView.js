@@ -2,7 +2,7 @@
     var GDBCustomView=function(params){
         var that={};
         that.curTimeout=-1;
-        that.include={'cbxDatatotal':1,'cbxTrackReconstruction':1,'cbxEnsemblAnnotation':1,'cbxRefSeq':1,'cbxRepeat':1};
+        that.include={'cbxTrackSequence':1,'cbxDatatotal':1,'cbxTrackReconstruction':1,'cbxTrackEnsemblAnnotation':1};
         that.viewID=-1;
 
         that.createView=function(){

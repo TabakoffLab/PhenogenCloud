@@ -805,14 +805,16 @@ public class BrowserView{
         String update="update BROWSER_VIEWS_TRACKS set ORDERING=? where bvid="+this.id+ " and trackid=?";
         String updateSettings="update BROWSER_TRACK_SETTINGS set SETTINGS=? where TRACKSETTINGID=?";
 
-        String delete="delete BROWSER_VIEWS_TRACKS where bvid=? and trackid=?";
-        String deleteSetting="delete BROWSER_TRACK_SETTINGS where tracksettingid in (select tracksettingid from BROWSER_VIEWS_TRACKS where bvid=? and trackid=?)";
+        String delete="delete from BROWSER_VIEWS_TRACKS where bvid=? and trackid=?";
+        String deleteSetting="delete from BROWSER_TRACK_SETTINGS where tracksettingid in (select tracksettingid from BROWSER_VIEWS_TRACKS where bvid=? and trackid=?)";
 
         PreparedStatement ps=null;
         try(Connection conn=pool.getConnection();){
+            log.debug("before update");
             for(int i=0;i<btList.size();i++){
-                if(btList.get(i).getDBStatus().equals("")) {
+                if(btList.get(i).getDBStatus().equals("update")) {
                     //update browser_view_tracks to change order
+                    log.debug(update);
                     PreparedStatement ips = conn.prepareStatement(update);
                     ips.setInt(1, i);
                     ips.setInt(2, btList.get(i).getID());
@@ -831,41 +833,45 @@ public class BrowserView{
             log.debug("update");
 
             for(int i=0;i<btList.size();i++){
-                int newSettingID=-1;
-                //insert browser track settings
-                PreparedStatement ips = conn.prepareStatement(insertSettings,PreparedStatement.RETURN_GENERATED_KEYS);
-                //ips.setInt(1,newSettingID);
-                log.debug("update");
-                log.debug("setting:"+btList.get(i).getDefaultSettings());
-                ips.setString(1, btList.get(i).getDefaultSettings());
-                ips.executeUpdate();
-                ResultSet rsID = ips.getGeneratedKeys();
-                if (rsID.next()) {
-                    newSettingID = rsID.getInt(1);
-                }
-                ips.close();
-                log.debug("before bvt insert");
-                //insert browser view tracks
-                if(newSettingID>0) {
-                    ips = conn.prepareStatement(insert);
-                    ips.setInt(1, this.getID());
-                    ips.setInt(2, btList.get(i).getID());
-                    ips.setInt(3, newSettingID);
-                    ips.setInt(4, i);
-                    ips.execute();
-
+                if(btList.get(i).getDBStatus().equals("add")) {
+                    int newSettingID = -1;
+                    //insert browser track settings
+                    PreparedStatement ips = conn.prepareStatement(insertSettings, PreparedStatement.RETURN_GENERATED_KEYS);
+                    //ips.setInt(1,newSettingID);
+                    //log.debug("update");
+                    //log.debug("setting:" + btList.get(i).getDefaultSettings());
+                    ips.setString(1, btList.get(i).getDefaultSettings());
+                    ips.executeUpdate();
+                    ResultSet rsID = ips.getGeneratedKeys();
+                    if (rsID.next()) {
+                        newSettingID = rsID.getInt(1);
+                    }
                     ips.close();
+                    //log.debug("before bvt insert");
+                    //insert browser view tracks
+                    if (newSettingID > 0) {
+                        ips = conn.prepareStatement(insert);
+                        ips.setInt(1, this.getID());
+                        ips.setInt(2, btList.get(i).getID());
+                        ips.setInt(3, newSettingID);
+                        ips.setInt(4, i);
+                        ips.execute();
+
+                        ips.close();
+                    }
+                    //log.debug("after bvt");
                 }
-                log.debug("after bvt");
             }
             log.debug("insert");
             for(int i=0;i<btListToDelete.size();i++) {
                 //delete
+                log.debug(deleteSetting);
                 ps = conn.prepareStatement(deleteSetting);
                 ps.setInt(1,this.getID());
                 ps.setInt(2,btListToDelete.get(i).getID());
                 ps.execute();
                 ps.close();
+                log.debug("delete bvid:"+this.getID()+"::"+btListToDelete.get(i).getID());
                 ps = conn.prepareStatement(delete);
                 ps.setInt(1,this.getID());
                 ps.setInt(2,btListToDelete.get(i).getID());
