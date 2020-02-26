@@ -6,7 +6,8 @@ import="org.json.*" %>
 <%@ include file="/web/common/anon_session_vars.jsp" %>
 <%
 	String sessionid="";
-	sessionid=session.getId();
+	sessionid=session.getId().replaceAll("\\.","_");
+
 	java.util.Date d=new java.util.Date();
 	String content="";
 	boolean htmlCreated=false;

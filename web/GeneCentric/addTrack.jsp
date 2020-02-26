@@ -20,6 +20,7 @@ import="org.json.*" %>
 	String location="";
 	String type="";
 	String prevFile="";
+	String genomeVer="rn6";
 	//User userLoggedIn=(User) session.getAttribute("userLoggedIn");
 	int uid=userLoggedIn.getUser_id();
 	
@@ -36,6 +37,16 @@ import="org.json.*" %>
 	}
 	if(request.getParameter("trackOrg")!=null){
 		trackOrg=FilterInput.getFilteredInput(request.getParameter("trackOrg"));
+		if(trackOrg.equals("Rn6")){
+			genomeVer="rn6";
+			trackOrg="Rn";
+		}else if(trackOrg.equals("Rn5")){
+			genomeVer="rn5";
+			trackOrg="Rn";
+		}else if(trackOrg.equals("Mm")){
+			genomeVer="mm10";
+			trackOrg="Mm";
+		}
 	}
 	if(request.getParameter("genericCategory")!=null){
 		genericCat=FilterInput.getFilteredInput(request.getParameter("genericCategory"));
@@ -61,7 +72,7 @@ import="org.json.*" %>
 	int tmpuserID=0;
 	bt.setSession(session);
 
-	boolean success=bt.createCustomTrack(uid,trackClass,trackName,trackDesc,trackOrg,"",0,genericCat,category,controls,true,location,prevFile,type);
+	boolean success=bt.createCustomTrack(uid,trackClass,trackName,trackDesc,trackOrg,genomeVer,0,genericCat,category,controls,true,location,prevFile,type);
 	//else will just return path to save to cookie.
 	JSONObject genejson;
 	genejson = new JSONObject();

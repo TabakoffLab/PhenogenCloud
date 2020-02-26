@@ -4,11 +4,8 @@ package edu.ucdenver.ccp.PhenoGen.tools.analysis;
 import edu.ucdenver.ccp.PhenoGen.tools.analysis.BrowserTrack;
 import edu.ucdenver.ccp.PhenoGen.web.SessionHandler;
 import edu.ucdenver.ccp.PhenoGen.web.mail.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -26,16 +23,23 @@ public class BrowserView{
     private boolean visible=false;
     private String imageSettings="";
     private String bvGenomeVer="";
+    private String UUID="";
+    private String email="";
+    private Timestamp created=null;
+    private Timestamp lastAccessed=null;
     private ArrayList<BrowserTrack> btList=new ArrayList<BrowserTrack>();
+    private ArrayList<BrowserTrack> btListToDelete=new ArrayList<BrowserTrack>();
+    private Logger log=null;
     
     public BrowserView(){
-        
+        log=Logger.getRootLogger();
     }
     public BrowserView(int userid,String name,String description, String organism,boolean visible,String imgsetting,String bvGenomeVer){
         this(-1,userid,name,description,organism,visible,imgsetting,bvGenomeVer);
     }
     
     public BrowserView(int id,int userid,String name,String description, String organism,boolean visible,String imgsetting,String bvGenomeVer){
+        log=Logger.getRootLogger();
         this.id=id;
         this.userID=userid;
         this.name=name;
@@ -46,8 +50,10 @@ public class BrowserView{
         this.bvGenomeVer=bvGenomeVer;
     }
     
+
     public ArrayList<BrowserView> getBrowserViews(int userid,String genomeVer,String uuid,DataSource pool){
         Logger log=Logger.getRootLogger();
+
         ArrayList<BrowserView> ret=new ArrayList<BrowserView>();
         
         HashMap<Integer,BrowserView> hm=new HashMap<Integer,BrowserView>();
@@ -168,12 +174,12 @@ public class BrowserView{
         Logger log=Logger.getRootLogger();
         BrowserView ret=null;
         String query="select bv.BVID,bv.USER_ID,bv.NAME,bv.DESCRIPTION,bv.ORGANISM,bv.VISIBLE,bv.IMAGE_SETTINGS,gbv.genome_id from BROWSER_VIEWS bv, BROWSER_GV2VIEW gbv "+
-                        "where bvid="+viewid+" and bv.bvid=gbv.bvid";
+                        "where bv.bvid="+viewid+" and bv.bvid=gbv.bvid";
         String trackquery="select bvt.bvid,bt.TRACKID, bt.USER_ID, bt.TRACK_CLASS, bt.TRACK_NAME, bt.TRACK_DESC, bt.ORGANISM, bt.CATEGORY_GENERIC, bt.CATEGORY, bt.DISPLAY_OPTS,"+
                         "bt.VISIBLE, bt.CUSTOM_LOCATION, bt.CUSTOM_DATE, bt.CUSTOM_FILE_ORIGINAL, bt.CUSTOM_TYPE,bts.settings,bvt.ordering"+
                         " from BROWSER_VIEWS_TRACKS bvt,BROWSER_TRACKS bt, BROWSER_TRACK_SETTINGS bts "+
                         " where bvt.trackid=bt.trackid and bvt.tracksettingid=bts.tracksettingid "+
-                        " and bt.visible=1 and bvt.bvid ="+viewid+") "+
+                        " and bt.visible=1 and bvt.bvid ="+viewid+" "+
                         " order by bvt.bvid,bvt.ordering";
             Connection conn=null;
             PreparedStatement ps=null;
@@ -369,8 +375,39 @@ public class BrowserView{
     public void setTracks(ArrayList<BrowserTrack> btList) {
         this.btList = btList;
     }
-    
-    
+
+    public String getUUID() {
+        return UUID;
+    }
+
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
+    }
+
+    public Timestamp getCreatedDate() {
+        return created;
+    }
+
+    public void setCreatedDate(Timestamp created) {
+        this.created = created;
+    }
+
+    public Timestamp getLastAccessed() {
+        return lastAccessed;
+    }
+
+    public void setLastAccessed(Timestamp lastAccessed) {
+        this.lastAccessed = lastAccessed;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     /*public int getNextID(DataSource pool){
         int id=-1;
         String query="select Browser_View_ID_SEQ.nextVal from dual";
@@ -435,9 +472,15 @@ public class BrowserView{
     public int saveToDB(String genomeVer,DataSource pool){
         boolean success=false;
         String insertVersion="insert into browser_GV2VIEW (GENOME_ID,BVID) values(?,?)";
+        String extraColumns="";
+        String extraValues="";
+        if(! this.UUID.equals("")){
+            extraColumns=", UUID, CREATED,LAST_ACCESS ";
+            extraValues=",?,?,?";
+        }
         String insertUsage="insert into browser_views ("
                 + "USER_ID,NAME,DESCRIPTION,ORGANISM,"
-                + "VISIBLE,IMAGE_SETTINGS) values (?,?,?,?,?,?)";
+                + "VISIBLE,IMAGE_SETTINGS"+extraColumns+") values (?,?,?,?,?,?"+extraValues+")";
          String insertCount="insert into browser_view_counts (BVID,COUNTER) values (?,?)";
 
         try(Connection conn=pool.getConnection();){
@@ -450,6 +493,11 @@ public class BrowserView{
             ps.setString(4, this.organism);
             ps.setBoolean(5,this.visible);
             ps.setString(6, this.imageSettings);
+            if(! this.UUID.equals("")){
+                ps.setString(7, this.UUID);
+                ps.setTimestamp(8,this.created);
+                ps.setTimestamp(9,this.created);
+            }
             ps.executeUpdate();
             ResultSet rsID = ps.getGeneratedKeys();
             if (rsID.next()) {
@@ -753,6 +801,168 @@ public class BrowserView{
            }
         return ret;
     }
+
+
+    public String updateTracks(DataSource pool){
+        boolean success=false;
+        String ret="";
+
+        String insert="insert into BROWSER_VIEWS_TRACKS (BVID,TRACKID,TRACKSETTINGID,ORDERING) VALUES (?,?,?,?)";
+        String insertSettings="insert into BROWSER_TRACK_SETTINGS (SETTINGS) VALUES (?)";
+
+        String update="update BROWSER_VIEWS_TRACKS set ORDERING=? where bvid="+this.id+ " and trackid=?";
+        String updateSettings="update BROWSER_TRACK_SETTINGS set SETTINGS=? where TRACKSETTINGID=?";
+
+        String delete="delete from BROWSER_VIEWS_TRACKS where bvid=? and trackid=?";
+        String deleteSetting="delete from BROWSER_TRACK_SETTINGS where tracksettingid in (select tracksettingid from BROWSER_VIEWS_TRACKS where bvid=? and trackid=?)";
+
+        PreparedStatement ps=null;
+        try(Connection conn=pool.getConnection();){
+            log.debug("before update");
+            for(int i=0;i<btList.size();i++){
+                if(btList.get(i).getDBStatus().equals("update")) {
+                    //update browser_view_tracks to change order
+                    log.debug(update);
+                    PreparedStatement ips = conn.prepareStatement(update);
+                    ips.setInt(1, i);
+                    ips.setInt(2, btList.get(i).getID());
+                    ips.execute();
+                    ips.close();
+
+                    //Currently we don't need to do this so it's commented out
+                    /*PreparedStatement ips = conn.prepareStatement(updateSettings);
+                    ips.setString(1, setting);
+                    ips.setInt(2, btList.get(i).getTrackSettingID());
+                    ips.execute();
+                    ips.close();*/
+
+                }
+            }
+            log.debug("update");
+
+            for(int i=0;i<btList.size();i++){
+                if(btList.get(i).getDBStatus().equals("add")) {
+                    int newSettingID = -1;
+                    //insert browser track settings
+                    PreparedStatement ips = conn.prepareStatement(insertSettings, PreparedStatement.RETURN_GENERATED_KEYS);
+                    //ips.setInt(1,newSettingID);
+                    //log.debug("update");
+                    //log.debug("setting:" + btList.get(i).getDefaultSettings());
+                    ips.setString(1, btList.get(i).getDefaultSettings());
+                    ips.executeUpdate();
+                    ResultSet rsID = ips.getGeneratedKeys();
+                    if (rsID.next()) {
+                        newSettingID = rsID.getInt(1);
+                    }
+                    ips.close();
+                    //log.debug("before bvt insert");
+                    //insert browser view tracks
+                    if (newSettingID > 0) {
+                        ips = conn.prepareStatement(insert);
+                        ips.setInt(1, this.getID());
+                        ips.setInt(2, btList.get(i).getID());
+                        ips.setInt(3, newSettingID);
+                        ips.setInt(4, i);
+                        ips.execute();
+
+                        ips.close();
+                    }
+                    //log.debug("after bvt");
+                }
+            }
+            log.debug("insert");
+            for(int i=0;i<btListToDelete.size();i++) {
+                //delete
+                log.debug(deleteSetting);
+                ps = conn.prepareStatement(deleteSetting);
+                ps.setInt(1,this.getID());
+                ps.setInt(2,btListToDelete.get(i).getID());
+                ps.execute();
+                ps.close();
+                log.debug("delete bvid:"+this.getID()+"::"+btListToDelete.get(i).getID());
+                ps = conn.prepareStatement(delete);
+                ps.setInt(1,this.getID());
+                ps.setInt(2,btListToDelete.get(i).getID());
+                ps.execute();
+                ps.close();
+
+            }
+            log.debug("delete");
+            btListToDelete=new ArrayList<>();
+            success=true;
+        }catch(SQLException e){
+            e.printStackTrace(System.err);
+            Logger log = Logger.getRootLogger();
+            log.error("Error copying View:",e);
+            Email myAdminEmail = new Email();
+            String fullerrmsg=e.getMessage();
+            StackTraceElement[] tmpEx=e.getStackTrace();
+            for(int i=0;i<tmpEx.length;i++){
+                fullerrmsg=fullerrmsg+"\n"+tmpEx[i];
+            }
+            myAdminEmail.setSubject("Exception thrown inserting a copied view");
+            myAdminEmail.setContent("There was an error inserting a copied view.\n"+fullerrmsg);
+            try {
+                myAdminEmail.sendEmailToAdministrator("");
+            } catch (Exception mailException) {
+                log.error("error sending message", mailException);
+                throw new RuntimeException();
+            }
+        }
+        ret="Completed";
+        if(!success){
+            ret="Error saving view.";
+        }
+        return ret;
+    }
+
+    public void updateView(DataSource pool){
+        log.debug("before update tracks to DB");
+        updateTracks(pool);
+        log.debug("after update tracks to DB");
+        if(!this.name.equals("") || !this.email.equals("")){
+            try(Connection conn=pool.getConnection();){
+                String update="update browser_views set name=?, ANON_email=? where bvid=?";
+                PreparedStatement ips = conn.prepareStatement(update);
+                ips.setString(1,this.name);
+                ips.setString(2,this.email);
+                ips.setInt(3,this.id);
+                ips.execute();
+                ips.close();
+            }catch(SQLException e){
+                log.error("Error saving view:",e);
+            }
+        }
+    }
+
+    public void updateTracks(ArrayList<BrowserTrack> tracks){
+        HashMap<String,Integer> trackHM= new HashMap<>();
+        ArrayList<BrowserTrack> newList= new ArrayList<>();
+        for(int i=0;i<btList.size();i++){
+            trackHM.put(btList.get(i).getTrackClass(),i);
+        }
+        for(int i=0;i<tracks.size();i++){
+            if(trackHM.containsKey(tracks.get(i).getTrackClass())) {
+                tracks.get(i).setDBStatus("update");
+                btList.set(trackHM.get(tracks.get(i).getTrackClass()), tracks.get(i));
+                trackHM.put(tracks.get(i).getTrackClass(),0);
+
+            }else{
+                tracks.get(i).setDBStatus("add");
+                btList.add(tracks.get(i));
+                trackHM.put(tracks.get(i).getTrackClass(),0);
+            }
+        }
+        for(int i=0;i<btList.size();i++){
+            if(trackHM.get(btList.get(i).getTrackClass())==0){
+                newList.add(btList.get(i));
+            }else{
+                btList.get(i).setDBStatus("delete");
+                btListToDelete.add(btList.get(i));
+            }
+        }
+        this.btList=newList;
+    }
     
 }
 
@@ -794,4 +1004,5 @@ class TrackSettings{
     public void markProcessed(){
         this.processed=true;
     }
+
 }

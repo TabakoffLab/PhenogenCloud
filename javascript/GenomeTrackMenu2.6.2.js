@@ -27,14 +27,17 @@ function TrackMenu(level){
 		var btData=[];
 		var count=0;
 		for(var j=0;j<that.trackList.length;j++){
+
 			if(	filter==="all" ||
 				(filter==="allpublic" && that.trackList[j].UserID===0) ||
 				(filter==="custom" && that.trackList[j].UserID!==0) ||
 				(filter==="genome" && that.trackList[j].GenericCategory==="Genome") ||
 				(filter==="trxome" && that.trackList[j].GenericCategory==="Transcriptome")
 				){
-				if(  that.trackList[j].Organism.toUpperCase()==="AA" || 
-					 (that.trackList[j].Organism.toUpperCase()===organism.toUpperCase())
+				if(  that.trackList[j].Organism.toUpperCase()==="AA" ||
+					(that.trackList[j].Organism.toUpperCase()===organism.toUpperCase()) ||
+					(that.trackList[j].Organism.toUpperCase()===organism.toUpperCase()) ||
+					 (that.trackList[j].Organism.substring(0,2).toUpperCase()===organism.toUpperCase())
 					){
 					if($("table#trackListTbl"+that.level+" tr#trk"+that.trackList[j].TrackID).length===0){
 						btData[count]=that.trackList[j];
@@ -207,7 +210,8 @@ function TrackMenu(level){
    				type: 'GET',
 				data: {genomeVer: genomeVer  },
 				dataType: 'json',
-                success: function(d){ 
+                success: function(d){
+
                     that.trackList=d;
 					if(that.level===0){
 						trackInfo=[];
@@ -226,7 +230,7 @@ function TrackMenu(level){
 					}
                 },
                 error: function(xhr, status, error) {
-                        
+                        console.log(error);
                 }
         });
 		/*d3.json(tmpContext+"getBrowserTracks.jsp",function (error,d){
@@ -254,19 +258,25 @@ function TrackMenu(level){
 	};
 
 	that.readCookieTracks=function(){
+		//console.log("READ COOKIE TRACKS****************");
 		var trackString="";
 		if(isLocalStorage() === true){
+			//console.log("local");
 			var cur=localStorage.getItem("phenogenCustomTracks");
+			//console.log(cur);
 			if(cur){
 				trackString=cur;
 			}
 		}else{
+			//console.log("cookie");
 			if($.cookie("phenogenCustomTracks")){
 				trackString=$.cookie("phenogenCustomTracks");
 			}
 		}
+		//console.log(trackString);
 		if(trackString && trackString.indexOf("<;>")>-1){
 			var trackStrings=trackString.split("<;>");
+			//console.log(trackStrings);
 			for(var j=0;j<trackStrings.length;j++){
 				var params=trackStrings[j].split("<->");
 				var obj={};
@@ -277,6 +287,9 @@ function TrackMenu(level){
 					}else if(values.length>2){
 						var name=params[k].substr(0,params[k].indexOf("="));
 						var value=params[k].substr(params[k].indexOf("=")+1);
+						if(name==="TrackID"||name==="TrackClass"){
+							value=value.replace(/\./g,"_");
+						}
 						obj[name]=value;
 					}
 				}
@@ -285,6 +298,8 @@ function TrackMenu(level){
 					that.trackList.push(obj);
 					if(that.level===0){
 						trackInfo[obj.TrackClass]=obj;
+						//console.log("added");
+						//console.log(obj);
 					}
 				}
 			}
@@ -316,7 +331,7 @@ function TrackMenu(level){
 	that.generatePreview=function(d){
 		$("div#trackPreviewOuter"+that.level+" div#trackPreviewContent").html("");
 		var tmpOrg=new String(organism).toUpperCase();
-		if(d.Organism==="AA"||d.Organism===tmpOrg){
+		if(d.Organism.substring(0,2)==="AA"||d.Organism.substring(0,2)===tmpOrg){
 			var min=svgList[that.level].xScale.domain()[0];
 			var max=svgList[that.level].xScale.domain()[1];
 			that.previewSVG=toolTipSVG("div#trackPreviewOuter"+that.level+" div#trackPreviewContent",565,min,max,that.previewLevel,chr,svgList[that.level].type);
@@ -343,9 +358,10 @@ function TrackMenu(level){
 		
 		var info="Name: <B>"+d.Name+"</B><BR>Description: <B>"+d.Description+"</B><BR>Original File: <B>"+d.OriginalFile+"</B><BR>Setup Date: <B>"+d.SetupDate+"</b>";
 		$("span#customTrackInfo"+that.level).html(info);
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserTracks','deleteCustomTrack');
-		}
+		}*/
+		gtag('event','deleteCustomTrack',{'event_category':'BrowserTracks'});
 	};
 
 	that.cancelDeleteTrack=function(){
@@ -429,9 +445,10 @@ function TrackMenu(level){
 		$("#deleteUsrTrack"+that.level).hide();
 		$("#selectTrack"+that.level).show();
 		that.generateTrackTable();
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserTracks','deleteTrack');
-		}
+		}*/
+		gtag('event','deleteTrack',{'event_category':'BrowserTracks'});
 	};
 
 	that.confirmUpload=function(){
@@ -459,9 +476,10 @@ function TrackMenu(level){
 		}else if(type==="bb"||type==="bw"){
 			that.createRemoteCustomTrack();
 		}
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserTracks','createCustomTrack');
-		}
+		}*/
+		gtag('event','createCustomTrack',{'event_category':'BrowserTracks'});
 	};
 
 	that.createUploadedCustomTrack=function(){
@@ -558,8 +576,8 @@ function TrackMenu(level){
 			}else{
 				minCol=$("#usrtrkColorMin"+that.level).val();
 				maxCol=$("#usrtrkColorMax"+that.level).val();
-				console.log(minCol);
-				console.log(maxCol);
+				//console.log(minCol);
+				//console.log(maxCol);
 				minCol=minCol.substr(1);
 				maxCol=maxCol.substr(1);
 			}
@@ -639,9 +657,10 @@ function TrackMenu(level){
 		$("#customFileURL"+that.level).val("");
 		
 		that.getTrackData();
-		if(ga){
+		/*if(ga){
 			ga('send','event','BrowserTracks','saveTrack');
-		}
+		}*/
+		gtag('event','saveTrack',{'event_category':'BrowserTracks'});
 	};
 
 
@@ -675,9 +694,10 @@ function TrackMenu(level){
 	        			var track=data2.trackFile;
 	        			var file=data2.trackFile;
 	        			that.saveTrack(track,file);
-	        			if(ga){
+	        			/*if(ga){
 							ga('send','event','BrowserTracks','customTrackUploaded');
-						}
+						}*/
+	        			gtag('event','customTrackUploaded',{'event_category':'BrowserTracks'});
 	    			},
 	    			error: function(xhr, status, error) {
 	        			console.log(error);

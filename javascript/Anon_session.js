@@ -27,7 +27,9 @@ function SetupAnonSession(){
             data: { uuid:that.UUID },
             dataType: 'json',
             success: function(data2){
-                that.pageSetup();
+                if(that.pageSetup) {
+                    that.pageSetup();
+                }
                 $('#createGeneList').show();
                 $('#linkEmail').show();
             },
