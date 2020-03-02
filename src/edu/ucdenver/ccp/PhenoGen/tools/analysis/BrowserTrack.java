@@ -103,12 +103,16 @@ public class BrowserTrack{
         nullStrainTracks.put("SmallRNA",1);
         nullStrainTracks.put("SpliceJunction",1);
         nullStrainTracks.put("CirRNA",1);
+        nullStrainTracks.put("Sequence",1);
+        nullStrainTracks.put("QTL",1);
         nullTissueTracks.put("RefSeq",1);
         nullTissueTracks.put("EnsemblAnnotation",1);
         nullTissueTracks.put("EnsemblAnnotationSmall",1);
         nullTissueTracks.put("Array",1);
         nullTissueTracks.put("Repeat",1);
         nullTissueTracks.put("Variant",1);
+        nullTissueTracks.put("Sequence",1);
+        nullStrainTracks.put("QTL",1);
     }
 
     public ArrayList<BrowserTrack> getBrowserTracks(int userid,String genomeVer,DataSource pool){
