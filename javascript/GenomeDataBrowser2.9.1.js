@@ -85,7 +85,7 @@ mouseOnly.probeMouse=1;
 
 var mmVer="Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer="Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer="PhenoGen v3.7.1(1/17/2020)";
+var siteVer="PhenoGen v3.7.1(2/26/2020)";
 
 var trackBinCutoff=10000;
 var customTrackLevel=-1;
@@ -179,9 +179,10 @@ function updatePage(topSVG){
         			topSVG.folderName=data2.folderName;
         			topSVG.updateData();
         			processAjax=0;
-        			if(ga){
+        			/*if(ga){
 						ga('send','event','updatePage','outsideLoadedRegion');
-					}
+					}*/
+					gtag('event','outsideLoadedRegion',{'event_category':'updatePage'});
     			},
     			error: function(xhr, status, error) {
         			console.log(error);
@@ -221,9 +222,10 @@ function back(level){
 
         }
     }
-	if(ga){
+	/*if(ga){
 		ga('send','event','stepBackSVGNaviation','navigateBack');
-	}
+	}*/
+	gtag('event','navigateBack',{'event_category':'stepBackSVGNaviation'});
 }
 
 function zoomIn(level,zoomScale){
@@ -268,9 +270,11 @@ function zoomIn(level,zoomScale){
 	if(level===0){
 		$('#geneTxt').val(chr+":"+tmp.start+"-"+tmp.stop);
 	}
-	if(ga){
-		ga('send','event','calledZoomIn',level);
-	}
+	/*if(ga){
+		ga('send','event',,level);
+	}*/
+
+	gtag('event',level,{'event_category':'calledZoomIn'});
 }
 
 function zoomOut(level,zoomScale){
@@ -311,9 +315,10 @@ function zoomOut(level,zoomScale){
 	if(level===0){
 		$('#geneTxt').val(chr+":"+tmp.start+"-"+tmp.stop);
 	}
-	if(ga){
+	/*if(ga){
 		ga('send','event','calledZoomOut',level);
-	}
+	}*/
+	gtag('event',level,{'event_category':'calledZoomOut'});
 }
 
 //setup event handlers
@@ -379,9 +384,10 @@ function mup() {
 			}
 		}
 	}
-	if(ga){
+	/*if(ga){
 		ga('send','event','dragMouseUp','mouseUpFromDrag');
-	}
+	}*/
+	gtag('event','mouseUpFromDrag',{'event_category':'dragMouseUp'});
 }
 function mmove(){
 	var i,p,minx,maxx,dist,scaleDist,start,width;
@@ -467,9 +473,10 @@ $(document).on("click",".closeBtn",function(){
                         $("span#viewMenuLbl"+tmpLevel).html("Select/Edit Views");
 						$("div.trackLevel"+tmpLevel).fadeOut("fast");
 					}
-					if(ga){
+					/*if(ga){
 						ga('send','event','closeSettings',setting);
-					}
+					}*/
+					gtag('event',setting,{'event_category':'closeSettings'});
 					return false;
 				});
 
@@ -491,9 +498,10 @@ $(document).on("click",".viewSelect",function(){
 						//$(".testToolTip").hide();
 						//var tmpStr=new String(setting);
 						//setupSettingUI(tmpStr.substr(tmpStr.length-1));
-						if(ga){
-						ga('send','event','openViews',level);
-					}
+						/*if(ga){
+							ga('send','event','openViews',level);
+						}*/
+						gtag('event',level,{'event_category':'openViews'});
 					}else{
 						$(".viewsLevel"+level).fadeOut("fast");
 					}
@@ -506,9 +514,10 @@ $(document).on("change","input[name='optioncbx']",function(){
 	var prefix=new String(idStr.substr(0,cbxInd));
 	var level=idStr.substr(cbxInd+3,1);
 	redrawTrack(level,prefix);
-	if(ga){
+	/*if(ga){
 						ga('send','event','changeSettingView',idStr);
-	}
+	}*/
+	gtag('event',idStr,{'event_category':'changeSettingView'});
 });
 
 
@@ -519,9 +528,10 @@ $(document).on("change","input[name='imgCBX']", function(){
 	var level=idStr.substr(cbxInd+3,1);
 	svgList[level].redraw();
 	setTimeout(function(){DisplayRegionReport();},300);
-	if(ga){
+	/*if(ga){
 						ga('send','event','clickCbx',idStr);
-	}
+	}*/
+	gtag('event',idStr,{'event_category':'clickCbx'});
 });
 
 $(document).on("click",".reset",function(){
@@ -539,9 +549,10 @@ $(document).on("click",".reset",function(){
 		setupDefaultView(level);
 		//saveToCookie(level);
 	}
-	if(ga){
+	/*if(ga){
 						ga('send','event','resetImage',id);
-	}
+	}*/
+	gtag('event',id,{'event_category':'resetImage'});
 });
 
 
@@ -578,16 +589,18 @@ function removeTrack(level,track){
 	if(typeof svgList[level] !== 'undefined'){
 		svgList[level].removeTrack(track);
 	}
-	if(ga){
+	/*if(ga){
 		ga('send','event','removeTrack',level,track);
-	}
+	}*/
+	gtag('event',level,{'event_category':'removeTrack','event_label':track});
 }
 
 function redrawTrack(level,track){
 	svgList[level].redrawTrack(track);
-	if(ga){
+	/*if(ga){
 		ga('send','event','redrawTrack',level,track);
-	}
+	}*/
+	gtag('event',level,{'event_category':'redrawTrack','event_label':track});
 }
 
 function changeTrackHeight(id,val){
@@ -848,23 +861,26 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 											.style("cursor","pointer")
 											.on("click",function(d){
 												d3.select(selector).remove();
-												if(ga){
+												/*if(ga){
 													ga('send','event','removeErrorTrack',selector);
-												}
+												}*/
+												gtag('event',selector,{'event_category':'removeErrorTrack'});
 											})
 											.on("mouseover",function(){
 												that.overSettings=1;
 												$("#mouseHelp").html("");
-												if(ga){
+												/*if(ga){
 													ga('send','event','mouseHelp',selector);
-												}
+												}*/
+												gtag('event',selector,{'event_category':'mouseHelp'});
 											})
 											.on("mouseout",function(){
 												that.overSettings=0;
 												$("#mouseHelp").html("Navigation Hints: Hold mouse over areas of the image for available actions.");
-												if(ga){
+												/*if(ga){
 													ga('send','event','hideMouseHelp',selector);
-												}
+												}*/
+												gtag('event',selector,{'event_category':'hideMouseHelp'});
 											});
 		}
 	};
@@ -935,10 +951,11 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 							}else{
 								that.changeTrackCursor("move");
 								that.changeScaleCursor("ew-resize");
-							}*/
+							}
 							if(ga){
 								ga('send','event','mouseOverTrack','');
-							}
+							}*/
+							gtag('event','',{'event_category':'mouseOverTrack'});
 						})
 						.on("mouseout", function(){
 							if(overSelectable===0){
@@ -990,9 +1007,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 														return ret;
 													});
 												ttsr.tooltipster('show');
-												if(ga){
+												/*if(ga){
 													ga('send','event','trackInfo',track);
-												}
+												}*/
+												gtag('event',track,{'event_category':'trackInfo'});
 											})
 											.on("mouseout",function(){
 												$(this).tooltipster('hide');
@@ -1038,9 +1056,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 													that.selectedTrackSetting="";
 													$('#trackSettingDialog').fadeOut("fast");
 												}
-												if(ga){
+												/*if(ga){
 													ga('send','event','trackSettings','click');
-												}
+												}*/
+												gtag('event','click',{'event_category':'trackSettings'});
 												return false;
 											})
 											.on("mouseover",function(){
@@ -1174,9 +1193,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 								data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: track, folder: that.folderName},
 								dataType: 'json',
 				    			success: function(data2){
-				    				if(ga){
+				    				/*if(ga){
 										ga('send','event','browser','generateTrackRefseq');
-									}
+									}*/
+				    				gtag('event','generateTrack'+track,{'event_category':'browser'});
 				    			},
 				    			error: function(xhr, status, error) {
 
@@ -1278,9 +1298,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 								data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:curPanel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: track, folder: that.folderName},
 								dataType: 'json',
 				    			success: function(data2){
-				    				if(ga){
+				    				/*if(ga){
 										ga('send','event','browser','generateTrackRefseq');
-									}
+									}*/
+									gtag('event','generateTrack'+track,{'event_category':'browser'});
 				    			},
 				    			error: function(xhr, status, error) {
 
@@ -1351,9 +1372,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 								data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: track, folder: that.folderName},
 								dataType: 'json',
 				    			success: function(data2){
-				    				if(ga){
+				    				/*if(ga){
 										ga('send','event','browser','generateTrackRefseq');
-									}
+									}*/
+									gtag('event','generateTrack'+track,{'event_category':'browser'});
 				    			},
 				    			error: function(xhr, status, error) {
 
@@ -1418,9 +1440,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 								data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: track, folder: that.folderName},
 								dataType: 'json',
 				    			success: function(data2){
-				    				if(ga){
+				    				/*if(ga){
 										ga('send','event','browser','generateTrackSNP');
-									}
+									}*/
+									gtag('event','generateTrack'+track,{'event_category':'browser'});
 				    			},
 				    			error: function(xhr, status, error) {
 
@@ -1572,9 +1595,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 								data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:tmpPanel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: track, folder: that.folderName,binSize:tmpBin},
 								dataType: 'json',
 				    			success: function(data2){
-				    				if(ga){
+				    				/*if(ga){
 										ga('send','event','browser','generateTrackCounts');
-									}
+									}*/
+									gtag('event','generateTrack'+track,{'event_category':'browser'});
 				    			},
 				    			error: function(xhr, status, error) {
 
@@ -1697,9 +1721,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 								data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: track, folder: that.folderName},
 								dataType: 'json',
 				    			success: function(data2){
-				    				if(ga){
+				    				/*if(ga){
 										ga('send','event','browser','generateTrackSpliceJnct');
-									}
+									}*/
+									gtag('event','generateTrack'+track,{'event_category':'browser'});
 				    			},
 				    			error: function(xhr, status, error) {
 
@@ -1797,9 +1822,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 								data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: track, folder: that.folderName},
 								dataType: 'json',
 				    			success: function(data2){
-				    				if(ga){
+				    				/*if(ga){
 										ga('send','event','browser','generateTrackRepeatMask');
-									}
+									}*/
+									gtag('event','generateTrack'+track,{'event_category':'browser'});
 				    			},
 				    			error: function(xhr, status, error) {
 
@@ -1848,6 +1874,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 			additionalOptions=additionalOptions+",Name="+trackDetails.Name;
 			additionalOptions="DataFile="+trackDetails.Location+","+additionalOptions;
 			if(trackDetails.Type=="bed"||trackDetails.Type=="bb"){
+				//console.log("ADDED CUSTOM TRANSCRIPT TRACK");
 				var data=new Array();
 				var newTrack=CustomTranscriptTrack(that,data,track,trackDetails.Name,3,additionalOptions);
 				that.addTrackList(newTrack);
@@ -1864,9 +1891,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 			that.addTrackList(newTrack);
 		}
 		$(".sortable"+that.levelNumber).sortable( "refresh" );	
-		if(ga){
+		/*if(ga){
 			ga('send','event','trackAdded',track);
-		}
+		}*/
+		gtag('event',track,{'event_category':'trackAdded'});
 	};
 
 	that.addTrackList= function (newTrack){
@@ -1900,9 +1928,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 		d3.selectAll("li.draggable"+that.levelNumber).remove();
 		that.trackList=[];
 		setTimeout(function(){DisplayRegionReport();},300);
-		if(ga){
+		/*if(ga){
 			ga('send','event','SVGremoveAllTracks',that.levelNumber);
-		}
+		}*/
+		gtag('event',that.levelNumber,{'event_category':'SVGremoveAllTracks'});
 	};
 
 	that.removeTrack=function (track){
@@ -1915,9 +1944,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 			}
 			that.trackListHash[track]=undefined;
 			setTimeout(function(){DisplayRegionReport();},300);
-			if(ga){
+			/*if(ga){
 				ga('send','event','removeTrack',that.levelNumber,track);
-			}
+			}*/
+			gtag('event',that.levelNumber,{'event_category':'removeTrack','event_label':track});
 	};
 
 	that.redrawTrack=function (track){
@@ -1947,9 +1977,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 			}
 		}
 		setTimeout(function(){DisplayRegionReport();},300);
-		if(ga){
+		/*if(ga){
 				ga('send','event','gsvgUpdate','genomeSVG.update');
-		}
+		}*/
+		gtag('event','genomeSVG.update',{'event_category':'gsvgUpdate'});
 	};
 
 	that.updateData=function (){
@@ -1960,9 +1991,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 		}
 		that.updateFullData();
 		setTimeout(function(){DisplayRegionReport();},300);
-		if(ga){
+		/*if(ga){
 				ga('send','event','gsvgUpdateData','genomeSVG.updateData');
-		}
+		}*/
+		gtag('event','genomeSVG.updateData',{'event_category':'gsvgUpdateData'});
 	};
 
 	that.updateFullData=function(){
@@ -2001,9 +2033,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				that.trackList[i].updateFullData(0,1);
 			}
 		}
-		if(ga){
+		/*if(ga){
 				ga('send','event','gsvgUpdateFullData','genomeSVG.updateFullData');
-		}
+		}*/
+		gtag('event','genomeSVG.updateFullData',{'event_category':'gsvgUpdateFullData'});
 	};
 
 	that.setLoading=function (){
@@ -2242,9 +2275,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				d3.select("span#dragzoom"+that.levelNumber).style("background","#989898");
 				that.changeTrackCursor("crosshair");
 				that.changeScaleCursor("crosshair");
-				if(ga){
+				/*if(ga){
 					ga('send','event','clickDragZoom','');
-				}
+				}*/
+				gtag('event','',{'event_category':'clickDragZoom'});
 			})
 			.on("mouseout",function(){
 				if(that.defaultMouseFunct!="dragzoom"){
@@ -2270,9 +2304,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				d3.select("span#pan"+that.levelNumber).style("background","#989898");
 				that.changeTrackCursor("move");
 				that.changeScaleCursor("ew-resize");
-				if(ga){
+				/*if(ga){
 					ga('send','event','clickPan','');
-				}
+				}*/
+				gtag('event','',{'event_category':'clickPan'});
 			})
 			.on("mouseout",function(){
 				if(that.defaultMouseFunct!="pan"){
@@ -2297,9 +2332,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				d3.select("span#reorder"+that.levelNumber).style("background","#989898");
 				that.changeTrackCursor("ns-resize");
 				that.changeScaleCursor("ew-resize");
-				if(ga){
+				/*if(ga){
 					ga('send','event','clickReorder','');
-				}
+				}*/
+				gtag('event','',{'event_category':'clickReorder'});
 			})
 			.on("mouseout",function(){
 				if(that.defaultMouseFunct!="reorder"){
@@ -2384,18 +2420,20 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 									//delete a;
 								    return true;
 								}
-								if(ga){
+								/*if(ga){
 										ga('send','event','browser','saveBrowserImage');
-								}
+								}*/
+								gtag('event','saveBrowserImage',{'event_category':'browser'});
 							  
 		    			},
 		    			error: function(xhr, status, error) {
 		        			console.log(error);
 		    			}
 					});
-				if(ga){
+				/*if(ga){
 					ga('send','event','saveImage','');
-				}
+				}*/
+				gtag('event','',{'event_category':'saveImage'});
 				})
 			.on("mouseover",function(){
 				d3.select(this).attr("src","/web/images/icons/savePic_white.png");
@@ -2432,9 +2470,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 					svgList[level].redraw();
 					svgList[0].updateFullData();
 				}
-				if(ga){
+				/*if(ga){
 					ga('send','event','clickResetImage','');
-				}
+				}*/
+				gtag('event','',{'event_category':'clickResetImage'});
 			})
 			.on("mouseover",function(){
 				d3.select(this).attr("src","/web/images/icons/reset_white.png");
@@ -2456,9 +2495,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 			.attr("cursor","pointer")
 			.on("click",function(){
 				back(that.levelNumber);
-				if(ga){
+				/*if(ga){
 					ga('send','event','clickBack','');
-				}
+				}*/
+				gtag('event','',{'event_category':'clickBack'});
 			})
 			.on("mouseover",function(){
 				d3.select(this).attr("src","/web/images/icons/back_white2.png");
@@ -2519,9 +2559,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 	      	.button()
 		      .click(function() {
 		        zoomIn(that.levelNumber,that.zoomFactor);
-		        if(ga){
+		        /*if(ga){
 					ga('send','event','clickZoomIn','');
-				}
+				}*/
+		        gtag('event','',{'event_category':'clickZoomIn'});
 		      })
 		      .on("mouseover",function(){
 		      		$(this).css("background","#989898");
@@ -2537,9 +2578,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 	      	.button()
 		      .click(function() {
 		        zoomOut(that.levelNumber,that.zoomFactor);
-		        if(ga){
+		        /*if(ga){
 					ga('send','event','clickZoomOut','');
-				}
+				}*/
+		        gtag('event','',{'event_category':'clickZoomOut'});
 		      })
 		      .on("mouseover",function(){
 		      		$(this).css("background","#989898");
@@ -2703,9 +2745,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				viewMenu[that.levelNumber].saveView(that.currentView.ViewID,that,false);
 				//remove modified labels
 				$("#viewModifiedCtl"+that.level).hide();
-				if(ga){
+				/*if(ga){
 					ga('send','event','menuSaveView','');
-				}
+				}*/
+				gtag('event','',{'event_category':'menuSaveView'});
 			})
 			.text("Save");
 		viewDivMenu.append("li").attr("id","menusaveAsView"+that.levelNumber)
@@ -2714,9 +2757,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				$(".viewsLevel"+that.levelNumber).css("top",250).css("left",$(window).width()-610);
 				$(".viewsLevel"+that.levelNumber).fadeIn("fast");
 				$("#viewModifiedCtl"+that.level).hide();
-				if(ga){
+				/*if(ga){
 					ga('send','event','menuSaveAsView','');
-				}
+				}*/
+				gtag('event','',{'event_category':'menuSaveAsView'});
 				//TODO: still need to make it load the new view instead of using the old view.
 			})
 			.text("Save As");
@@ -2726,9 +2770,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				viewMenu[that.levelNumber].confirmDeleteView(that.currentView);
 				$(".viewsLevel"+that.levelNumber).css("top",250).css("left",$(window).width()-610);
 				$(".viewsLevel"+that.levelNumber).fadeIn("fast");
-				if(ga){
+				/*if(ga){
 					ga('send','event','menuDeleteView','');
-				}
+				}*/
+				gtag('event','',{'event_category':'menuDeleteView'});
 			})
 			.text("Delete");
 		//viewDivMenu.append("li").attr("id","menuresetView"+that.levelNumber).text("Reset");
@@ -2795,9 +2840,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 					setTimeout(function(){
 						trackMenu[that.levelNumber].generateTrackTable();
 					},250);
-					if(ga){
+					/*if(ga){
 						ga('send','event','clickAddTrack','');
-					}
+					}*/
+					gtag('event','',{'event_category':'clickAddTrack'});
 				} else{
 					$(".trackLevel"+that.levelNumber).fadeOut("fast");
 				}
@@ -2852,9 +2898,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 						that.scrollSize=100;
 					}
 					changeTrackHeight("Level"+that.levelNumber,that.scrollSize);
-					if(ga){
+					/*if(ga){
 						ga('send','event','changeScrollHeight','');
-					}
+					}*/
+					gtag('event','',{'event_category':'changeScrollHeight'});
 				})
 				.on("mouseout",function(){
 					$("#mouseHelp").html("Navigation Hints: Hold mouse over areas of the image for available actions.");
@@ -2904,9 +2951,10 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 						$("#scrollSize"+that.levelNumber).hide();
 						changeTrackHeight("Level"+that.levelNumber,0);
 					}
-					if(ga){
+					/*if(ga){
 						ga('send','event','toggleImageScroll','');
-					}
+					}*/
+					gtag('event','',{'event_category':'toggleImageScroll'});
 				})
 				.on("mouseover",function(){
 					$("#mouseHelp").html("Click to toggle browser image scrolling on/off.  <b>Off</b> the image takes as much space as needed. <b>On</b> you can adjust the maximum length of the image.");
@@ -3565,6 +3613,7 @@ function selectionSVG(div,imageWidth,levelNumber,parent){
 	};
 
 	that.draw=function(){
+		console.log("selectionSVG.draw"+that.trackClass);
 		if(that.visible){
 			var w=that.xScale(that.stop)-that.xScale(that.start);
 			that.parent.updateTrackSelectedArea(that.start,that.stop);
@@ -4969,9 +5018,10 @@ function SequenceTrack(gsvg,trackClass,label,additionalOptions){
 										data: {chromosome: chr,minCoord:that.tmpseqRegionMin,maxCoord:that.tmpseqRegionMax,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: that.trackClass, folder: that.gsvg.folderName},
 										dataType: 'json',
 						    			success: function(data2){
-						    				if(ga){
+						    				/*if(ga){
 												ga('send','event','browser','generateTrackSequence');
-											}
+											}*/
+											gtag('event','generateTrackSequence',{'event_category':'browser'});
 						    			},
 						    			error: function(xhr, status, error) {
 
@@ -6146,9 +6196,10 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
                             data: {chromosome: chr,minCoord:that.gsvg.xScale.domain()[0],maxCoord:that.gsvg.xScale.domain()[1],panel:curPanel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: file, folder: that.gsvg.folderName},
                             dataType: 'json',
                             success: function(data2){
-                            	if(ga){
+                            	/*if(ga){
 										ga('send','event','browser','generateTrackGene');
-									}
+									}*/
+                            	gtag('event','generateTrackGene',{'event_category':'browser'});
                             },
                             error: function(xhr, status, error) {
 
@@ -6224,9 +6275,10 @@ function GeneTrack(gsvg,data,trackClass,label,additionalOptions){
                             data: {chromosome: chr,minCoord:that.gsvg.xScale.domain()[0],maxCoord:that.gsvg.xScale.domain()[1],panel:curPanel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: file, folder: that.gsvg.folderName},
                             dataType: 'json',
                             success: function(data2){
-                            	if(ga){
+                            	/*if(ga){
 										ga('send','event','browser','generateTrackGene');
-									}
+									}*/
+                            	gtag('event','generateTrackGene',{'event_category':'browser'});
                             },
                             error: function(xhr, status, error) {
 
@@ -10454,9 +10506,10 @@ function CustomCountTrack(gsvg,data,trackClass,density,additionalOptions){
 													dataType: 'json',
 									    			success: function(data2){
 									    				//console.log("generateTrack:DONE");
-									    				if(ga){
+									    				/*if(ga){
 															ga('send','event','browser','generateTrackCount');
-														}	
+														}*/
+									    				gtag('event','generateTrackCount',{'event_category':'browser'});
 									    			},
 									    			error: function(xhr, status, error) {
 
@@ -10836,9 +10889,10 @@ function CountTrack(gsvg,data,trackClass,density){
 												dataType: 'json',
 								    			success: function(data2){
 								    				//console.log("generateTrack:DONE");
-								    				if(ga){
+								    				/*if(ga){
 														ga('send','event','browser','generateTrackCount');
-													}	
+													}*/
+								    				gtag('event','generateTrackCount',{'event_category':'browser'});
 								    			},
 								    			error: function(xhr, status, error) {
 
@@ -11439,7 +11493,12 @@ function PolyATrack(gsvg,data,trackClass,label,density,additionalOptions){
 function CustomTranscriptTrack(gsvg,data,trackClass,label,density,additionalOptions){
 	var that=GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOptions);
 	var opts=additionalOptions.split(",");
+	that.xmlTag="Feature";
+	that.xmlTagBlockElem="block";
 	that.density=density;
+	if(that.density!==1 && that.density!==2 && that.density!==3){
+		that.density=3;
+	}
 	if(opts.length>0){
 		that.dataFileName=opts[0].substr(9);
 	}
@@ -11506,9 +11565,10 @@ function CustomTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpti
 									//data: {chromosome: chr,minCoord:minCoord,maxCoord:maxCoord,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism, track: that.trackClass, folder: folderName,binSize:that.bin},
 									dataType: 'json',
 					    			success: function(data2){
-					    				if(ga){
+					    				/*if(ga){
 											ga('send','event','browser','generateTrackCustomTranscript');
-										}
+										}*/
+										gtag('event','generateTrackCustomTranscript',{'event_category':'browser'});
 					    			},
 					    			error: function(xhr, status, error) {
 					        			console.log(error);
@@ -12251,6 +12311,8 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 	that.drawTrx=function (d,i){
 		var txG=d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).select("#"+that.idPrefix+"tx"+d.getAttribute("ID"));
 		exList=getAllChildrenByName(getFirstChildByName(d,that.xmlTagBlockElem+"List"),that.xmlTagBlockElem);
+		//console.log("DRAW TRX:");
+		//console.log(exList);
 		for(var m=0;m<exList.length;m++){
 			var curR=txG.append("rect")
 			.attr("x",function(d){ return that.xScale(exList[m].getAttribute("start"))-that.xScale(d.getAttribute("start")); })
@@ -12442,9 +12504,10 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 								//data: {chromosome: chr,minCoord:minCoord,maxCoord:maxCoord,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism, track: that.trackClass, folder: folderName,binSize:that.bin},
 								dataType: 'json',
 				    			success: function(data2){
-				    				if(ga){
+				    				/*if(ga){
 										ga('send','event','browser','generateTrackTranscript');
-									}
+									}*/
+				    				gtag('event','generateTrackTranscript',{'event_category':'browser'});
 				    			},
 				    			error: function(xhr, status, error) {
 
@@ -12499,7 +12562,7 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 
 
 	that.draw=function(data){
-		
+		//console.log("DRAW"+that.trackClass);
 		that.data=data;
 		that.prevDensity=that.density;
 		//that.setDensity();
@@ -12510,14 +12573,16 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 				that.yMaxArr[j]=0;
 				that.yArr[0][j]=0;
 		}
-
+		//console.log("#Level"+that.gsvg.levelNumber+that.trackClass);
+		//console.log("."+that.idPrefix+"trx"+that.gsvg.levelNumber);
 		d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("."+that.idPrefix+"trx"+that.gsvg.levelNumber).remove();
 		that.redrawLegend();
 		if(data){
+			//console.log(data);
 			//d3.select("#Level"+that.gsvg.levelNumber+that.trackClass)
 			var tmp=d3.select("#Level"+that.gsvg.levelNumber+that.trackClass).selectAll("."+that.idPrefix+"trx"+that.gsvg.levelNumber)
 		   			.data(data,key);
-		   	
+			//console.log(tmp);
 		  	tmp.enter().append("g")
 					.attr("class",that.idPrefix+"trx"+that.gsvg.levelNumber)
 					.attr("transform",function(d,i){ return "translate("+that.xScale(d.getAttribute("start"))+","+that.calcY(parseInt(d.getAttribute("start"),10),parseInt(d.getAttribute("stop"),10),i)+")";})
@@ -13074,9 +13139,10 @@ function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 							//data: {chromosome: chr,minCoord:minCoord,maxCoord:maxCoord,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism, track: that.trackClass, folder: folderName,binSize:that.bin},
 							dataType: 'json',
 							success: function(data2){
-								if(ga){
+								/*if(ga){
 									ga('send','event','browser','generateTrackCustomTranscript');
-								}
+								}*/
+								gtag('event','generateTrackCustomTranscript',{'event_category':'browser'});
 							},
 							error: function(xhr, status, error) {
 								console.log(error);

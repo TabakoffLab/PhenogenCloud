@@ -31,10 +31,21 @@
 				(type.equals("mask") ? thisResource.getMaskDataFiles() :
                                 (type.equals("pub") ? thisResource.getPublicationFiles() :
                                 (type.equals("gtf") ? thisResource.getSAMDataFiles() :
-				null)))))))));
+										(type.equals("rsem") ? thisResource.getSAMDataFiles() :
+				null))))))))));
         log.debug("array size="+dataFiles.length);
+        String displayType=type;
+        if(type.equals("gtf")){
+        	displayType="GTF";
+		}else if(type.equals("rsem")){
+			displayType="Normalized RSEM Results";
+		}
 %>
-
+<style>
+	a {
+		color:#0000FF;text-decoration: underline;
+	}
+</style>
 	<BR>
 	<form	method="post" 
 		action="downloadFiles.jsp" 
@@ -43,7 +54,19 @@
             <% if(type.equals("pub")){%>
                 <div class="leftTitle">Files That Can Be Downloaded For <%=thisResource.getDownloadHeader()%>:</div>
             <%}else{%>
-                <div class="leftTitle">Files That Can Be Downloaded For <%=type%>:</div>
+				<div style="width:100%; text-align: center;" id="acknowledge">
+					Please acknowledge you will properly cite downloaded PhenoGen Data when used in future publications.  Additional information on citing PhenoGen can be found <a href="web/common/citation.jsp" style="color:#0000FF;">here</a>.<BR>
+					<a href="https://doi.org/10.1007/978-1-4939-9581-3_10"  style="color:#0000FF;">DOI: 10.1007/978-1-4939-9581-3_10</a></p><BR>
+
+						<input type="button" value="I acknowledge the citation information" onClick="showDownloads()"> <input type="button" value="No I do not acknowledge" style="margin-left: 25px;" onClick="showAcceptCitation()">
+
+				</div>
+				<div id="acknowledgePopup" style="display: none;color:#FF0000;width:100%; text-align: center;">
+					You must acknowledge that you will cite the data to proceed.<BR>
+					<input type="button" value="Back" onClick="showAcknowledge()">
+				</div>
+				<div id="downloadListPopup" style="display: none;width:100%; text-align: center;">
+                <div class="leftTitle">Files That Can Be Downloaded For <%=displayType%>:</div>
             <%}%>
 		
 		<table name="items" class="list_base" cellpadding="0" cellspacing="3" width="90%">
@@ -84,6 +107,10 @@
         <% if(type.equals("expression")){ %>
 		<center>*For the Affymetrix Exon Arrays, expression levels are estimated on the exon level (i.e., probe set) or gene level (i.e. transcript cluster) and inclusion in the data set is determined based on confidence in annotation (core,extended, and full). For more details, see the Affymetrix GeneChip � Exon Array whitepaper, Exon Probeset Annotations and Transcript Cluster Groupings (2005).</center>
         <% } %>
+
+		<% if(! type.equals("pub")){%>
+				</div>
+		<%}%>
 		<input type="hidden" name="resource" value=<%=resource%> />
 		<input type="hidden" name="type" value=<%=type%> />
 	</form>
@@ -96,4 +123,16 @@
 				downloadModal.dialog("close");	
 		});
 	});
+	showDownloads=function(){
+		$("#downloadListPopup").show();
+		$("#acknowledge").hide();
+	}
+	showAcceptCitation=function(){
+		$("#acknowledgePopup").show();
+		$("#acknowledge").hide();
+	}
+	showAcknowledge=function(){
+		$("#acknowledge").show();
+		$("#acknowledgePopup").hide();
+	}
 </script>

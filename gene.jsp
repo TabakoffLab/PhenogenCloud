@@ -68,9 +68,9 @@
     log.debug("end of top");
 %>
 <%if (popup) {%>
-    <%@ include file="/web/common/header_adaptive_noMenu.jsp" %>
+<%@ include file="/web/common/header_adaptive_noMenu.jsp" %>
 <%} else {%>
-    <%@ include file="/web/common/header_adaptive_menu.jsp" %>
+<%@ include file="/web/common/header_adaptive_menu.jsp" %>
 <%}%>
 <%@ include file="/web/GeneCentric/browserCSS.jsp" %>
 
@@ -150,8 +150,12 @@
     }
     log.debug("*****\nafter species Genome:" + genomeVer);
     if (request.getParameter("genomeVer") != null) {
-        genomeVer=FilterInput.getFilteredInput(request.getParameter("genomeVer").trim());
-        overideGV = "Y";
+        genomeVer = FilterInput.getFilteredInput(request.getParameter("genomeVer").trim());
+        if (!genomeVer.equals("")) {
+            overideGV = "Y";
+        } else {
+            genomeVer = defaultGenomeVer;
+        }
         log.debug("******\nreading Genome Ver:" + genomeVer);
     }
     int val = -1;
@@ -209,7 +213,7 @@
                 response.redirect(lg.getGeneLink(curGene.getGeneID(),myOrganism,true,true,false));
         }else */
     if ((((action != null) && action.equals("Get Transcription Details")) && (!region)) || (auto && (!region))
-            ) {
+    ) {
         myDisplayGene = myGene;
         mySessionHandler.createSessionActivity(session.getId(), "GTD Browser Gene: " + myGene, pool);
         List homologList = null;
@@ -633,10 +637,7 @@
 </div>
 
 
-
-
 <div style="text-align:center;width:100%;">
-
 
 
     <form method="post"
@@ -647,16 +648,16 @@
         <div style="color:#FF0000;width:90%"><%=regionError%>
         </div>
         <%}%>
-        <div class="widget" style="width:98%" >
+        <div class="widget" style="width:98%">
 
-            <fieldset>
+            <fieldset class="top">
                 <legend>1. Specify a Gene or Region to get started:</legend>
 
-            <label>Gene Identifier or Region:
-                <input type="text" name="geneTxt" id="geneTxt" size="35"
-                       value="<%= (myDisplayGene!=null)?myDisplayGene:"" %>">
-                <span class="tooltipster"
-                      title="1. Enter a gene identifier(e.g. gene symbol, probe set ID, Ensembl ID, etc.) in the gene field.
+                <label>Gene Identifier or Region:
+                    <input type="text" name="geneTxt" id="geneTxt" size="35"
+                           value="<%= (myDisplayGene!=null)?myDisplayGene:"" %>">
+                    <span class="tooltipster"
+                          title="1. Enter a gene identifier(e.g. gene symbol, probe set ID, Ensembl ID, etc.) in the gene field.
 OR
 Enter a region such as
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;chr1:1-50000 is Chromosome 1 @ bp 1-50,000.
@@ -669,288 +670,245 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 2. Choose a species.
 3. Click Go.">
                         <img src="<%=imagesDir%>/icons/info.gif"></span>
-                <BR>
-                ex. chr1:1-50000 or Agt
-            </label>
-            <BR><BR>
-            <label>Species:
-                <select name="speciesCB" id="speciesCB">
-                    <option value="Rn" <%if(myOrganism!=null && myOrganism.equals("Rn")){%>selected<%}%>>Rattus norvegicus
-                    </option>
-                    <option value="Mm" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>selected<%}%>>Mus musculus
-                    </option>
-                </select>
-            </label>
-            <span class="tooltipster"
-                  title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
-                    src="<%=imagesDir%>/icons/info.gif"></span>
-                    or <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
-                              onClick="openTranslateRegion()">
-                    <BR><BR>
-            <span style="padding-left:10px;"> <input type="submit" name="goBTN" id="goBTN" value="Go"
-                                                     onClick="return displayWorking()"></span>
+                    <BR>
+                    ex. chr1:1-50000 or Agt
+                </label>
+                <BR><BR>
+                <label>Species:
+                    <select name="speciesCB" id="speciesCB">
+                        <option value="Rn" <%if(myOrganism!=null && myOrganism.equals("Rn")){%>selected<%}%>>Rattus
+                            norvegicus
+                        </option>
+                        <option value="Mm" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>selected<%}%>>Mus
+                            musculus
+                        </option>
+                    </select>
+                </label>
+                <span class="tooltipster"
+                      title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
+                        src="<%=imagesDir%>/icons/info.gif"></span>
+                or <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
+                          onClick="openTranslateRegion()">
+                <BR><BR>
+                <span style="padding-left:10px;"> <input type="submit" class="goBTN" id="goBTN1" value="Go"
+                                                         onClick="return displayWorking()"></span>
 
             </fieldset>
 
-            <fieldset>
+            <fieldset class="top">
                 <legend>2. What data do you want to view?</legend>
                 <div class="controlgroup">
-            <label>Initial View:
-                <select name="defaultView" id="defaultView">
-                    <%
-                        for (int i = 0; i < views.size(); i++) {
-                            if (views.get(i).getGenomeVersion().equals(defaultGenomeVer) &&
-                                    (views.get(i).getOrganism().toUpperCase().equals("AA") ||
-                                            myOrganism.toUpperCase().equals(views.get(i).getOrganism().toUpperCase()))
+                    <label>Initial View:
+                        <select name="defaultView" id="defaultView">
+                            <option value="custom">Custom View</option>
+                            <%
+                                for (int i = 0; i < views.size(); i++) {
+                                    if (views.get(i).getGenomeVersion().equals(defaultGenomeVer) &&
+                                            (views.get(i).getOrganism().toUpperCase().equals("AA") ||
+                                                    myOrganism.toUpperCase().equals(views.get(i).getOrganism().toUpperCase()))
                                     ) {
-                                String display = views.get(i).getName();
-                                if (views.get(i).getUserID() == 0) {
-                                    display = display + "   (Predefined)";
-                                } else {
-                                    display = display + "   (Custom)";
-                                }
-                    %>
-                    <option value="<%=views.get(i).getID()%>"
-                            <%if(defView.equals(Integer.toString(views.get(i).getID()))){%>selected<%}%>><%=display%>
-                    </option>
-                    <%}%>
-                    <%}%>
-                </select>
-                </label>
-                    <span style="padding-left:10px;"> <input type="submit" name="goBTN" id="goBTN" value="Go"
+                                        String display = views.get(i).getName();
+                                        if (views.get(i).getUserID() == 0) {
+                                            display = display + "   (Predefined)";
+                                        } else {
+                                            display = display + "   (Custom)";
+                                        }
+                            %>
+                            <option value="<%=views.get(i).getID()%>"
+                                    <%if(defView.equals(Integer.toString(views.get(i).getID()))){%>selected<%}%>><%=display%>
+                            </option>
+                            <%}%>
+                            <%}%>
+                        </select>
+                    </label>
+                    <span style="padding-left:10px;"> <input type="submit" class="goBTN" id="goBTN2" value="Go"
                                                              onClick="return displayWorking()"></span>
+                    <BR><BR>
+                    <span style="padding-left:10px;"> <input type="button" name="customBTN" id="customBTN"
+                                                             value="Create Custom View"
+                                                             onClick="return custView.displayCustom()"></span>
                 </div>
-                <!--Customize  View:
-                <div id="accordion">
-                    <h3>Tissues</h3>
-                    <div class="checkbox-choice">
-                        <p>
-                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-1">Whole Brain (HRDP RNA-Seq, HXB Arrays)</label><BR>
-                            <input type="checkbox" name="checkbox-2" id="checkbox-2">
-                            <label for="checkbox-2">Liver (HRDP RNA-Seq, HXB Arrays)</label><BR>
-                            <input type="checkbox" name="checkbox-3" id="checkbox-3">
-                            <label for="checkbox-3">Heart (BNLx/SHR RNA-Seq, HXB Arrays) </label><BR>
-                            <input type="checkbox" name="checkbox-4" id="checkbox-4">
-                            <label for="checkbox-4">Brown Adipose (HXB Arrays)</label>
-                        </p>
-                    </div>
-                    <h3>Data Source</h3>
-                    <div>
-                        <p>
-                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-1">Total RNA-Seq (Ribosome depleted)</label><BR>
-                            <input type="checkbox" name="checkbox-2" id="checkbox-2">
-                            <label for="checkbox-2">Small RNA-Seq</label><BR>
-                            <input type="checkbox" name="checkbox-2" id="checkbox-2">
-                            <label for="checkbox-2">Affymetrix Exon Arrays</label><BR>
-                            <input type="checkbox" name="checkbox-2" id="checkbox-2">
-                            <label for="checkbox-2">Circular RNAs (Predicted Circular RNAs / Array cirRNA expression - BNLx/SHR Heart) </label><BR>
-                            <span class="checkbox-l2">
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">Predicted Circular RNAs (BNLx/SHR Brain/Heart/Liver) </label><BR>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">Array cirRNA Expression (BNLx/SHR Heart) </label>
-                            </span>
-                        </p>
-                    </div>
-                    <h3>Track Types</h3>
-                    <div>
-                        <p>
-                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-1">Reconstructed Transcriptome</label><BR>
-                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-1">Splice Junctions</label><BR>
-                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-1">Strain Read counts(Total)</label><BR>
-                            <span class="checkbox-l2">
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                BNLx</label>
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                SHR</label>
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                BXH2</label>
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                BXH3</label>
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                BXH5</label>
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                BXH6</label>
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                BXH8</label>
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                BXH9</label>
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                BXH10</label>
-                                <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                                BXH11</label>
-                                 <label for="checkbox-2"><input type="checkbox" name="checkbox-2" id="">
-                               BXH12</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH13</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB1</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB2</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB3</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB4</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB5</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB7</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB10</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB13</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB15</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB17</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB18</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB20</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB21</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB22</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB23</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB24</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB25</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB27</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB29</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB31</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">F344/Stm</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">LE/Stm</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">ACI</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">Cop</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">DA</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">LEW/Crl</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">LEW/SsNHsd</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">SHRSP</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">SR</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">SS</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">WKY</label>
-                            </span><BR>
-                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-1">Strain Read counts(Sampled)</label><BR>
-                            <span class="checkbox-l2">
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BNLx</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">SHR</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH2</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH3</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH5</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH6</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH8</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH9</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH10</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH11</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH12</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">BXH13</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB1</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB2</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB3</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB4</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB5</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB7</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB10</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB13</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB15</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB17</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB18</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB20</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB21</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB22</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB23</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB24</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB25</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB27</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB29</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">HXB31</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">F344/Stm</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">LE/Stm</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">ACI</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">Cop</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">DA</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">LEW/Crl</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">LEW/SsNHsd</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">SHRSP</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">SR</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">SS</label>
-                                <input type="checkbox" name="checkbox-2" id="">
-                                <label for="checkbox-2">WKY</label>
-                            </span>
-                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-1">Small RNA-Seq Features</label><BR>
-                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-1">Circular RNA Features</label><BR>
-                            <input type="checkbox" name="checkbox-1" id="checkbox-1">
-                            <label for="checkbox-1">Array Probe Sets</label><BR>
-                        </p>
-                    </div>
-                </div>-->
             </fieldset>
+            <div id="createCustomView" style="width:100%;/*overflow: auto;max-height: 400px;*/display:none;">
+                <fieldset class="customFieldSet">
+                    <legend>3. What data should be included in the custom view?</legend>
+                    <div class="controlgroup">
+
+                        <span style="float: right;"><span class="custViewStatus"></span><input type="submit" class="goBTN" id="goBTN3" value="Go"
+                                                                      onClick="return displayWorking()"></span>
+                        <BR>
+                        Genome Version:
+                        <select id="custGenomeVer">
+                            <%if(myOrganism.equals("Rn")){%>
+                                <option value="rn6">Rn6</option>
+                                <option value="rn5">Rn5</option>
+                            <%}else{ %>
+                                <option value="mm10">Mm10</option>
+                            <%}%>
+                        </select>
+                        <BR>
+                        Optional:
+                        <span style="margin-left:45px;">View Name:<input type="text" id="viewName"></span><span style="margin-left:45px;">Email for later retreival:<input type="text" id="assocEmail"></span>
+                        <BR>
+                        <div id="accordion" >
+                            <h3>Tissues</h3>
+                            <div class="checkbox-choice">
+                                <p>
+                                    <input type="checkbox" class="custviewCbx" id="cbxTissueBrain">
+                                    <label for="cbxTissueBrain">Whole Brain (HRDP RNA-Seq, HXB Arrays)</label><BR>
+                                    <input type="checkbox" class="custviewCbx" id="cbxTissueLiver">
+                                    <label for="cbxTissueLiver">Liver (HRDP RNA-Seq, HXB Arrays)</label><BR>
+                                    <input type="checkbox" class="custviewCbx" id="cbxTissueHeart">
+                                    <label for="cbxTissueHeart">Heart (BNLx/SHR RNA-Seq, HXB Arrays) </label><BR>
+                                    <input type="checkbox" class="custviewCbx" id="cbxTissueMerged">
+                                    <label for="cbxTissueMerged">Merged (HRDP RNA-Seq merged across tissues and strains) </label><BR>
+                                    <input type="checkbox" class="custviewCbx" id="cbxTissueBAT">
+                                    <label for="cbxTissueBAT">Brown Adipose (HXB Arrays)</label>
+                                </p>
+                            </div>
+                            <h3>Data / Tracks</h3>
+                            <div class="checkbox-choice">
+                                <H3>PhenoGen Data</H3>
+                                <p>
+                                    <input type="checkbox" class="custviewCbx" checked="checked" id="cbxDatatotal">
+                                    <label>Total RNA-Seq (Ribosome depleted)</label><BR>
+                                    <div class="checkbox-l3"  id="totalOpts">
+                                        <!--Version:
+                                        <select id="selDataTotalVer">
+                                            <option value="0">Current Version(update if newer versions)</option>
+                                            <option value="5">HRDP v5(Current)</option>
+                                            <option value="3">HRDP v4</option>
+                                            <option value="1">HRDP v3</option>
+                                        </select><BR>-->
+                                        Tracks:<BR>
+                                        <input type="checkbox" class="custviewCbx" id="cbxTrackReconstruction" checked="checked">
+                                        <label >Reconstructed Transcriptome</label><BR>
+                                        <input type="checkbox" class="custviewCbx" id="cbxTrackSpliceJunction">
+                                        <label >Splice Junctions</label><BR>
+                                        <input type="checkbox" class="custviewCbx" id="cbxTrackReadCounts">
+                                        <label >Strain Read counts</label><BR>
+                                        <div class="checkbox-l3" style="display:none;" id="ReadCountsOpts">
+
+                                            <!--Select Count type:
+                                                <select>
+                                                    <option value="total">Total Read Counts</option>
+                                                    <option value="sampled">Sampled Read Counts</option>
+                                                </select><BR>
+                                            <input type="checkbox" class="custviewCbx" id="cbxTrackOptConstScale">
+                                            <label >Use same Y-axis scale for all</label><BR>-->
+                                            Select Strians to display:<BR>
+                                            <input type="button"  id="selectAll" value="Select All"
+                                                   onClick="return custView.selectAllStrains()">
+                                            <input type="button"  id="deselectAll" value="Deselect All"
+                                                   onClick="return custView.deselectAllStrains()"><BR>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsBNLx">BNLx</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSHR">SHR</label>
+                                            <!--<label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH2">BXH2</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH3">BXH3</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH5">BXH5</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH6">BXH6</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH8">BXH8</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH9">BXH9</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH10">BXH10</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH11">BXH11</label>
+                                             <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH12">BXH12</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH13">BXH13</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB1">HXB1</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB2">HXB2</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB3">HXB3</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB4">HXB4</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB5">HXB5</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB7">HXB7</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB10">HXB10</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB13">HXB13</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB15">HXB15</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB17">HXB17</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB18">HXB18</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB20">HXB20</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB21">HXB21</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB22">HXB22</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB23">HXB23</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB24">HXB24</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB25">HXB25</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXH27">HXB27</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB29">HXB29</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB31">HXB31</label>-->
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsF344Stm">F344/Stm</label>
+                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEStm">LE/Stm</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsACI">ACI</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsCOP">Cop</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsDA">DA</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEWCrl">LEW/Crl</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEWSsnhsd">LEW/SsNHsd</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSHRP">SHRSP</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSR">SR</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSS">SS</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsWKY">WKY</label>
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" class="custviewCbx" id="cbxDataSmallRNA">
+                                    <label>Small RNA-Seq</label><BR>
+                                    <div class="checkbox-l3" style="display:none;" id="SmallRNAOpts">
+                                        Tracks:<BR>
+                                        <input type="checkbox" class="custviewCbx"  id="cbxTrackSmallRNA">
+                                        <label >Small RNA-Seq Features</label><BR>
+                                        <input type="checkbox" class="custviewCbx"  id="cbxTrackReadCountsSmall">
+                                        <label >Small RNA-Seq Read Counts</label><BR>
+                                        <div class="checkbox-l3" style="display:none;" id="ReadCountsSmallOpts">
+                                            <label ><input type="checkbox" class="custviewCbx" id="strainReadsSmallBNLxSHR">BNLx/SHR</label>
+                                            <!--<label ><input type="checkbox" class="custviewCbx" id="">SHR</label>-->
+                                        </div>
+                                    </div>
+                                    <input type="checkbox" class="custviewCbx" id="cbxTrackArray">
+                                    <label>Affymetrix Exon Arrays</label><BR>
+                                    <!--<div class="checkbox-l3" style="display:none;" id="ArrayOpts">
+                                        Color By:
+                                        <select id="selArrayColorBy">
+                                            <option value="">Annotation</option>
+                                            <option value="">Detection Above Background</option>
+                                            <option value="">Heritiblity</option>
+                                        </select><BR>
+                                    </div>-->
+                                    <input type="checkbox" class="custviewCbx" id="cbxTrackCirRNA">
+                                    <label>Circular RNAs</label><BR>
+                                    <!--<div class="checkbox-l3" style="display:none;" id="CirRNAOpts">
+                                        Display:<BR>
+                                        <input type="checkbox" class="custviewCbx" id="cbxOptsCirRNAPred">
+                                        <label>Predicted Circular RNAs (BNLx/SHR Brain/Heart/Liver) </label><BR>
+                                        <input type="checkbox" class="custviewCbx" id="cbxOptsCirRNAArray">
+                                        <label>Array cirRNA Expression (BNLx/SHR Heart) </label>
+                                    </div>-->
+                                    <input type="checkbox" class="custviewCbx" id="cbxTrackVariant">
+                                    <label>Strain Variants</label><BR>
+                                    <div class="checkbox-l3" style="display:none;" id="VariantOpts">
+                                        Strains:<BR>
+                                        <label ><input type="checkbox" class="custviewCbx" id="strainVarBNLx">BNLx</label>
+                                        <label ><input type="checkbox" class="custviewCbx" id="strainVarSHR">SHR</label>
+                                        <label ><input type="checkbox" class="custviewCbx" id="strainVarSHRJ">SHRJ</label>
+                                        <label ><input type="checkbox" class="custviewCbx" id="strainVarF344">F344</label>
+                                    </div>
+                                </p>
+                                <H3>Annotation</H3>
+                                <p>
+                                    <input type="checkbox" class="custviewCbx" checked="checked" id="cbxTrackSequence">
+                                    <label>Ensembl</label><BR>
+                                    <input type="checkbox" class="custviewCbx" checked="checked" id="cbxTrackEnsemblAnnotation">
+                                    <label>Ensembl</label><BR>
+                                    <input type="checkbox" class="custviewCbx"  id="cbxTrackRefSeq">
+                                    <label>RefSeq</label><BR>
+                                    <input type="checkbox" class="custviewCbx"  id="cbxTrackRepeat">
+                                    <label>Repeat Masker</label><BR>
+                                    <input type="checkbox" class="custviewCbx"  id="cbxTrackQTL">
+                                    <label>QTLs</label><BR>
+                                </p>
+                            </div>
+
+                        </div>
+                        <span style="float: right;"><span class="custViewStatus"></span><input type="submit" class="goBTN" id="goBTN4" value="Go"
+                                     onClick="return displayWorking()"></span></span>
+                    </div>
+                </fieldset>
+            </div>
         </div>
 
         <input type="hidden" name="pvalueCutoffInput" id="pvalueCutoffInput" value="<%=pValueCutoff%>"/>
@@ -969,29 +927,29 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
     </form>
     <%if (genURL.size() > 1) {%>
     <BR><BR>
-        <label><span style="font-weight:bold;color:#FF0000;font-size: large;">Multiple genes were returned please select the gene of Interest:</span>
-            <select name="geneSelectCBX" id="geneSelectCBX">
-                <%
-                    for (int i = 0; i < firstEnsemblID.size(); i++) {
-                %>
-                <option value="<%=firstEnsemblID.get(i)%>"
-                        <%if((geneSymbol.get(i)!=null&&geneSymbol.get(i).toLowerCase().equals(myGene.toLowerCase()))){%>selected<%}%>>
-                    <%if (geneSymbol.get(i) != null && !geneSymbol.get(i).startsWith("ERROR")) {%>
-                    <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
-                    <%} else if (geneSymbol.get(i).startsWith("ERROR")) {%>
-                    <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
-                    <%} else {%>
-                    <%=firstEnsemblID.get(i)%>
-                    <%}%>
-
-                </option>
+    <label><span style="font-weight:bold;color:#FF0000;font-size: large;">Multiple genes were returned please select the gene of Interest:</span>
+        <select name="geneSelectCBX" id="geneSelectCBX">
+            <%
+                for (int i = 0; i < firstEnsemblID.size(); i++) {
+            %>
+            <option value="<%=firstEnsemblID.get(i)%>"
+                    <%if((geneSymbol.get(i)!=null&&geneSymbol.get(i).toLowerCase().equals(myGene.toLowerCase()))){%>selected<%}%>>
+                <%if (geneSymbol.get(i) != null && !geneSymbol.get(i).startsWith("ERROR")) {%>
+                <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
+                <%} else if (geneSymbol.get(i).startsWith("ERROR")) {%>
+                <%=geneSymbol.get(i)%> (<%=firstEnsemblID.get(i)%>)
+                <%} else {%>
+                <%=firstEnsemblID.get(i)%>
                 <%}%>
-            </select>
-        </label>
 
-        <input type="submit" name="action" id="selGeneBTN" value="Go" onClick="enterSelectedGene()"><BR/>
-        Hint: Try other synonyms if the first ID that you enter is not found.
-        <BR/><BR/>
+            </option>
+            <%}%>
+        </select>
+    </label>
+
+    <input type="submit" name="action" id="selGeneBTN" value="Go" onClick="enterSelectedGene()"><BR/>
+    Hint: Try other synonyms if the first ID that you enter is not found.
+    <BR/><BR/>
     <%}%>
 </div>
 
@@ -1470,6 +1428,9 @@ Hint: Try other synonyms if the first ID that you enter is not found.
 <%}%>
 
 <script type="text/javascript">
+    var custView;
+    var PhenogenAnonSession;
+    var contextRoot="/";
     $("div#wait1").hide();
     $('.fancybox').fancybox({
         helpers: {
@@ -1486,13 +1447,20 @@ Hint: Try other synonyms if the first ID that you enter is not found.
         prevEffect: 'fade'
     });
     $(window).ready(function () {
-
-        getMainViewData(1);
+        setTimeout(function () {
+            getMainViewData(1);
+            custView = GDBCustomView();
+            custView.setup();
+        }, 10);
+        setTimeout(function () {
+            PhenogenAnonSession = SetupAnonSession();
+            PhenogenAnonSession.setupSession();
+        },20);
         //$( ".controlgroup" ).controlgroup()
         /*$( ".controlgroup-vertical" ).controlgroup({
             "direction": "vertical"
         });*/
-        $( "div#accordion" ).accordion();
+
         $(".tooltipster").tooltipster({
             position: 'top-right',
             maxWidth: 250,
@@ -1513,6 +1481,11 @@ Hint: Try other synonyms if the first ID that you enter is not found.
 <%}%>
 </div>
 </div>
+
+<%@ include file="/javascript/customView.js" %>
+<script>
+    <%@ include file="/javascript/Anon_session.js" %>
+</script>
 
 <%@ include file="/web/common/footer_adaptive.jsp" %>
 

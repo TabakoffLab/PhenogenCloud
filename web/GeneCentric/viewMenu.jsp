@@ -5,17 +5,21 @@
 	int level=0;
 	String type="gene";
 	String myOrganism="Rn";
+	String genomeVer="";
 	if(request.getParameter("level")!=null){
-		level=Integer.parseInt(request.getParameter("level"));
+		level=Integer.parseInt(FilterInput.getFilteredInput(request.getParameter("level")));
 	}
 	
 	if(request.getParameter("type")!=null){
-		type=request.getParameter("type");
+		type=FilterInput.getFilteredInput(request.getParameter("type"));
 	}
 	
 	if(request.getParameter("organism")!=null){
-		myOrganism=request.getParameter("organism");
+		myOrganism=FilterInput.getFilteredInput(request.getParameter("organism"));
 	}
+	if(request.getParameter("genomeVer")!=null){
+	    genomeVer=FilterInput.getFilteredInput(request.getParameter("genomeVer"));
+    }
 %>
 
 
@@ -128,7 +132,7 @@
            </div>
            <div id="nameView<%=level%>" style="width:100%;display:none;border:solid; border-color:#000000; border-width:1px 1px 1px 1px;text-align:left;">
            		<div id="predefinedSaveAs<%=level%>" style="display:none;">
-                	The modified view is a predefined view and cannot be saved, but you can save the modified view as a new track.  Complete the form below to save the modified view.
+                	The modified view is a predefined view and cannot be saved, but you can save the modified view as a new View.  Complete the form below to save the modified view.
                 </div>
             <form method="post" 
                 action="createBrowserViews.jsp"
@@ -145,6 +149,7 @@
                         </span>
                         <input type="hidden" id="createType<%=level%>" value="blank" />
                        	<input type="hidden" id="function<%=level%>" value="create" />
+                        <input type="hidden" id="genomeVer" value="<%=genomeVer%>>"/>
                </div>
            </form>
         </div>

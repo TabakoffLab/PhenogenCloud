@@ -150,7 +150,7 @@
 
 <!-- Website status message or other important message-->
 <span style="color:#FF0000;font-size: large; text-align: center;display:none;" ></span>
-
+<div style="font-size: large; text-align: center;width: 100%;" >Summer of Rat Genetics/Genomics 2020 May 19th-20th <a href="/downloads/SuRGe_flyer_2020-01-10.pdf" target="_blank">Flyer</a> <a href="http://opar.io/surge2020/" target="_blank" style="margin-left: 10px;">Registration</a></div>
 <span id="noJS" style="color:#FF0000;display:inline-block;" >This site requires JavaScript and it is currently disabled.  Please visit <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Software Requirments</a>.</span>
 <script type="text/javascript">	
 			$('#noJS').css("display","none");

@@ -35,7 +35,7 @@
 	log.debug("after rna");
 	Resource[] myDNASeqResources = myResource.getDNASeqResources();
 	log.debug("after dnaSeq");
-	//Resource[] myGenotypeResources = myResource.getGenotypingResources();
+	Resource[] rsemResources = myResource.getRNASeqExpressionResources();
 	log.debug("after genotype");
         Resource[] myPublicationResources1 = myResource.getPublicationResources1();
 	log.debug("after pub1");
@@ -251,6 +251,100 @@ pageDescription="Data resources available for downloading includes Microarrays, 
         </form>
         </div>
         <div id="rnaseq" style="<%if(!section.equals("rnaseq")){%>display:none;<%}%>border-top:1px solid black;">
+			<form	method="post"
+					 action="resources.jsp"
+					 enctype="application/x-www-form-urlencoded"
+					 name="resources">
+				<div class="title"> RNA-Seq Transcriptome Reconstruction<span class="toolTip" title="Reconstructed Transcriptome with high confidence transcripts from Stringtie/Cufflinks."><img src="<%=imagesDir%>icons/info.gif"></span></div>
+				<table id="gtfFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3">
+					<thead>
+					<tr class="col_title">
+						<th>Organism</th>
+						<th>Strains</th>
+						<th>Tissue</th>
+						<th>Assembled by</th>
+						<th>.gtf Files</th>
+					</tr>
+					</thead>
+					<% for (Resource resource: myGTFResources) { %>
+					<tr id="<%=resource.getID()%>">
+
+						<TD><%=resource.getOrganism()%></TD>
+						<TD><%=resource.getSource()%></TD>
+						<TD><%=resource.getTechType()%></TD>
+						<TD><%=resource.getGenome()%></TD>
+						<td class="actionIcons">
+							<div class="linkedImg download" type="gtf"><div>
+						</td>
+					</tr>
+					<% } %>
+				</table>
+				<BR>
+
+				<BR>
+				<div class="title">Transcriptome Quantitation(Gene/Transcript, Ensembl/Reconstruction)<span class="toolTip" title="Quantified/Normalized RSEM results for both Annotated (Ensembl) / Novel (Transcriptome reconstruction) genes and transcripts."><img src="<%=imagesDir%>icons/info.gif"></span></div>
+				<table id="gtfFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3">
+					<thead>
+					<tr class="col_title">
+						<th>Organism</th>
+						<th>Strains</th>
+						<th>Tissue</th>
+						<th>.csv Files</th>
+					</tr>
+					</thead>
+					<% for (Resource resource: rsemResources) { %>
+					<tr id="<%=resource.getID()%>">
+
+						<TD><%=resource.getOrganism()%></TD>
+						<TD><%=resource.getSource()%></TD>
+						<TD><%=resource.getTechType()%></TD>
+						<td class="actionIcons">
+							<div class="linkedImg download" type="rsem"><div>
+						</td>
+					</tr>
+					<% } %>
+				</table>
+				<BR>
+				<BR>
+				<div class="title"> RNA Sequencing BED/BAM Data Files</div>
+				<table id="rnaFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3">
+					<thead>
+					<tr class="col_title">
+						<th>Organism</th>
+						<th>Strain</th>
+						<th>Tissue</th>
+						<th>Seq. Tech.</th>
+						<th>RNA Type</th>
+						<th>Read Type</th>
+						<TH>Genome Versions</th>
+						<th>.BED/.BAM Files</th>
+					</tr>
+					</thead>
+					<tbody>
+					<% for (Resource resource: myRNASeqResources) { %>
+					<tr id="<%=resource.getID()%>">
+						<td> <%=resource.getOrganism()%> </td>
+						<td> <%=resource.getSource()%></td>
+						<td> <%=resource.getTissue()%></td>
+						<td> <%=resource.getTechType()%></td>
+						<td> <%=resource.getRNAType()%></td>
+						<td> <%=resource.getReadType()%></td>
+						<td> <%=resource.getGenome()%></td>
+						<% if (resource.getSAMDataFiles() != null && resource.getSAMDataFiles().length > 0) { %>
+						<td class="actionIcons">
+							<div class="linkedImg download" type="rnaseq"><div>
+						</td>
+						<% } else { %>
+						<td>&nbsp;</td>
+						<% } %>
+					</tr>
+					<% } %>
+					</tbody>
+				</table>
+
+			</form>
+
+
                 <div class="title"> New RNA Sequencing Datasets Experimental Details/Downloads</div>
                 <form	method="post" 
 		action="resources.jsp" 
@@ -326,72 +420,7 @@ pageDescription="Data resources available for downloading includes Microarrays, 
                         </tbody>
                  </table>
                 </form>
-                <form	method="post" 
-		action="resources.jsp" 
-		enctype="application/x-www-form-urlencoded"
-		name="resources">
-                <BR>
-		<BR>   
-                 <div class="title"> RNA Sequencing BED/BAM Data Files</div>
-		      <table id="rnaFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3">
-            		<thead>
-                               <tr class="col_title">
-					<th>Organism</th>
-					<th>Strain</th>
-                    <th>Tissue</th>
-                    <th>Seq. Tech.</th>
-                    <th>RNA Type</th>
-                    <th>Read Type</th>
-                    <TH>Genome Versions</th>
-					<th>.BED/.BAM Files</th>
-				</tr>
-			</thead>
-			<tbody>
-			<% for (Resource resource: myRNASeqResources) { %> 
-				<tr id="<%=resource.getID()%>">  
-				<td> <%=resource.getOrganism()%> </td>
-				<td> <%=resource.getSource()%></td>
-                <td> <%=resource.getTissue()%></td>
-                <td> <%=resource.getTechType()%></td>
-                <td> <%=resource.getRNAType()%></td>
-                <td> <%=resource.getReadType()%></td>    
-                <td> <%=resource.getGenome()%></td>
-				<% if (resource.getSAMDataFiles() != null && resource.getSAMDataFiles().length > 0) { %>
-					<td class="actionIcons">
-						<div class="linkedImg download" type="rnaseq"><div>
-					</td>
-				<% } else { %>
-                                	<td>&nbsp;</td>
-				<% } %>
-				</tr> 
-			<% } %>
-			</tbody>
-		</table>
-                <div class="title"> RNA-Seq Transcriptome Reconstruction<span class="toolTip" title="Reconstructed Transcriptome with high confidence transcripts from Cufflinks."><img src="<%=imagesDir%>icons/info.gif"></span></div>
-		      <table id="gtfFiles" class="list_base" name="items" cellpadding="0" cellspacing="3">
-            		<thead>
-                               <tr class="col_title">
-					<th>Organism</th>
-					<th>Strains</th>
-                                        <th>Tissue</th>
-                                        <th>Assembled by</th>
-					<th>.gtf Files</th>
-				</tr>
-			</thead>
-                        <% for (Resource resource: myGTFResources) { %> 
-				<tr id="<%=resource.getID()%>">  
-                                    
-                                    <TD><%=resource.getOrganism()%></TD>
-                                    <TD><%=resource.getSource()%></TD>
-                                    <TD><%=resource.getTechType()%></TD>
-                                    <TD><%=resource.getGenome()%></TD>
-                                    <td class="actionIcons">
-						<div class="linkedImg download" type="gtf"><div>
-                                    </td>
-				</tr> 
-			<% } %>
-                      </table>
-                </form>
+
         </div>
         <div id="dnaseq" style="<%if(!section.equals("dnaseq")){%>display:none;<%}%>border-top:1px solid black;">
 	<form	method="post" 

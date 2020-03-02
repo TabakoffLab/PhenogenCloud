@@ -26,6 +26,8 @@ String desc="";
 String type="";
 String org="AA";
 String disp="displaySelect0=700;";
+String UUID="";
+String genomeVer="";
 int newID=-1;
 
 
@@ -50,11 +52,21 @@ if(request.getParameter("copyFrom")!=null){
 if(request.getParameter("organism")!=null){
 	org=FilterInput.getFilteredInput(request.getParameter("organism"));
 }
+if(request.getParameter("UUID")!=null){
+	UUID=FilterInput.getFilteredInput(request.getParameter("UUID"));
+}
+if(request.getParameter("genomeVer")!=null){
+	genomeVer=FilterInput.getFilteredInput(request.getParameter("genomeVer"));
+}
 
 if(type.equals("blank")){
-	newID=bt.createBlankView(name,desc,org,disp);
+	if(UUID.equals("")) {
+		newID = bt.createBlankView(name, desc, org,genomeVer, disp);
+	}else{
+		newID = bt.createBlankView(UUID,name, desc, org,genomeVer, disp);
+	}
 }else{
-	newID=bt.createCopiedView(name,desc,org,disp,copyFrom);
+	newID=bt.createCopiedView(name,desc,org,genomeVer,disp,copyFrom);
 }
 
 response.setContentType("application/json");

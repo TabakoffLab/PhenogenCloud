@@ -35,8 +35,32 @@ public class BrowserTrack{
     private String type="";
     private Timestamp ts=null;
     private String gV="";
+    private String dbStatus="";
+    private HashMap<String,Integer> nullTissueTracks=new HashMap();
+    private HashMap<String,Integer> nullStrainTracks=new HashMap();
+
+
     
     public BrowserTrack(){
+        nullStrainTracks.put("RefSeq",1);
+        nullStrainTracks.put("EnsemblAnnotation",1);
+        nullStrainTracks.put("EnsemblAnnotationSmall",1);
+        nullStrainTracks.put("Array",1);
+        nullStrainTracks.put("Repeat",1);
+        nullStrainTracks.put("Reconstruction",1);
+        nullStrainTracks.put("SmallRNA",1);
+        nullStrainTracks.put("SpliceJunction",1);
+        nullStrainTracks.put("CirRNA",1);
+        nullStrainTracks.put("Sequence",1);
+        nullStrainTracks.put("QTL",1);
+        nullTissueTracks.put("RefSeq",1);
+        nullTissueTracks.put("EnsemblAnnotation",1);
+        nullTissueTracks.put("EnsemblAnnotationSmall",1);
+        nullTissueTracks.put("Array",1);
+        nullTissueTracks.put("Repeat",1);
+        nullTissueTracks.put("Variant",1);
+        nullTissueTracks.put("Sequence",1);
+        nullStrainTracks.put("QTL",1);
     }
 
     public BrowserTrack( int userid,  String trackclass,
@@ -69,6 +93,22 @@ public class BrowserTrack{
         this.originalFile=fileName;
         this.type=fileType;
         this.gV=genomeVer;
+
+        nullStrainTracks.put("RefSeq",1);
+        nullStrainTracks.put("EnsemblAnnotation",1);
+        nullStrainTracks.put("EnsemblAnnotationSmall",1);
+        nullStrainTracks.put("Array",1);
+        nullStrainTracks.put("Repeat",1);
+        nullStrainTracks.put("Reconstruction",1);
+        nullStrainTracks.put("SmallRNA",1);
+        nullStrainTracks.put("SpliceJunction",1);
+        nullStrainTracks.put("CirRNA",1);
+        nullTissueTracks.put("RefSeq",1);
+        nullTissueTracks.put("EnsemblAnnotation",1);
+        nullTissueTracks.put("EnsemblAnnotationSmall",1);
+        nullTissueTracks.put("Array",1);
+        nullTissueTracks.put("Repeat",1);
+        nullTissueTracks.put("Variant",1);
     }
 
     public ArrayList<BrowserTrack> getBrowserTracks(int userid,String genomeVer,DataSource pool){
@@ -161,6 +201,178 @@ public class BrowserTrack{
                    
                 }
             }
+        return ret;
+    }
+
+    public ArrayList<BrowserTrack> getBrowserTracks(String[] tracks,String genomeVer,int datasetVer,DataSource pool){
+        Logger log=Logger.getRootLogger();
+        log.debug("getBrowserTracks find any that match selection");
+        log.debug(tracks);
+        ArrayList<BrowserTrack> ret=new ArrayList<BrowserTrack>();
+
+        String query="select bt.TRACKID, bt.USER_ID, bt.TRACK_CLASS, bt.TRACK_NAME, bt.TRACK_DESC, bt.ORGANISM, bt.CATEGORY_GENERIC, bt.CATEGORY, bt.DISPLAY_OPTS, bt.VISIBLE, bt.CUSTOM_LOCATION, bt.CUSTOM_DATE, bt.CUSTOM_FILE_ORIGINAL, bt.CUSTOM_TYPE,bt.Tissue,bt.track_type,bt.strain,gbt.genome_id from BROWSER_TRACKS bt, BROWSER_GV2TRACK gbt where ";
+        query = query +"bt.TRACKID=gbt.TRACKID and  bt.visible=1 ";
+        if(!genomeVer.equals("all")){
+            query=query+" and gbt.genome_id= '"+genomeVer+"' ";
+        }
+
+
+        boolean readCounts=false;
+        boolean readCountsSmall=false;
+        boolean variants=false;
+        String tissueSelection="";
+        String nullSTTrackType="";
+        String nullStrainTrackType="";
+        String nullTissueTrackType="";
+        String strainsReads="";
+        String strainsReadsSmall="";
+        String strainVars="";
+        HashMap<String,String> settingHM=new HashMap<>();
+        for(int i=0;i<tracks.length;i++){
+            log.debug("Track:"+tracks[i]);
+            if(tracks[i].startsWith("cbxTissue")){
+                tissueSelection=tissueSelection+",'"+tracks[i].substring(9)+"'";
+            }else if(tracks[i].startsWith("cbxTrack") && !tracks[i].equals("cbxTrackVariant")){
+                String track=tracks[i].substring(8);
+                if(nullTissueTracks.containsKey(track) && nullStrainTracks.containsKey(track)){
+                    nullSTTrackType=nullSTTrackType+",'"+track+"'";
+                }else if(nullTissueTracks.containsKey(track)){
+                    nullTissueTrackType=nullTissueTrackType+",'"+track+"'";
+                }else if(nullStrainTracks.containsKey(track)){
+                    nullStrainTrackType=nullStrainTrackType+",'"+track+"'";
+                }/*else{
+                    strainTrackType=strainTrackType+",'"+track+"'";
+                }*/
+            }else if(tracks[i].startsWith("strainReads")){
+                strainsReads=strainsReads+",'"+tracks[i].substring(11)+"'";
+            }else if(tracks[i].startsWith("strainReadsSmall")){
+                strainsReadsSmall=strainsReadsSmall+",'"+tracks[i].substring(16)+"'";
+            }else if(tracks[i].startsWith("strainVar")){
+                strainVars=strainVars+",'"+tracks[i].substring(9)+"'";
+            }
+            log.debug("tissueSelection:"+tissueSelection);
+            log.debug("nullSTTT:"+nullSTTrackType);
+            log.debug("nullTTT:"+nullTissueTrackType);
+            log.debug("nullSTT:"+nullStrainTrackType);
+        }
+        String tissueQuery="";
+        //String nullStrainTrackQuery="";
+        //String nullTissueTrackQuery="";
+        //String nullSTTrackQuery="";
+        if(!tissueSelection.equals("")){
+            tissueSelection=tissueSelection.substring(1);
+            if(tissueSelection.indexOf(",")>0){
+                tissueQuery = " bt.tissue in ("+tissueSelection+") ";
+            }else{
+                tissueQuery = " bt.tissue = "+tissueSelection+" ";
+            }
+
+        }
+        log.debug("tissueQuery:"+tissueQuery);
+        String and=" and (";
+        if(!nullStrainTrackType.equals("")){
+            nullStrainTrackType=nullStrainTrackType.substring(1);
+            if(nullStrainTrackType.indexOf(",")>0) {
+                query = query +and+" ("+tissueQuery+" and bt.strain is null and bt.track_Type in (" + nullStrainTrackType + ") ) ";
+            }else{
+                query = query +and +" ( "+tissueQuery+" and bt.strain is null and bt.track_type = " + nullStrainTrackType + ") ";
+            }
+            and=" or ";
+        }
+
+        if(!nullTissueTrackType.equals("")){
+            nullTissueTrackType=nullTissueTrackType.substring(1);
+            if(nullTissueTrackType.indexOf(",")>0) {
+                query = query  +and+" ( bt.tissue is null and bt.track_Type in (" + nullTissueTrackType + ") )";
+            }else{
+                query = query  +and+" ( bt.tissue is null and bt.track_type = " + nullTissueTrackType + ") ";
+            }
+            and=" or ";
+        }
+        if(!nullSTTrackType.equals("")){
+            nullSTTrackType=nullSTTrackType.substring(1);
+            if(nullSTTrackType.indexOf(",")>0) {
+                query = query +and+" ( bt.tissue is null and bt.strain is null and bt.track_Type in (" + nullSTTrackType + ") )";
+            }else{
+                query = query +and+" ( bt.tissue is null and bt.strain is null and bt.track_type = " + nullSTTrackType + ") ";
+            }
+            and=" or ";
+        }
+
+        /*if( !tissueQuery.equals("") && !trackQuery.equals("")) {
+            query = query + " and (( " + tissueQuery + " and " + trackQuery + " ) or ( bt.tissue is null and " + trackQuery + " ) )";
+        }else if(!trackQuery.equals("")){
+            query = query + " and  bt.tissue is null and "+trackQuery;
+        }else if(!tissueQuery.equals("")){
+            query = query + " and "+tissueQuery;
+        }*/
+
+        if(!strainsReads.equals("")){
+            strainsReads=strainsReads.substring(1);
+            if(strainsReads.indexOf(",")>0) {
+                query = query +and+ " ("+tissueQuery+" and  bt.track_type = 'ReadCounts' and bt.strain in (" + strainsReads + ") ) ";
+            }else{
+                query = query +and+" ("+tissueQuery+" and  bt.track_type = 'ReadCounts' and bt.strain = " +strainsReads+ ") ";
+            }
+            and=" or ";
+        }
+        if(!strainsReadsSmall.equals("")){
+            strainsReadsSmall=strainsReadsSmall.substring(1);
+            if(strainsReadsSmall.indexOf(",")>0) {
+                query = query + and+" ("+tissueQuery+" and bt.track_type = 'ReadCountsSmall' and bt.strain in (" +strainsReadsSmall + ") ) ";
+            }else{
+                query = query + and +" ("+tissueQuery+" and bt.track_type = 'ReadCountsSmall' and bt.strain = " + strainsReadsSmall + ") ";
+            }
+            and=" or ";
+        }
+        if(!strainVars.equals("")){
+            strainVars=strainVars.substring(1);
+            if(strainVars.indexOf(",")>0) {
+                query = query + and+" ( bt.track_type = 'Variant' and bt.strain in (" +strainVars + ") ) ";
+            }else{
+                query = query +and+" ( bt.track_type = 'Variant' and bt.strain = " + strainVars + ") ";
+            }
+            and=" or ";
+        }
+        if(and.equals(" or ")){
+            query=query+" )";
+        }
+        log.debug("find Tracks for trackString:\n");
+        log.debug(query);
+        PreparedStatement ps=null;
+        try(Connection conn=pool.getConnection();) {
+            ps = conn.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            //int count=0;
+            while(rs.next()){
+                int tid=rs.getInt(1);
+                int uid=rs.getInt(2);
+                String tclass=rs.getString(3);
+                String name=rs.getString(4);
+                String desc=rs.getString(5);
+                String org=rs.getString(6);
+                String genCat=rs.getString(7);
+                String cat=rs.getString(8);
+                String controls=rs.getString(9);
+                boolean vis=rs.getBoolean(10);
+                String location=rs.getString(11);
+                Timestamp t=rs.getTimestamp(12);
+                String file=rs.getString(13);
+                String type=rs.getString(14);
+                String gV=rs.getString(18);
+                BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,"",0,genCat,cat,controls,vis,location,file,type,t,gV);
+                ret.add(tmpBT);
+            }
+
+            ps.close();
+        } catch (SQLException ex) {
+            log.error("SQL Exception retreiving browser views:" ,ex);
+            try {
+                ps.close();
+            } catch (Exception ex1) {
+
+            }
+        }
         return ret;
     }
     
@@ -295,9 +507,28 @@ public class BrowserTrack{
     public void setSetupTime(Timestamp ts) {
         this.ts = ts;
     }
-    
-    
-    
+
+    public String getDBStatus() {
+        return dbStatus;
+    }
+
+    public void setDBStatus(String dbStatus) {
+        this.dbStatus = dbStatus;
+    }
+
+    public String getDefaultSettings(){
+        String ret="";
+        if(this.controls!=null) {
+            String[] list = this.controls.split(",");
+            for (int i = 0; i < list.length; i++) {
+                String tmp = list[i].substring(list[i].indexOf("Default=") + 8);
+                ret = ret + "," + tmp;
+            }
+            ret = ret.substring(1);
+        }
+        return ret;
+    }
+
     /*public int getNextID(DataSource pool){
         int id=-1;
         String query="select Browser_Track_ID_SEQ.nextVal from dual";
@@ -437,8 +668,6 @@ public class BrowserTrack{
                     conn=null;
                 }
             }
-            
-            
         return ret;
     }
 }

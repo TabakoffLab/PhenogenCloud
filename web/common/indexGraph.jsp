@@ -513,13 +513,15 @@ div#announcement a:hover, div#announcementSmall a:hover {
                                 if (displayOverride != 1) {
                                     animationStop();
                                 }
-                                if (ga) {
+                                //if (ga) {
                                     var cat = 'indexClickCategory';
                                     if (displayOverride !== 1) {
                                         cat = 'indexAutoCategory';
                                     }
-                                    ga('send', 'event', cat, d.groupName);
-                                }
+                                    //ga('send', 'event', cat, d.groupName);
+                                    gtag('event',d.groupName,{'event_category': cat});
+
+                                //}
                             }
                             if (d.level == 2) {
                                 if (displayOverride == 1 || (mouseEnter != NaN && curTime - mouseEnter > 60)) {
@@ -551,13 +553,14 @@ div#announcement a:hover, div#announcementSmall a:hover {
                                             if (displayOverride !== 1) {
                                                 animationStop();
                                             }
-                                            if (ga) {
+                                            //if (ga) {
                                                 var cat = 'indexClickDetail';
                                                 if (displayOverride !== 1) {
                                                     cat = 'indexAutoDetail';
                                                 }
-                                                ga('send', 'event', cat, d.descPage);
-                                            }
+                                                //ga('send', 'event', cat, d.descPage);
+                                                gtag('event',d.descPage,{'event_category': cat});
+                                            //}
                                         }
                                     }
                                 }
@@ -824,9 +827,10 @@ div#announcement a:hover, div#announcementSmall a:hover {
                                 redraw();
                             }
                             $('#indexDescContent').css("width", contentWidth);
-                            if (ga) {
-                                ga('send', 'event', 'index', 'expandDetail');
-                            }
+                            //if (ga) {
+                                //ga('send', 'event', 'index', 'expandDetail');
+                            gtag('event','expandDetail',{'event_category': 'index'});
+                            //}
                         });
                     </script>
 

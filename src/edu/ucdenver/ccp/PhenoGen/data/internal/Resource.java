@@ -33,6 +33,7 @@ public class Resource {
         public SAMDataFile[] samDataFiles = null;
         public GenotypeDataFile[] genotypeDataFiles = null;
 	public ExpressionDataFile[] expressionDataFiles = null;
+    public SAMDataFile[] rnaSeqExpressionDataFiles = null;
 	public EQTLDataFile[] eQTLDataFiles = null;
 	public HeritabilityDataFile[] heritabilityDataFiles = null;
         public MaskDataFile[] maskDataFiles=null;
@@ -274,6 +275,13 @@ public class Resource {
         public MarkerDataFile[] getMarkerDataFiles() {
                 return this.markerDataFiles;
         }
+
+        /*public SAMDataFile[] getRNASeqExpressionDataFiles() {
+            return this.rnaSeqExpressionDataFiles;
+        }
+        public void setRNASeqExpressionDataFiles(SAMDataFile[] inSAMDataFiles) {
+            this.rnaSeqExpressionDataFiles = inSAMDataFiles;
+        }*/
         
         public void setSAMDataFiles(SAMDataFile[] inSAMDataFiles) {
                 this.samDataFiles = inSAMDataFiles;
@@ -389,6 +397,7 @@ public class Resource {
                 List<Resource> pubResources7 = Arrays.asList(getPublicationResources7());
                 List<Resource> pubResources8 = Arrays.asList(getPublicationResources8());
                 List<Resource> gtfResources = Arrays.asList(getGTFResources());
+                List<Resource> rsemResources = Arrays.asList(getRNASeqExpressionResources());
 		List<Resource> allResources = new ArrayList<Resource>(expressionResources);
 		allResources.addAll(markerResources);
                 allResources.addAll(rnaResources);
@@ -403,6 +412,7 @@ public class Resource {
                 allResources.addAll(pubResources7);
                 allResources.addAll(pubResources8);
                 allResources.addAll(gtfResources);
+                allResources.addAll(rsemResources);
 		Resource[] allResourcesArray = myObjectHandler.getAsArray(allResources, Resource.class);
 		return allResourcesArray;
 	}
@@ -854,19 +864,43 @@ public class Resource {
         	Dataset HXBRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.HXBRI_DATASET_NAME);
         	Dataset LXSRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.LXSRI_DATASET_NAME);
 
+        String markerFilePath="/downloads/Markers/";
+        List<MarkerDataFile> markerFileList = new ArrayList<MarkerDataFile>();
+        markerFileList.add(new MarkerDataFile("HRDPv4 Markers", markerFilePath + "HRDP_v4_Markers.txt","HRDPv4"));
+        MarkerDataFile[] markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
+
+        EQTLDataFile[] eQTLFileArray = new EQTLDataFile[0];
+
+        resourceList.add(new Resource(13, "Rat", "<a href='http://oct2012.archive.ensembl.org/Rattus_norvegicus/Info/Content?file=star.html' target='_blank'>STAR consortium</a>", null, markerFileArray,eQTLFileArray,"HRDPv4"));
+
+        // Setup the HXBRI stuff
+        String resourcesDir = HXBRI_Dataset.getResourcesDir();
+        resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
+
+        String datasetDir = HXBRI_Dataset.getPath();
+        markerFileList = new ArrayList<MarkerDataFile>();
+        markerFileList.add(new MarkerDataFile("HXB Markers", resourcesDir + "HXB_BXH_Markers.txt.zip","HXB/BXH"));
+        markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
+
+        List<EQTLDataFile> eQTLFileList = new ArrayList<EQTLDataFile>();
+        eQTLFileList.add(new EQTLDataFile("eQTLs using STAR Consortium Markers", resourcesDir + "HXB_BXH_eQTL_STARConsortiumMarkers_07Oct09.txt.zip"));
+        eQTLFileArray = myObjectHandler.getAsArray(eQTLFileList, EQTLDataFile.class);
+
+        resourceList.add(new Resource(12, "Rat", "<a href='http://oct2012.archive.ensembl.org/Rattus_norvegicus/Info/Content?file=star.html' target='_blank'>STAR consortium</a>", HXBRI_Dataset, markerFileArray, eQTLFileArray,"HXB/BXH"));
+
 		// Setup the BXDRI stuff
-		String resourcesDir = BXDRI_Dataset.getResourcesDir();
+		resourcesDir = BXDRI_Dataset.getResourcesDir();
         log.debug("BXD:"+resourcesDir);
                 resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
-		String datasetDir = BXDRI_Dataset.getPath();
+		datasetDir = BXDRI_Dataset.getPath();
 
-		List<MarkerDataFile> markerFileList = new ArrayList<MarkerDataFile>();
+        markerFileList = new ArrayList<MarkerDataFile>();
 		markerFileList.add(new MarkerDataFile("BXD Markers", resourcesDir + "BXD_Markers.zip","BXD"));
-		MarkerDataFile[] markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
+		markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
 
-		List<EQTLDataFile> eQTLFileList = new ArrayList<EQTLDataFile>();
+		eQTLFileList = new ArrayList<EQTLDataFile>();
 		eQTLFileList.add(new EQTLDataFile("eQTLs using Wellcome Trust Markers", resourcesDir + "BXD_eQTL_WellcomeTrustMarkers_16Apr12.csv.zip"));
-		EQTLDataFile[] eQTLFileArray = myObjectHandler.getAsArray(eQTLFileList, EQTLDataFile.class);
+		eQTLFileArray = myObjectHandler.getAsArray(eQTLFileList, EQTLDataFile.class);
 
                 resourceList.add(new Resource(10, "Mouse", "<a href='http://www.well.ox.ac.uk/mouse/INBREDS' target='_blank'>Wellcome-CTC Mouse Strain SNP Genotype Set</a>", BXDRI_Dataset, markerFileArray, eQTLFileArray,"BXD"));
 //Wellcome-CTC Mouse Strain SNP Genotype Set (http://www.well.ox.ac.uk/mouse/INBREDS/)
@@ -888,20 +922,7 @@ public class Resource {
 
                 resourceList.add(new Resource(11, "Mouse", "Affymetrix Mouse Diversity SNP Array", LXSRI_Dataset, markerFileArray, eQTLFileArray,"LXS"));
 
-		// Setup the HXBRI stuff
-		resourcesDir = HXBRI_Dataset.getResourcesDir();
-                resourcesDir=resourcesDir.substring(resourcesDir.indexOf("/userFiles/"));
-		datasetDir = HXBRI_Dataset.getPath();
 
-		markerFileList = new ArrayList<MarkerDataFile>();
-		markerFileList.add(new MarkerDataFile("HXB Markers", resourcesDir + "HXB_BXH_Markers.txt.zip","HXB/BXH"));
-		markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
-
-		eQTLFileList = new ArrayList<EQTLDataFile>();
-		eQTLFileList.add(new EQTLDataFile("eQTLs using STAR Consortium Markers", resourcesDir + "HXB_BXH_eQTL_STARConsortiumMarkers_07Oct09.txt.zip"));
-		eQTLFileArray = myObjectHandler.getAsArray(eQTLFileList, EQTLDataFile.class);
-
-                resourceList.add(new Resource(12, "Rat", "<a href='http://oct2012.archive.ensembl.org/Rattus_norvegicus/Info/Content?file=star.html' target='_blank'>STAR consortium</a>", HXBRI_Dataset, markerFileArray, eQTLFileArray,"HXB/BXH"));
 
 		Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
 		return resourceArray;
@@ -915,6 +936,9 @@ public class Resource {
 		log.debug("in getRNASeqResources");
 		String seqFilePath="/downloads/RNASeq/";
 		List<Resource> resourceList = new ArrayList<Resource>();
+
+
+
                 
                 SAMDataFile[] bnlxFileList = new SAMDataFile[4];
                 bnlxFileList[0]=new SAMDataFile("BN-Lx Aligned BAM File",seqFilePath+"Aligned/rn6/BNLx.rn6.Brain.polyA.bam","Rn6");
@@ -1029,26 +1053,84 @@ public class Resource {
 		log.debug("in getRNASeqResources");
                 String seqFilePath="/downloads/RNASeq/";
 		List<Resource> resourceList = new ArrayList<Resource>();
+
+        SAMDataFile[] brainGTFList = new SAMDataFile[1];
+        brainGTFList[0]=new SAMDataFile("HRDPv5 Brain Rn6 GTF (10/31/2019)",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.reconstruction.gtf.gz","Rn6");
+        resourceList.add(new Resource(124, "Rat", "HRDP v5","Whole Brain", brainGTFList, "Stringtie" ));
+
+        SAMDataFile[] liverGTFList = new SAMDataFile[1];
+        liverGTFList[0]=new SAMDataFile("HRDPv5 Liver Rn6 GTF (10/31/2019)",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.reconstruction.gtf.gz","Rn6");
+        resourceList.add(new Resource(125, "Rat", "HRDP v5","Liver", liverGTFList, "Stringtie" ));
+        SAMDataFile[] heartGTFList = new SAMDataFile[1];
+        heartGTFList[0]=new SAMDataFile("HRDPv5 Heart Rn6 GTF (10/31/2019)",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Heart.reconstruction.gtf.gz","Rn6");
+
+        resourceList.add(new Resource(126, "Rat", "HRDP v5","Heart", heartGTFList, "Stringtie" ));
+        SAMDataFile[] mergedGTFList = new SAMDataFile[1];
+        mergedGTFList[0]=new SAMDataFile("HRDPv5 Merged Rn6 GTF (10/31/2019)",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Merged.reconstruction.gtf.gz","Rn6");
+        resourceList.add(new Resource(127, "Rat", "HRDP v5","Merged", mergedGTFList, "Stringtie" ));
                 
-                SAMDataFile[] brainGTFList = new SAMDataFile[2];
+        brainGTFList = new SAMDataFile[2];
                 brainGTFList[0]=new SAMDataFile("HXB Brain Rn6 GTF v1 (5/31/2016)",seqFilePath+"HXB.Brain.rn6.gtf.zip","Rn6");
                 brainGTFList[1]=new SAMDataFile("HXB Brain Rn6 GTF with Merged IDs v1 (5/31/2016)",seqFilePath+"HXB.Brain.rn6.Merged.v1.gtf.zip","Rn6");
                 resourceList.add(new Resource(120, "Rat", "BN-Lx/CubPrin,SHR/OlaIpcvPrin","Whole Brain", brainGTFList, "Cufflinks" ));
-                SAMDataFile[] heartGTFList = new SAMDataFile[2];
+        heartGTFList = new SAMDataFile[2];
                 heartGTFList[0]=new SAMDataFile("HXB Heart Rn6 GTF v1 (4/6/2016)",seqFilePath+"HXB.Heart.rn6.gtf.zip","Rn6");
                 heartGTFList[1]=new SAMDataFile("HXB Heart Rn6 GTF with Merged IDs v1 (4/6/2016)",seqFilePath+"HXB.Heart.rn6.Merged.v1.gtf.zip","Rn6");
                 resourceList.add(new Resource(121, "Rat", "BN-Lx/CubPrin,SHR/OlaIpcvPrin","Heart", heartGTFList, "Cufflinks" ));
-                SAMDataFile[] liverGTFList = new SAMDataFile[2];
+        liverGTFList = new SAMDataFile[2];
                 liverGTFList[0]=new SAMDataFile("HXB Liver Rn6 GTF v1 (4/6/2016)",seqFilePath+"HXB.Liver.rn6.gtf.zip","Rn6");
                 liverGTFList[1]=new SAMDataFile("HXB Liver Rn6 GTF with Merged IDs v1 (4/6/2016)",seqFilePath+"HXB.Liver.rn6.Merged.v1.gtf.zip","Rn6");
                 resourceList.add(new Resource(122, "Rat", "BN-Lx/CubPrin,SHR/OlaIpcvPrin","Liver", liverGTFList, "Cufflinks" ));
-                SAMDataFile[] mergedGTFList = new SAMDataFile[1];
+        mergedGTFList = new SAMDataFile[1];
                 mergedGTFList[0]=new SAMDataFile("HXB Merged Tissue Rn6 GTF v1 (5/31/2016)",seqFilePath+"HXB.Merged.rn6.v1.gtf.zip","Rn6");
                 resourceList.add(new Resource(123, "Rat", "BN-Lx/CubPrin,SHR/OlaIpcvPrin","Whole Brain", mergedGTFList, "Cufflinks" ));
                 Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
 		return resourceArray;
 
 	}
+
+    public Resource[] getRNASeqExpressionResources() {
+        log.debug("in getRNASeqResources");
+        String seqFilePath="/downloads/RNASeq/RSEM/";
+        List<Resource> resourceList = new ArrayList<Resource>();
+
+        SAMDataFile[] brainGTFList = new SAMDataFile[8];
+        brainGTFList[0]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Gene Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.gene.ensembl96.strainMeans.txt.gz","Rn6");
+        brainGTFList[1]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.transcript.ensembl96.strainMeans.txt.gz","Rn6");
+        brainGTFList[2]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Gene Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.gene.reconstruction.strainMeans.txt.gz","Rn6");
+        brainGTFList[3]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.transcript.reconstruction.strainMeans.txt.gz","Rn6");
+        brainGTFList[4]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.gene.ensembl96.txt.gz","Rn6");
+        brainGTFList[5]=new SAMDataFile("HRDPv5 Brain TotalRNA Ensembl Transcript Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.transcript.ensembl96.txt.gz","Rn6");
+        brainGTFList[6]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.gene.reconstruction.txt.gz","Rn6");
+        brainGTFList[7]=new SAMDataFile("HRDPv5 Brain TotalRNA Reconstruction Transcript Individual Sampless",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.transcript.reconstruction.txt.gz","Rn6");
+        resourceList.add(new Resource(500, "Rat", "HRDP v5","Whole Brain", brainGTFList, "RSEM" ));
+
+        SAMDataFile[] liverGTFList = new SAMDataFile[8];
+        liverGTFList[0]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Gene Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.gene.ensembl96.strainMeans.txt.gz","Rn6");
+        liverGTFList[1]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.transcript.ensembl96.strainMeans.txt.gz","Rn6");
+        liverGTFList[2]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Gene Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.gene.reconstruction.strainMeans.txt.gz","Rn6");
+        liverGTFList[3]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.transcript.reconstruction.strainMeans.txt.gz","Rn6");
+        liverGTFList[4]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.gene.ensembl96.txt.gz","Rn6");
+        liverGTFList[5]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Transcript Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.transcript.ensembl96.txt.gz","Rn6");
+        liverGTFList[6]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.gene.reconstruction.txt.gz","Rn6");
+        liverGTFList[7]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Transcript Individual Samples",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.transcript.reconstruction.txt.gz","Rn6");
+        resourceList.add(new Resource(501, "Rat", "HRDP v5","Liver", liverGTFList, "RSEM" ));
+
+        /*SAMDataFile[] heartGTFList = new SAMDataFile[8];
+        heartGTFList[0]=new SAMDataFile("HRDPv5 Heart TotalRNA Ensembl Gene Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.gene.v5.ensembl96.strainMeans.csv.gz","Rn6");
+        heartGTFList[1]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.transcript.v5.ensembl96.strainMeans.csv.gz","Rn6");
+        heartGTFList[2]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Gene Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.gene.v5.strainMeans.csv.gz","Rn6");
+        heartGTFList[3]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Transcript Strain Means",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.transcript.v5.strainMeans.csv.gz","Rn6");
+        heartGTFList[4]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.gene.v5.ensembl96.csv.gz","Rn6");
+        heartGTFList[5]=new SAMDataFile("HRDPv5 Liver TotalRNA Ensembl Transcript Individual Samples",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.transcript.v5.ensembl96.csv.gz","Rn6");
+        heartGTFList[6]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Gene Individual Samples",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.gene.v5.csv.gz","Rn6");
+        heartGTFList[7]=new SAMDataFile("HRDPv5 Liver TotalRNA Reconstruction Transcript Individual Sampless",seqFilePath+"PhenoGen.HRDP.totalRNA.Liver.transcript.v5.csv.gz","Rn6");
+        resourceList.add(new Resource(502, "Rat", "HRDP v5","Heart", heartGTFList, "RSEM" ));*/
+
+        Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
+        return resourceArray;
+
+    }
         
         
         /**

@@ -193,9 +193,10 @@ function GOBrowser(path,fileName){
                     	/*}else{
                     		event.preventDefault();
                     	}*/
-                    	if(ga){
+                    	/*if(ga){
 							ga('send','event','gl_WGCNA_go','changeDepth');
-						}
+						}*/
+                    	gtag('event','changeDepth',{'event_category':'gl_WGCNA_go'});
                     },
                     spin: function( event, ui ) {
                     	//if(ui.value<=(that.singleImage.maxDepth+1)){
@@ -211,9 +212,10 @@ function GOBrowser(path,fileName){
                     	/*}else{
                     		event.preventDefault();
                     	}*/
-                    	if(ga){
+                    	/*if(ga){
 							ga('send','event','gl_WGCNA_go','changeDepth');
-						}
+						}*/
+						gtag('event','changeDepth',{'event_category':'gl_WGCNA_go'});
                     }
                 }).val(3);
 	};
@@ -771,9 +773,10 @@ function GOBrowser(path,fileName){
 			                    }
 			                    thatimg.redraw();
 			                    d3.event.stopPropagation();
-			                    if(ga){
+			                    /*if(ga){
 			                        ga('send','event','wgcna','mouseClickGO');
-			                    }
+			                    }*/
+			                    gtag('event','mouseClickGO',{'event_category':'wgcna'});
 		                	}
                         })
                         .on("mouseover",function(d){
@@ -796,9 +799,10 @@ function GOBrowser(path,fileName){
                                  
                             }
                             d3.event.stopPropagation();
-                            if(ga){
+                            /*if(ga){
 		                        ga('send','event','wgcna','mouseOverGO');
-		                    }
+		                    }*/
+                            gtag('event','mouseOverGO',{'event_category':'wgcna'});
                         })
 						.on("mouseleave",function(d){
 							tt.transition()        
@@ -1297,9 +1301,10 @@ function GOBrowser(path,fileName){
                         .attr("class",function(d){return " d"+d.depth;})
                         .on("mouseover",function(d){
                         	d3.select(this).style("background-color","#FFFFFF");
-                        	if(ga){
+                        	/*if(ga){
 		                        ga('send','event','wgcna','mouseOverGOTbl');
-		                    }
+		                    }*/
+                        	gtag('event','mouseOverGOTbl',{'event_category':'wgcna'});
                         })
                         .on("mouseleave",function(d){
                         	d3.select(this).style("background-color",that.singleImage.pathColor(d));
@@ -1310,9 +1315,10 @@ function GOBrowser(path,fileName){
                         	$('span[name=d'+d.depth+']').addClass("less");
                 			$("tr.d"+d.depth).show();
                         	that.singleImage.redraw();
-                        	if(ga){
+                        	/*if(ga){
 		                        ga('send','event','wgcna','mouseClickGOTbl');
-		                    }
+		                    }*/
+                        	gtag('event','mouseClickGOTbl',{'event_category':'wgcna'});
                         }).each(function(d,i){
 			                var tmpI=i;
 			                var tmpD=d;
