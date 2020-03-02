@@ -1055,18 +1055,18 @@ public class Resource {
 		List<Resource> resourceList = new ArrayList<Resource>();
 
         SAMDataFile[] brainGTFList = new SAMDataFile[1];
-        brainGTFList[0]=new SAMDataFile("HRDPv5 Brain Rn6 GTF (1/12/2020)",seqFilePath+"HXB.Brain.rn6.gtf.zip","Rn6");
+        brainGTFList[0]=new SAMDataFile("HRDPv5 Brain Rn6 GTF (10/31/2019)",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Brain.reconstruction.gtf.gz","Rn6");
         resourceList.add(new Resource(124, "Rat", "HRDP v5","Whole Brain", brainGTFList, "Stringtie" ));
 
         SAMDataFile[] liverGTFList = new SAMDataFile[1];
-        liverGTFList[0]=new SAMDataFile("HXB Brain Rn6 GTF v1 (5/31/2016)",seqFilePath+"HXB.Brain.rn6.gtf.zip","Rn6");
+        liverGTFList[0]=new SAMDataFile("HRDPv5 Liver Rn6 GTF (10/31/2019)",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Liver.reconstruction.gtf.gz","Rn6");
         resourceList.add(new Resource(125, "Rat", "HRDP v5","Liver", liverGTFList, "Stringtie" ));
         SAMDataFile[] heartGTFList = new SAMDataFile[1];
-        heartGTFList[0]=new SAMDataFile("HXB Brain Rn6 GTF v1 (5/31/2016)",seqFilePath+"HXB.Brain.rn6.gtf.zip","Rn6");
+        heartGTFList[0]=new SAMDataFile("HRDPv5 Heart Rn6 GTF (10/31/2019)",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Heart.reconstruction.gtf.gz","Rn6");
 
         resourceList.add(new Resource(126, "Rat", "HRDP v5","Heart", heartGTFList, "Stringtie" ));
         SAMDataFile[] mergedGTFList = new SAMDataFile[1];
-        mergedGTFList[0]=new SAMDataFile("HXB Brain Rn6 GTF v1 (5/31/2016)",seqFilePath+"HXB.Brain.rn6.gtf.zip","Rn6");
+        mergedGTFList[0]=new SAMDataFile("HRDPv5 Merged Rn6 GTF (10/31/2019)",seqFilePath+"PhenoGen.HRDP.v5.totalRNA.Merged.reconstruction.gtf.gz","Rn6");
         resourceList.add(new Resource(127, "Rat", "HRDP v5","Merged", mergedGTFList, "Stringtie" ));
                 
         brainGTFList = new SAMDataFile[2];
