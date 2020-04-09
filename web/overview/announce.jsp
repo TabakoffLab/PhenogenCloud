@@ -15,7 +15,7 @@
                         <H2 style="font-weight: bold;font-size:20px;">SuRGe 2020</H2>
                         <div style="margin-left:5px;">
                             OSGA Training - Summer of Rat Genetics/Genomics<BR>
-                            When: May 19th and 20th, 2020<BR>
+                            When: <span style="color:#ff0000;"> Postponed </span> <BR>
                             Quantitative Trait Loci Mapping in Model Organisms<BR>
                             Workshop Objectives: By the end of the workshop participants will
                             <OL>
@@ -24,9 +24,9 @@
                                 <li>Be able map a phenotype from a complex population using software such as R/qtl2</li>
                                 <li>Practice reproducible research using a Jupyter Lab Notebook</li>
                             </OL>
-                            <span style="font-size:large;"><a href="/downloads/SuRGe_flyer_2020-01-10.pdf" target="_blank">Flyer</a>
+                            <!--<span style="font-size:large;"><a href="/downloads/SuRGe_flyer_2020-01-10.pdf" target="_blank">Flyer</a>
                             <BR>
-                            <a href="http://opar.io/surge2020/" target="_blank">Registration</a></span>
+                            <a href="http://opar.io/surge2020/" target="_blank">Registration</a></span>-->
                         </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.1</H2>
                         <div style="margin-left:5px;">
