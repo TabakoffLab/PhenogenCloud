@@ -12,21 +12,17 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
-                        <H2 style="font-weight: bold;font-size:20px;">SuRGe 2020</H2>
+                        <H2 style="font-weight: bold;font-size:20px;">Webinar Series </H2>
                         <div style="margin-left:5px;">
-                            OSGA Training - Summer of Rat Genetics/Genomics<BR>
-                            When: <span style="color:#ff0000;"> Postponed </span> <BR>
-                            Quantitative Trait Loci Mapping in Model Organisms<BR>
-                            Workshop Objectives: By the end of the workshop participants will
-                            <OL>
-                                <li>Understand the genetic concepts behind QTL mapping</li>
-                                <li>Be able to map a phenotype using GeneNetwork2</li>
-                                <li>Be able map a phenotype from a complex population using software such as R/qtl2</li>
-                                <li>Practice reproducible research using a Jupyter Lab Notebook</li>
-                            </OL>
-                            <!--<span style="font-size:large;"><a href="/downloads/SuRGe_flyer_2020-01-10.pdf" target="_blank">Flyer</a>
-                            <BR>
-                            <a href="http://opar.io/surge2020/" target="_blank">Registration</a></span>-->
+                            <h3><a href="http://opar.io/webinar_series_1.html">Quantitative Genetics Tools</a></h3>
+                            The NIDA Center of Excellence in Omics, Systems Genetics, and the Addictome has put together a <a href="http://opar.io/webinar_series_1.html">webinar
+                            series, Quantitative Genetics Tools for Mapping Trait Variation to Mechanisms, Therapeutics, and
+                            Interventions</a>. The goal of this series is to transverse the path from trait variance to QTL to gene
+                            variant to molecular networks to mechanisms to therapeutic and interventions. The target audience for
+                            this series are those new to the field of quantitative genetics, so please pass this information on to
+                            your trainees or colleagues.<BR>
+                            <a href="http://opar.io/webinar_series_1.html">More Information</a><BR>
+                            <a href="http://opar.io/webinar_series_1.html">Previously Recorded Webinars</a>
                         </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.1</H2>
                         <div style="margin-left:5px;">
