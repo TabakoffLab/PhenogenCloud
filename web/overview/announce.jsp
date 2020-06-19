@@ -12,6 +12,26 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #3</H2>
+                        <div style="margin-left:5px;">
+                            <h3>QTL to gene/molecular networks 6/12/2020 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://bit.ly/osga_2020-06-12">Register</a>
+                            Goals of this webinar (QTL to gene/molecular networks):<BR>
+                            <UL>
+                                <li>Define eQTL</li>
+                                <li>Examine the role of eQTL in the relationship of genes and molecular networks with phenotypic QTL</li>
+                                <li>eQTL for co-expression networks</li>
+                            </UL>
+                            <BR>
+
+                            Presented by:<BR>
+                            Dr. Laura Saba<BR>
+                            Associate Professor<BR>
+                            Department of Pharmaceutical Sciences<BR>
+                            University of Colorado Anschutz Medical Campus<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">Webinar Series </H2>
                         <div style="margin-left:5px;">
                             <h3><a href="http://opar.io/webinar_series_1.html">Quantitative Genetics Tools</a></h3>
@@ -21,6 +41,7 @@
                             variant to molecular networks to mechanisms to therapeutic and interventions. The target audience for
                             this series are those new to the field of quantitative genetics, so please pass this information on to
                             your trainees or colleagues.<BR>
+                            Webinar #3 - 6/12/2020 10amPDT/1pm EDT - QTL to gene/molecular networks - <a href="https://bit.ly/osga_2020-06-12">Register</a>
                             <a href="http://opar.io/webinar_series_1.html">More Information</a><BR>
                             <a href="http://opar.io/webinar_series_1.html">Previously Recorded Webinars</a>
                         </div>
