@@ -337,7 +337,9 @@ public class GeneDataTools {
         int[] rnaDS=getOrganismSpecificIdentifiers(organism,tissue,genomeVer,version);
         if(geneID.startsWith("ENS")){
             geneID=translateENStoPRN(Integer.toString(rnaDS[1]),geneID);
-            geneID=geneID.substring(1,geneID.length()-1);
+            if(geneID.length()>1) {
+                geneID = geneID.substring(1, geneID.length() - 1);
+            }
         }
         String trxQuery="select isoform_id,merge_isoform_id from rna_transcripts rt " +
                 "where rt.rna_dataset_id="+rnaDS[1] +" "+
