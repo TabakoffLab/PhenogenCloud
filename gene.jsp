@@ -788,21 +788,33 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                         <input type="checkbox" class="custviewCbx" id="cbxTrackReadCounts">
                                         <label >Strain Read counts</label><BR>
                                         <div class="checkbox-l3" style="display:none;" id="ReadCountsOpts">
-
-                                            <!--Select Count type:
+                                            Select Count type:
                                                 <select>
                                                     <option value="total">Total Read Counts</option>
-                                                    <option value="sampled">Sampled Read Counts</option>
+                                                    <!--<option value="sampled">Sampled Read Counts</option>-->
                                                 </select><BR>
-                                            <input type="checkbox" class="custviewCbx" id="cbxTrackOptConstScale">
+                                            <!--<input type="checkbox" class="custviewCbx" id="cbxTrackOptConstScale">
                                             <label >Use same Y-axis scale for all</label><BR>-->
                                             Select Strians to display:<BR>
                                             <input type="button"  id="selectAll" value="Select All"
                                                    onClick="return custView.selectAllStrains()">
                                             <input type="button"  id="deselectAll" value="Deselect All"
                                                    onClick="return custView.deselectAllStrains()"><BR>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsBNLx">BNLx</label>
-                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSHR">SHR</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsBNLx">BNLx (HXB parent)</label>
+                                            <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSHR">SHR (HXB parent)</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsF344Stm">F344/Stm (FXLE parent)</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEStm">LE/Stm (FXLE parent)</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsACI">ACI</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsCOP">Cop</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsDA">DA</label>
+                                            <!--<label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsF344NCl">F344/NCl</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsF344NHsd">F344/NHsd</label>-->
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEWCrl">LEW/Crl</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEWSsnhsd">LEW/SsNHsd</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSHRP">SHRSP</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSR">SR</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSS">SS</label>
+                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsWKY">WKY</label>
                                             <!--<label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH2">BXH2</label>
                                             <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH3">BXH3</label>
                                             <label ><input type="checkbox" class="custviewCbx strainCbx" id="strainBXH5">BXH5</label>
@@ -833,17 +845,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                              <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXH27">HXB27</label>
                                              <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB29">HXB29</label>
                                              <label><input type="checkbox" class="custviewCbx strainCbx" id="strainHXB31">HXB31</label>-->
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsF344Stm">F344/Stm</label>
-                                             <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEStm">LE/Stm</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsACI">ACI</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsCOP">Cop</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsDA">DA</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEWCrl">LEW/Crl</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEWSsnhsd">LEW/SsNHsd</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSHRP">SHRSP</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSR">SR</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSS">SS</label>
-                                            <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsWKY">WKY</label>
+
                                         </div>
                                     </div>
                                     <input type="checkbox" class="custviewCbx" id="cbxDataSmallRNA">

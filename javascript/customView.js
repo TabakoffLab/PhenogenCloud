@@ -1,9 +1,11 @@
 <script>
+
     var GDBCustomView=function(params){
         var that={};
         that.curTimeout=-1;
         that.include={'cbxTrackSequence':1,'cbxDatatotal':1,'cbxTrackReconstruction':1,'cbxTrackEnsemblAnnotation':1};
         that.viewID=-1;
+        that.cDefault="total";
 
         that.createView=function(){
             setTimeout(function(){
@@ -41,16 +43,24 @@
         that.removeTracks=function(){
 
         };*/
-
         that.submitChanges=function(){
             if(that.curTimeout>0){
                 clearTimeout(that.curTimeout);
             }
             that.curTimeout=setTimeout( function(){
                 includeString="";
+                strainString="";
                 includeKey=Object.keys(that.include);
                 for( k in includeKey ){
-                    includeString=includeString+","+includeKey[k];
+                    if(k.indexOf("strain")===0){
+                        strainString=strainString+","+k.substr(11);
+                    }else {
+                        includeString=includeString+","+includeKey[k];
+                    }
+
+                }
+                if(strainString.length>1){
+                    strainString=strainString.substr(1);
                 }
                 includeString=includeString.substr(1);
                 genomeVer=$("#custGenomeVer").val();
@@ -61,7 +71,7 @@
                     url: "/web/GeneCentric/addRemoveViewTracks.jsp",
                     type: 'GET',
                     cache: false,
-                    data: {tracks:includeString,viewID:that.viewID,genomeVer: genomeVer,name:name,email: email,version:dsVer},
+                    data: {tracks:includeString,viewID:that.viewID,genomeVer: genomeVer,name:name,email: email,version:dsVer,countStrains:strainString,countDefault:that.cDefault},
                     dataType: 'json',
                     beforeSend: function () {
                         that.curTimeout = -1;
