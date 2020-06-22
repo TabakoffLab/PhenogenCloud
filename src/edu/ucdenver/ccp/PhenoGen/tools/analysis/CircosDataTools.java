@@ -319,7 +319,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                 circosErrorMessage = circosErrorMessage + " " + perlScriptArguments[i];
             }
             circosErrorMessage = circosErrorMessage + ")\n\n"+myExec_session.getErrors();
-            if(! circosErrorMessage.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:")){
+            if(! circosErrorMessage.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:") && ! circosErrorMessage.contains("Circos::Error::GROUPERROR")){
                 myAdminEmail.setContent(circosErrorMessage);
                 try {
                     myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
@@ -336,7 +336,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
 
         String errors=myExec_session.getErrors();
         if(!exception && errors!=null && !(errors.equals(""))) {
-            if (!errors.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:")) {
+            if (!errors.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:")  && !errors.contains("Circos::Error::GROUPERROR")) {
                 Email myAdminEmail = new Email();
                 myAdminEmail.setSubject("Exception thrown in Exec_session");
                 circosErrorMessage = "There was an error while running ";
