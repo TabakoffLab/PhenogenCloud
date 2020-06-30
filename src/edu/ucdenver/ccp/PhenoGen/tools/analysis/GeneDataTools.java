@@ -95,6 +95,7 @@ public class GeneDataTools {
     private String  returnUCSCURL= "";
     private String  returnOutputDir="";
     private String returnGeneSymbol="";
+    private boolean isSessionSet=false;
 
     private String insertUsage="insert into TRANS_DETAIL_USAGE (INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?)";
     String updateSQL="update TRANS_DETAIL_USAGE set TIME_TO_RETURN=? , RESULT=? where TRANS_DETAIL_ID=?";
@@ -113,6 +114,8 @@ public class GeneDataTools {
     public boolean isPathReady(){
         return this.pathReady;
     }
+
+    public boolean isSessionSet() { return this.isSessionSet; }
     
     public void resetPathReady(){
         this.pathReady=false;
@@ -186,10 +189,10 @@ public class GeneDataTools {
         
             int[] ret=new int[2];
             String organismLong="Mouse";
-            if(organism.equals("Rn")){
+            if(organism!=null && organism.equals("Rn")){
                 organismLong="Rat";
             }
-            if(tissue.equals("Whole Brain")){
+            if(tissue!=null && tissue.equals("Whole Brain")){
                 tissue="Brain";
             }
             String atQuery="select Array_type_id from array_types "+
@@ -202,7 +205,7 @@ public class GeneDataTools {
             */
             String rnaIDQuery="select rna_dataset_id from RNA_DATASET "+
                         "where organism = '"+organism+"' and tissue='"+tissue+"' and strain_panel='BNLX/SHRH' and visible=1 and genome_id='"+genomeVer+"'";
-            if(version.equals("")) {
+            if(version==null || version.equals("")) {
                 rnaIDQuery=rnaIDQuery+" order by BUILD_VERSION DESC";
             }else{
                 rnaIDQuery=rnaIDQuery+" and BUILD_VERSION='"+version+"' ";
@@ -2742,6 +2745,7 @@ public class GeneDataTools {
             //log.debug("userFilesRoot");
         }
         threadList=(ArrayList<Thread>)session.getServletContext().getAttribute("threadList");
+        isSessionSet=true;
     }
 
     public ArrayList<Gene> mergeOverlapping(ArrayList<Gene> initialList){

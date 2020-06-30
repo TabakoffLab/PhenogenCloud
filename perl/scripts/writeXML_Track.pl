@@ -249,8 +249,17 @@ sub createXMLFile
 		#print ("min:$minCoord\nmax:$maxCoord\nroundMin:$roundMin\nroundMax:$roundMax\n");
 		
 		my $rnaCountRef;
-
-        $rnaCountRef=readRNACountsDataFromMongo($chromosome,$species,$publicID,$panel,$type,$roundMin,$roundMax,$genomeVer,$dsn,$usr,$passwd,$mongoDsn,$mongoUser,$mongoPasswd);
+		my $ver="";
+		my $countType="";
+		if(index($type,"_")>-1){
+            $ver=substr($type,index($type,"_")+1);
+            if(index($ver,";")>-1){
+                my $tmpVer=substr($ver,0,index($ver,";"));
+                my $countType=substr($ver,index($ver,";")+1);
+                $ver=$tmpVer;
+            }
+        }
+        $rnaCountRef=readRNACountsDataFromMongo($chromosome,$species,$publicID,$panel,$type,$countType,$ver,$roundMin,$roundMax,$genomeVer,$dsn,$usr,$passwd,$mongoDsn,$mongoUser,$mongoPasswd);
 		
 		my %rnaCountHOH=%$rnaCountRef;
 		my $rnaCountEnd=time();
