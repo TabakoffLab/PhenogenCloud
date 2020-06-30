@@ -26,6 +26,7 @@
                         that.setStatus("");
                         that.toggleGO();
                         $("#defaultView").append('<option value="'+that.viewID+'" selected="selected">Custom View</option>');
+                        console.log("defaultView should be "+that.viewID);
                         //$('defaultView').
                     },
                     error: function(xhr, status, error) {
@@ -84,6 +85,11 @@
                         }
                         that.setStatus("Updating Tracks...Done");
                         setTimeout(function(){that.setStatus("")},5000);
+                        tmpName=name;
+                        if(tmpName.length===0){
+                            tmpName="Custom View";
+                        }
+                        $('#defaultView option[value='+that.viewID+']').text(tmpName);
                     },
                     error: function(xhr, status, error){
                         if(that.curTimeout==-1){
