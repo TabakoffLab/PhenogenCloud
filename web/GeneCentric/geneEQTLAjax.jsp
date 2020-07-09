@@ -22,7 +22,9 @@
 	ArrayList<String>geneSymbol=new ArrayList<String>();
 	ArrayList<String>trxList=new ArrayList<String>();
 	
-
+	if(!gdt.isSessionSet()){
+		gdt.setSession(session);
+	}
 	
 	if(request.getParameter("levels")!=null && !request.getParameter("levels").equals("")){			
 				String tmpSelectedLevels = FilterInput.getFilteredInput(request.getParameter("levels"));

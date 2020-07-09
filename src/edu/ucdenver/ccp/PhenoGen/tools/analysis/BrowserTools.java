@@ -108,8 +108,7 @@ public class BrowserTools{
         }
         return ret;
     }
-
-    public boolean editCustomView(String trackString, int viewID, int userID, String name, String email,String genomeVer,int datasetVer){
+    public boolean editCustomView(String trackString, int viewID, int userID, String name, String email,String genomeVer,int datasetVer,String countDefault,String strainList){
         boolean success=false;
         BrowserView bv=new BrowserView();
         BrowserTrack bt=new BrowserTrack();

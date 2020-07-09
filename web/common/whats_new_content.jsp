@@ -28,6 +28,58 @@ span.control{
 		background:#989898;
 	}
 </style>
+<div class="whats_new version"><p><h3>Version: v3.7.2</h3><BR />7/8/2020</p></div>
+
+    <UL>
+        <LI>Version 3.7.2 has been released with the following updates.
+            <ul><LI>RNA-Seq eQTLs
+                <UL>
+                    <LI>Gene Track Summaries now include RNA-Seq based eQTL summaries</LI>
+                    <LI>Modules for a region can be selected base on overlap of the module QTL with the region.</LI>
+                    <LI>Genes with an eQTL that overlaps the region are now available based on RNA-Seq and Microarrays</LI>
+                </UL>
+            </LI>
+                <LI>Custom Views
+                    <UL>
+                        <LI>Total Counts for all 45 strains to date are available.</LI>
+                    </UL>
+                </LI>
+                <LI>Read counts for all 45 strains are available to add as browser tracks.</LI>
+                <LI>Bug Fixes</LI>
+            </ul>
+    </UL>
+<HR>
+<div class="whats_new version"><p><h3>Version: v3.7.1</h3><BR />2/27/2020</p></div>
+<UL>
+    <LI>Version 3.7.1 has been released with the following updates.
+        <ul><LI>Downloads
+            <UL>
+                <LI>Tissue Specific/Merged Reconstruction GTFs</LI>
+                <LI>Normalized Expression Values for Ensembl/Reconstruction, Gene/Transcript, Strain Means/Individual values</LI>
+            </UL>
+        </LI>
+            <LI>Custom Views
+                <UL>
+                    <LI>Build a custom view on the fly by selecting a few check boxes simply select sissue and track types.</LI>
+                    <LI>Views can be named and saved for future use</LI>
+                </UL>
+            </LI>
+
+        </ul>
+</UL>
+<HR>
+<div class="whats_new version"><p><h3>Version: v3.7</h3>1/12/2020<BR /></p></div>
+<UL>
+    <LI>Version 3.7 has been released with HRDP v5.
+        <ul><LI>Transcriptomes are now based on the full HXB/BXH RI panel in brain and liver and available inbred strains now including the F344/Stm and LE/Stm strains. </LI>
+            <LI>Updated WGCNA, expression values, eQTLs, and transcriptomes are available.</LI>
+            <LI>Transcript level expression is available for the full panel.</LI>
+            <LI>Transcript level eQTLs are now available once you've selected a gene.</LI>
+            <LI> Transcript level WGCNA is coming in the next 1-2 months. </LI>
+        </ul>
+    <LI>CircularRNA data is availble now. This includes predictions from BNLx/SHR in Brain/Heart/Liver using CIRI 2.0 and CircExplorer2.  Also Heart left ventricle includes data from more than 12,000 previously described cirRNAs using cirRNA arrays.  Full reports are coming soon but the browser includes tracks with annotation and structure all available data.</LI>
+</UL>
+<HR>
 <div class="whats_new version"><p><h3>Version: v3.6</h3><BR />7/23/2019</p></div>
 <ul>
     <li><span class="highlight-dark"> HRDP v4 Data is available</span>
