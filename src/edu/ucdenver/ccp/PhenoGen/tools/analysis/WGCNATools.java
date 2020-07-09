@@ -212,7 +212,115 @@ public class WGCNATools{
         }
         return ret;
     }
-     
+    public ArrayList<String> getWGCNAModulesForQTLRegion(GeneDataTools gdt,String region,String panel,String tissue,String org,String genomeVer,String source,String version, double cutoff){
+        ArrayList<String> ret=new ArrayList<String>();
+        HashMap<String,String> geneCount=new HashMap<String,String>();
+        int rnaDSID=-1;
+        int dsid=-1;
+        int[] tmpIDs=this.getWGCNADataset(panel,tissue,org,genomeVer,source,version);
+        if(tmpIDs!=null && tmpIDs.length>1) {
+            dsid=tmpIDs[0];
+            rnaDSID=tmpIDs[1];
+        }
+        String idlookupTissue=tissue;
+        String geneIDColumn="merge_gene_id";
+        if(dsid==6 || dsid==7){
+            idlookupTissue="Merged";
+            geneIDColumn="gene_id";
+        }
+        String chr=region.substring(0,region.indexOf(":"));
+        if(chr.indexOf("chr")>-1){
+            chr=chr.substring(3);
+        }
+
+        chr=chr.toUpperCase();
+        String startStr=region.substring(region.indexOf(":")+1,region.indexOf("-"));
+        String stopStr=region.substring(region.indexOf("-")+1);
+        int start=Integer.parseInt(startStr);
+        int stop=Integer.parseInt(stopStr);
+        int arrayID=21;
+        if(org.equals("Rn")){
+            arrayID=22;
+        }
+        //String query="Select unique module from wgcna_module_info where wdsid="+dsid+" and gene_id='"+id+"'";
+        String chrQ="select chromosome_id from chromosomes where name= '"+chr.toUpperCase()+"' and organism='"+org+"'";
+        try(Connection conn=pool.getConnection()) {
+            int chrID=-99;
+            PreparedStatement psC = conn.prepareStatement(chrQ);
+            ResultSet rsC = psC.executeQuery();
+            if(rsC.next()){
+                chrID=rsC.getInt(1);
+            }
+            rsC.close();
+            psC.close();
+
+            String query ="";
+            /*if(source.equals("array")){
+                query="select distinct module,gene_id from wgcna_module_info where probeset_id in " +
+                        "(select aep.probeset_id from affy_exon_probeset aep " +
+                        " where aep.array_type_id=" + arrayID+
+                        " and aep.genome_id='"+genomeVer+"' "+
+                        " and aep.chromosome_id="+ chrID +" "+
+                        " and ( ("+start+"<=aep.psstart and aep.psstart<="+stop+")" +
+                        " or " +
+                        " ("+start+"<=aep.psstop and aep.psstop<="+stop+") )" +
+                        ")" +
+                        "  and wdsid=" +dsid+" order by module";
+            }else if(source.equals("seq")){*/
+                query="select distinct module,gene_id from wgcna_module_info where wdsid = " + dsid  + " and module_id in " +
+                        "(select distinct wle.MODULE_ID from WGCNA_LOCATION_EQTL wle " +
+                        "left outer join snps s on s.snp_id=wle.SNP_ID " +
+                        " where wle.WDSID=" + dsid +" "+
+                        " and s.chromosome_id = "+chrID+" "+
+                        " and ( ( s.snp_start <="+start+" and "+start+"<= s.snp_end )" +
+                        " or ( s.snp_start <="+stop+" and "+stop+"<= s.snp_end )" +
+                        " or ("+start+"<=s.snp_start and s.snp_start<="+stop+") )" +
+                        " and wle.PVALUE>="+cutoff+") " +
+                        " order by module";
+            //}
+            log.debug("QUERY:"+query);
+            PreparedStatement ps = conn.prepareStatement(query);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String mod=rs.getString(1);
+                String gene=rs.getString(2);
+                if(geneCount.containsKey(rs.getString(1))){
+                    String tmp=geneCount.get(mod);
+                    tmp=tmp+","+gene;
+                    geneCount.put(mod,tmp);
+                }else{
+                    geneCount.put(mod, gene);
+                }
+            }
+            ps.close();
+
+        }catch(SQLException e){
+            e.printStackTrace(System.err);
+            log.error("Error getting WGCNA dataset id.",e);
+            Email myAdminEmail = new Email();
+            String fullerrmsg=e.getMessage();
+            StackTraceElement[] tmpEx=e.getStackTrace();
+            for(int i=0;i<tmpEx.length;i++){
+                fullerrmsg=fullerrmsg+"\n"+tmpEx[i];
+            }
+            myAdminEmail.setSubject("Exception thrown getting WGCNA dataset id");
+            myAdminEmail.setContent("There was an error getting WGCNA dataset id.\n"+fullerrmsg);
+            try {
+                myAdminEmail.sendEmailToAdministrator("");
+            } catch (Exception mailException) {
+                log.error("error sending message", mailException);
+                throw new RuntimeException();
+            }
+        }
+        Set keys=geneCount.keySet();
+        Iterator itr=keys.iterator();
+        while(itr.hasNext()){
+            String key=(String)itr.next();
+            String geneList=geneCount.get(key);
+            ret.add(key+":"+geneList);
+        }
+        return ret;
+    }
     public ArrayList<String> getWGCNAModulesForGeneList(GeneDataTools gdt,int glID,String panel,String tissue,String genomeVer,String source,String version){
         ArrayList<String> ret=new ArrayList<String>();
         HashMap<String,String> geneCount=new HashMap<String,String>();

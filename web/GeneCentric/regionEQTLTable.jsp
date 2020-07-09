@@ -14,6 +14,7 @@
     String folderName = "";
     String type = "";
     String genomeVer = "";
+    String dataSource="seq";
     LinkGenerator lg = new LinkGenerator(session);
     double pValueCutoff = 0.01;
     int rnaDatasetID = 0;
@@ -33,16 +34,25 @@
     String[] tissuesList1 = new String[1];
     String[] tissuesList2 = new String[1];
     if (myOrganism.equals("Rn")) {
-        tissuesList1 = new String[4];
-        tissuesList2 = new String[4];
-        tissuesList1[0] = "Brain";
-        tissuesList2[0] = "Whole Brain";
-        tissuesList1[1] = "Heart";
-        tissuesList2[1] = "Heart";
-        tissuesList1[2] = "Liver";
-        tissuesList2[2] = "Liver";
-        tissuesList1[3] = "Brown Adipose";
-        tissuesList2[3] = "Brown Adipose";
+        if(dataSource.equals("seq")){
+            tissuesList1 = new String[2];
+            tissuesList2 = new String[2];
+            tissuesList1[0] = "Brain";
+            tissuesList2[0] = "Whole Brain";
+            tissuesList1[1] = "Liver";
+            tissuesList2[1] = "Liver";
+        }else {
+            tissuesList1 = new String[4];
+            tissuesList2 = new String[4];
+            tissuesList1[0] = "Brain";
+            tissuesList2[0] = "Whole Brain";
+            tissuesList1[1] = "Heart";
+            tissuesList2[1] = "Heart";
+            tissuesList1[2] = "Liver";
+            tissuesList2[2] = "Liver";
+            tissuesList1[3] = "Brown Adipose";
+            tissuesList2[3] = "Brown Adipose";
+        }
     } else {
         tissuesList1[0] = "Brain";
         tissuesList2[0] = "Whole Brain";
@@ -74,6 +84,9 @@
     }
     if (request.getParameter("genomeVer") != null) {
         genomeVer = request.getParameter("genomeVer");
+    }
+    if (request.getParameter("dataSource") != null) {
+        dataSource = request.getParameter("dataSource");
     }
 
     String[] selectedChromosomes = null;
@@ -143,15 +156,24 @@
     String[] tissueNameArray = new String[4];
     String tissueSelected = isNotSelectedText;
     if (myOrganism.equals("Mm")) {
+        tissueNameArray = new String[1];
         numberOfTissues = 1;
         tissueNameArray[0] = "Brain";
     } else {
-        numberOfTissues = 4;
-        // assume if not mouse that it's rat
-        tissueNameArray[0] = "Brain";
-        tissueNameArray[1] = "Heart";
-        tissueNameArray[2] = "Liver";
-        tissueNameArray[3] = "BAT";
+        if(dataSource.equals("seq")){
+            tissueNameArray = new String[2];
+            numberOfTissues = 2;
+            // assume if not mouse that it's rat
+            tissueNameArray[0] = "Brain";
+            tissueNameArray[1] = "Liver";
+        }else {
+            numberOfTissues = 4;
+            // assume if not mouse that it's rat
+            tissueNameArray[0] = "Brain";
+            tissueNameArray[1] = "Heart";
+            tissueNameArray[2] = "Liver";
+            tissueNameArray[3] = "BAT";
+        }
     }
 
     // Get information about which tissues to view -- easier for mouse
@@ -315,7 +337,7 @@
         log.debug("loc:" + chromosome + ":" + min + "-" + max + "::" + folderName);
         log.debug("get EQTLs");
         java.util.Date tmpStart = new java.util.Date();
-        ArrayList<TranscriptCluster> transOutQTLs = gdt.getTransControllingEQTLs(min, max, chromosome, arrayTypeID, rnaDatasetID, pValueCutoff, levelString, myOrganism, genomeVer, tissueString, chromosomeString);//this region controls what genes
+        ArrayList<TranscriptCluster> transOutQTLs = gdt.getTransControllingEQTLs(min, max, chromosome, arrayTypeID, rnaDatasetID, pValueCutoff, levelString, myOrganism, genomeVer, tissueString, chromosomeString,dataSource);//this region controls what genes
         time = new java.util.Date();
         log.debug("Setup after getcontrolling eqtls:\n" + (time.getTime() - tmpStart.getTime()));
         tmpStart = new java.util.Date();
@@ -359,12 +381,16 @@
         String svgPdfFile = shortRegionCentricPath + "/circos" + cutoffTimesTen + "/svg/circos.png";
         log.debug("MADE IT TO:path");
         log.debug("iframe:\n"+iframeURL);
+        int tissueColumnCount=1;
+        if(dataSource.equals("array")){
+            tissueColumnCount=2;
+        }
     %>
 
 
     <div id="circosDiv">
         <div class="regionSubHeader" style="font-size:18px; font-weight:bold; text-align:center; width:100%;">
-            Gene Location Circos Plot
+            Genes with an eQTL overlaping this region(<%if(dataSource.equals("array")){%>Mircroarray<%}else{%>HRDP v5 RNA-Seq<%}%> Data)
             <div class="inpageHelp" style="display:inline-block;"><img id="HelpRevCircos" class="helpImage"
                                                                        src="../web/images/icons/help.png"/></div>
             <!--<span style="font-size:12px; font-weight:normal;">
@@ -489,7 +515,8 @@
             <THEAD>
             <tr>
                 <th colspan="3" class="topLine noSort noBox"></th>
-                <th colspan="<%=tissuesList2.length*2+4%>" class="center noSort topLine"
+                <%if(dataSource.equals("array")){%>
+                <th colspan="<%=tissuesList2.length*tissueColumnCount+4%>" class="center noSort topLine"
                     title="Dataset is available by going to Microarray Analysis Tools -> Analyze Precompiled Dataset or Downloads.">
                     Affy Exon 1.0 ST PhenoGen Public Dataset(
                     <%if (myOrganism.equals("Mm")) {%>
@@ -502,13 +529,22 @@
                                                                                src="../web/images/icons/help.png"/>
                     </div>
                 </th>
+                <%}else{%>
+                    <th colspan="<%=tissuesList2.length*tissueColumnCount+4%>" class="center noSort topLine"
+                    title="">
+                    HRDP v5 Ribosome Depleted TotalRNA Sequencing Dataset
+                    <div class="inpageHelp" style="display:inline-block;"><img id="HelpeQTLRNA" class="helpImage"
+                                                                               src="../web/images/icons/help.png"/>
+                    </div>
+                    </th>
+                <%}%>
             </tr>
             <tr>
                 <th colspan="3" class="topLine noSort noBox"></th>
                 <th colspan="4" class="leftBorder noSort noBox"></th>
                 <%for (int i = 0; i < tissuesList2.length; i++) {%>
-                <th colspan="2" class="center noSort topLine">Tissue:<%=tissuesList2[i]%>
-                </th>
+                    <th colspan="<%=tissueColumnCount%>" class="center noSort topLine">Tissue:<%=tissuesList2[i]%>
+                    </th>
                 <%}%>
             </tr>
             <TR class="col_title">
@@ -536,10 +572,12 @@
                         class="eQTLListToolTip"
                         title="The P-value associated with this region.  Note that this region may only partially overlap with the region this P-value refers to or may be much larger."><img
                         src="<%=imagesDir%>icons/info.gif"></span></TH>
-                <TH title="Click on View Location Plot to see all locations below the cutoff."># other locations
+                <%if(dataSource.equals("array")){%>
+                    <TH title="Click on View Location Plot to see all locations below the cutoff."># other locations
                     P-value<<%=pValueCutoff%> <span class="eQTLListToolTip"
                                                     title="The number of other locations with eQTLs that have a P-value below the selected cut-off."><img
                             src="<%=imagesDir%>icons/info.gif"></span></TH>
+                <%}%>
                 <!--<TH>Max LOD genome-wide</TH>-->
                 <%}%>
 
@@ -695,9 +733,11 @@
                     <%=df4.format(regEQTL.getPVal())%>
                     <%}%>
                 </TD>
+                <%if(dataSource.equals("array")){%>
                 <TD title="Click on View Location Plot to see all locations below the cutoff.">
                     <%=qtlCount%>
                 </TD>
+                <%}%>
                 <%}%>
 
             </TR>
@@ -835,6 +875,16 @@
     <table style="width:100%;">
         <tbody>
         <TR>
+            <TD colspan="2" style="text-align:center;">
+                Data Source:
+                <select name="dataSource" id="dataSource">
+                    <option value="array" <%if(dataSource.equals("array")){%>selected<%}%>>Microarray</option>
+                    <option value="seq" <%if(dataSource.equals("seq")){%>selected<%}%>>RNA-Seq</option>
+                </select>
+                <span class="eQTLListToolTip"
+                      title="Select the data source used to calculate QTLs.  Array - Affy Exon arrays, RNA-Seq is ribosome depleted totalRNA and reconstructed transcriptome."><img
+                        src="<%=imagesDir%>icons/info.gif"></span>
+            </TD>
             <TD colspan="2" style="text-align:center;">
                 <%log.debug("Pvalue cutoff:" + Double.toString(pValueCutoff));%>
                 eQTL P-Value Cut-off:

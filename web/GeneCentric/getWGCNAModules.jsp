@@ -30,6 +30,7 @@ String genomeVer="";
 String source="";
 int geneList=0;
 String version="";
+String getModulesBy="gene";
 
 if(request.getParameter("id")!=null){
 	id=request.getParameter("id");
@@ -58,6 +59,9 @@ if(request.getParameter("source")!=null){
 if(request.getParameter("version")!=null){
         version=request.getParameter("version");
 }
+if(request.getParameter("modSelection")!=null){
+        getModulesBy=request.getParameter("modSelection");
+}
 
 wgt.setSession(session);
 gdt.setSession(session);
@@ -65,7 +69,13 @@ ArrayList<String> modules=null;
 if(!id.equals("")){
     modules=wgt.getWGCNAModulesForGene(gdt,id,panel,tissue,org,genomeVer,source,version);
 }else if(!region.equals("")){
-    modules=wgt.getWGCNAModulesForRegion(gdt,region,panel,tissue,org,genomeVer,source,version);
+    if(getModulesBy.equals("gene") || getModulesBy.equals("")) {
+        modules = wgt.getWGCNAModulesForRegion(gdt, region, panel, tissue, org, genomeVer, source, version);
+    }else if(getModulesBy.startsWith("eQTL")){
+        double cutoff=Double.parseDouble(getModulesBy.substring(getModulesBy.indexOf(":")+1));
+        modules = wgt.getWGCNAModulesForQTLRegion(gdt, region, panel, tissue, org, genomeVer, source, version,cutoff);
+
+    }
 }else if(geneList>0){
     modules=wgt.getWGCNAModulesForGeneList(gdt,geneList,panel,tissue,genomeVer,source,version);
 }

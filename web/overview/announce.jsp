@@ -12,21 +12,59 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
-                        <H2 style="font-weight: bold;font-size:20px;">SuRGe 2020</H2>
+                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.2</H2>
                         <div style="margin-left:5px;">
-                            OSGA Training - Summer of Rat Genetics/Genomics<BR>
-                            When: <span style="color:#ff0000;"> Postponed </span> <BR>
-                            Quantitative Trait Loci Mapping in Model Organisms<BR>
-                            Workshop Objectives: By the end of the workshop participants will
-                            <OL>
-                                <li>Understand the genetic concepts behind QTL mapping</li>
-                                <li>Be able to map a phenotype using GeneNetwork2</li>
-                                <li>Be able map a phenotype from a complex population using software such as R/qtl2</li>
-                                <li>Practice reproducible research using a Jupyter Lab Notebook</li>
-                            </OL>
-                            <!--<span style="font-size:large;"><a href="/downloads/SuRGe_flyer_2020-01-10.pdf" target="_blank">Flyer</a>
+                            <UL>
+                                <LI>Version 3.7.2 has been released with the following updates.
+                                    <ul><LI>RNA-Seq eQTLs
+                                        <UL>
+                                            <LI>Gene Track Summaries now include RNA-Seq based eQTL summaries</LI>
+                                            <LI>Modules for a region can be selected base on overlap of the module QTL with the region.</LI>
+                                            <LI>Genes with an eQTL that overlaps the region are now available based on RNA-Seq and Microarrays</LI>
+                                        </UL>
+                                    </LI>
+                                        <LI>Custom Views
+                                            <UL>
+                                                <LI>Total Counts for all 45 strains to date are available.</LI>
+                                            </UL>
+                                        </LI>
+                                        <LI>Read counts for all 45 strains are available to add as browser tracks.</LI>
+                                        <LI>Bug Fixes</LI>
+                                    </ul>
+                            </UL>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #3</H2>
+                        <div style="margin-left:5px;">
+                            <h3>QTL to gene/molecular networks 6/12/2020 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://bit.ly/osga_2020-06-12">Register</a>
+                            Goals of this webinar (QTL to gene/molecular networks):<BR>
+                            <UL>
+                                <li>Define eQTL</li>
+                                <li>Examine the role of eQTL in the relationship of genes and molecular networks with phenotypic QTL</li>
+                                <li>eQTL for co-expression networks</li>
+                            </UL>
                             <BR>
-                            <a href="http://opar.io/surge2020/" target="_blank">Registration</a></span>-->
+
+                            Presented by:<BR>
+                            Dr. Laura Saba<BR>
+                            Associate Professor<BR>
+                            Department of Pharmaceutical Sciences<BR>
+                            University of Colorado Anschutz Medical Campus<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">Webinar Series </H2>
+                        <div style="margin-left:5px;">
+                            <h3><a href="http://opar.io/webinar_series_1.html">Quantitative Genetics Tools</a></h3>
+                            The NIDA Center of Excellence in Omics, Systems Genetics, and the Addictome has put together a <a href="http://opar.io/webinar_series_1.html">webinar
+                            series, Quantitative Genetics Tools for Mapping Trait Variation to Mechanisms, Therapeutics, and
+                            Interventions</a>. The goal of this series is to transverse the path from trait variance to QTL to gene
+                            variant to molecular networks to mechanisms to therapeutic and interventions. The target audience for
+                            this series are those new to the field of quantitative genetics, so please pass this information on to
+                            your trainees or colleagues.<BR>
+                            Webinar #3 - 6/12/2020 10amPDT/1pm EDT - QTL to gene/molecular networks - <a href="https://bit.ly/osga_2020-06-12">Register</a>
+                            <a href="http://opar.io/webinar_series_1.html">More Information</a><BR>
+                            <a href="http://opar.io/webinar_series_1.html">Previously Recorded Webinars</a>
                         </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.1</H2>
                         <div style="margin-left:5px;">

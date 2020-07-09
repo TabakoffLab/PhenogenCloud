@@ -55,6 +55,7 @@ public class Gene {
     HashMap snps=new HashMap();
     TranscriptCluster tc=null;
     ArrayList<HashMap<String,String>> quant=new ArrayList<HashMap<String,String>>();
+    RNASeqHeritQTLData rnaSeq;
     
     
     
@@ -173,7 +174,12 @@ public class Gene {
         }
         return shortDesc;
     }
-    
+    public void setRNASeq(RNASeqHeritQTLData rnaSeq){
+        this.rnaSeq=rnaSeq;
+    }
+    public RNASeqHeritQTLData getRNASeq(){
+        return this.rnaSeq;
+    }
     public void setDescription(String description) {
         this.description = description;
     }

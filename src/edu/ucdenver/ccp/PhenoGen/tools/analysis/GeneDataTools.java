@@ -15,6 +15,7 @@ import edu.ucdenver.ccp.PhenoGen.data.Bio.SmallNonCodingRNA;
 import edu.ucdenver.ccp.PhenoGen.data.Bio.Annotation;
 import edu.ucdenver.ccp.PhenoGen.data.Bio.RNASequence;
 import edu.ucdenver.ccp.PhenoGen.data.Bio.SequenceVariant;
+import edu.ucdenver.ccp.PhenoGen.data.Bio.RNASeqHeritQTLData;
 import edu.ucdenver.ccp.PhenoGen.driver.PerlHandler;
 import edu.ucdenver.ccp.PhenoGen.driver.PerlException;
 import edu.ucdenver.ccp.PhenoGen.driver.ExecHandler;
@@ -95,6 +96,7 @@ public class GeneDataTools {
     private String  returnUCSCURL= "";
     private String  returnOutputDir="";
     private String returnGeneSymbol="";
+    private boolean isSessionSet=false;
 
     private String insertUsage="insert into TRANS_DETAIL_USAGE (INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?)";
     String updateSQL="update TRANS_DETAIL_USAGE set TIME_TO_RETURN=? , RESULT=? where TRANS_DETAIL_ID=?";
@@ -113,6 +115,8 @@ public class GeneDataTools {
     public boolean isPathReady(){
         return this.pathReady;
     }
+
+    public boolean isSessionSet() { return this.isSessionSet; }
     
     public void resetPathReady(){
         this.pathReady=false;
@@ -186,10 +190,10 @@ public class GeneDataTools {
         
             int[] ret=new int[2];
             String organismLong="Mouse";
-            if(organism.equals("Rn")){
+            if(organism!=null && organism.equals("Rn")){
                 organismLong="Rat";
             }
-            if(tissue.equals("Whole Brain")){
+            if(tissue!=null && tissue.equals("Whole Brain")){
                 tissue="Brain";
             }
             String atQuery="select Array_type_id from array_types "+
@@ -202,7 +206,7 @@ public class GeneDataTools {
             */
             String rnaIDQuery="select rna_dataset_id from RNA_DATASET "+
                         "where organism = '"+organism+"' and tissue='"+tissue+"' and strain_panel='BNLX/SHRH' and visible=1 and genome_id='"+genomeVer+"'";
-            if(version.equals("")) {
+            if(version==null || version.equals("")) {
                 rnaIDQuery=rnaIDQuery+" order by BUILD_VERSION DESC";
             }else{
                 rnaIDQuery=rnaIDQuery+" and BUILD_VERSION='"+version+"' ";
@@ -337,7 +341,9 @@ public class GeneDataTools {
         int[] rnaDS=getOrganismSpecificIdentifiers(organism,tissue,genomeVer,version);
         if(geneID.startsWith("ENS")){
             geneID=translateENStoPRN(Integer.toString(rnaDS[1]),geneID);
-            geneID=geneID.substring(1,geneID.length()-1);
+            if(geneID.length()>1) {
+                geneID = geneID.substring(1, geneID.length() - 1);
+            }
         }
         String trxQuery="select isoform_id,merge_isoform_id from rna_transcripts rt " +
                 "where rt.rna_dataset_id="+rnaDS[1] +" "+
@@ -851,6 +857,7 @@ public class GeneDataTools {
             log.debug("getRegionData() returning gene list of size:" + ret.size());
 
             if (withEQTL) {
+                this.addRegionHeritEQTLs(ret,minCoord,maxCoord,organism,chromosome,"5","rn6",2);
                 this.addHeritDABG(ret, minCoord, maxCoord, organism, chromosome, RNADatasetID, arrayTypeID, genomeVer);
                 ArrayList<TranscriptCluster> tcList = getTransControlledFromEQTLs(minCoord, maxCoord, chromosome, arrayTypeID, pValue, "All", genomeVer);
                 HashMap<String, TranscriptCluster> transInQTLsCore = new HashMap<String, TranscriptCluster>();
@@ -1340,7 +1347,7 @@ public class GeneDataTools {
             	circosErrorMessage = circosErrorMessage + " " + perlScriptArguments[i];
             }
             circosErrorMessage = circosErrorMessage + ")\n\n"+myExec_session.getErrors();
-            if(! circosErrorMessage.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:")){
+            if (!circosErrorMessage.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:")  && !circosErrorMessage.contains("Circos::Error::GROUPERROR")) {
                 myAdminEmail.setContent(circosErrorMessage);
                 try {
                     myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
@@ -1357,7 +1364,7 @@ public class GeneDataTools {
         
         String errors=myExec_session.getErrors();
         if(!exception && errors!=null && !(errors.equals(""))){
-            if(! errors.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:")){
+            if (!errors.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:")  && !errors.contains("Circos::Error::GROUPERROR")) {
                 Email myAdminEmail = new Email();
                 myAdminEmail.setSubject("Exception thrown in Exec_session");
                 circosErrorMessage = "There was an error while running ";
@@ -2740,6 +2747,7 @@ public class GeneDataTools {
             //log.debug("userFilesRoot");
         }
         threadList=(ArrayList<Thread>)session.getServletContext().getAttribute("threadList");
+        isSessionSet=true;
     }
 
     public ArrayList<Gene> mergeOverlapping(ArrayList<Gene> initialList){
@@ -2808,7 +2816,98 @@ public class GeneDataTools {
         }
         return mainGenes;
     }
-    
+    public void addRegionHeritEQTLs(ArrayList<Gene> list,int min, int max,String organism,String chr,String hrdpVer,String genomeVer,int pvalue){
+
+        if(chr.startsWith("chr")){
+            chr=chr.substring(3);
+        }
+        String chrQ="select chromosome_id,name from chromosomes where organism='"+organism+"'";
+        HashMap<Integer,String> chrHM=new HashMap<>();
+        HashMap<String,RNASeqHeritQTLData> geneHM=new HashMap();
+        try (Connection conn=pool.getConnection()){
+            int chrID=-99;
+            PreparedStatement psC = conn.prepareStatement(chrQ);
+            ResultSet rsC = psC.executeQuery();
+            while(rsC.next()){
+                int tmpID=rsC.getInt(1);
+                String name=rsC.getString(2);
+                chrHM.put(tmpID,name);
+                if(name.equals(chr.toUpperCase())) {
+                    chrID=tmpID;
+                }
+            }
+            rsC.close();
+            psC.close();
+            //get region Phenogen Gene IDs
+            String heritQ="select rt.merge_gene_id, rt.herit_gene,rt.rna_dataset_id,rta.annotation from rna_transcripts rt "+
+                " left outer join rna_transcripts_annot rta on rt.rna_transcript_id=rta.rna_transcript_id "+
+                "where rt.rna_dataset_id in (97,98) "+
+                "and rt.chromosome_id="+chrID+" "+
+                "and (( "+min+"<=rt.trstart and rt.trstart<="+max+") "+
+                "or ( "+min+"<=rt.trstop and rt.trstop<="+max+") "+
+                    " or (rt.trstart <= "+min+" and "+max+"<=rt.trstop))";
+            log.debug("region herit:"+heritQ);
+            PreparedStatement psH = conn.prepareStatement(heritQ);
+            ResultSet rsH = psH.executeQuery();
+            while(rsH.next()){
+                String id=rsH.getString(4);
+                String tissue="";
+                if(rsH.getInt(3)==97){
+                    tissue="Whole Brain";
+                }else if(rsH.getInt(3)==98){
+                    tissue="Liver";
+                }
+                if(id!=null && id.startsWith("ENSRNOG")){
+                    id=id.substring(0,id.indexOf(":"));
+                }else{
+                    id=rsH.getString(1);
+                }
+                if(geneHM.containsKey(id) ) {
+                    RNASeqHeritQTLData tmp=geneHM.get(id);
+                    tmp.addHerit(tissue, rsH.getDouble(2));
+                }else{
+                    RNASeqHeritQTLData tmp=new RNASeqHeritQTLData(rsH.getString(1));
+                    tmp.addHerit(tissue,rsH.getDouble(2));
+                    geneHM.put(id,tmp);
+                }
+            }
+            psH.close();
+            StringBuffer sb=new StringBuffer();
+            HashMap<String,Gene> p2E=new HashMap();
+            for(int i=0;i<list.size();i++) {
+                Gene curGene=list.get(i);
+                if(geneHM.containsKey(curGene.getGeneID())) {
+                    RNASeqHeritQTLData tmpSeq=geneHM.get(curGene.getGeneID());
+                    curGene.setRNASeq(tmpSeq);
+                    sb.append(",'"+tmpSeq.getID()+"'");
+                    p2E.put(tmpSeq.getID(),curGene);
+                }
+            }
+            //get region eQTLs for Gene IDs
+            String qtlQ="select s.chromosome_id,s.snp_start,s.snp_end,s.tissue,lse.PROBE_ID,lse.PVALUE from LOCATION_SPECIFIC_EQTL2 lse "+
+                    "inner join snps s on s.snp_id=lse.snp_id "+
+                    "where s.rna_dataset_id in (97,98) "+
+                    " and s.type='seq' "+
+                    " and lse.pvalue>= "+pvalue +" "+
+                    " and lse.probe_id in ( "+sb.substring(1)+" )";
+            log.debug("region qtl:"+qtlQ);
+            PreparedStatement ps = conn.prepareStatement(qtlQ);
+            ResultSet rs = ps.executeQuery();
+            while(rs.next()){
+                String id=rs.getString(5);
+                String tissue=rs.getString(4);
+                String location=chrHM.get(rs.getInt(1))+":"+ rs.getInt(2)+"-"+rs.getInt(3);
+                double pval=rs.getDouble(6);
+                if(p2E.containsKey(id)) {
+                    RNASeqHeritQTLData cur=p2E.get(id).getRNASeq();
+                    cur.addCount(tissue,pval,location);
+                }
+            }
+            ps.close();
+        }catch(SQLException e) {
+            log.error("addRNASeqHeritQTL error",e);
+        }
+    }
     public void addHeritDABG(ArrayList<Gene> list,int min,int max,String organism,String chr,int rnaDS_ID,int arrayTypeID,String genomeVer){
         //get all probesets for region with herit and dabg
         if(chr.startsWith("chr")){
@@ -3153,7 +3252,7 @@ public class GeneDataTools {
     }
     
     
-    public ArrayList<TranscriptCluster> getTransControllingEQTLs(int min,int max,String chr,int arrayTypeID,int RNADatasetID,double pvalue,String level,String organism,String genomeVer,String circosTissue,String circosChr){
+    public ArrayList<TranscriptCluster> getTransControllingEQTLs(int min,int max,String chr,int arrayTypeID,int RNADatasetID,double pvalue,String level,String organism,String genomeVer,String circosTissue,String circosChr,String dataSource){
         //session.removeAttribute("get");
         session.setAttribute("getTransControllingEQTL","");
         ArrayList<TranscriptCluster> transcriptClusters=new ArrayList<TranscriptCluster>();
@@ -3209,10 +3308,14 @@ public class GeneDataTools {
             int snpcount=0;
             String snpQ="select snp_id,tissue,snp_name,snp_start,snp_end from snps s where "+
                     "s.genome_id='"+genomeVer+"' " +
-                    "and s.type='array' "+
+                    "and s.type='"+dataSource+"' "+
                     "and s.chromosome_id = "+chrID+" " +
                     "and (((s.snp_start>="+min+" and s.snp_start<="+max+") or (s.snp_end>="+min+" and s.snp_end<="+max+") or (s.snp_start<="+min+" and s.snp_end>="+min+")) "+
                     " or (s.snp_start=s.snp_end and ((s.snp_start>="+(min-500000)+" and s.snp_start<="+(max+500000)+") or (s.snp_end>="+(min-500000)+" and s.snp_end<="+(max+500000)+") or (s.snp_start<="+(min-500000)+" and s.snp_end>="+(max+500000)+")))) ";
+
+            if(dataSource.equals("seq")){
+                snpQ=snpQ+" and s.RNA_DATASET_ID in (97,98)";
+            }
 
             HashMap<String,HashMap<String,String>> snpsHM=new HashMap<>();
             StringBuffer sb=new StringBuffer();
@@ -3236,23 +3339,26 @@ public class GeneDataTools {
             }
             rs.close();
             ps.close();
-            String qtlQuery="select aep.transcript_cluster_id,aep.chromosome_id,aep.strand,aep.psstart,aep.psstop,aep.pslevel,lse.snp_id, lse.pvalue " +
-                    "from affy_exon_probeset aep " +
-                    "inner join location_specific_eqtl lse on lse.probe_id=aep.probeset_id " +
-                    "where  aep.genome_id='"+genomeVer+"' " +
-                    "and aep.updatedlocation='Y' " +
-                    "and aep.psannotation='transcript' " +
-                    "and aep.array_type_id="+arrayTypeID+" "+
-                    "and lse.snp_id in ( "+sb.toString()+")";
+            String qtlQuery="";
+            if(dataSource.equals("array")) {
+                qtlQuery = "select aep.transcript_cluster_id,aep.chromosome_id,aep.strand,aep.psstart,aep.psstop,aep.pslevel,lse.snp_id, lse.pvalue " +
+                        "from affy_exon_probeset aep " +
+                        "inner join location_specific_eqtl lse on lse.probe_id=aep.probeset_id " +
+                        "where  aep.genome_id='" + genomeVer + "' " +
+                        "and aep.updatedlocation='Y' " +
+                        "and aep.psannotation='transcript' " +
+                        "and aep.array_type_id=" + arrayTypeID + " " +
+                        "and lse.pvalue>=1.5 "+
+                        "and lse.snp_id in ( " + sb.toString() + ")" ;
 
-                if(!level.equals("All")){
-                    if(level.equals("core;extended;full")){
+                if (!level.equals("All")) {
+                    if (level.equals("core;extended;full")) {
                         qtlQuery = qtlQuery + " and aep.pslevel <> 'ambiguous' ";
-                    }else {
+                    } else {
                         qtlQuery = qtlQuery + " and ( ";
                         for (int k = 0; k < levels.length; k++) {
                             if (k == 0) {
-                                qtlQuery = qtlQuery + "aep.pslevel='" + levels[k] + "' ";
+                                qtlQuery = qtlQuery + " aep.pslevel='" + levels[k] + "' ";
                             } else {
                                 qtlQuery = qtlQuery + " or aep.pslevel='" + levels[k] + "' ";
                             }
@@ -3260,6 +3366,14 @@ public class GeneDataTools {
                         qtlQuery = qtlQuery + ") ";
                     }
                 }
+            }else{
+                qtlQuery = "select rt.MERGE_GENE_ID,rt.chromosome_id,rt.strand,rt.trstart,rt.trstop,'',lse.snp_id, lse.pvalue " +
+                        "from RNA_TRANSCRIPTS rt " +
+                        "inner join location_specific_eqtl2 lse on lse.probe_id=rt.MERGE_GENE_ID " +
+                        "where  rt.RNA_DATASET_ID in (97,98) " +
+                        "and lse.pvalue>=1.5 "+
+                        "and lse.snp_id in ( " + sb.toString() + ")" ;
+            }
                 log.debug("SQL eQTL FROM QUERY\n"+qtlQuery);
                 ps = conn.prepareStatement(qtlQuery);
                 rs = ps.executeQuery();
@@ -4134,8 +4248,6 @@ public class GeneDataTools {
         return returnUCSCURL;
     }
 
-    
-
     public String getOutputDir() {
         return returnOutputDir;
     }
@@ -4143,10 +4255,9 @@ public class GeneDataTools {
     public String getGeneSymbol() {
         return returnGeneSymbol;
     }
-    
-    
-    
+
 }
+
 class RegionDirFilter implements FileFilter{
     String toCheck="";
     

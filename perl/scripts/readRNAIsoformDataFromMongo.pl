@@ -914,7 +914,7 @@ sub readSmallRNADataFromDB{
 
 
 sub readRNACountsDataFromMongo{
-	my($geneChrom,$organism,$publicUserID,$panel,$type,$geneStart,$geneStop,$genomeVer,$dsn,$usr,$passwd,$mongoHost,$mongoUsr,$mongoPwd)=@_;
+	my($geneChrom,$organism,$publicUserID,$panel,$type,$countType,$buildVersion,$geneStart,$geneStop,$genomeVer,$dsn,$usr,$passwd,$mongoHost,$mongoUsr,$mongoPwd)=@_;
 	
 	my $org="Mm";
 	if($organism eq "Rat"){
@@ -925,17 +925,27 @@ sub readRNACountsDataFromMongo{
 	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 
 	$geneChrom=uc($geneChrom);
-	
-	$query ="Select rd.shared_id from rna_dataset rd
-			where 
-			rd.organism = '".$org."' "."
+	my $tmpType=$type;
+	if(index($tmpType,"Plus")>-1){
+	    $tmpType=~s/Plus//;
+	}elsif(index($tmpType,"Minus")>-1){
+	    $tmpType=~s/Minus//;
+	}
+	$query ="Select rd.shared_id,rd.total_plus,rd.total_minus,rd.norm_plus,rd.norm_minus from rna_dataset rd
+			where rd.organism = '".$org."' "."
 			and rd.genome_id='".$genomeVer."'
 			and rd.user_id= $publicUserID  
 			and rd.visible=0
-			and rd.description = '".$type."'
+			and rd.description = '".$tmpType."'
 			and rd.strain_panel like '".$panel."' ";
-	
-	
+	if($buildVersion eq ""){
+	    $query=$query."order by build_version DESC";
+	}else{
+	    $query=$query." and rd.build_version='".$buildVersion."'";
+	}
+	print $type."\n";
+	print $tmpType."\n";
+	print $countType."\n";
 	print $query."\n";		
 	$query_handle = $connect->prepare($query) or die (" RNA Dataset Shared ID query prepare failed \n");
 
@@ -944,11 +954,32 @@ sub readRNACountsDataFromMongo{
 
         # BIND TABLE COLUMNS TO VARIABLES
 
-	$query_handle->bind_columns(\$sharedID);
+	$query_handle->bind_columns(\$sharedID,\$totalPlus,\$totalMinus,\$normPlus,\$normMinus);
 	my $listCount=0;
 	$query_handle->fetch();
 	
 	my $dsid=$sharedID;
+	if(! $dsid){
+	    if($countType eq "" ){
+	        if($totalPlus){
+	            $countType="Total";
+	        }elsif($normPlus){
+	            $countType="Norm";
+	        }
+	    }
+	    if(index($type,"Plus")>0){
+	        $dsid=$totalPlus;
+	        if(!$dsid or $countType eq "Norm"){
+	            $dsid=$normPlus;
+	        }
+	    }elsif(index($type,"Minus")>0){
+	        $dsid=$totalMinus;
+            if(!$dsid or $countType eq "Norm"){
+                $dsid=$normMinus;
+            }
+
+	    }
+	}
 
 	$query_handle->finish();
 	$connect->disconnect();
