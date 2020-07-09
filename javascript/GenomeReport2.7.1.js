@@ -215,7 +215,7 @@ function loadRegionWGCNA(){
 	gtag('event','wgcna',{'event_category':'loadWGCNA'});
 }
 
-function loadEQTLTableWParams(levelList,chrList,tisList,pval){
+function loadEQTLTableWParams(levelList,chrList,tisList,pval,dataSource){
 	var jspPage="web/GeneCentric/regionEQTLTable.jsp";
 	var params={
 			species: organism,
@@ -228,7 +228,8 @@ function loadEQTLTableWParams(levelList,chrList,tisList,pval){
 			tissues:tisList,
 			chromosomes:chrList,
 			levels:levelList,
-			folderName: regionfolderName
+			folderName: regionfolderName,
+			dataSource:dataSource
 		};
 	loadDivWithPage("div#regionEQTLTable",jspPage,false,params,
 		"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");

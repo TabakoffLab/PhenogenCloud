@@ -6,6 +6,7 @@
     gdt.setSession(session);
 	ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> fullGeneList=new ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene>();
 	DecimalFormat dfC = new DecimalFormat("#,###");
+
 	String myOrganism="";
 	String fullOrg="";
 	String panel="";
@@ -189,7 +190,7 @@
                         	<%if(myOrganism.equals("Rn")){%>
                         		colspan="8"
                         	<%}else{%>
-                        	colspan="6"
+                        	    colspan="6"
                         	<%}%> 
                         	class="topLine noSort noBox" style="text-align:left;"><!--<span class="legendBtn"><img src="../web/images/icons/legend_7.png"><span style="position:relative;top:-7px;">Legend</span></span>--></th>
                         <th 
@@ -199,6 +200,10 @@
                         		colspan="2"
                         	<%}%> 
                         class="center noSort topLine">Transcript Information</th>
+                        <%if(myOrganism.equals("Rn")){%>
+                        <th colspan="6"  class="center noSort topLine" title="HRDP v5 Ribosome Depleted TotalRNA Data">HRDP v5 Ribosome Depleted TotalRNA
+                            <div class="inpageHelp" style="display:inline-block; "><img id="HelpAffyExon" class="helpImage" src="../web/images/icons/help.png" /></div></th>
+                        <%}%>
                         <th colspan="<%=4+tissuesList1.length*2+tissuesList2.length*2%>"  class="center noSort topLine" title="Dataset is available by going to Microarray Analysis Tools -> Analyze Precompiled Dataset or Downloads.">Affy Exon 1.0 ST PhenoGen Public Dataset(
 							<%if(myOrganism.equals("Mm")){%>
                             	Public ILSXISS RI Mice
@@ -217,6 +222,8 @@
                         class="topLine noSort noBox"></th>
                         <th colspan="1"  class="leftBorder noSort"></th>
                         <th colspan="1"  class="rightBorder noSort"></th>
+                        <th colspan="3"  class="leftBorder rightBorder topLine noSort">Whole Brain</th>
+                        <th colspan="3"  class="rightBorder topLine noSort">Liver</th>
                         <th colspan="1"  class="leftBorder rightBorder noSort"></th>
                         <th colspan="<%=tissuesList1.length%>"  class="center noSort topLine">Probe Sets > 0.33 Heritability
                           <div class="inpageHelp" style="display:inline-block; "><img id="HelpProbeHerit" class="helpImage" src="../web/images/icons/help.png" /></div></th>
@@ -247,7 +254,8 @@
                         colspan="1"
                         <%}%>  
                         class="topLine leftBorder rightBorder noSort"># Transcripts <span class="geneListToolTip" title="The number of transcripts assigned to this gene.  Ensembl is the number of ensembl annotated transcripts.  RNA-Seq is the number of RNA-Seq transcripts assigned to this gene.  The RNA-Seq Transcript Matches column contains additional details about why transcripts were or were not matched to a particular gene."><img src="<%=imagesDir%>icons/info.gif"></span></th>
-                        
+                        <th colspan="3" class="leftBorder rightBorder noSort noBox"></th>
+                        <th colspan="3" class="leftBorder rightBorder noSort noBox"></th>
                         <th colspan="1"  class="leftBorder rightBorder noSort"></th>
                         <th colspan="<%=tissuesList1.length%>"  class="leftBorder rightBorder noSort noBox"></th>
                         <th colspan="<%=tissuesList1.length%>"  class="leftBorder rightBorder noSort noBox"></th>
@@ -274,6 +282,12 @@
                     <TH>Ensembl</TH>
                     <%if(myOrganism.equals("Rn")){%>
                     	<TH>RNA-Seq</TH>
+                        <TH>Heritiblity</TH>
+                        <TH>Count ></TH>
+                        <TH>Max eQTL Location</TH>
+                        <TH>Heritiblity</TH>
+                        <TH>Count ></TH>
+                        <TH>Max eQTL Location</TH>
                     <%}%>
                     
                     <TH>Total Probe Sets <span class="geneListToolTip" title="The total number of non-masked probesets that overlap with any region of an Ensembl transcript<%if(myOrganism.equals("Rn")){%> or an RNA-Seq transcript<%}%>."><img src="<%=imagesDir%>icons/info.gif"></span></TH>
@@ -538,8 +552,46 @@
                                 <TD><!--RNA Transcript count-->
                                     <%=curGene.getTranscriptCountRna()%>
                                 </TD>
-                                
-                                <%}%>
+                                <%RNASeqHeritQTLData rna=curGene.getRNASeq();
+                                if(rna!=null){
+                                    String bHerit="";
+                                    String lHerit="";
+                                    if(rna.getHerit("Whole Brain")>=0){
+                                        bHerit=df2.format(rna.getHerit("Whole Brain"));
+                                    }
+                                    if(rna.getHerit("Liver")>=0){
+                                        lHerit=df2.format(rna.getHerit("Liver"));
+                                    }
+                                    Double bPv=0.0;
+                                    Double lPv=0.0;
+                                    String bMax=rna.getMaxQTL("Whole Brain");
+                                    if(!bMax.equals("")){
+                                        bPv=Double.parseDouble(bMax.substring(0,bMax.indexOf(":")));
+                                        bPv=Math.pow(10.0,-1*bPv);
+                                        bMax="chr"+bMax.substring(bMax.indexOf(":")+1);
+                                    }
+                                    String lMax=rna.getMaxQTL("Liver");
+                                    if(!lMax.equals("")){
+                                        lPv=Double.parseDouble(lMax.substring(0,lMax.indexOf(":")));
+                                        lPv=Math.pow(10.0,-1*lPv);
+                                        lMax="chr"+lMax.substring(lMax.indexOf(":")+1);
+                                    }
+                                %>
+                                <TD class="leftBorder"><%=bHerit%></TD>
+                                <TD><%if(rna.getQTLCount("Whole Brain")==0){%><%}else{%><%=rna.getQTLCount("Whole Brain")%><%}%></TD>
+                                <TD><%=df4.format(bPv)+"<BR>"+bMax%></TD>
+                                <TD class="leftBorder"><%=lHerit%> </TD>
+                                <TD><%if(rna.getQTLCount("Liver")==0){%><%}else{%><%=rna.getQTLCount("Liver")%><%}%></TD>
+                                <TD ><%=df4.format(lPv)+"<BR>"+lMax%></TD>
+                                <%}else{%>
+                                    <TD class="leftBorder"></TD>
+                                    <TD></TD>
+                                    <TD></TD>
+                                    <TD class="leftBorder"></TD>
+                                    <TD></TD>
+                                    <TD ></TD>
+                                <%}
+                                }%>
                             
                                 <TD class="leftBorder"><%=curGene.getProbeCount()%></TD>
                                 

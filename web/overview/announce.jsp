@@ -12,6 +12,27 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.2</H2>
+                        <div style="margin-left:5px;">
+                            <UL>
+                                <LI>Version 3.7.2 has been released with the following updates.
+                                    <ul><LI>RNA-Seq eQTLs
+                                        <UL>
+                                            <LI>Gene Track Summaries now include RNA-Seq based eQTL summaries</LI>
+                                            <LI>Modules for a region can be selected base on overlap of the module QTL with the region.</LI>
+                                            <LI>Genes with an eQTL that overlaps the region are now available based on RNA-Seq and Microarrays</LI>
+                                        </UL>
+                                    </LI>
+                                        <LI>Custom Views
+                                            <UL>
+                                                <LI>Total Counts for all 45 strains to date are available.</LI>
+                                            </UL>
+                                        </LI>
+                                        <LI>Read counts for all 45 strains are available to add as browser tracks.</LI>
+                                        <LI>Bug Fixes</LI>
+                                    </ul>
+                            </UL>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #3</H2>
                         <div style="margin-left:5px;">
                             <h3>QTL to gene/molecular networks 6/12/2020 10am PDT/1pm EDT</h3><BR>

@@ -49,8 +49,10 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 	that.skipGrey=1;
     that.chrLen=19;
     that.selSource="seq";
-    that.version="2";
+    that.version="5";
     that.moduleRequestList=[];
+    that.modSelect="gene";
+    that.modSelectCutoff=2.0;
 
     if(organism==="Mm"){
             that.panel="ILS/ISS";
@@ -145,11 +147,15 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 		that.moduleGenes={};
 		that.moduleList=[];
 		that.modules={};
+		var tmpModSelect=that.modSelect;
+		if(that.modSelect=="eQTL"){
+			tmpModSelect=tmpModSelect+":"+that.modSelectCutoff;
+		}
 		$.ajax({
 				url:  pathPrefix +"getWGCNAModules.jsp",
 	   			type: 'GET',
 	   			async: true,
-				data: {source:that.selSource,modFileType:that.viewtype,id:that.singleID,organism:organism,panel:that.panel,tissue:that.tissue,region:that.region,geneList:that.geneList,genomeVer:genomeVer,version:that.version},
+				data: {source:that.selSource,modFileType:that.viewtype,id:that.singleID,organism:organism,panel:that.panel,tissue:that.tissue,region:that.region,geneList:that.geneList,genomeVer:genomeVer,version:that.version,modSelection:tmpModSelect},
 				dataType: 'json',
 				beforeSend: function(){
 					$("#waitCircos").show();
@@ -157,6 +163,9 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 						that.moduleRequestList[i].abort();
 					}
 					that.moduleRequestList=[];
+					console.log(that.modSelect+":"+that.modSelectCutoff);
+					console.log(tmpModSelect);
+
 					console.log("request mod list:"+that.wDSID+":"+that.selSource);
 				},
 	    		success: function(data2){
@@ -165,7 +174,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                                 if(data2.length>0 && !(data2.length===1 && data2[0].ModuleID==="grey")){
                                 	setTimeout(function() {
 										for (var i = 0; i < data2.length; i++) {
-											console.log("Mod:"+data2[i].ModuleID);
+											//console.log("Mod:"+data2[i].ModuleID);
 											if (data2[i].ModuleID !== "grey"){ // && data2[i].ModuleID !=="turquoise"){
 												that.moduleList.push(data2[i].ModuleID);
 												//var isLast=data2.length-i;
@@ -174,7 +183,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 												if (typeof data2[i].GeneList !== 'undefined') {
 													that.moduleGenes[data2[i].ModuleID] = data2[i].GeneList;
 												}
-												console.log("after calling:"+that.requests+":"+data2[i].ModuleID);
+												//console.log("after calling:"+that.requests+":"+data2[i].ModuleID);
 											}
 										}
 										that.refreshRegion(1000);
@@ -229,8 +238,9 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 				dataType: 'json',
 	    		success: function(data2){
 					console.log("success:"+contextRoot+"tmpData/browserCache/"+genomeVer+"/modules/ds"+that.wDSID+"/" +file+".json");
-                                        //setTimeout(function(){
-                                            //console.log(file);
+                                        setTimeout(function(){
+                                        	console.log("countingGeneInstances")
+                                            console.log(file);
                                             if(that.singleID.length>0){
                                                 that.countGeneInstance(that.singleID,data2);
                                             }else{
@@ -249,13 +259,14 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                                             if(callBack){
                                             	callBack(file);
                                             }
-                                        //},20);
+                                        },20);
                                         /*if(ga){
 											ga('send','event','requestModule',file);
 										}*/
                                         gtag('event',file,{'event_category':'requestModule'});
 	    		},
 	    		error: function(xhr, status, error) {
+					console.log(error);
 	        		that.requests--;
 	    		}
 		});
@@ -690,7 +701,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 		}
 		dataSel.append("br");
 
-		var spanV=dataSel.append("span").attr("id","spanVersion");
+		//var spanV=dataSel.append("span").attr("id","spanVersion");
 
         dataSel.append("text").text("Tissue:");
 		var sel=dataSel.append("select").attr("id","wgcnaTissueSelect").on("change",function(){
@@ -747,6 +758,8 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 		for(var i=0;i<that.tissues.length;i++){
 			sel.append("option").attr("value",that.tissues[i]).text(that.dispTissues[i]);
 		}
+
+
 		dataSel.append("br");
 		var spanV=dataSel.append("span").attr("id","spanVersion");
 		spanV.append("text").text("Version:");
@@ -775,7 +788,41 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 			sel.append("option").attr("value",that.ver[i]).text(that.dispVer[i]);
 		}
 		d3.select("#wgcnaVersionSelect").select("option[value=\""+that.version+"\"]").attr("selected","selected");
+		//////////////////////////////////////////////////////////////////////////
+		dataSel.append("br");
+		var spanV=dataSel.append("span").attr("id","spanReturnType");
+		spanV.append("text").text("Module selection by:");
+		var sel=spanV.append("select").attr("id","wgcnaModuleSelect").on("change",function(){
+			that.modSelect=$('#wgcnaModuleSelect').val();
+			that.requestModuleList();
+			if(that.modSelect==='eQTL'){
+				$('#spaneQTLCutoff').show();
+			}else{
+				$('#spaneQTLCutoff').hide();
+			}
+		});
+		spanV.append("text").text("in this region");
+		dataSel.append("br");
+		var spanVC=dataSel.append("span").attr("id","spaneQTLCutoff").style("display","none");
+		spanVC.append("text").text("eQTL Cutoff P-value:");
 
+		var vals=["gene","eQTL"];
+		var dispVals=["genes","module Eigengene QTL"];
+		for(var i=0;i<vals.length;i++){
+			sel.append("option").attr("value",vals[i]).text(dispVals[i]);
+		}
+		d3.select("#wgcnaModuleSelect").select("option[value=\""+that.modSelect+"\"]").attr("selected","selected");
+		$('span#spanReturnType').show();
+		sel=spanVC.append("select").attr("id","wgcnaModuleEQTLCutoff").on("change",function(){
+			that.modSelectCutoff=$('#wgcnaModuleEQTLCutoff').val();
+			that.requestModuleList();
+		});
+		vals=["1","2","3","4"];
+		dispVals=["0.1","0.01","0.001","0.0001"];
+		for(var i=0;i<vals.length;i++){
+			sel.append("option").attr("value",vals[i]).text(dispVals[i]);
+		}
+		d3.select("#wgcnaModuleEQTLCutoff").select("option[value=\""+that.modSelectCutoff+"\"]").attr("selected","selected");
                 var go=that.dataBar.append("td").append("div").attr("id","goCtls").attr("class","goCTL").style("display","none").style("margin-left","10px");
                 go.append("text").text("GO Domain:");
                 sel=go.append("select").attr("id","goDomainSelect").on("change",function(){
@@ -798,7 +845,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                     max: 100,
                     step: 1,
                     change: function( event, ui ) {
-                    	console.log("change");
+                    	//console.log("change");
                     	//if(ui.value<=(that.singleImage.maxDepth+1)){
 	                        that.singleImage.displayDepth=ui.value;
 	                        if(that.singleImage.selectedNode !==that.singleImage.data.GOList[0] &&
@@ -1289,7 +1336,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 			thatimg.dataList={};
 			var dataCount=0;
 			for(var j=0;j<that.moduleList.length;j++){
-				console.log("multiModView:"+that.moduleList.length+":"+that.moduleList[j]);
+				//console.log("multiModView:"+that.moduleList.length+":"+that.moduleList[j]);
 				if(that.moduleList[j]!=="grey" || (that.moduleList[j]==="grey" && that.skipGrey===0 )){
                     if(typeof that.modules[that.moduleList[j]] !=='undefined'){
                         data[dataCount]=that.modules[that.moduleList[j]];
@@ -1344,7 +1391,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 					.attr("transform",function(d,i){ 
 						return "translate("+thatimg.calcX(d,i)+","+thatimg.calcY(d,i)+")";
 					});
-			console.log("before append to image");
+			//console.log("before append to image");
 			//add new
 			mod.enter().append("g")
 				.attr("class","modules")
@@ -1449,7 +1496,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                                 return val;
                             });
 				} );
-			console.log("end of draw");
+			//console.log("end of draw");
 		};
 
 		thatimg.backModule=function(){
@@ -3652,13 +3699,13 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 						dataType: 'json',
 			    		success: function(root){
 			    			thatimg.data=root;
-			    			console.log(thatimg.data);
-			    			console.log(thatimg.data.GOList[0]);
+			    			//console.log(thatimg.data);
+			    			//console.log(thatimg.data.GOList[0]);
 		                    var nodes =thatimg.data.GOList[0];
 		                    var uniqueID=0;
 		                    for(var z=0;z<nodes.length;z++){
 		                    	nodes[z].UnqID=uniqueID;
-		                    	console.log(nodes[z]);
+		                    	//console.log(nodes[z]);
 		                    	uniqueID++;
 		                    }
 		                    nodes = thatimg.data.GOList[1];
@@ -4879,7 +4926,7 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 	                    .attr("class",function(d){return "mod "+that.removeInvalidIDChars(d.MODULE);})
 	                    .attr("id",function(d){return "mod_"+that.removeInvalidIDChars(d.MODULE);})
 	                    .on("click", function(d){
-                                	console.log("request"+d.MODULE);
+                                	//console.log("request"+d.MODULE);
                                 	if(! that.moduleGenes[d.MODULE]){
                                 		that.moduleGenes[d.MODULE]="";
                                 		that.requestModule(d.MODULE,thatimg.selectMetaMod);
