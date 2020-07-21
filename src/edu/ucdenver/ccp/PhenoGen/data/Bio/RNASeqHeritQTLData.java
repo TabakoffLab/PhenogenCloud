@@ -23,7 +23,7 @@ public class RNASeqHeritQTLData {
                 countQTL.put(tissue,tmp);
                 String tmpMax=maxQTL.get(tissue);
                 double tmpPval=Double.parseDouble(tmpMax.substring(0,tmpMax.indexOf(":")));
-                if(tmpPval>pvalue){
+                if(tmpPval<pvalue){
                     maxQTL.put(tissue,pvalue+":"+location);
                 }
             }else{

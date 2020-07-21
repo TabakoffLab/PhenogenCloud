@@ -353,7 +353,7 @@
                 min = Integer.parseInt(part2[0]);
                 max = Integer.parseInt(part2[1]);
                 myDisplayGene = myGene;
-                fullGeneList = gdt.getRegionData(chr, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false);
+                fullGeneList = gdt.getRegionData(chr, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false,false);
                 String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
                 String tmpGeneSymbol = gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
                 String tmpUcscURL = gdt.getUCSCURL();//(String)session.getAttribute("ucscURL");
@@ -552,7 +552,7 @@
                     }
                     DecimalFormat df0 = new DecimalFormat("#,###");
                     myDisplayGene = chromosome + ":" + df0.format(min) + "-" + df0.format(max);
-                    fullGeneList = gdt.getRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false);
+                    fullGeneList = gdt.getRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false,false);
                     String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
                     String tmpGeneSymbol = gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
                     String tmpUcscURL = gdt.getUCSCURL();//(String)session.getAttribute("ucscURL");

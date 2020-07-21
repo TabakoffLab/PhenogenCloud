@@ -87,9 +87,9 @@
             }
 
             if(source.startsWith("merged")){
-                fullGeneList =gdt.getMergedRegionData(chromosome,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,true);
+                fullGeneList =gdt.getMergedRegionData(chromosome,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,true, true);
             }else{
-                fullGeneList =gdt.getRegionData(chromosome,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,true);
+                fullGeneList =gdt.getRegionData(chromosome,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,true, true);
             
             }
             log.debug("Gene list size:"+fullGeneList.size());
@@ -183,7 +183,7 @@
 		  		edu.ucdenver.ccp.PhenoGen.data.Bio.Gene tmpGene=fullGeneList.get(0);
 				%>
 		 	
-          	<TABLE name="items"  id="tblGenes<%=type%>" class="list_base" cellpadding="0" cellspacing="0"  >
+          	<TABLE name="items"  id="tblGenes<%=type%>" class="list_base downloadTbl" cellpadding="0" cellspacing="0"  >
                 <THEAD>
                     <tr>
                         <th 
@@ -202,7 +202,7 @@
                         class="center noSort topLine">Transcript Information</th>
                         <%if(myOrganism.equals("Rn")){%>
                         <th colspan="6"  class="center noSort topLine" title="HRDP v5 Ribosome Depleted TotalRNA Data">HRDP v5 Ribosome Depleted TotalRNA
-                            <div class="inpageHelp" style="display:inline-block; "><img id="HelpAffyExon" class="helpImage" src="../web/images/icons/help.png" /></div></th>
+                            <div class="inpageHelp" style="display:inline-block; "><img id="HelpRNASeqSummary" class="helpImage" src="../web/images/icons/help.png" /></div></th>
                         <%}%>
                         <th colspan="<%=4+tissuesList1.length*2+tissuesList2.length*2%>"  class="center noSort topLine" title="Dataset is available by going to Microarray Analysis Tools -> Analyze Precompiled Dataset or Downloads.">Affy Exon 1.0 ST PhenoGen Public Dataset(
 							<%if(myOrganism.equals("Mm")){%>
@@ -283,10 +283,10 @@
                     <%if(myOrganism.equals("Rn")){%>
                     	<TH>RNA-Seq</TH>
                         <TH>Heritiblity</TH>
-                        <TH>Count ></TH>
+                        <TH>eQTL Count <= <%=forwardPValueCutoff%></TH>
                         <TH>Max eQTL Location</TH>
                         <TH>Heritiblity</TH>
-                        <TH>Count ></TH>
+                        <TH>eQTL Count <= <%=forwardPValueCutoff%></TH>
                         <TH>Max eQTL Location</TH>
                     <%}%>
                     

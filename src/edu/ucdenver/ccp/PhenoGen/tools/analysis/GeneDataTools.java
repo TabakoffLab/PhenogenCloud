@@ -563,7 +563,7 @@ public class GeneDataTools {
             if(!chrom.toLowerCase().startsWith("chr")){
                 chrom="chr"+chrom;
             }
-            ret=this.getRegionData(chrom, minCoord, maxCoord, panel, organism,genomeVer, RNADatasetID, arrayTypeID, 0.01,eQTL);
+            ret=this.getRegionData(chrom, minCoord, maxCoord, panel, organism,genomeVer, RNADatasetID, arrayTypeID, 0.01,eQTL,false);
             for(int i=0;i<ret.size();i++){
                 //log.debug(ret.get(i).getGeneID()+"::"+ensemblIDList);
                 if(ret.get(i).getGeneID().equals(ensemblIDList)){
@@ -705,19 +705,19 @@ public class GeneDataTools {
     
     public ArrayList<Gene> getMergedRegionData(String chromosome,int minCoord,int maxCoord,
             String panel,
-            String organism,String genomeVer,int RNADatasetID,int arrayTypeID,double pValue,boolean withEQTL) {
-        return this.getRegionDataMain(chromosome,minCoord,maxCoord,panel,organism,genomeVer,RNADatasetID,arrayTypeID,pValue,withEQTL,"mergedTotal.xml");
+            String organism,String genomeVer,int RNADatasetID,int arrayTypeID,double pValue,boolean withEQTL,boolean withRNASeqQTL) {
+        return this.getRegionDataMain(chromosome,minCoord,maxCoord,panel,organism,genomeVer,RNADatasetID,arrayTypeID,pValue,withEQTL,withRNASeqQTL,"mergedTotal.xml");
     }
     
     public ArrayList<Gene> getRegionData(String chromosome,int minCoord,int maxCoord,
             String panel,
-            String organism,String genomeVer,int RNADatasetID,int arrayTypeID,double pValue,boolean withEQTL) {
-        return this.getRegionDataMain(chromosome,minCoord,maxCoord,panel,organism,genomeVer,RNADatasetID,arrayTypeID,pValue,withEQTL,"Region.xml");
+            String organism,String genomeVer,int RNADatasetID,int arrayTypeID,double pValue,boolean withEQTL,boolean withRNASeqQTL) {
+        return this.getRegionDataMain(chromosome,minCoord,maxCoord,panel,organism,genomeVer,RNADatasetID,arrayTypeID,pValue,withEQTL,withRNASeqQTL,"Region.xml");
     }
     
     public ArrayList<Gene> getRegionDataMain(String chromosome,int minCoord,int maxCoord,
             String panel,
-            String organism,String genomeVer,int RNADatasetID,int arrayTypeID,double pValue,boolean withEQTL,String file) {
+            String organism,String genomeVer,int RNADatasetID,int arrayTypeID,double pValue,boolean withEQTL,boolean withRNASeqEQTL,String file) {
 
         ArrayList<Gene> ret = new ArrayList<Gene>();
 
@@ -855,9 +855,10 @@ public class GeneDataTools {
 
             ret = Gene.readGenes(outputDir + file);
             log.debug("getRegionData() returning gene list of size:" + ret.size());
-
+            if(withRNASeqEQTL){
+                this.addRegionHeritEQTLs(ret,minCoord,maxCoord,organism,chromosome,"5","rn6",pValue);
+            }
             if (withEQTL) {
-                this.addRegionHeritEQTLs(ret,minCoord,maxCoord,organism,chromosome,"5","rn6",2);
                 this.addHeritDABG(ret, minCoord, maxCoord, organism, chromosome, RNADatasetID, arrayTypeID, genomeVer);
                 ArrayList<TranscriptCluster> tcList = getTransControlledFromEQTLs(minCoord, maxCoord, chromosome, arrayTypeID, pValue, "All", genomeVer);
                 HashMap<String, TranscriptCluster> transInQTLsCore = new HashMap<String, TranscriptCluster>();
@@ -2816,7 +2817,7 @@ public class GeneDataTools {
         }
         return mainGenes;
     }
-    public void addRegionHeritEQTLs(ArrayList<Gene> list,int min, int max,String organism,String chr,String hrdpVer,String genomeVer,int pvalue){
+    public void addRegionHeritEQTLs(ArrayList<Gene> list,int min, int max,String organism,String chr,String hrdpVer,String genomeVer,double pvalue){
 
         if(chr.startsWith("chr")){
             chr=chr.substring(3);
@@ -2883,27 +2884,29 @@ public class GeneDataTools {
                     p2E.put(tmpSeq.getID(),curGene);
                 }
             }
-            //get region eQTLs for Gene IDs
-            String qtlQ="select s.chromosome_id,s.snp_start,s.snp_end,s.tissue,lse.PROBE_ID,lse.PVALUE from LOCATION_SPECIFIC_EQTL2 lse "+
-                    "inner join snps s on s.snp_id=lse.snp_id "+
-                    "where s.rna_dataset_id in (97,98) "+
-                    " and s.type='seq' "+
-                    " and lse.pvalue>= "+pvalue +" "+
-                    " and lse.probe_id in ( "+sb.substring(1)+" )";
-            log.debug("region qtl:"+qtlQ);
-            PreparedStatement ps = conn.prepareStatement(qtlQ);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                String id=rs.getString(5);
-                String tissue=rs.getString(4);
-                String location=chrHM.get(rs.getInt(1))+":"+ rs.getInt(2)+"-"+rs.getInt(3);
-                double pval=rs.getDouble(6);
-                if(p2E.containsKey(id)) {
-                    RNASeqHeritQTLData cur=p2E.get(id).getRNASeq();
-                    cur.addCount(tissue,pval,location);
+            if(sb.length()>1) {
+                //get region eQTLs for Gene IDs
+                String qtlQ = "select s.chromosome_id,s.snp_start,s.snp_end,s.tissue,lse.PROBE_ID,lse.PVALUE from LOCATION_SPECIFIC_EQTL2 lse " +
+                        "inner join snps s on s.snp_id=lse.snp_id " +
+                        "where s.rna_dataset_id in (97,98) " +
+                        " and s.type='seq' " +
+                        " and lse.pvalue>= " + (-Math.log10(pvalue)) + " " +
+                        " and lse.probe_id in ( " + sb.substring(1) + " )";
+                log.debug("region qtl:" + qtlQ);
+                PreparedStatement ps = conn.prepareStatement(qtlQ);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    String id = rs.getString(5);
+                    String tissue = rs.getString(4);
+                    String location = chrHM.get(rs.getInt(1)) + ":" + rs.getInt(2) + "-" + rs.getInt(3);
+                    double pval = rs.getDouble(6);
+                    if (p2E.containsKey(id)) {
+                        RNASeqHeritQTLData cur = p2E.get(id).getRNASeq();
+                        cur.addCount(tissue, pval, location);
+                    }
                 }
+                ps.close();
             }
-            ps.close();
         }catch(SQLException e) {
             log.error("addRNASeqHeritQTL error",e);
         }
@@ -3268,7 +3271,7 @@ public class GeneDataTools {
                 if(organism.equals("Mm")){
                     panel="ILS/ISS";
                 }
-                this.getRegionData(chr, min, max, panel, organism,genomeVer, RNADatasetID, arrayTypeID, pvalue, false);
+                this.getRegionData(chr, min, max, panel, organism,genomeVer, RNADatasetID, arrayTypeID, pvalue, false,false);
         }
 
         circosTissue=circosTissue.replaceAll(";;", ";");
@@ -3371,7 +3374,7 @@ public class GeneDataTools {
                         "from RNA_TRANSCRIPTS rt " +
                         "inner join location_specific_eqtl2 lse on lse.probe_id=rt.MERGE_GENE_ID " +
                         "where  rt.RNA_DATASET_ID in (97,98) " +
-                        "and lse.pvalue>=1.5 "+
+                        "and lse.pvalue>=2 "+
                         "and lse.snp_id in ( " + sb.toString() + ")" ;
             }
                 log.debug("SQL eQTL FROM QUERY\n"+qtlQuery);
