@@ -129,7 +129,7 @@ public class AsyncGeneDataThread extends Thread {
         outputDir=gdt.getImageRegionData(chromosome,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,true);
         pathReady=true;
         //call full version for adding files later
-        gdt.getRegionData(chromosome,fullMin,fullMax,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,false);
+        gdt.getRegionData(chromosome,fullMin,fullMax,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,false,false);
         doneThread=true;
     }
 

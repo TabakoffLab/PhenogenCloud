@@ -21,6 +21,19 @@ Columns:<BR />
 
 </div></div>
 
+<div id="HelpRNASeqSummaryContent" class="inpageHelpContent" title="Help"><div class="help-content">
+    <H3>RNA-Seq Data Columns</H3>
+    For each available tissue where HRDP strains are available the following columns are available.
+
+    Columns:<BR />
+    <ul style="padding-left:25px; list-style-type:square;">
+        <li>Heritability calculated on the displayed HRDP version</li><BR />
+        <li>eQTL Count is the number of eQTLs for a given gene that have a pvalue less than or equal to the selected cutoff.</li><BR />
+        <li>Max QTL location is the lowest P-value and the corresponding location.</li><BR>
+    </ul>
+
+</div></div>
+
 <div id="HelpGenesInRegionContent" class="inpageHelpContent" title="Help-Gene in Region Tab"><div class="help-content">
 <H3>Features Physically Located in Region Tab</H3>
 This tab will display all the Ensembl features located in the chosen region, as well as any RNA-Seq features that do not correspond to an Ensembl gene.<BR /><BR />
