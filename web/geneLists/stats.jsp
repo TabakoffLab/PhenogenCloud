@@ -5,9 +5,10 @@
 
 	request.setAttribute( "selectedTabId", "stats" );
 	extrasList.add("stats.js");
-        extrasList.add("jquery.dataTables.1.10.9.min.js");
-        extrasList.add("tableExport/tableExport.js");
-        extrasList.add("tableExport/jquery.base64.js");
+	extrasList.add("datatables.1.10.21.min.js");
+    //    extrasList.add("jquery.dataTables.1.10.9.min.js");
+    //    extrasList.add("tableExport/tableExport.js");
+    //    extrasList.add("tableExport/jquery.base64.js");
 
 	optionsList.add("geneListDetails");
 	optionsList.add("chooseNewGeneList");
@@ -214,13 +215,14 @@
                         $("span#exportBtn").on("click",function(){
                             $('table#items').tableExport({type:'csv',escape:'false'});
                         });
-                        $("table#items").dataTable({
-					"bPaginate": false,
-					"bAutoWidth": true,
-					"sScrollX": "100%",
-					"sScrollY": "600px",
-					"aaSorting": [[ 1, "asc" ]],
-					"sDom": 'fti'
+                        $("table#items").DataTable({
+					bPaginate: false,
+					bAutoWidth: true,
+					sScrollX: "100%",
+					sScrollY: "600px",
+					aaSorting: [[ 1, "asc" ]],
+					sDom: 'Bfti',
+							buttons: ['copy', 'excel', 'pdf']
 			});
 		});
 	</script>

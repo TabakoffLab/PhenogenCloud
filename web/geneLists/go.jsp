@@ -11,7 +11,8 @@
 <jsp:useBean id="myEnsembl" class="edu.ucdenver.ccp.PhenoGen.data.external.Ensembl"> </jsp:useBean>
 
 <%
-	extrasList.add("jquery.dataTables.1.10.9.min.js");
+    extrasList.add("datatables.1.10.21.min.js");
+    //extrasList.add("jquery.dataTables.1.10.9.min.js");
         extrasList.add("d3.v4.8.0.min.js");
 	log.info("in go.jsp. user = " + user);
 	log.debug("action = " +action);

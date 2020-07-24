@@ -23,7 +23,8 @@
 	extrasList.add("resources1.0.js");
 	extrasList.add("jquery.tooltipster.min.js");
         extrasList.add("d3.v3.5.16.min.js");
-        extrasList.add("jquery.dataTables.1.10.9.min.js");
+	extrasList.add("datatables.1.10.21.min.js");
+    //    extrasList.add("jquery.dataTables.1.10.9.min.js");
 	
 	mySessionHandler.createSessionActivity(session.getId(), "Looked at download systems biology resources page", pool);
 

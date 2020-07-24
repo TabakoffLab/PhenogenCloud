@@ -1,6 +1,7 @@
 <%@ include file="/web/common/anon_session_vars.jsp" %>
 <%
-	extrasList.add("jquery.dataTables.1.10.9.min.js");
+	extrasList.add("datatables.1.10.21.min.js");
+	//extrasList.add("jquery.dataTables.1.10.9.min.js");
 	extrasList.add("jquery.cookie.js");
 	extrasList.add("spectrum.js");
         extrasList.add("svg-pan-zoom.3.5.1.min.js");

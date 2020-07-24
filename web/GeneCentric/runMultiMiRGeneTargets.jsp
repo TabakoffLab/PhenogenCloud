@@ -213,12 +213,12 @@
 			});
 	
 	
-	var tblMirGene=$('#mirGeneTbl').dataTable({
-			"bPaginate": false,
+	var tblMirGene=$('#mirGeneTbl').DataTable({
+			bPaginate: false,
 			//"sScrollX": "100%",
 			//"sScrollY": "350px",
-			"bDeferRender": true,
-			"aaSorting": [[ 16, "desc" ]],
-			"sDom": '<"leftSearch"fr><t><i>'
+			bDeferRender: true,
+			aaSorting: [[ 16, "desc" ]],
+			sDom: '<"leftSearch"fr><t><i>'
 	});
 </script>
