@@ -286,22 +286,24 @@ Detailed Summary Table
 		$('.resultViewBTN').show();
 		$(this).hide();
 	});
-	var tblMirSummaryResult=$('#resultSummaryMirGeneTbl').dataTable({
-			"bPaginate": false,
-			"bDeferRender": true,
-			"sScrollX": "100%",
-			"sScrollY": "580px",
-			"aaSorting": [[ 0, "desc" ]],
-			"sDom": '<fr><t><i>'
+	var tblMirSummaryResult=$('#resultSummaryMirGeneTbl').DataTable({
+			bPaginate: false,
+			bDeferRender: true,
+			sScrollX: "100%",
+			sScrollY: "580px",
+			aaSorting: [[ 0, "desc" ]],
+			sDom: '<fr><t><i>',
+			buttons: ['copy', 'excel', 'pdf']
 	});
 	
-	var tblMirDetailResult=$('#resultDetailMirGeneTbl').dataTable({
-			"bPaginate": false,
-			"bDeferRender": true,
-			"sScrollX": "100%",
-			"sScrollY": "580px",
-			"aaSorting": [[ 0, "desc" ]],
-			"sDom": '<fr><t><i>'
+	var tblMirDetailResult=$('#resultDetailMirGeneTbl').DataTable({
+			bPaginate: false,
+			bDeferRender: true,
+			sScrollX: "100%",
+			sScrollY: "580px",
+			aaSorting: [[ 0, "desc" ]],
+			sDom: '<fr><t><i>',
+			buttons: ['copy', 'excel', 'pdf']
 	});
 	$('#resultDetail').hide();
 	

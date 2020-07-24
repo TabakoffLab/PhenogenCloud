@@ -17,7 +17,8 @@
 	request.setAttribute( "selectedTabId", "share" );
 	optionsList.add("geneListDetails");
 	optionsList.add("chooseNewGeneList");
-        extrasList.add("jquery.dataTables.1.10.9.min.js");
+	extrasList.add("datatables.1.10.21.min.js");
+	//extrasList.add("jquery.dataTables.1.10.9.min.js");
 
 
         if (userLoggedIn.getUser_name().equals("guest")) {

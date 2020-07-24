@@ -3,7 +3,8 @@
 <%
 	request.setAttribute( "selectedTabId", "list" );
 	extrasList.add("geneList.js");
-	extrasList.add("jquery.dataTables.1.10.9.min.js");
+	extrasList.add("datatables.1.10.21.min.js");
+	//extrasList.add("jquery.dataTables.1.10.9.min.js");
 	extrasList.add("dataTables.paging.css");
         //extrasList.add("jquery.dataTables.min.css");
 	
@@ -200,25 +201,26 @@
 				optionArr=[[10,25,50,100,250,-1],[10,25,50,100,250,"All"]];
 			}
 			
-			geneListdt=$("table#list").dataTable({
-					"bPaginate": true,
-					"bProcessing": true,
-					"bStateSave": false,
-					"bAutoWidth": true,
-					"aLengthMenu": optionArr,
-					"iDisplayLength": defaultLen,
-					"sPaginationType": "full_numbers",
+			geneListdt=$("table#list").DataTable({
+					bPaginate: true,
+					bProcessing: true,
+					bStateSave: false,
+					bAutoWidth: true,
+					aLengthMenu: optionArr,
+					iDisplayLength: defaultLen,
+					sPaginationType: "full_numbers",
 					//"sScrollX": "950px",
 					//"sScrollY": "550px",
-					"aaSorting": [[ 0, "asc" ]],
+					aaSorting: [[ 0, "asc" ]],
 					/*"aoColumnDefs": [
       						{ "bVisible": false, "aTargets": hideFirst }
     					],*/
-					"sDom": format/*,
+					sDom: format,/*,
 					"oTableTools": {
 							"sSwfPath": "/css/swf/copy_csv_xls.swf",
 							"aButtons": [ "csv", "xls","copy"]
 							}*/
+				buttons: ['copy','csv', 'excel', 'pdf']
 	
 			});
 			

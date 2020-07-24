@@ -321,16 +321,17 @@
 	if(organism == "Mm"){
 		bqtlTarget=[ 1,4,5,10,12,13,14 ];
 	}
-	var tblBQTL=$('#tblBQTL').dataTable({
-	"bPaginate": false,
-	"bProcessing": true,
-	"sScrollX": "100%",
-	"sScrollY": "100%",
-	"bDeferRender": true,
-	"aoColumnDefs": [
+	var tblBQTL=$('#tblBQTL').DataTable({
+	bPaginate: false,
+	bProcessing: true,
+	sScrollX: "100%",
+	sScrollY: "100%",
+	bDeferRender: true,
+	aoColumnDefs: [
       { "bVisible": false, "aTargets": bqtlTarget }
     ],
-	"sDom": '<"leftSearch"fr><t>'
+	sDom: '<"leftSearch"frB><t>',
+		buttons: ['copy', 'excel', 'pdf']
 	});
 	
 	

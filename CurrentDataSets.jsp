@@ -1,13 +1,14 @@
 <%@ include file="/web/access/include/login_vars.jsp" %>
 <%  pageTitle="Current Datasets";
     pageDescription="A list of public datasets available for download or analysis";
-    extrasList.add("jquery.dataTables.1.10.9.min.js");
+    extrasList.add("datatables.1.10.21.min.js");
     extrasList.add("jquery.dataTables.1.10.9.min.css");
 %>
 <%@ include file="/web/common/header_adaptive_menu.jsp" %>
-<div style="margin:10px;" style="width:100%">
+<style>div#main_body_plain {padding-bottom: 20px;}</style>
+<div style="margin:10px;" style="width:100%;margin-bottom: 80px;">
     <H2>Current Datasets</h2>
-    <table id="datasets" name="items" style="width:100%" class="list_base"  cellpadding="0" cellspacing="0">
+    <table id="datasets" name="items" style="width:100%;" class="list_base"  cellpadding="0" cellspacing="0">
         <thead>
             <TR class="col_title">
                 <TH>Species</TH>
@@ -457,7 +458,7 @@
             </TR>
         </tbody>
     </table>
-</div>
+</div><div style="margin-bottom: 80px;"></div>
 <script type="text/javascript">
     $("div#wait1").hide();
     var tblData=$('#datasets').dataTable({

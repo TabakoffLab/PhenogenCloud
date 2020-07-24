@@ -170,12 +170,12 @@
 	<%}%>
         (function($){
             <%if(nonZeroLen){%>
-            $('#resultTbl').dataTable({
-            
-			"bPaginate": false,
-			"bDeferRender": true,
-			"aaSorting": [[ 2, "desc" ]],
-			"sDom": '<r><t>'
+            $('#resultTbl').DataTable({
+                bPaginate: false,
+                bDeferRender: true,
+                aaSorting: [[ 2, "desc" ]],
+                sDom: '<r><t>',
+                buttons: ['copy', 'excel', 'pdf']
             });
             <%}%>
             $(".promoterResultDetail").on("click",function (){

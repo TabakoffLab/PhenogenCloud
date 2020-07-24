@@ -18,9 +18,10 @@
 	
 	log.debug("in pathwayResults. itemID = " + itemID);
 	extrasList.add("pathwayResults.js");
-        extrasList.add("jquery.dataTables.1.10.9.min.js");
-        extrasList.add("tableExport/tableExport.js");
-        extrasList.add("tableExport/jquery.base64.js");
+	extrasList.add("datatables.1.10.21.min.js");
+        //extrasList.add("jquery.dataTables.1.10.9.min.js");
+        //extrasList.add("tableExport/tableExport.js");
+        //extrasList.add("tableExport/jquery.base64.js");
 
 	GeneListAnalysis thisGeneListAnalysis = myGeneListAnalysis.getGeneListAnalysis(itemID, pool);
 			

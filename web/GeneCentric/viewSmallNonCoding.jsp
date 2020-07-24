@@ -193,11 +193,11 @@ function updateSmallNonCoding(idList,nameList,id){
    		interactiveTolerance: 350
 	});
 	
-	var tblSMNC=$('#tblViewSMNC').dataTable({
-	"bPaginate": false,
-	"bProcessing": true,
-	"sScrollX": "900px",
-	"sScrollY": "350px"
+	var tblSMNC=$('#tblViewSMNC').DataTable({
+	bPaginate: false,
+	bProcessing: true,
+	sScrollX: "900px",
+	sScrollY: "350px"
 	});
 	//tblSMNC.dataTable().fnAdjustColumnSizing();
 	

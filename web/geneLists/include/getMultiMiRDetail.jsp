@@ -191,22 +191,24 @@
 
 <script type="text/javascript">
 
-	$('#mirValTbl').dataTable({
-			"bPaginate": false,
-			"bDeferRender": false,
+	$('#mirValTbl').DataTable({
+			bPaginate: false,
+			bDeferRender: false,
 			//"sScrollX": "650px",
 			//"sScrollY": "450px",
-			"aaSorting": [[ 0, "desc" ]],
-			"sDom": '<fr><t><i>'
+			aaSorting: [[ 0, "desc" ]],
+			sDom: '<fr><t><i>',
+		buttons: ['copy', 'excel', 'pdf']
 	});
 	
-	$('#mirPredTbl').dataTable({
-			"bPaginate": false,
-			"bDeferRender": false,
+	$('#mirPredTbl').DataTable({
+			bPaginate: false,
+			bDeferRender: false,
 			//"sScrollX": "650px",
 			//"sScrollY": "450px",
-			"aaSorting": [[ 0, "desc" ]],
-			"sDom": '<fr><t><i>'
+			aaSorting: [[ 0, "desc" ]],
+			sDom: '<fr><t><i>',
+		buttons: ['copy', 'excel', 'pdf']
 	});
 	/*$(".hoverDetail").tooltipster({
 				position: 'top-left',
