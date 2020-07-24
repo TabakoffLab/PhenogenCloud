@@ -1402,16 +1402,17 @@ function GOBrowser(path,fileName){
         });
         
         $('#GoTable').DataTable({
-                        "bPaginate": false,
-                        "bSort": false,
-                        "asStripClasses":[],
+                        bPaginate: false,
+                        bSort: false,
+                        asStripClasses:[],
                         /*"bProcessing": true,
                         "bStateSave": false,
                         "bAutoWidth": true,
                         "bDeferRender": true,
                         "aaSorting": [[ 3, "desc" ]],*/
         
-                        "sDom": 'f<t>'
+                        sDom: 'fB<t>',
+						buttons: ['copy', 'excel', 'pdf']
                 });
         
         

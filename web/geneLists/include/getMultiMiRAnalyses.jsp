@@ -91,11 +91,12 @@
 	//var rows=$("table#mirTbl tr");
 	//stripeTable(rows);
         <%if(results.length>0){%>
-            var tblMir=$('#resultTbl').dataTable({
-                            "bPaginate": false,
-                            "bDeferRender": true,
-                            "aaSorting": [[ 1, "desc" ]],
-                            "sDom": '<r><t>'
+            var tblMir=$('#resultTbl').DataTable({
+                            bPaginate: false,
+                            bDeferRender: true,
+                            aaSorting: [[ 1, "desc" ]],
+                            sDom: '<r><t>',
+				buttons: ['copy', 'excel', 'pdf']
             });
 	<%}%>
         

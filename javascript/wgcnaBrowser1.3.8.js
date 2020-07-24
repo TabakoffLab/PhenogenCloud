@@ -2961,9 +2961,10 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 		                //d3.select(this).append("td").html(function(){return tmpI+1;});
 				});
 		        $('table#moduleTable').DataTable({
-						"bPaginate": false,
-						"aaSorting": [[ 4, "desc" ]],
-						"sDom": 'fi<t>'
+						bPaginate: false,
+						aaSorting: [[ 4, "desc" ]],
+						sDom: 'fiB<t>',
+					buttons: ['copy', 'excel', 'pdf']
 				});
 				if(testFireFox){
 					/*setTimeout(function(){
@@ -3159,13 +3160,14 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
             
                 
                 $('table#mirTable').DataTable({
-                                "bPaginate": false,
+                                bPaginate: false,
                                 /*"bProcessing": true,
                                 "bStateSave": false,
                                 "bAutoWidth": true,
                                 "bDeferRender": true,*/
-                                "aaSorting": [[ 4, "desc" ]],
-                                "sDom": 'f<"rightTable"i><t>'
+                                aaSorting: [[ 4, "desc" ]],
+                                sDom: 'fB<"rightTable"i><t>',
+								buttons: ['copy', 'excel', 'pdf']
                         });
            
         };
@@ -3326,13 +3328,14 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 			}
 
             $('table#mirGeneTable').DataTable({
-				"bPaginate": false,
+				bPaginate: false,
 				/*"bProcessing": true,
 				"bStateSave": false,
 				"bAutoWidth": true,
 				"bDeferRender": true,*/
-				"aaSorting": [[ 4, "desc" ]],
-				"sDom": '<"rightTable"i><"leftTable"f><t>'
+				aaSorting: [[ 4, "desc" ]],
+				sDom: '<"rightTable"i><"leftTable"fB><t>',
+				buttons: ['copy', 'excel', 'pdf']
 			});
     	};
         
@@ -4455,13 +4458,14 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 
                                     
                                     $('#eqtlTable').DataTable({
-                                                    "bPaginate": false,
+                                                    bPaginate: false,
                                                     /*"bProcessing": true,
                                                     "bStateSave": false,
                                                     "bAutoWidth": true,
                                                     "bDeferRender": true,*/
-                                                    "aaSorting": [[ 3, "desc" ]],
-                                                    "sDom":'fi<t>'
+                                                    aaSorting: [[ 3, "desc" ]],
+                                                    sDom:'fiB<t>',
+													buttons: ['copy', 'excel', 'pdf']
                                             });
                                     //trackDataTable.draw();
                                     $('div#waitEqtlTable').hide();

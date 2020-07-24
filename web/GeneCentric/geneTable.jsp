@@ -110,7 +110,7 @@
 
 
 
-<div id="geneList"  style="position:relative;top:56px;border-color:#CCCCCC; border-width:1px 0px 0px 0px; border-style:inset;">
+<div id="geneList"  style="position:relative;top:56px;border-color:#CCCCCC; border-width:1px 0px 0px 0px; border-style:inset;margin-bottom: 80px;">
 
                 <table class="geneFilter">
                 	<thead>
@@ -182,7 +182,7 @@
 		  	if(fullGeneList.size()>0){
 		  		edu.ucdenver.ccp.PhenoGen.data.Bio.Gene tmpGene=fullGeneList.get(0);
 				%>
-		 	
+		 	<div class="downloadBtns" style="text-align: left;margin-bottom: 10px;">Export As:</div>
           	<TABLE name="items"  id="tblGenes<%=type%>" class="list_base downloadTbl" cellpadding="0" cellspacing="0"  >
                 <THEAD>
                     <tr>
@@ -686,6 +686,7 @@
 					
 				 </tbody>
               </table>
+    <div class="downloadBtns" style="text-align: left;margin-top:10px;">Export As:</div>
 <script type="text/javascript">
 	var spec="<%=myOrganism%>";
 	
@@ -706,24 +707,30 @@
 	}
 	
 	
-	var tblGenes=$('#tblGenes<%=type%>').dataTable({
-	"bPaginate": false,
-	"bProcessing": true,
-	"bStateSave": false,
-	"bAutoWidth": true,
-	"bDeferRender": true,
-	"sScrollX": $(this).parent().width()-5,
-	"sScrollY": "500px",
-	"aaSorting": [[ sortCol, "desc" ]],
+	var tblGenes=$('#tblGenes<%=type%>').DataTable({
+	bPaginate: false,
+	bProcessing: true,
+	bStateSave: false,
+	bAutoWidth: true,
+	bDeferRender: true,
+	sScrollX: $(this).parent().width()-5,
+	sScrollY: "500px",
+	aaSorting: [[ sortCol, "desc" ]],
 	/*"aoColumnDefs": [
       { "bVisible": false, "aTargets": geneTargets }
     ],*/
-	"sDom": '<"leftSearch"fr><t>'
+	sDom: '<"leftSearch"fr><t>',
+        buttons: [
+            'copy', 'excel', 'pdf'
+        ]
 	/*"oTableTools": {
 			"sSwfPath": "/css/swf/copy_csv_xls_pdf.swf"
 		}*/
 
 	});
+    var tmpContainer=tblGenes.buttons().container();
+    //tmpContainer.prepend("<button class=\"dt-button ui-button ui-state-default ui-button-text-only buttons-html5\"  type=\"button\"><span class=\"ui-button-text\">Create PhenoGen Gene List</span></button>")
+	$('.downloadBtns').append(tmpContainer);
 
 	$('#tblGenes_wrapper').css({position: 'relative', top: '-56px'});
 
@@ -830,8 +837,8 @@
 			
 		}	
 	}
-	
-	tblGenes.fnAdjustColumnSizing();
+
+    tblGenes.fnAdjustColumnSizing();
 	//tblGenes.fnDraw();
 	
 	/*$(window).resize(function(){

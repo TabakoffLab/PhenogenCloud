@@ -17,7 +17,8 @@
 <%
         log.info("in exonCorrelationTab.jsp. user =  "+ user);
         extrasList.add("exonCorrelationTab0.1.js");
-        extrasList.add("jquery.dataTables.1.10.9.min.js");
+    extrasList.add("datatables.1.10.21.min.js");
+        //extrasList.add("jquery.dataTables.1.10.9.min.js");
 	extrasList.add("jquery.cookie.js");
 	extrasList.add("d3.v4.8.0.min.js");
         extrasList.add("spectrum.js");

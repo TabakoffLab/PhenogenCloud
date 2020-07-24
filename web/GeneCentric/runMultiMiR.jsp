@@ -245,13 +245,13 @@
 				interactiveTolerance: 350
 			});
 	<%if(mirList.size()>0){%>
-            var tblMir=$('#mirTbl').dataTable({
-                            "bPaginate": false,
+            var tblMir=$('#mirTbl').DataTable({
+                            bPaginate: false,
                             //"sScrollX": "100%",
                             //"sScrollY": "350px",
-                            "bDeferRender": true,
-                            "aaSorting": [[ 15, "desc" ]],
-                            "sDom": '<"leftSearch"fr><t><i>'
+                            bDeferRender: true,
+                            aaSorting: [[ 15, "desc" ]],
+                            sDom: '<"leftSearch"fr><t><i>'
             });
 	<%}%>
 	/*tblMir.fnAdjustColumnSizing();

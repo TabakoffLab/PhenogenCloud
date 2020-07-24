@@ -706,18 +706,18 @@
 		sortCol=2;
 	}
 	
-	var tblsmGenes=$('#tblsmGenes').dataTable({
-	"bPaginate": false,
-	"bProcessing": true,
-	"bAutoWidth": true,
-	"bDeferRender": true,
-	"sScrollX": $(this).parent().width()-5,
-	"sScrollY": "500px",
-	"aaSorting": [[ sortCol, "desc" ]],
+	var tblsmGenes=$('#tblsmGenes').DataTable({
+	bPaginate: false,
+	bProcessing: true,
+	bAutoWidth: true,
+	bDeferRender: true,
+	sScrollX: $(this).parent().width()-5,
+	sScrollY: "500px",
+	aaSorting: [[ sortCol, "desc" ]],
 	/*"aoColumnDefs": [
       { "bVisible": false, "aTargets": geneTargets }
     ],*/
-	"sDom": '<"leftSearch"fr><t>'
+	sDom: '<"leftSearch"fr><t>'
 	/*"oTableTools": {
 			"sSwfPath": "/css/swf/copy_csv_xls_pdf.swf"
 		}*/

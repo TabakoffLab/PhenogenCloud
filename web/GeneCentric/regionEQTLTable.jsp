@@ -755,14 +755,15 @@
 
     <script type="text/javascript">
 
-        var tblFrom = $('#tblFrom').dataTable({
-            "bAutoWidth": false,
-            "bPaginate": false,
-            "bProcessing": true,
-            "sScrollX": "100%",
-            "sScrollY": "100%",
-            "bDeferRender": false,
-            "sDom": '<"leftSearch"fr><t>'
+        var tblFrom = $('#tblFrom').DataTable({
+            bAutoWidth: false,
+            bPaginate: false,
+            bProcessing: true,
+            sScrollX: "100%",
+            sScrollY: "100%",
+            bDeferRender: false,
+            sDom: '<"leftSearch"frB><t>',
+            buttons: ['copy', 'excel', 'pdf']
         });
         $('#geneIDFCBX').click(function () {
             if (typeof tblFrom != 'undefined') {

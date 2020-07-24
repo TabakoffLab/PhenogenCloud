@@ -17,11 +17,12 @@
         log.info("in expressionValues.jsp. user =  "+ user);
 
         extrasList.add("expressionValues.js");
-		extrasList.add("jquery.dataTables.1.10.9.min.js");
+	extrasList.add("datatables.1.10.21.min.js");
+        //extrasList.add("jquery.dataTables.1.10.9.min.js");
 		extrasList.add("jquery.tooltipster.min.js");
 		//extrasList.add("tooltipster.min.css");
-		extrasList.add("TableTools.min.js");
-		extrasList.add("TableTools.css");
+		//extrasList.add("TableTools.min.js");
+		//extrasList.add("TableTools.css");
 	optionsList.add("geneListDetails");
 	optionsList.add("chooseNewGeneList");
         if(userLoggedIn.getUser_name().equals("anon")){
@@ -433,41 +434,43 @@
         setupPage();
 		setTimeout("setupMain()", 100);
 		
-			groupM=$("table[id='groupMeans']").dataTable({
-					"bPaginate": false,
-					"bProcessing": true,
-					"bStateSave": false,
-					"bAutoWidth": false,
-					"sScrollX": "100%",
-					"sScrollY": "550px",
-					"aaSorting": [[ 1, "asc" ]],
-					"aoColumnDefs": [
+			groupM=$("table[id='groupMeans']").DataTable({
+					bPaginate: false,
+					bProcessing: true,
+					bStateSave: false,
+					bAutoWidth: false,
+					sScrollX: "100%",
+					sScrollY: "550px",
+					aaSorting: [[ 1, "asc" ]],
+					aoColumnDefs: [
       						{ "bVisible": false, "aTargets": hideFirst }
     					],
-					"sDom": '<"leftSearch"Tfr><t>',
-					"oTableTools": {
-							"sSwfPath": "/css/swf/copy_csv_xls.swf",
-							"aButtons": [ "csv", "xls","copy"]
-							}
+					sDom: '<"leftSearch"Tfr><t>',
+					//oTableTools: {
+					//		"sSwfPath": "/css/swf/copy_csv_xls.swf",
+					//		"aButtons": [ "csv", "xls","copy"]
+					//		},
+				buttons: ['copy', 'excel', 'pdf']
 	
 			});
                         
-			arrayV=$("table[id='arrayValues']").dataTable({
-					"bPaginate": false,
-					"bProcessing": true,
-					"bStateSave": false,
-					"bAutoWidth": false,
-					"sScrollX": "100%",
-					"sScrollY": "550px",
-					"aaSorting": [[ 1, "asc" ]],
-					"aoColumnDefs": [
+			arrayV=$("table[id='arrayValues']").DataTable({
+					bPaginate: false,
+					bProcessing: true,
+					bStateSave: false,
+					bAutoWidth: false,
+					sScrollX: "100%",
+					sScrollY: "550px",
+					aaSorting: [[ 1, "asc" ]],
+					aoColumnDefs: [
       						{ "bVisible": false, "aTargets": hideFirst }
     					],
-					"sDom": '<"leftSearch"Tfr><t>',
-					"oTableTools": {
-							"sSwfPath": "/css/swf/copy_csv_xls.swf",
-							"aButtons": [ "csv", "xls","copy"]
-						}
+					sDom: '<"leftSearch"Tfr><t>',
+					//oTableTools: {
+					//		"sSwfPath": "/css/swf/copy_csv_xls.swf",
+					//		"aButtons": [ "csv", "xls","copy"]
+					//	},
+				buttons: ['copy', 'excel', 'pdf']
 	
 			});
                         if(groupM && groupM.columns){
