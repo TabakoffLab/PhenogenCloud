@@ -220,7 +220,7 @@
 							"sSwfPath": "/css/swf/copy_csv_xls.swf",
 							"aButtons": [ "csv", "xls","copy"]
 							}*/
-				buttons: ['copy', 'excel', 'pdf']
+				buttons: ['copy','csv', 'excel', 'pdf']
 	
 			});
 			

@@ -721,7 +721,7 @@
     ],*/
 	sDom: '<"leftSearch"fr><t>',
         buttons: [
-            'copy', 'excel', 'pdf'
+            'copy','csv', 'excel', 'pdf'
         ]
 	/*"oTableTools": {
 			"sSwfPath": "/css/swf/copy_csv_xls_pdf.swf"

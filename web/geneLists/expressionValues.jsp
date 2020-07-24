@@ -445,12 +445,8 @@
 					aoColumnDefs: [
       						{ "bVisible": false, "aTargets": hideFirst }
     					],
-					sDom: '<"leftSearch"Tfr><t>',
-					//oTableTools: {
-					//		"sSwfPath": "/css/swf/copy_csv_xls.swf",
-					//		"aButtons": [ "csv", "xls","copy"]
-					//		},
-				buttons: ['copy', 'excel', 'pdf']
+					sDom: '<"leftSearch"TfrB><t>',
+				buttons: ['copy','csv', 'excel', 'pdf']
 	
 			});
                         
@@ -465,12 +461,9 @@
 					aoColumnDefs: [
       						{ "bVisible": false, "aTargets": hideFirst }
     					],
-					sDom: '<"leftSearch"Tfr><t>',
-					//oTableTools: {
-					//		"sSwfPath": "/css/swf/copy_csv_xls.swf",
-					//		"aButtons": [ "csv", "xls","copy"]
-					//	},
-				buttons: ['copy', 'excel', 'pdf']
+					sDom: '<"leftSearch"TfrB><t>',
+
+				buttons: ['copy','csv', 'excel', 'pdf']
 	
 			});
                         if(groupM && groupM.columns){

@@ -717,10 +717,9 @@
 	/*"aoColumnDefs": [
       { "bVisible": false, "aTargets": geneTargets }
     ],*/
-	sDom: '<"leftSearch"fr><t>'
-	/*"oTableTools": {
-			"sSwfPath": "/css/swf/copy_csv_xls_pdf.swf"
-		}*/
+	sDom: '<"leftSearch"frB><t>',
+		buttons: ['copy', 'excel', 'pdf']
+
 
 	});
 	
