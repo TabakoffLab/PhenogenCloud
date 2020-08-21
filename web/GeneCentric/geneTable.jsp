@@ -655,12 +655,12 @@
                                 %>
                                     <TD class="leftBorder"><%if(brain!=null && brain.containsKey("ensmed")){%><%=brain.get("ensmed")%><%}%></TD>
                                     <TD><%if(brain!=null && brain.containsKey("ensmed")){%><%=brain.get("ensmin")%>-<%=brain.get("ensmax")%><%}%></TD>
-                                    <TD></TD>
+                                    <TD><%if(brain!=null && brain.containsKey("geneHerit") && brain.get("geneHerit")>0){%><%=df2.format(brain.get("geneHerit"))%><%}%></TD>
                                     <TD><%if(cisPvalB>-1){%><%=dfe.format(cisPvalB)%><BR><%=cisLocationB%><%}%></TD>
                                     <TD><%if(transPvalB>-1){%><%=dfe.format(transPvalB)%><BR><%=transLocationB%><%}%></TD>
                                     <TD class="leftBorder"><%if(liver!=null && liver.containsKey("ensmed")){%><%=liver.get("ensmed")%><%}%> </TD>
                                     <TD><%if(liver!=null && liver.containsKey("ensmed")){%><%=liver.get("ensmin")%>-<%=liver.get("ensmax")%><%}%></TD>
-                                    <TD ></TD>
+                                    <TD ><%if(liver!=null && liver.containsKey("geneHerit") && liver.get("geneHerit")>0){%><%=df2.format(liver.get("geneHerit"))%><%}%></TD>
                                     <TD><%if(cisPvalL>-1){%><%=dfe.format(cisPvalL)%><BR><%=cisLocationL%><%}%></TD>
                                     <TD><%if(transPvalL>-1){%><%=dfe.format(transPvalL)%><BR><%=transLocationL%><%}%></TD>
                                 <%
