@@ -1,5 +1,6 @@
 package edu.ucdenver.ccp.PhenoGen.tools.analysis;
 
+
 import edu.ucdenver.ccp.PhenoGen.driver.ExecException;
 import edu.ucdenver.ccp.PhenoGen.driver.ExecHandler;
 import edu.ucdenver.ccp.PhenoGen.tools.idecoder.IDecoderClient;
@@ -31,6 +32,8 @@ public class CircosDataTools {
     private String url="";
     private String message="";
     private String path;
+    private String transcriptome="ensembl";
+    private String cisOnly="all";
     private boolean success=false;
     private int cutoff;
     private int geneListID;
@@ -44,7 +47,7 @@ public CircosDataTools (HttpSession session,String path){
     log = Logger.getRootLogger();
 }
 
-public boolean runCircosGeneList(int geneListID,String chromosomeList,String tissueList,String source, String genomeVer, String rnaDSIDs, int cutoff){
+public boolean runCircosGeneList(int geneListID,String chromosomeList,String tissueList,String source, String genomeVer, String rnaDSIDs, int cutoff,String transcriptome,String cisOnly){
     this.chrList=chromosomeList;
     this.tisList=tissueList;
     this.source=source;
@@ -52,6 +55,9 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
     this.cutoff=cutoff;
     this.geneListID=geneListID;
     this.success=false;
+    this.transcriptome=transcriptome;
+    this.cisOnly=cisOnly;
+
     boolean continueCircos=true;
     String circosErrorMessage;
     DataSource pool=(DataSource) session.getAttribute("dbPool");
@@ -60,11 +66,12 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
     // Create if doeesn't exist or is older than 1 month
     // Copy to circos folder if it does exist
     String finalPath=path+"/geneListLocations.txt";
-    String finalPathEQTL=path+"/geneListEQTLs_"+source+".txt";
+    String finalPathEQTL=path+"/geneListEQTLs_"+source+"_"+transcriptome+"_"+cisOnly+".txt";
 
     StringBuffer pgID=new StringBuffer();
     boolean firstPGID=true;
     StringBuffer affID=new StringBuffer();
+    StringBuffer ensID=new StringBuffer();
     boolean firstAffID=true;
     File geneFile=new File(finalPath);
     File eqtlFile=new File(finalPathEQTL);
@@ -91,6 +98,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                         String id = "";
                         String trxID = "";
                         String phenogenID = "";
+                        String ensID2="";
                         Identifier thisIdentifier = (Identifier) itr.next();
                         HashMap<String, Set<Identifier>> targetHM = thisIdentifier.getTargetHashMap();
                         if (targetHM.containsKey("Ensembl ID")) {
@@ -102,6 +110,8 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                                     chr = curID.getChromosome();
                                     min = Integer.parseInt(curID.getBP());
                                     id = curID.getIdentifier();
+                                    ensID.append(",'"+curID.getIdentifier()+"'");
+                                    ensID2=ensID2+","+curID.getIdentifier();
                                 }
                             }
                         }
@@ -182,7 +192,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                             chr = chr.substring(3);
                         }
                         chr = genomeVer.substring(0, 2) + chr;
-                        out.write(chr + "\t" + min + "\t" + id + "\t" + trxID + "\t" + phenogenID + "\n");
+                        out.write(chr + "\t" + min + "\t" + id + "\t" + trxID + "\t" + phenogenID + "\t"+ ensID2.substring(1) +"\n");
                     }
                 } else {
                     message = "Error translating gene list IDs to IDs with eQTLs.";
@@ -221,29 +231,39 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                 if(source.equals("array")){
                     inIDs=affID.toString();
                 }else{
-                    inIDs=pgID.toString();
+                    if(transcriptome.equals("ensembl")){
+                        inIDs=ensID.substring(1).toString();
+                    }else{
+                        inIDs=pgID.toString();
+                    }
                 }
-                String qtlQuery="select s.chromosome_id,s.snp_start,s.tissue,l.pvalue,l.probe_id "
-                        +"from SNPS s "
-                        +"left outer join location_specific_eqtl2 l on s.snp_id=l.snp_id "
+                String qtlQuery="select s.chromosome_id,s.coord,s.tissue,l.pvalue,l.probe_id "
+                        +"from SNPS_HRDP s "
+                        +"left outer join location_specific_eqtl_HRDP l on s.snp_id=l.snp_id "
                         +"where l.probe_id in ( "+inIDs+") "
                         +"and s.genome_id='"+genomeVer+"' "
                         +"and s.type='"+source+"' ";
                 if(source.equals("seq")){
-
                     qtlQuery=qtlQuery+" and s.rna_dataset_id in ("+rnaDSIDs+")";
+                    if(cisOnly.equals("cis")){
+                        qtlQuery=qtlQuery+" and is_cis=1";
+
+                    }
                 }
-                        //+"and l.PVALUE >= "+cutoff;
-                log.debug("\n"+qtlQuery+"\n");
+                        //
+                log.debug("QTLQUERY\n"+qtlQuery+"\n");
                 PreparedStatement ps = conn.prepareStatement(qtlQuery);
                 ResultSet rs= ps.executeQuery();
                 while (rs.next()){
                     String curChr=chrHM.get(rs.getInt(1));
                     int start=rs.getInt(2);
                     String tissue=rs.getString(3);
-                    float pval=rs.getFloat(4);
+                    double pval=rs.getDouble(4);
                     String probe=rs.getString(5);
-                    out.write(curChr+"\t"+start+"\t"+tissue+"\t"+pval+"\t"+probe+"\n");
+                    double logP=-1*Math.log10(pval);
+                    if(logP>=cutoff) {
+                        out.write(curChr + "\t" + start + "\t" + tissue + "\t" + pval + "\t" + probe + "\n");
+                    }
                 }
             }catch (SQLException e) {
                 message = "Error SQL.";
@@ -269,7 +289,7 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
         String perlEnvironmentVariables = (String)session.getAttribute("perlEnvVar");
 
         perlEnvironmentVariables += ":/usr/bin:/usr/share/circos/lib:/usr/share/circos/bin";
-        String[] perlScriptArguments = new String[11];
+        String[] perlScriptArguments = new String[13];
         // the 0 element in the perlScriptArguments array must be "perl" ??
         perlScriptArguments[0] = "perl";
         // the 1 element in the perlScriptArguments array must be the script name including path
@@ -283,6 +303,8 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
         perlScriptArguments[8]=genomeVer;
         perlScriptArguments[9]=source;
         perlScriptArguments[10]=rnaDSIDs;
+        perlScriptArguments[11]=transcriptome;
+        perlScriptArguments[12]=cisOnly;
         //setup params
         //call circos
         String[] envVar=perlEnvironmentVariables.split(",");

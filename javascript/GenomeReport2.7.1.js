@@ -78,11 +78,11 @@ function loadRegionReport(reportName,chromosome,rptmin,rptmax){
             }
             regionDetailLoaded[reportName]=curRptRegion;
     }
-    if(reportName==="regionEQTLTable"){
+    /*if(reportName==="regionEQTLTable"){
             if(tblFrom){
                     tblFrom.fnAdjustColumnSizing();
             }
-    }
+    }*/
     /*if(ga){
 						ga('send','event','loadRegionReport',reportName);
 	}*/
@@ -176,9 +176,14 @@ function loadTrackTable(){
 }
 
 function loadEQTLTable(){
-	var jspPage="web/GeneCentric/regionEQTLTable.jsp";
+	var jspPage="web/GeneCentric/regionEQTLTableSeq.jsp";
 	var min=svgList[0].xScale.domain()[0];
     var max=svgList[0].xScale.domain()[1];
+
+    transcriptome=$("#transriptome").val();
+    cisOnly=$("#cisTrans").val();
+    pValueCutoff=$("#pvalueCutoffSelect2").val();
+
 	var params={
 			species: organism,
 			minCoord: min,
@@ -188,7 +193,10 @@ function loadEQTLTable(){
 			arrayTypeID: arrayTypeID,
 			pValueCutoff:pValueCutoff,
 			folderName: regionfolderName,
-			genomeVer: genomeVer
+			genomeVer: genomeVer,
+			transcriptome: transcriptome,
+			cisOnly: cisOnly
+
 		};
 	loadDivWithPage("div#regionEQTLTable",jspPage,false,params,
 		"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
@@ -216,20 +224,30 @@ function loadRegionWGCNA(){
 }
 
 function loadEQTLTableWParams(levelList,chrList,tisList,pval,dataSource){
-	var jspPage="web/GeneCentric/regionEQTLTable.jsp";
+	var jspPage="web/GeneCentric/regionEQTLTableSeq.jsp";
+	var min=svgList[0].xScale.domain()[0];
+	var max=svgList[0].xScale.domain()[1];
+
+	transcriptome=$("#transriptome").val();
+	cisOnly=$("#cisTrans").val();
+	pValueCutoff=$("#pvalueCutoffSelect2").val();
 	var params={
+		 	genomeVer: genomeVer,
 			species: organism,
-			minCoord: minCoord,
-			maxCoord: maxCoord,
+			minCoord: min,
+			maxCoord: max,
 			chromosome: chr,
 			rnaDatasetID: rnaDatasetID,
 			arrayTypeID: arrayTypeID,
-			pValueCutoff:pval,
+			pValueCutoff:pValueCutoff,
 			tissues:tisList,
 			chromosomes:chrList,
-			levels:levelList,
+			//levels:levelList,
 			folderName: regionfolderName,
-			dataSource:dataSource
+			//dataSource:dataSource,
+			transcriptome: transcriptome,
+			cisOnly: cisOnly
+
 		};
 	loadDivWithPage("div#regionEQTLTable",jspPage,false,params,
 		"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
@@ -249,6 +267,7 @@ function loadDivWithPage(divSelector,jspPage,scrollToDiv,params,loadingHTML){
    				cache: false,
 				data: params,
 				dataType: 'html',
+				async:true,
     			success: function(data2){ 
         			$(divSelector).html(data2);
         			if(scrollToDiv){

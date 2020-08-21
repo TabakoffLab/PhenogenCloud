@@ -33,15 +33,17 @@
         String genomeVer="";
         String source="seq";
         String version="";
+        String transcriptome="ensembl";
+        String cisOnly="all";
         FileHandler myFH=new FileHandler();
         //
         //Configure Inputs from session variables, unless they are already defined on the page.
         //
 
         LinkedHashMap inputHash = new LinkedHashMap();
-        if(request.getParameter("hiddenGeneSymbol")!=null){
+        if(request.getParameter("geneSymbol")!=null){
                 // The top of the form has already been filled in so get information from form
-                geneSymbolinternal =(String)request.getParameter("hiddenGeneSymbol");
+                geneSymbolinternal =(String)request.getParameter("geneSymbol");
                 geneCentricPath =(String)request.getParameter("geneCentricPath");	
                 log.debug("Got geneCentricPath and geneSymbol from form "+ geneSymbolinternal + "  " + geneCentricPath);
         }
@@ -54,6 +56,12 @@
         if(request.getParameter("version")!=null){
             version=FilterInput.getFilteredInput(request.getParameter("version"));
         }
+        if(request.getParameter("transcriptome")!=null){
+            transcriptome=FilterInput.getFilteredInput(request.getParameter("transcriptome"));
+        }
+        if(request.getParameter("cisOnly")!=null){
+           cisOnly=FilterInput.getFilteredInput(request.getParameter("cisOnly"));
+        }
         log.debug("before geneCentricPath");
         inputHash.put("geneSymbol",geneSymbolinternal);
         inputHash.put("geneCentricPath",geneCentricPath);
@@ -63,14 +71,15 @@
         log.debug("after geneCentricPath");
 
         ensemblIdentifier = geneCentricPath.substring(tmpIndex+2,geneCentricPath.length()-1);
+        log.debug("ensembl:"+ensemblIdentifier);
         inputHash.put("ensemblIdentifier",ensemblIdentifier);
         inputHash.put("transcriptClusterFileName",geneCentricPath+"tmp_psList_transcript.txt");
         transcriptClusterFileName = geneCentricPath.concat("tmp_psList_transcript.txt");
 
-        if(ensemblIdentifier.substring(0,7).equals("ENSRNOG")|| ensemblIdentifier.substring(0,7).equals("PRN")){
+        if(ensemblIdentifier.substring(0,7).equals("ENSRNOG")|| ensemblIdentifier.substring(0,3).equals("PRN")){
                 species="Rn";
                 longSpecies = "Rattus norvegicus";
-        }else if (ensemblIdentifier.substring(0,7).equals("ENSMUSG")|| ensemblIdentifier.substring(0,7).equals("PMM")){
+        }else if (ensemblIdentifier.substring(0,7).equals("ENSMUSG")|| ensemblIdentifier.substring(0,3).equals("PMM")){
                 species="Mm";
                 longSpecies="Mus musculus";
         }
@@ -161,22 +170,27 @@
                 log.debug(" Transcript Cluster Stop: "+transcriptClusterStop);
             }
         }else if(source.equals("seq")){
+            log.debug("seq");
             String[] loc=null;
             if(request.getParameter("transcriptClusterID")!=null){
                 transcriptClusterID=request.getParameter("transcriptClusterID");
+            }else if(ensemblIdentifier!=null && !ensemblIdentifier.equals("")){
+                transcriptClusterID=ensemblIdentifier;
             }
-            if(transcriptClusterID.startsWith("ENS")){
+            log.debug("transcriptClusterID:seq:"+transcriptClusterID);
+            if(transcriptClusterID.startsWith("ENS") && transcriptome.equals("reconst")){
                 // find the corresponding Reconstruction Gene
                 try{
                     ArrayList<String> idlist=gdt.getPhenoGenID(transcriptClusterID,genomeVer,version);
                     if(idlist.size()==1){
                         transcriptClusterID=idlist.get(0);
+                        log.debug("ID list:"+idlist);
                     }else if(idlist.size()>1){
                         transcriptClusterID=idlist.get(0);
-                        log.debug("ID list >1");
+                        log.debug("ID list >1:"+idlist);
                     }
                 }catch(SQLException e){
-                    
+                    log.error("PhenoGenID list error:",e);
                 }
                 //Return error if no corresponding gene
                 if(transcriptClusterID.startsWith("ENS")){
@@ -274,12 +288,15 @@
                 tissueNameArray[1]="Liver";
                 tissueDisplayArray[1]="Liver";
         }
-
-        
         // Get information about the cutoff value
         if(request.getParameter("cutoffValue")!=null){
                 selectedCutoffValue = request.getParameter("cutoffValue");
                 log.debug(" Selected Cutoff Value " + selectedCutoffValue);
+                double tmpPval=Double.parseDouble(selectedCutoffValue);
+                if(tmpPval<1){
+                    tmpPval=-1*Math.log10(tmpPval);
+                    selectedCutoffValue=Double.toString(tmpPval);
+                }
 
         }
 
@@ -409,7 +426,7 @@
 
 
             log.debug("\n******* Create Perl Arguments");
-            String[] perlScriptArguments = new String[22];
+            String[] perlScriptArguments = new String[24];
             // the 0 element in the perlScriptArguments array must be "perl" ??
             perlScriptArguments[0] = "perl";
             // the 1 element in the perlScriptArguments array must be the script name including path
@@ -435,6 +452,8 @@
             perlScriptArguments[19]=source;
             perlScriptArguments[20]=rnaDSIDs;
             perlScriptArguments[21]=prnID;
+            perlScriptArguments[22]=transcriptome;
+            perlScriptArguments[23]=cisOnly;
             log.debug("\n******* Create Perl Arguments[20]");
 
             log.debug("\n*** Calling createCircosFiles from GeneDataTools");

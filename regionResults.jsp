@@ -14,6 +14,8 @@ var arrayTypeID=<%=arrayTypeID%>;
 var panel="<%=panel%>";
 var forwardPValueCutoff=<%=forwardPValueCutoff%>;
 var pValueCutoff=<%=pValueCutoff%>;
+var transcriptome="<%=transcriptome%>";
+var cisOnly="<%=cisOnly%>";
 var filterExpanded=0;
 var tblBQTLAdjust=false;
 var tblFromAdjust=false;
@@ -179,13 +181,13 @@ console.log("urlprefix:"+urlprefix);
         <div id="collapsableImage" class="geneimage" >
 
             <div id="geneImage" class="ucscImage"  style="display:inline-block;width:100%;">
-                <script src="javascript/gdb.2.9.3.min.js" type="text/javascript"></script>
+            <!--    <script src="javascript/gdb.2.9.3.min.js" type="text/javascript"></script>-->
 
-            <!--<script src="javascript/GenomeDataBrowser2.9.1.js" type="text/javascript"></script>
+            <script src="javascript/GenomeDataBrowser2.9.1.js" type="text/javascript"></script>
             <script src="javascript/GenomeReport2.7.1.js" type="text/javascript"></script>
             <script src="javascript/GenomeViewMenu2.6.2.js" type="text/javascript"></script>
             <script src="javascript/GenomeTrackMenu2.6.2.js" type="text/javascript"></script>
-            <script src="javascript/wgcnaBrowser1.3.8.js" type="text/javascript"></script>-->
+            <script src="javascript/wgcnaBrowser1.3.8.js" type="text/javascript"></script>
            </div>
         </div>
 

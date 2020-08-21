@@ -1,21 +1,12 @@
 package edu.ucdenver.ccp.PhenoGen.tools.analysis;
 
 //import com.sun.org.apache.xpath.internal.operations.String;
+import edu.ucdenver.ccp.PhenoGen.data.Bio.*;
 import edu.ucdenver.ccp.PhenoGen.driver.RException;
 import edu.ucdenver.ccp.PhenoGen.driver.R_session;
 import edu.ucdenver.ccp.PhenoGen.data.AsyncUpdateDataset;
 import edu.ucdenver.ccp.PhenoGen.data.Dataset;
 import edu.ucdenver.ccp.PhenoGen.data.User;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.Gene;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.BQTL;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.EQTL;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.Transcript;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.TranscriptCluster;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.SmallNonCodingRNA;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.Annotation;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.RNASequence;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.SequenceVariant;
-import edu.ucdenver.ccp.PhenoGen.data.Bio.RNASeqHeritQTLData;
 import edu.ucdenver.ccp.PhenoGen.driver.PerlHandler;
 import edu.ucdenver.ccp.PhenoGen.driver.PerlException;
 import edu.ucdenver.ccp.PhenoGen.driver.ExecHandler;
@@ -2817,6 +2808,51 @@ public class GeneDataTools {
         }
         return mainGenes;
     }
+
+    public HashMap<String,HashMap<String,HashMap<String,Double>>> getTPM(String geneIDs,String dsIDs){
+        HashMap<String,HashMap<String,HashMap<String,Double>>> ret= new HashMap<>();
+        String tpmQ="select rd.tissue,rtt.* from rna_transcripts_tpm rtt left outer join rna_dataset rd on rd.rna_dataset_id=rtt.rna_dataset_id  where rtt.rna_dataset_id in ("+dsIDs+ ") and (rtt.feature_id in (" +geneIDs+ ") or rtt.alt_feature_id in ("+geneIDs+") )";
+        log.debug("TPMQ\n"+tpmQ);
+        try (Connection conn=pool.getConnection()){
+            PreparedStatement psC = conn.prepareStatement(tpmQ);
+            ResultSet rsC = psC.executeQuery();
+            while(rsC.next()){
+                String tissue=rsC.getString(1);
+                String id=rsC.getString(3);
+                String altID=rsC.getString(7);
+                String mainID=id;
+                if(!geneIDs.contains(id)){
+                    mainID=altID;
+                }
+                if(! ret.containsKey(tissue)){
+                    ret.put(tissue,new HashMap<String,HashMap<String,Double>>());
+                }
+                String keyMed="ensmed";
+                String keyMin="ensmin";
+                String keyMax="ensmax";
+                if(id.startsWith("PRN")){
+                    keyMed="reconmed";
+                    keyMin="reconmin";
+                    keyMax="reconmax";
+                }
+                if(ret.get(tissue).containsKey(mainID)){
+                    HashMap<String, Double> tmp=ret.get(tissue).get(mainID);
+                    tmp.put(keyMed,rsC.getDouble(4));
+                    tmp.put(keyMin,rsC.getDouble(5));
+                    tmp.put(keyMax,rsC.getDouble(6));
+                }else {
+                    HashMap<String, Double> tmp=new HashMap<>();
+                    tmp.put(keyMed,rsC.getDouble(4));
+                    tmp.put(keyMin,rsC.getDouble(5));
+                    tmp.put(keyMax,rsC.getDouble(6));
+                    ret.get(tissue).put(mainID, tmp);
+                }
+            }
+        }catch(SQLException e) {
+            log.error("getTPM error",e);
+        }
+        return ret;
+    }
     public void addRegionHeritEQTLs(ArrayList<Gene> list,int min, int max,String organism,String chr,String hrdpVer,String genomeVer,double pvalue){
 
         if(chr.startsWith("chr")){
@@ -2824,7 +2860,7 @@ public class GeneDataTools {
         }
         String chrQ="select chromosome_id,name from chromosomes where organism='"+organism+"'";
         HashMap<Integer,String> chrHM=new HashMap<>();
-        HashMap<String,RNASeqHeritQTLData> geneHM=new HashMap();
+        HashMap<String,RNASeqHeritQTLData> geneHM=new HashMap<>();
         try (Connection conn=pool.getConnection()){
             int chrID=-99;
             PreparedStatement psC = conn.prepareStatement(chrQ);
@@ -2852,57 +2888,89 @@ public class GeneDataTools {
             ResultSet rsH = psH.executeQuery();
             while(rsH.next()){
                 String id=rsH.getString(4);
+                String phenogenID=rsH.getString(1);
+                String ensemblID=rsH.getString(4);
+                if(ensemblID!=null && ensemblID.startsWith("ENSRNOG")){
+                    ensemblID=ensemblID.substring(0,ensemblID.indexOf(":"));
+                }
                 String tissue="";
                 if(rsH.getInt(3)==97){
                     tissue="Whole Brain";
                 }else if(rsH.getInt(3)==98){
                     tissue="Liver";
                 }
-                if(id!=null && id.startsWith("ENSRNOG")){
-                    id=id.substring(0,id.indexOf(":"));
+                if(ensemblID!=null && ensemblID.startsWith("ENSRNOG")){
+                    id=ensemblID;
                 }else{
-                    id=rsH.getString(1);
+                    id=phenogenID;
                 }
                 if(geneHM.containsKey(id) ) {
                     RNASeqHeritQTLData tmp=geneHM.get(id);
                     tmp.addHerit(tissue, rsH.getDouble(2));
                 }else{
-                    RNASeqHeritQTLData tmp=new RNASeqHeritQTLData(rsH.getString(1));
+                    RNASeqHeritQTLData tmp=new RNASeqHeritQTLData(phenogenID,ensemblID);
                     tmp.addHerit(tissue,rsH.getDouble(2));
-                    geneHM.put(id,tmp);
+                    if(phenogenID!=null){
+                        geneHM.put(phenogenID,tmp);
+                    }
+                    if(ensemblID!=null) {
+                        geneHM.put(ensemblID, tmp);
+                    }
                 }
             }
             psH.close();
             StringBuffer sb=new StringBuffer();
-            HashMap<String,Gene> p2E=new HashMap();
+            HashMap<String,Gene> p2E=new HashMap<>();
             for(int i=0;i<list.size();i++) {
                 Gene curGene=list.get(i);
                 if(geneHM.containsKey(curGene.getGeneID())) {
                     RNASeqHeritQTLData tmpSeq=geneHM.get(curGene.getGeneID());
                     curGene.setRNASeq(tmpSeq);
-                    sb.append(",'"+tmpSeq.getID()+"'");
-                    p2E.put(tmpSeq.getID(),curGene);
+                    if(tmpSeq.getPhenogenID()!=null) {
+                        sb.append(",'" + tmpSeq.getPhenogenID() + "'");
+                    }
+                    if(tmpSeq.getEnsemblID()!=null){
+                        sb.append(",'" + tmpSeq.getEnsemblID() + "'");
+                    }
+                    if(tmpSeq.getPhenogenID()!=null && !tmpSeq.getPhenogenID().equals("")) {
+                        p2E.put(tmpSeq.getPhenogenID(), curGene);
+                    }
+                    if(tmpSeq.getEnsemblID()!=null && !tmpSeq.getEnsemblID().equals("")) {
+                        p2E.put(tmpSeq.getEnsemblID(), curGene);
+                    }
                 }
             }
             if(sb.length()>1) {
                 //get region eQTLs for Gene IDs
-                String qtlQ = "select s.chromosome_id,s.snp_start,s.snp_end,s.tissue,lse.PROBE_ID,lse.PVALUE from LOCATION_SPECIFIC_EQTL2 lse " +
-                        "inner join snps s on s.snp_id=lse.snp_id " +
+                String qtlQ = "select s.chromosome_id,s.coord,s.tissue,lse.PROBE_ID,lse.PVALUE,lse.is_cis,lse.cor_pvalue from LOCATION_SPECIFIC_EQTL_HRDP lse " +
+                        "inner join snps_hrdp s on s.snp_id=lse.snp_id " +
                         "where s.rna_dataset_id in (97,98) " +
                         " and s.type='seq' " +
-                        " and lse.pvalue>= " + (-Math.log10(pvalue)) + " " +
-                        " and lse.probe_id in ( " + sb.substring(1) + " )";
+                        " and lse.probe_id in ( " + sb.substring(1) + " )"+
+                        " and ( (lse.is_cis=0 and lse.pvalue <= 0.000001 ) "+
+                        " or ( lse.is_cis=1 and lse.cor_pvalue <=0.05) )";
                 log.debug("region qtl:" + qtlQ);
                 PreparedStatement ps = conn.prepareStatement(qtlQ);
                 ResultSet rs = ps.executeQuery();
                 while (rs.next()) {
-                    String id = rs.getString(5);
-                    String tissue = rs.getString(4);
-                    String location = chrHM.get(rs.getInt(1)) + ":" + rs.getInt(2) + "-" + rs.getInt(3);
-                    double pval = rs.getDouble(6);
+                    String id = rs.getString(4);
+                    String tissue = rs.getString(3);
+                    String location = chrHM.get(rs.getInt(1)) + ":" + rs.getInt(2);
+                    double pval = rs.getDouble(5);
+                    double corPval=rs.getDouble(7);
+                    int isCis=rs.getInt(6);
                     if (p2E.containsKey(id)) {
                         RNASeqHeritQTLData cur = p2E.get(id).getRNASeq();
-                        cur.addCount(tissue, pval, location);
+                        String source="ensembl";
+                        if(id.startsWith("PRN")){
+                            source="reconst";
+                        }
+                        if(isCis==1){
+                            cur.addCount(tissue, corPval, location,true,source);
+                        }else{
+                            cur.addCount(tissue, pval, location,false,source);
+                        }
+
                     }
                 }
                 ps.close();
@@ -3252,6 +3320,508 @@ public class GeneDataTools {
         log.debug(folder);*/
         folder=min+"_"+max;
         return folder;
+    }
+
+    public HashMap<String, TranscriptomeQTL> getRegionEQTLs(int min,int max,String chr,int arrayTypeID,int RNADatasetID,double pvalue,String organism,String genomeVer,String circosTissue,String circosChr,String dataSource,String cisTrans){
+        session.setAttribute("getTransControllingEQTL","");
+        if(chr.startsWith("chr")){
+            chr=chr.substring(3);
+        }
+        String folderName=min+"_"+max;
+        String tmpOutputDir=fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/chr"+chr+"/"+folderName+"/";
+        File mainDir=new File(fullPath + "tmpData/browserCache/"+genomeVer+"/regionData/chr"+chr+"/"+folderName);
+        if(! mainDir.exists()){
+            String panel="BNLX/SHRH";
+            if(organism.equals("Mm")){
+                panel="ILS/ISS";
+            }
+            this.getRegionData(chr, min, max, panel, organism,genomeVer, RNADatasetID, arrayTypeID, pvalue, false,false);
+        }
+
+        circosTissue=circosTissue.replaceAll(";;", ";");
+        circosChr=circosChr.replaceAll(";;", ";");
+
+        String tmpRegion=chr+":"+min+"-"+max;
+        String curParams="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",pvalue="+pvalue+",org="+organism;
+        String curParamsMinusPval="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",org="+organism;
+        String curCircosParams="min="+min+",max="+max+",chr="+chr+",arrayid="+arrayTypeID+",pvalue="+pvalue+",org="+organism+",circosTissue="+circosTissue+",circosChr="+circosChr;
+        boolean run=true;
+        boolean filter=false;
+
+        HashMap<String, TranscriptomeQTL> geneQTLHM=new HashMap<>();
+
+        HashMap<Integer,String> chrHM=new HashMap<>();
+        String org="Rn";
+        if(genomeVer.toLowerCase().startsWith("mm")){
+            org="Mm";
+        }
+        String chrQ="select chromosome_id,name from chromosomes where organism='"+org+"'";
+
+        int chrID=-99;
+        try(Connection conn=pool.getConnection()) {
+
+            PreparedStatement psC = conn.prepareStatement(chrQ);
+            ResultSet rsC = psC.executeQuery();
+            while (rsC.next()) {
+                int tmpID = rsC.getInt(1);
+                String tmpName = rsC.getString(2);
+                if (tmpName.equals(chr.toUpperCase())) {
+                    chrID = tmpID;
+                }
+                chrHM.put(tmpID, tmpName);
+            }
+            rsC.close();
+            psC.close();
+            int snpcount = 0;
+            String snpQ = "select snp_id,tissue,snp_name,coord from snps_hrdp s where " +
+                    "s.genome_id='" + genomeVer + "' " +
+                    "and s.type='seq' " +
+                    "and s.chromosome_id = " + chrID + " " +
+                    "and ( s.coord>=" + (min - 1000000) + " and s.coord<=" + (max + 1000000) + ") ";
+
+            //if (dataSource.equals("seq")) {
+                snpQ = snpQ + " and s.RNA_DATASET_ID in (97,98)";
+            //}
+
+            HashMap<String, HashMap<String, String>> snpsHM = new HashMap<>();
+            StringBuffer sb = new StringBuffer();
+            log.debug("SNP_HRDP Query\n"+snpQ);
+            PreparedStatement ps = conn.prepareStatement(snpQ);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                if (sb.length() == 0) {
+                    sb.append(rs.getInt(1));
+                } else {
+                    sb.append("," + rs.getInt(1));
+                }
+                String id = Integer.toString(rs.getInt(1));
+                HashMap<String, String> snpEntry = new HashMap<>();
+                snpEntry.put("id", id);
+                snpEntry.put("tissue", rs.getString(2));
+                snpEntry.put("snp_name", rs.getString(3));
+                snpEntry.put("start", Integer.toString(rs.getInt(4)));
+                snpsHM.put(id, snpEntry);
+                snpcount++;
+            }
+            rs.close();
+            ps.close();
+            int isCis = 0;
+            if (cisTrans.equals("all")) {
+                isCis = 0;
+            } else if (cisTrans.equals("cis")) {
+                isCis = 1;
+            }
+            String qtlQuery = "select rt.rna_dataset_id,rt.merge_gene_id,c.name,rt.trstart,rt.trstop,rt.strand,rta.annotation,rncg.stable_id,rncsr.name,rncg.seq_region_start,rncg.seq_region_end,lse.probe_id,lse.snp_id, lse.pvalue,lse.is_cis " +
+                    "from  location_specific_eqtl_hrdp lse " +
+                    "left outer join RNA_TRANSCRIPTS rt on rt.MERGE_GENE_ID=lse.probe_id and rt.RNA_DATASET_ID in (97,98) " +
+                    "left outer join rna_transcripts_annot rta on rta.rna_transcript_id=rt.rna_transcript_id " +
+                    "left outer join chromosomes c on c.chromosome_id=rt.chromosome_id " +
+                    "left outer join rattus_norvegicus_core_98_6.gene rncg on rncg.stable_id=lse.probe_id " +
+                    "left outer join rattus_norvegicus_core_98_6.seq_region rncsr on rncsr.seq_region_id=rncg.seq_region_id and rncsr.coord_system_id=3 " +
+                    "where lse.pvalue<=0.000001 " +
+                    "and lse.snp_id in ( " + sb.toString() + ") ";
+            if(cisTrans.equals("cis")) {
+                qtlQuery = qtlQuery+ "and lse.is_cis=" + isCis;
+            }
+
+            log.debug("SQL eQTL FROM QUERY\n" + qtlQuery);
+            ps = conn.prepareStatement(qtlQuery);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                String probeID = rs.getString(12);
+                String ensID = rs.getString(8);
+                if(ensID==null && rs.getString(7)!=null){
+                    ensID=rs.getString(7);
+                    ensID=ensID.substring(0,ensID.indexOf(":"));
+                }
+                String phenogenID = rs.getString(2);
+                String tcChr = "";
+                String rtChr=rs.getString(3);
+                String eChr=rs.getString(9);
+                if (rtChr==null) {
+                    tcChr = eChr;
+                }else if(eChr==null){
+                    tcChr=rtChr;
+                }else if(rtChr!=null && eChr!=null && rtChr.equals(eChr)){
+                    tcChr=rtChr;
+                }
+
+                int tcStrand = rs.getInt(6);
+                int tcStart = rs.getInt(4);
+                int tcEnd = rs.getInt(5);
+                int ensStart=rs.getInt(10);
+                int ensEnd=rs.getInt(11);
+                int snpID = rs.getInt(13);
+                double pval = rs.getDouble(14);
+                int cis = rs.getInt(15);
+                boolean isCis1 = false;
+                if (cis == 1) {
+                    isCis1 = true;
+                }
+                //log.debug("probe_id:"+probeID+":phenogen:"+phenogenID+":ens:"+ensID+":snpID:"+snpID+":pval:"+(-1*Math.log10(pval)));
+                TranscriptomeQTL tmpQTL = null;
+                if (ensID!=null && geneQTLHM.containsKey(ensID)) {
+                    tmpQTL = geneQTLHM.get(ensID);
+                    if(phenogenID!=null && !geneQTLHM.containsKey(phenogenID)){
+                        geneQTLHM.put(phenogenID,tmpQTL);
+                    }
+                }else if(phenogenID!=null && geneQTLHM.containsKey(phenogenID)){
+                    tmpQTL = geneQTLHM.get(phenogenID);
+                    if(ensID!=null && !geneQTLHM.containsKey(ensID)){
+                        geneQTLHM.put(ensID,tmpQTL);
+                    }
+                } else {
+                    tmpQTL = new TranscriptomeQTL();
+                    if (ensID != null) {
+                        tmpQTL.setEnsemblID(ensID);
+                        if (!geneQTLHM.containsKey(ensID)) {
+                            geneQTLHM.put(ensID, tmpQTL);
+                        }
+                    }
+                    if (phenogenID != null) {
+                        tmpQTL.setPhenogenID(phenogenID);
+                        if (!geneQTLHM.containsKey(phenogenID)) {
+                            geneQTLHM.put(phenogenID, tmpQTL);
+                        }
+                    }
+                    tmpQTL.setProbeID(probeID);
+                    tmpQTL.setChromosome(tcChr);
+                    if(ensStart!=0 && tcStart!=0) {
+                        if (tcStart < ensStart) {
+                            tmpQTL.setStart(tcStart);
+                        } else {
+                            tmpQTL.setStart(ensStart);
+                        }
+                    }else if(ensStart==0){
+                        tmpQTL.setStart(tcStart);
+                    }else if(tcStart==0){
+                        tmpQTL.setStart(ensStart);
+                    }
+                    if(ensEnd!=0 && tcEnd!=0) {
+                        if (tcEnd > ensEnd) {
+                            tmpQTL.setEnd(tcEnd);
+                        } else {
+                            tmpQTL.setEnd(ensEnd);
+                        }
+                    }else if(ensEnd==0){
+                        tmpQTL.setEnd(tcEnd);
+                    }else if(tcEnd==0){
+                        tmpQTL.setEnd(ensEnd);
+                    }
+                    if(tcStrand==0){
+                        tmpQTL.setStrand(0);
+                    }else {
+                        tmpQTL.setStrand(tcStrand);
+                    }
+                }
+                //update IDs just in case
+                if(tmpQTL.getEnsemblID().equals("")&& ensID!=null){
+                    tmpQTL.setEnsemblID(ensID);
+                }
+                if(tmpQTL.getPhenogenID().equals("")&& phenogenID!=null){
+                    tmpQTL.setPhenogenID(phenogenID);
+                }
+                if(tmpQTL!=null) {
+                    String snpIDstr=(new Integer(snpID)).toString();
+                    HashMap<String, String> curSNP = snpsHM.get(snpIDstr);
+                    tmpQTL.addQTL(probeID, curSNP.get("snp_name"), chr, Integer.parseInt(curSNP.get("start")), pval, isCis1, curSNP.get("tissue"));
+                }
+
+            }
+            ps.close();
+        }catch(SQLException e){
+            log.error("SQL Exception:"+e.toString(),e);
+        }
+        HashMap<String, String> previousOutput=new HashMap<>();
+        Set keys=geneQTLHM.keySet();
+        Iterator itr=keys.iterator();
+        try{
+            log.debug("open geneLocation.txt");
+            BufferedWriter out=new BufferedWriter(new FileWriter(new File(tmpOutputDir+dataSource+"_geneLocation.txt")));
+            while(itr.hasNext()){
+                TranscriptomeQTL tmpQ=(TranscriptomeQTL)geneQTLHM.get(itr.next());
+                String pID=tmpQ.getEnsemblID();
+                if(pID==null || pID.equals("")) {
+                    pID = tmpQ.getPhenogenID();
+                }
+                if(!previousOutput.containsKey(pID)){
+                        String line=tmpQ.getProbeID()+"\t"+tmpQ.getChromosome()+"\t"+tmpQ.getStart()+"\t"+tmpQ.getEnd()+"\t"+tmpQ.getStrand()+"\n";
+                        out.write(line);
+                        previousOutput.put(tmpQ.getProbeID(),"");
+                }
+            }
+            out.flush();
+            out.close();
+            log.debug("done output geneLocation.txt");
+        }catch(IOException e){
+            log.error("I/O Exception trying to output geneLocation.txt file.",e);
+            session.setAttribute("getTransControllingEQTL","Error retreiving eQTLs(4).  Please try again later.  The administrator has been notified of the problem.");
+            Email myAdminEmail = new Email();
+            myAdminEmail.setSubject("Exception thrown in GeneDataTools.getTransControllingEQTLS");
+            myAdminEmail.setContent("There was an error while running getTransControllingEQTLS.\nI/O Exception trying to output transcluster.txt file.",e);
+            try {
+                myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+            } catch (Exception mailException) {
+                log.error("error sending message", mailException);
+                try {
+                    myAdminEmail.sendEmailToAdministrator("");
+                } catch (Exception mailException1) {
+                    //throw new RuntimeException();
+                }
+            }
+        }
+        //log.debug("after geneLocation.txt");
+        HashMap<String,String> source=getGenomeVersionSource(genomeVer);
+        String ensemblPath=source.get("ensembl");
+        File ensPropertiesFile = new File(ensemblDBPropertiesFile);
+        Properties myENSProperties = new Properties();
+        String ensHost="";
+        String ensPort="";
+        String ensUser="";
+        String ensPassword="";
+        try{
+            myENSProperties.load(new FileInputStream(ensPropertiesFile));
+            ensHost=myENSProperties.getProperty("HOST");
+            ensPort=myENSProperties.getProperty("PORT");
+            ensUser=myENSProperties.getProperty("USER");
+            ensPassword=myENSProperties.getProperty("PASSWORD");
+        }catch(IOException e){
+            log.error("I/O Exception trying to read properties file.",e);
+            session.setAttribute("getTransControllingEQTL","Error retreiving eQTLs(5).  Please try again later.  The administrator has been notified of the problem.");
+            Email myAdminEmail = new Email();
+            myAdminEmail.setSubject("Exception thrown in GeneDataTools.getTransControllingEQTLS");
+            myAdminEmail.setContent("There was an error while running getTransControllingEQTLS.\nI/O Exception trying to read properties file.",e);
+            try {
+                myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+            } catch (Exception mailException) {
+                log.error("error sending message", mailException);
+                try {
+                    myAdminEmail.sendEmailToAdministrator("");
+                } catch (Exception mailException1) {
+                    //throw new RuntimeException();
+                }
+            }
+        }
+
+        /*boolean error=false;
+        String[] perlArgs = new String[9];
+        perlArgs[0] = "perl";
+        perlArgs[1] = perlDir + "writeGeneIDs.pl";
+        perlArgs[2] = tmpOutputDir+"transcluster.txt";
+        perlArgs[3] = tmpOutputDir+"TC_to_Gene.txt";
+        if (organism.equals("Rn")) {
+            perlArgs[4] = "Rat";
+        } else if (organism.equals("Mm")) {
+            perlArgs[4] = "Mouse";
+        }
+        perlArgs[5] = ensHost;
+        perlArgs[6] = ensPort;
+        perlArgs[7] = ensUser;
+        perlArgs[8] = ensPassword;
+
+
+        //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list
+        String[] envVar=perlEnvVar.split(",");
+
+        for (int i = 0; i < envVar.length; i++) {
+            if(envVar[i].contains("/ensembl")){
+                envVar[i]=envVar[i].replaceFirst("/ensembl", "/"+ensemblPath);
+            }
+            log.debug(i + " EnvVar::" + envVar[i]);
+        }
+
+
+        //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
+        myExec_session = new ExecHandler(perlDir, perlArgs, envVar, tmpOutputDir+"toGeneID");
+        boolean exception=false;
+        try {
+
+            myExec_session.runExec();
+
+        } catch (ExecException e) {
+            exception=true;
+            error=true;
+            log.error("In Exception of run writeGeneIDs.pl Exec_session", e);
+            session.setAttribute("getTransControllingEQTL","Error retreiving eQTLs(6).  Please try again later.  The administrator has been notified of the problem.");
+            setError("Running Perl Script to match Transcript Clusters to Genes.");
+            Email myAdminEmail = new Email();
+            myAdminEmail.setSubject("Exception thrown in Exec_session");
+            myAdminEmail.setContent("There was an error while running "
+                    + perlArgs[1] + " (" + perlArgs[2] +" , "+perlArgs[3]+" , "+perlArgs[4]+")\n\n"+myExec_session.getErrors());
+            try {
+                myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+            } catch (Exception mailException) {
+                log.error("error sending message", mailException);
+                try {
+                    myAdminEmail.sendEmailToAdministrator("");
+                } catch (Exception mailException1) {
+                    //throw new RuntimeException();
+                }
+            }
+        }
+
+        String errors=myExec_session.getErrors();
+        if(!exception && errors!=null && !(errors.equals(""))){
+            error=true;
+            Email myAdminEmail = new Email();
+            session.setAttribute("getTransControllingEQTL","Error retreiving eQTLs(1).  Please try again later.  The administrator has been notified of the problem.");
+            myAdminEmail.setSubject("Exception thrown in Exec_session");
+            myAdminEmail.setContent("There was an error while running "
+                    + perlArgs[1] + " (" + perlArgs[2] +" , "+perlArgs[3]+" , "+perlArgs[4]+
+                    ")\n\n"+errors);
+            try {
+                myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+            } catch (Exception mailException) {
+                log.error("error sending message", mailException);
+                try {
+                    myAdminEmail.sendEmailToAdministrator("");
+                } catch (Exception mailException1) {
+                    //throw new RuntimeException();
+                }
+            }
+        }
+        if(!error){*/
+        int finalCount=0;
+            try{
+                /*log.debug("Read TC_to_Gene");
+                BufferedReader in = new BufferedReader(new FileReader(new File(tmpOutputDir+"TC_to_Gene.txt")));
+                while(in.ready()){
+                    String line=in.readLine();
+                    String[] tabs=line.split("\t");
+                    String tcID=tabs[0];
+                    String ensID=tabs[1];
+                    String geneSym=tabs[2];
+                    String sStart=tabs[3];
+                    String sEnd=tabs[4];
+                    String sOverlap=tabs[5];
+                    String sOverlapG=tabs[6];
+                    String description="";
+                    if(tabs.length>7){
+                        description=tabs[7];
+                    }
+                    if(tmpHM.containsKey(tcID)){
+                        TranscriptCluster tmpTC=(TranscriptCluster)tmpHM.get(tcID);
+                        tmpTC.addGene(ensID,geneSym,sStart,sEnd,sOverlap,sOverlapG,description);
+                    }
+                }
+                in.close();*/
+                log.debug("geneQTLDetails.txt");
+                ArrayList<String> geneQTLKeys=new ArrayList<>(geneQTLHM.keySet());
+                HashMap<String,String> processedHM=new HashMap<>();
+                BufferedWriter out= new BufferedWriter(new FileWriter(new File(tmpOutputDir+dataSource+"_geneQTLDetails.txt")));
+                for(int i=0;i<geneQTLKeys.size();i++){
+                    TranscriptomeQTL tQ=geneQTLHM.get(geneQTLKeys.get(i));
+                        HashMap<String,ArrayList<TrxQTL>> hm = tQ.getTissueQTLList(dataSource);
+                        String[] tissueKey = hm.keySet().toArray(new String[hm.size()]);
+                        if (tissueKey != null) {
+                            for (int j = 0; j < tissueKey.length; j++) {
+                                if(processedHM.containsKey(tissueKey[j]+":"+tQ.getProbeID())) {
+                                }else {
+                                    processedHM.put(tissueKey[j]+":"+tQ.getProbeID(),"");
+                                    finalCount++;
+                                    String line = "";
+                                    ArrayList<TrxQTL> tmpQTLArr = (ArrayList<TrxQTL>) hm.get(tissueKey[j]);
+                                    if (tmpQTLArr != null && tmpQTLArr.size() > 0) {
+                                        TrxQTL tmpEQTL = tmpQTLArr.get(0);
+                                        line = tmpEQTL.getSnpID() + "\t" + tmpEQTL.getSNPChr() + "\t" + tmpEQTL.getSNPCoord();
+                                            line = line + "\t" + tQ.getProbeID() + "\t" + tQ.getChromosome() + "\t" + tQ.getStart() + "\t" + tQ.getEnd();
+                                            String tmpGeneSym = tQ.getEnsemblID();
+                                            if (tmpGeneSym == null || tmpGeneSym.equals("")) {
+                                                tmpGeneSym = tQ.getPhenogenID();
+                                            }
+                                            if (tmpGeneSym == null || tmpGeneSym.equals("")) {
+                                                tmpGeneSym = tQ.getProbeID();
+                                            }
+                                            line = line + "\t" + tmpGeneSym + "\t" + tissueKey[j] + "\t" + tmpEQTL.getNegLogPVal() + "\n";
+                                            out.write(line);
+
+                                    }
+                                }
+                            }
+                        }
+
+                }
+                out.close();
+                log.debug("Done-transcript cluster details.");
+            }catch(IOException e){
+                log.error("Error reading Gene - Transcript IDs.",e);
+                session.setAttribute("getTransControllingEQTL","Error retreiving eQTLs(2).  Please try again later.  The administrator has been notified of the problem.");
+                Email myAdminEmail = new Email();
+                myAdminEmail.setSubject("Exception thrown in GeneDataTools.getTransControllingEQTLS");
+                myAdminEmail.setContent("There was an error while running getTransControllingEQTLS.\nI/O Exception trying to read Gene - Transcript IDs file.",e);
+                try {
+                    myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+                } catch (Exception mailException) {
+                    log.error("error sending message", mailException);
+                }
+            }
+
+
+        //}
+        log.debug("Transcript Cluster Size:"+finalCount);
+    /*}catch(SQLException e){
+        log.error("Error retreiving EQTLs.",e);
+        session.setAttribute("getTransControllingEQTL","Error retreiving eQTLs(3).  Please try again later.  The administrator has been notified of the problem.");
+        e.printStackTrace(System.err);
+
+        Email myAdminEmail = new Email();
+        myAdminEmail.setSubject("Exception thrown in GeneDataTools.getTransControllingEQTLS");
+        myAdminEmail.setContent("There was an error while running getTransControllingEQTLS.\n SQLException getting transcript clusters.",e);
+        try {
+            myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+        } catch (Exception mailException) {
+            log.error("error sending message", mailException);
+        }
+    }*/
+
+    run=true;
+    double tmpPval=-1*Math.log10(pvalue);
+    File test=new File(tmpOutputDir.substring(0,tmpOutputDir.length()-1)+"/circos"+dataSource+cisTrans+tmpPval);
+        if(!test.exists()){
+        log.debug("\ngenerating new-circos\n");
+
+        //run circos scripts
+        boolean errorCircos=false;
+        String[] perlArgs = new String[8];
+        perlArgs[0] = "perl";
+        perlArgs[1] = perlDir + "callCircosReverse.pl";
+        perlArgs[2] = Double.toString(tmpPval);
+        perlArgs[3] = organism;
+        perlArgs[4] = tmpOutputDir.substring(0,tmpOutputDir.length()-1);
+        perlArgs[5] = circosTissue;
+        perlArgs[6] = circosChr;
+        perlArgs[7] = dataSource;
+        //remove old circos directory
+        double cutoff=pvalue;
+        String circosDir=tmpOutputDir+"circos"+cutoff;
+        File circosFile=new File(circosDir);
+        if(circosFile.exists()){
+            try{
+                myFH.deleteAllFilesPlusDirectory(circosFile);
+            }catch(Exception e){
+                log.error("Error trying to delete circos directory\n",e);
+            }
+        }
+
+        //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list
+        String[] envVar=perlEnvVar.split(",");
+
+        //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
+        myExec_session = new ExecHandler(perlDir, perlArgs, envVar, tmpOutputDir+"circos_"+pvalue);
+
+        try {
+
+            myExec_session.runExec();
+        } catch (ExecException e) {
+            //error=true;
+            log.error("In Exception of run callCircosReverse.pl Exec_session", e);
+            session.setAttribute("getTransControllingEQTLCircos","Error running Circos.  Unable to generate Circos image.  Please try again later.  The administrator has been notified of the problem.");
+            setError("Running Perl Script to match create circos plot.");
+
+        }
+    }
+
+        return geneQTLHM;
     }
     
     

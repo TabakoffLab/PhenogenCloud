@@ -423,8 +423,8 @@ sub createCircosPvaluesConfFile{
 	
 	}
 	
-	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r');
-	my @outerRadiusArray = ('0.85r + 100p','0.75r + 100p','0.65r + 100p','0.55r + 100p');
+	my @innerRadiusArray = ('0.80r','0.65r','0.50r','0.35r');
+	my @outerRadiusArray = ('0.80r + 150p','0.65r + 150p','0.50r + 150p','0.35r + 150p');
 
 	for(my $i=0; $i<$numberOfTissues; $i++){
 		$plotColor = $colorHash{$tissueList[$i]};
@@ -488,8 +488,8 @@ sub createCircosPvaluesConfFile{
 	
 	}
 	
-	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r');
-	my @outerRadiusArray = ('0.85r + 100p','0.75r + 100p','0.65r + 100p','0.55r + 100p');
+	my @innerRadiusArray = ('0.80r','0.65r','0.50r','0.35r');
+	my @outerRadiusArray = ('0.80r + 150p','0.65r + 150p','0.50r + 150p','0.35r + 150p');
 
 	for(my $i=0; $i<$numberOfTissues; $i++){
 		$plotColor = $colorHash{$tissueList[$i]};
@@ -625,19 +625,19 @@ sub writePlot{
 	print $FILEHANDLE 'stroke_color = '.$plotColor."\n";
 	print $FILEHANDLE 'fill_color = '.$plotColor."\n";
 	print $FILEHANDLE 'min = 0'."\n";
-	print $FILEHANDLE 'max = 5'."\n";	
+	print $FILEHANDLE 'max = 15'."\n";
 	print $FILEHANDLE 'r0 = '.$innerRadius."\n";
 	print $FILEHANDLE 'r1 = '.$outerRadius."\n";
 	print $FILEHANDLE '<axes>'."\n";
 	print $FILEHANDLE '<axis>'."\n";
 	print $FILEHANDLE 'thickness = 1'."\n";
-	print $FILEHANDLE 'spacing = 0.2r'."\n";
+	print $FILEHANDLE 'spacing = 0.15r'."\n";
 	#print $FILEHANDLE 'spacing = 1.0r'."\n";
 	print $FILEHANDLE 'color = black'."\n";
 	#print $FILEHANDLE 'axis           = yes'."\n";
 	#print $FILEHANDLE 'axis_color     = black'."\n";
 	#print $FILEHANDLE 'axis_thickness = 1'."\n";
-	#print $FILEHANDLE 'axis_spacing   = 1.0'."\n";
+	#print $FILEHANDLE 'axis_spacing   = 2.0'."\n";
 	print $FILEHANDLE '</axis>'."\n";
 	print $FILEHANDLE '</axes>'."\n";
 	

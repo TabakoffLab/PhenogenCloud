@@ -15,10 +15,8 @@
     String source="";
     String message="";
     String path="";
-    String HRDPversion="5";
-    String rnaDSIDs="97,98";
-    String transcriptome="ensembl";
-    String cisOnly="all";
+    String HRDPversion="3";
+    String rnaDSIDs="93,94";
 
 
     //String contextRoot = (String) session.getAttribute("contextRoot");
@@ -72,46 +70,19 @@
         }
     }
 
-    if(request.getParameter("transcriptome")!=null){
-        transcriptome = request.getParameter("transcriptome");
-    }
-    if(request.getParameter("cisOnly")!=null){
-        cisOnly = request.getParameter("cisOnly");
-    }
-
-
-    /*if(selectedCutoffValue.indexOf(".")>-1) {
-        selectedCutoffValue = selectedCutoffValue.substring(0, selectedCutoffValue.indexOf("."));
-    }*/
-    double tmpPval=Double.parseDouble(selectedCutoffValue);
-    double logP=-1*Math.log10(tmpPval);
-    int cutoff=(int)Math.round(logP);
-    CircosDataTools cdt=new CircosDataTools(session,path);
-    cdt.runCircosGeneList(selectedGeneList.getGene_list_id(),chromosomeString,tissueString,source,genomeVer,rnaDSIDs,cutoff,transcriptome,cisOnly);
-    //
-    // call perl script
-    //
-    //String filePrefixWithPath=cdt.getPath();
-    if(cdt.isSuccess()){
-        log.debug("Circos run completed successfully");
-        String svgFile = cdt.getURL();
-        iframeURL = svgFile;
-    }
-    else{
-        //log.debug("Circos run failed");
-        // be sure iframeURL is still null
-        iframeURL = null;
-        message="There was an error running Circos.  Please try again later.  The administrator has been notified of the error.<BR>"+cdt.getMessage();
-    } // end of if(circosReturnStatus)
-
-    //response.setContentType("application/json");
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setDateHeader("Expires", 0);
 %>
+<H2>eQTLs</H2>
+<table>
+    <thead>
 
-
-{
-    "path":"<%=iframeURL%>"
-}
-
+    </thead>
+    <tbody>
+    <TR>
+        <TD></TD>
+        <TD></TD>
+    </TR>
+    </tbody>
+</table>
 

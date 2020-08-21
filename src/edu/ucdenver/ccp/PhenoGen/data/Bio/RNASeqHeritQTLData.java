@@ -4,32 +4,62 @@ import java.util.HashMap;
 
 public class RNASeqHeritQTLData {
         private String phenogenID="";
-        private HashMap<String,Double> herit=new HashMap();
-        private HashMap<String,Integer> countQTL=new HashMap();
-        private HashMap<String,String> maxQTL=new HashMap();
+        private String ensemblID="";
+        private HashMap<String,Double> herit=new HashMap<>();
+        private HashMap<String,HashMap<String,String>> minTransQTL=new HashMap<>();
+        private HashMap<String,HashMap<String,String>> minCisQTL=new HashMap<>();
+        private HashMap<String,HashMap<String,Double>> tpm=new HashMap<>();
 
-        public RNASeqHeritQTLData(String phenogenID){
+        public RNASeqHeritQTLData(String phenogenID,String ensemblID){
             this.phenogenID=phenogenID;
+            this.ensemblID=ensemblID;
         }
+
+        public String getPhenogenID() {return phenogenID;}
+        public String getEnsemblID() {return ensemblID;}
 
         public void addHerit(String tissue,double herit){
             this.herit.put(tissue,herit);
         }
 
-        public void addCount(String tissue,double pvalue,String location){
-            if(countQTL.containsKey(tissue)){
-                int tmp=countQTL.get(tissue);
-                tmp++;
-                countQTL.put(tissue,tmp);
-                String tmpMax=maxQTL.get(tissue);
-                double tmpPval=Double.parseDouble(tmpMax.substring(0,tmpMax.indexOf(":")));
-                if(tmpPval<pvalue){
-                    maxQTL.put(tissue,pvalue+":"+location);
+        public void addCount(String tissue,double pvalue,String location,boolean cis,String source){
+            if(cis){
+                if(minCisQTL.containsKey(tissue)){
+                    HashMap<String,String> tmpSourceHM=minCisQTL.get(tissue);
+                    if(tmpSourceHM.containsKey(source)){
+                        String tmpMin=tmpSourceHM.get(source);
+                        double tmpPval=Double.parseDouble(tmpMin.substring(0,tmpMin.indexOf(":")));
+                        if(pvalue<tmpPval){
+                            tmpSourceHM.put(source,pvalue+":"+location);
+                        }
+                    }else{
+                        tmpSourceHM.put(source,pvalue+":"+location);
+                    }
+                }else{
+                    HashMap<String,String> tmp = new HashMap<>();
+                    tmp.put(source,pvalue+":"+location);
+                    minCisQTL.put(tissue,tmp);
                 }
             }else{
-                countQTL.put(tissue,1);
-                maxQTL.put(tissue,pvalue+":"+location);
+                if(minTransQTL.containsKey(tissue)){
+                    HashMap<String,String> tmpSourceHM=minTransQTL.get(tissue);
+                    if(tmpSourceHM.containsKey(source)){
+                        String tmpMin=tmpSourceHM.get(source);
+                        double tmpPval=Double.parseDouble(tmpMin.substring(0,tmpMin.indexOf(":")));
+                        if(pvalue<tmpPval){
+                            tmpSourceHM.put(source,pvalue+":"+location);
+                        }
+                    }else{
+                        tmpSourceHM.put(source,pvalue+":"+location);
+                    }
+
+                }else{
+                    HashMap<String,String> tmp = new HashMap<>();
+                    tmp.put(source,pvalue+":"+location);
+                    minTransQTL.put(tissue,tmp);
+                }
             }
+
 
         }
 
@@ -45,17 +75,17 @@ public class RNASeqHeritQTLData {
             return ret;
         }
 
-        public String getMaxQTL(String tissue){
+        public String getMinTransQTL(String tissue,String source){
             String ret="";
-            if(maxQTL.containsKey(tissue)){
-                ret=maxQTL.get(tissue);
+            if(minTransQTL.containsKey(tissue)){
+                ret=minTransQTL.get(tissue).get(source);
             }
             return ret;
         }
-        public int getQTLCount(String tissue){
-            int ret=0;
-            if(countQTL.containsKey(tissue)){
-                ret=countQTL.get(tissue);
+        public String getMinCisQTL(String tissue,String source){
+            String ret="";
+            if(minCisQTL.containsKey(tissue)){
+                ret=minCisQTL.get(tissue).get(source);
             }
             return ret;
         }

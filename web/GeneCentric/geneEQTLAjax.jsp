@@ -19,6 +19,8 @@
         String version="";
         String trxID="";
 	int selectedGene=0;
+	String transcriptome="ensembl";
+	String cisOnly="all";
 	ArrayList<String>geneSymbol=new ArrayList<String>();
 	ArrayList<String>trxList=new ArrayList<String>();
 	
