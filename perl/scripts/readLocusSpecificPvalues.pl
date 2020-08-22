@@ -29,7 +29,7 @@ sub readLocusSpecificPvalues{
 	#INPUT VARIABLES: $probeID, $organism
 
 	# Read inputs
-	my($probeID,$organism,$genomeVer,$chromosomeListRef,$dsn,$usr,$passwd,$type,$rnaDSID)=@_;
+	my($probeID,$organism,$genomeVer,$chromosomeListRef,$dsn,$usr,$passwd,$type,$rnaDSID,$transcriptome,$cisOnly)=@_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# $hostname is used to determine the connection to the database.
@@ -45,8 +45,8 @@ sub readLocusSpecificPvalues{
 
 	my @eqtlAOH; # array of hashes containing location specific eqtl data
 
-	my $locationSpecificEQTLTablename = 'Location_Specific_EQTL2';
-	my $snpTablename = 'SNPS';
+	my $locationSpecificEQTLTablename = 'Location_Specific_EQTL_HRDP';
+	my $snpTablename = 'SNPS_HRDP';
 	my $chromosomeTablename = 'Chromosomes';
 	
 	# PERL DBI CONNECT
@@ -54,7 +54,7 @@ sub readLocusSpecificPvalues{
 
 	# PREPARE THE QUERY for pvalues
 
-	my $query = "select s.SNP_NAME, c.NAME, s.SNP_START, s.TISSUE, e.PVALUE
+	my $query = "select s.SNP_NAME, c.NAME, s.COORD, s.TISSUE, e.PVALUE
 		      from $snpTablename s, $chromosomeTablename c, $locationSpecificEQTLTablename e
 		      where ";
 	if(index($probeID,",")>0){
@@ -73,6 +73,10 @@ sub readLocusSpecificPvalues{
 	}elsif($type eq 'seq' && index($rnaDSID,",")>-1){
 		$query=$query." and s.rna_dataset_id in (".$rnaDSID.")";
 	}
+	if( $cisOnly==1){
+	    $query=$query." and e.is_cis=1";
+	}
+
 
 		      
 	#if ($debugLevel >= 2){
@@ -106,7 +110,7 @@ sub readLocusSpecificPvalues{
 			$eqtlAOH[$counter]{chromosome}=renameChromosome($dbchrom_name,$organism);
 			$eqtlAOH[$counter]{location}=$dbsnp_location;
 			$eqtlAOH[$counter]{tissue}=$dbtissue;
-			$eqtlAOH[$counter]{pvalue}=$dbpvalue;
+			$eqtlAOH[$counter]{pvalue}=-1*(log($dbpvalue)/log(10));
 		}
 	}
 	$query_handle->finish();

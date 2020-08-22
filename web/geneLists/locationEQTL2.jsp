@@ -52,6 +52,8 @@
     String gcPath="";
     String source="seq";
     String hrdpVer="";
+    String transcriptome="ensembl";
+    String cisOnly="all";
     int selectedGene=0;
     ArrayList<String>geneSymbol=new ArrayList<String>();
 
@@ -113,7 +115,12 @@
     if(request.getParameter("version")!=null){
         hrdpVer=FilterInput.getFilteredInput(request.getParameter("version"));
     }
-
+    if(request.getParameter("transcriptome")!=null){
+        transcriptome=FilterInput.getFilteredInput(request.getParameter("transcriptome"));
+    }
+    if(request.getParameter("cisOnly")!=null){
+        cisOnly=FilterInput.getFilteredInput(request.getParameter("cisOnly"));
+    }
     gcPath=applicationRoot + contextRoot+"tmpData/"+userLoggedIn.getUser_name()+"/GeneLists/";
     if(userLoggedIn.getUser_name().equals("anon")){
         gcPath=gcPath+uuid+"/"+selectedGeneList.getGene_list_id();
@@ -231,11 +238,15 @@
         var pval=$('#cutoffValue').val();
         var path="<%=gcPath%>";
         var HRDPversion=$('#hrdpVer').val();
+
+        var transcriptome=$('#transcriptome').val();;
+        var cisOnly=$('#cisTrans').val();;
+
         $.ajax({
             url: "/web/geneLists/include/runCircosGeneList.jsp",
             type: 'GET',
             cache: false,
-            data: {cutoffValue:pval,tissues:tisList,chromosomes:chrList,path:path,genomeVer:genomeVer,source:source,version:HRDPversion},
+            data: {cutoffValue:pval,tissues:tisList,chromosomes:chrList,path:path,genomeVer:genomeVer,source:source,version:HRDPversion,transcriptome: transcriptome,cisOnly: cisOnly},
             dataType: 'json',
             beforeSend: function(){
                 $('#circosStatus').html("");
@@ -548,9 +559,24 @@
                 style = "";
                 optionHash = new LinkedHashMap();
                 optionHash.put("seq", "RNA-Seq");
-                optionHash.put("array", "Microarrays");
+                //optionHash.put("array", "Microarrays");
             %><%@ include file="/web/common/selectBox.jsp" %>
-            <span style="padding-left:20px;"><strong>P-value Threshold for Highlighting:</strong></span>
+            <span style="padding-left:30px;"><strong>Transcriptome Data:</strong></span>
+            <select name="transcriptome" id="transcriptome">
+                <option value="ensembl" <%if(transcriptome.equals("ensembl")){%>selected<%}%>>Ensembl</option>
+                <option value="reconst" <%if(transcriptome.equals("reconst")){%>selected<%}%>>Reconstruction</option>
+            </select>
+            <span class="eQTLListToolTip"
+                  title="Select the transriptome used for quantification."><img
+                    src="<%=imagesDir%>icons/info.gif"></span>
+
+            <span style="padding-left:30px;"><strong>Genome Wide eQTLs:</strong></span>
+            <select name="cisTrans" id="cisTrans">
+                <option value="cis" <%if(cisOnly.equals("cis")){%>selected<%}%>>Cis eQTLs Only</option>
+                <option value="all" <%if(cisOnly.equals("all")){%>selected<%}%>>Genome Wide</option>
+            </select>
+            <BR>
+            <span style="padding-left:30px;"><strong>P-value Threshold for Highlighting:</strong></span>
             <span class="eQTLtooltip" title="Loci with p-values below the chosen threshold are highlighted on the Circos plot in yellow; a line connects the significant loci with the physical location of the gene. All p-values are displayed on the Circos graphic as the negative log base 10 of the p-value."><img src="<%=imagesDir%>icons/info.gif"></span>
 
             <%
@@ -564,14 +590,17 @@
                 onChange = "";
                 style = "";
                 optionHash = new LinkedHashMap();
-                optionHash.put("1.0", "0.10");
-                optionHash.put("2.0", "0.01");
-                optionHash.put("3.0", "0.001");
-                optionHash.put("4.0", "0.0001");
-                optionHash.put("5.0", "0.00001");
+                optionHash.put("6.0", "0.000001");
+                optionHash.put("7.0", "0.0000001");
+                optionHash.put("8.0", "0.00000001");
+                optionHash.put("9.0", "0.000000001");
+                optionHash.put("10.0", "0.0000000001");
             %>
             <%@ include file="/web/common/selectBox.jsp" %>
-            <span style="padding-left:20px;"><strong>Genome Version:</strong></span>
+            <span class="eQTLListToolTip"
+                  title="Display cis eQTLs only or genome wide eQTLs."><img
+                    src="<%=imagesDir%>icons/info.gif"></span>
+            <span style="padding-left:30px;"><strong>Genome Version:</strong></span>
             <span class="eQTLtooltip" title="eQTLs have been calculated for transcripts in each genome version.  For rat both rn5 and rn6 are supported.  Mouse only has mm10."><img src="<%=imagesDir%>icons/info.gif"></span>
             <%
                 selectName = "genomeVer";
@@ -590,13 +619,13 @@
                 if(org.equals("Mm")) {
                     optionHash.put("mm10", "Mm10");
                 }else {
-                    optionHash.put("rn5", "Rn5");
+                    //optionHash.put("rn5", "Rn5");
                     optionHash.put("rn6", "Rn6");
                 }
             %>
             <%@ include file="/web/common/selectBox.jsp" %>
             <%if(org.equals("Rn")){%>
-                <span style="padding-left:20px;"><strong>HRDP Version:</strong></span>
+                <span style="padding-left:30px;"><strong>HRDP Version:</strong></span>
                 <span class="eQTLtooltip" title="HRDP Version for eQTL data to use for Circos plot."><img src="<%=imagesDir%>icons/info.gif"></span>
                 <%
                     selectName = "hrdpVer";
@@ -604,14 +633,15 @@
                         selectedOption = hrdpVer;
                     }
                     else{
-                        selectedOption = "3";
+                        selectedOption = "5";
                     }
                     onChange = "";
                     style = "";
                     optionHash = new LinkedHashMap();
 
-                    optionHash.put("1", "v1 (6/2016)");
-                    optionHash.put("3","v3 (7/2019)");
+                    //optionHash.put("1", "v1 (6/2016)");
+                    //optionHash.put("3","v3 (7/2019)");
+                    optionHash.put("5", "HRDP v5");
 
                 %>
                 <%@ include file="/web/common/selectBox.jsp" %>

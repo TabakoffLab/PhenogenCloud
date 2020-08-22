@@ -7,7 +7,7 @@ my $debugLevel = 2;
 sub prepCircos
 {
 	# this routine creates configuration and data files for circos
-	my($geneName,$geneSymbol,$probeID,$psLevel,$probeChromosome,$probeStart,$probeStop,$cutoff,$organism,$genomeVer,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueListRef,$dsn,$usr,$passwd,$hostname,$type,$rnaDSID,$prnID)=@_;
+	my($geneName,$geneSymbol,$probeID,$psLevel,$probeChromosome,$probeStart,$probeStop,$cutoff,$organism,$genomeVer,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueListRef,$dsn,$usr,$passwd,$hostname,$type,$rnaDSID,$prnID,$transcriptome,$cisOnly)=@_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my @tissueList = @{$tissueListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
@@ -45,7 +45,7 @@ sub prepCircos
 	my $genericConfLocation2 = '/usr/share/tomcat/webapps/PhenoGen/web/';
 	my $karyotypeLocation = '/usr/share/circos/data/karyotype/';
 	my $tmpPid=$probeID;
-	if(index($tmpPid,"ENS")==0){
+	if(index($tmpPid,"ENS")==0 && $transcriptome ne 'ensembl'){
 		$tmpPid=$prnID;
 	}
 	createCircosConfFile($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$chromosomeListRef,$oneToCreateLinks,$genomeVer);
@@ -53,8 +53,8 @@ sub prepCircos
 	createCircosProbesetTextConfFile($dataDirectory,$confDirectory);
 	createCircosProbesetTextDataFile($dataDirectory,$geneName,$geneSymbol,$probeID,$psLevel,$probeChromosome,$probeStart,$probeStop,$organism);
 	createCircosPvaluesConfFile($confDirectory,$dataDirectory,$cutoff,$organism,$tissueListRef);
-	my $eqtlAOHRef = readLocusSpecificPvalues($tmpPid,$organism,$genomeVer,$chromosomeListRef,$dsn,$usr,$passwd,$type,$rnaDSID);
-	createCircosPvaluesDataFiles($dataDirectory,$probeID,$organism,$eqtlAOHRef,$chromosomeListRef);
+	my $eqtlAOHRef = readLocusSpecificPvalues($tmpPid,$organism,$genomeVer,$chromosomeListRef,$dsn,$usr,$passwd,$type,$rnaDSID,$transcriptome,$cisOnly);
+	createCircosPvaluesDataFiles($dataDirectory,$probeID,$organism,$eqtlAOHRef,$chromosomeListRef,$cutoff);
 	if($oneToCreateLinks == 1){
 		createCircosLinksConfAndData($dataDirectory,$organism,$confDirectory,$eqtlAOHRef,$probeChromosome,$probeStart,$probeStop,$cutoff,$tissueListRef);	
 	}
@@ -256,8 +256,8 @@ sub createCircosPvaluesConfFile{
 	
 	}
 	
-	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r');
-	my @outerRadiusArray = ('0.85r + 100p','0.75r + 100p','0.65r + 100p','0.55r + 100p');
+	my @innerRadiusArray = ('0.80r','0.65r','0.50r','0.35r');
+	my @outerRadiusArray = ('0.80r + 150p','0.65r + 150p','0.50r + 150p','0.35r + 150p');
 
 	for(my $i=0; $i<$numberOfTissues; $i++){
 		$plotColor = $colorHash{$tissueList[$i]};
@@ -284,7 +284,7 @@ sub createCircosPvaluesDataFiles{
 	# The 2nd column is the location of the SNP 
 	# The 3rd column has been modified so the histogram shows up better.
 	# The 3rd column might be modified by adding 5000000
-	my ($dataDirectory,$probeID,$organism, $eqtlAOHRef,$chromosomeListRef) = @_;
+	my ($dataDirectory,$probeID,$organism, $eqtlAOHRef,$chromosomeListRef,$cutoff) = @_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	if($debugLevel >= 2){
@@ -315,20 +315,22 @@ sub createCircosPvaluesDataFiles{
 	for($i=0;$i<$arrayLength;$i++){
 		$tissue = $eqtlAOH[$i]{tissue};
 		$stopLocation = $eqtlAOH[$i]{location} + 50000*$numberOfChromosomes;
-		if($tissue eq 'Whole Brain'){
-			print BRAINFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
-		}
-		elsif($tissue eq 'Liver'){
-			print LIVERFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
-		}
-		elsif($tissue eq 'Heart'){
-			print HEARTFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
-		}
-		elsif($tissue eq 'Brown Adipose'){
-			print BATFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
-		}
-		else{
-			die(" Invalid Tissue in createCircosPvaluesDataFiles.  Organism: $organism  Tissue: $tissue\n");
+		if($eqtlAOH[$i]{pvalue}>=$cutoff){
+            if($tissue eq 'Whole Brain'){
+                print BRAINFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
+            }
+            elsif($tissue eq 'Liver'){
+                print LIVERFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
+            }
+            elsif($tissue eq 'Heart'){
+                print HEARTFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
+            }
+            elsif($tissue eq 'Brown Adipose'){
+                print BATFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
+            }
+            else{
+                die(" Invalid Tissue in createCircosPvaluesDataFiles.  Organism: $organism  Tissue: $tissue\n");
+            }
 		}
 	}
 	close(BRAINFILE);
@@ -358,7 +360,7 @@ sub createCircosLinksConfAndData{
 	my $keepLink;
 
 	for($i=0;$i<$arrayLength;$i++){
-		if($eqtlAOH[$i]{pvalue} > $cutoff){
+		if($eqtlAOH[$i]{pvalue} >= $cutoff){
 			# Check whether we want this type of link
 			$tissue = $eqtlAOH[$i]{tissue};
 			if($tissue eq "Whole Brain"){
@@ -456,16 +458,16 @@ sub writeLink{
 	print $FILEHANDLE "<link ".$linkName.">"."\n";
 	print $FILEHANDLE  "z = 0"."\n";
 	if($numberOfTissues == 4){
-		print $FILEHANDLE  "radius = 0.55r"."\n";
+		print $FILEHANDLE  "radius = 0.35r"."\n";
 	}
 	elsif($numberOfTissues == 3){
-		print $FILEHANDLE  "radius = 0.65r"."\n";	
+		print $FILEHANDLE  "radius = 0.50r"."\n";
 	}
 	elsif($numberOfTissues == 2){
-		print $FILEHANDLE  "radius = 0.75r"."\n";
+		print $FILEHANDLE  "radius = 0.65r"."\n";
 	}
 	else{
-		print $FILEHANDLE "radius = 0.85r"."\n";
+		print $FILEHANDLE "radius = 0.80r"."\n";
 	}
 	print $FILEHANDLE  "bezier_radius = .1r"."\n";
 	print $FILEHANDLE  "show = yes"."\n";
@@ -483,7 +485,7 @@ sub writePlot{
 	print $FILEHANDLE 'stroke_color = '.$plotColor."\n";
 	print $FILEHANDLE 'fill_color = '.$plotColor."\n";
 	print $FILEHANDLE 'min = 0'."\n";
-	print $FILEHANDLE 'max = 5'."\n";
+	print $FILEHANDLE 'max = 15'."\n";
 	
 	#print $FILEHANDLE 'r0 = 0.85r'."\n";
 	#print $FILEHANDLE 'r1 = 0.85r +100p'."\n";
@@ -494,7 +496,7 @@ sub writePlot{
 	print $FILEHANDLE '<axes>'."\n";
 	print $FILEHANDLE '<axis>'."\n";
 	print $FILEHANDLE 'thickness = 1'."\n";
-	print $FILEHANDLE 'spacing = 0.2r'."\n";
+	print $FILEHANDLE 'spacing = 0.15r'."\n";
 	#print $FILEHANDLE 'spacing = 1.0r'."\n";
 	print $FILEHANDLE 'color = black'."\n";
 	#print $FILEHANDLE 'axis           = yes'."\n";
@@ -519,7 +521,7 @@ sub writePlot{
 	print $FILEHANDLE '<rules>'."\n";
 	print $FILEHANDLE '<rule>'."\n";
 	print $FILEHANDLE 'importance = 100'."\n";
-        print $FILEHANDLE 'condition  = var(value) > '.$cutoff."\n";
+    print $FILEHANDLE 'condition  = var(value) > '.$cutoff."\n";
 	#print $FILEHANDLE 'condition  = _VALUE_ > '.$cutoff."\n";
 	print $FILEHANDLE 'fill_color = yellow'."\n";
 	print $FILEHANDLE 'color = dyellow'."\n";

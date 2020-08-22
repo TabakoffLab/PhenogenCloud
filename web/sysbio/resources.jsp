@@ -47,6 +47,7 @@
         Resource[] myPublicationResources6 = myResource.getPublicationResources6();
         Resource[] myPublicationResources7 = myResource.getPublicationResources7();
 		Resource[] myPublicationResources8 = myResource.getPublicationResources8();
+	Resource[] myPublicationResources9 = myResource.getPublicationResources9();
 
         Resource[] myGTFResources=myResource.getGTFResources();
 	// Sort by organism first, dataset second (seems backwards!)
@@ -129,7 +130,6 @@ pageDescription="Data resources available for downloading includes Microarrays, 
             
     </div>
 </div>
-
 <div id="array" style="<%if(!section.equals("array")){%>display:none;<%}%>border-top:1px solid black;">
 	<form	method="post" 
 		action="resources.jsp" 
@@ -538,6 +538,29 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 		action="resources.jsp" 
 		enctype="application/x-www-form-urlencoded"
 		name="resources">
+		<div class="title">Data Files for "A Long Non-Coding RNA (Lrap) Modulates Brain Gene Expression and Levels of Alcohol Consumption in Rats" by Saba, L. et. al. (submitted, Genes, Brain and Behavior)
+		</div>
+		<table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
+			<thead>
+			<tr class="col_title">
+				<th>Data</th>
+				<TH>Files</TH>
+			</tr>
+			</thead>
+			<tbody>
+			<% for (Resource resource: myPublicationResources9) { %>
+			<tr id="<%=resource.getID()%>">
+
+				<TD><%=resource.getDescription()%></TD>
+				<td class="actionIcons">
+					<div class="linkedImg download" type="pub"><div>
+				</td>
+			</tr>
+			<% } %>
+
+			</tbody>
+		</table>
+		<BR><BR>
 		<div class="title">Data Files for "Insight into genetic regulation of miRNA in mouse brain" by Kordas, G. et. al. (submitted, BMC Genomics)
 		</div>
 		<table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">

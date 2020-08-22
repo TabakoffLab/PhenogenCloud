@@ -101,6 +101,8 @@
     String filteredImg = "";
     String panel = "";
     String chromosome = "";
+    String transcriptome="ensembl";
+    String cisOnly="all";
     LinkGenerator lg = new LinkGenerator(session);
 
     boolean displayNoEnsembl = false;

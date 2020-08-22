@@ -23,8 +23,9 @@ function displayGo(){
 function displayColumns(table,colStart,colLen,showOrHide){
 	var colStop=colStart+colLen;
 	for(var i=colStart;i<colStop;i++){
-				table.dataTable().fnSetColumnVis( i, showOrHide );
+				table.column(i).visible( showOrHide );
 	}
+	table.draw();
 }
 
 

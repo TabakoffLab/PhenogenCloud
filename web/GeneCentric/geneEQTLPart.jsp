@@ -26,6 +26,8 @@
 			background-color: Silver;
 		}
 	</style>
+
+
 	<script type="text/javascript">
                 var source="<%=source%>";
                 var version="<%=version%>";
@@ -38,6 +40,7 @@
 			//document.getElementById("circosError1").style.display = 'none';		
 		}
 		function runCircos(){
+			console.log("runCircos()");
 			$('#wait2').show();
 			var chrList = "";
                         $("#chromosomesMS option").each(function () {
@@ -54,9 +57,10 @@
                         if(source==="seq"){
                             tcID=idStr;
                         }
-			var path="<%=gcPath%>";
+			var path=$("#hiddenGeneCentricPath").val();
 			var version=$('#version').val();
-			var geneSymbol="<%=geneSymbol.get(selectedGene)%>";
+			var geneSymboltmp=$("#hiddenGeneSymbol").val();
+
 			if($('#trxCB').val()!=="gene"){
 				geneSymbol=$('#trxCB').val();
 				tcID=$('#trxCB').val();
@@ -64,8 +68,8 @@
 			$.ajax({
 				url: "/web/GeneCentric/runCircos.jsp",
    				type: 'GET',
-                                cache: false,
-				data: {cutoffValue:pval,transcriptClusterID:tcID,tissues:tisList,chromosomes:chrList,geneCentricPath:path,hiddenGeneSymbol:geneSymbol,genomeVer:genomeVer,source:source,version:version},
+				cache: false,
+				data: {cutoffValue:pval,geneSymbol:geneSymboltmp,transcriptClusterID:tcID,tissues:tisList,chromosomes:chrList,geneCentricPath:path,genomeVer:genomeVer,source:source,version:version,transcriptome: transcriptome,cisOnly: cisOnly},
 				dataType: 'html',
 				beforeSend: function(){
 				},
@@ -324,7 +328,7 @@
 				style = "";
 				optionHash = new LinkedHashMap();
                         	optionHash.put("seq", "RNA-Seq");
-                        	optionHash.put("array", "Microarrays");
+                        	//optionHash.put("array", "Microarrays");
 				%><%@ include file="/web/common/selectBox.jsp" %><BR>
 						<span id="versionSelect" style="display:inline-block;">
 							<strong>Version:</strong>
@@ -338,12 +342,12 @@
 							}
 							style = "";
 							optionHash = new LinkedHashMap();
-							optionHash.put("1", "HRDP v3");
-							optionHash.put("3", "HRDP v4");
+							//optionHash.put("1", "HRDP v3");
+							//optionHash.put("3", "HRDP v4");
 							optionHash.put("5", "HRDP v5");
 						%><%@ include file="/web/common/selectBox.jsp" %>
 
-							<BR><strong>Gene/Transcript:</strong>
+						<!--	<BR><strong>Gene/Transcript:</strong>
 						<span class="eQTLtooltip" title="Select Gene level or individual transcripts."><img src="<%=imagesDir%>icons/info.gif"></span>
 						<%
 							selectName = "trxCB";
@@ -358,8 +362,17 @@
 							for(int i=0;i<trxList.size();i++){
 								optionHash.put(trxList.get(i), trxList.get(i));
 							}
-						%><%@ include file="/web/common/selectBox.jsp" %>
+						%><%@ include file="/web/common/selectBox.jsp" %>-->
 						</span>
+					<BR>
+			<strong>Transcriptome Data:</strong>
+							<select name="transcriptome" id="transriptome">
+								<option value="ensembl" <%if(transcriptome.equals("ensembl")){%>selected<%}%>>Ensembl</option>
+								<option value="reconst" <%if(transcriptome.equals("reconst")){%>selected<%}%>>Reconstruction</option>
+							</select>
+							<span class="eQTLListToolTip"
+								  title="Select the transriptome used for quantification."><img
+									src="<%=imagesDir%>icons/info.gif"></span>
                     </td>
 			<td style="text-align:center;">
 				<strong>P-value Threshold for Highlighting:</strong> 
@@ -371,18 +384,28 @@
 					selectedOption = selectedCutoffValue;
 				}
 				else{
-					selectedOption = "2.0";					
+					selectedOption = "0.000001";
 				}
 				onChange = "";
 				style = "";
 				optionHash = new LinkedHashMap();
-                        	optionHash.put("1.0", "0.10");
-                        	optionHash.put("2.0", "0.01");
-                        	optionHash.put("3.0", "0.001");
-                        	optionHash.put("4.0", "0.0001");
-                        	optionHash.put("5.0", "0.00001");
+                        	optionHash.put("0.000001", "0.000001");
+                        	optionHash.put("0.0000001", "0.0000001");
+                        	optionHash.put("0.00000001", "0.00000001");
+                        	optionHash.put("0.000000001", "0.000000001");
+                        	optionHash.put("0.0000000001", "0.0000000001");
 				%>
 				<%@ include file="/web/common/selectBox.jsp" %>
+				<BR>
+				<BR>
+				<strong>Genome Wide eQTLs:</strong>
+				<select name="cisTrans" id="cisTrans">
+					<option value="cis" <%if(cisOnly.equals("cis")){%>selected<%}%>>Cis eQTLs Only</option>
+					<option value="all" <%if(cisOnly.equals("all")){%>selected<%}%>>Genome Wide</option>
+				</select>
+				<span class="eQTLListToolTip"
+					  title="Display cis eQTLs only or genome wide eQTLs."><img
+						src="<%=imagesDir%>icons/info.gif"></span>
             </td>
 		
                 
@@ -430,8 +453,8 @@
 					
 		</tr>
 
-		<input type="hidden" id="hiddenGeneCentricPath" name="hiddenGeneCentricPath" value=<%=geneCentricPath%> />
-		<input type="hidden" id="hiddenGeneSymbol" name="hiddenGeneSymbol" value=<%=geneSymbolinternal%> />
+		<input type="hidden" id="hiddenGeneCentricPath" name="hiddenGeneCentricPath" value="<%=geneCentricPath%>" />
+		<input type="hidden" id="hiddenGeneSymbol" name="hiddenGeneSymbol" value="<%=geneSymbolinternal%>" />
 
 		
 		

@@ -15,7 +15,7 @@ sub replaceDot{
 sub prepCircosGeneList
 {
 	# this routine creates configuration and data files for circos
-	my($cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$type,$rnaDSIDs)=@_;
+	my($cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$type,$rnaDSIDs,$transcriptome,$cisOnly)=@_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# if probeChromosome is not in chromosomeList then we don't want to create a links file
@@ -43,9 +43,9 @@ sub prepCircosGeneList
 	createCircosConfFile($confDirectory,$genericConfLocation,$genericConfLocation2,$karyotypeLocation,$organism,$genomeVer,$chromosomeListRef,$oneToCreateLinks,$oneToCreateLinks);
 	createCircosIdeogramConfFiles($confDirectory,$organism,$chromosomeListRef);
 	createCircosGenesTextConfFile($dataDirectory,$confDirectory);
-	my $geneHashRef=createCircosGenesTextDataFile($dataDirectory,$organism,$type);
+	my $geneHashRef=createCircosGenesTextDataFile($dataDirectory,$organism,$type,$transcriptome);
 	createCircosEQTLCountConfFile($confDirectory,$dataDirectory,$cutoff,$organism,$tissueString,$type);
-	createCircosEQTLCountLinkDataFiles($dataDirectory,$organism,$chromosomeListRef,$tissueString,$interval,$cutoff,$type,$geneHashRef);
+	createCircosEQTLCountLinkDataFiles($dataDirectory,$organism,$chromosomeListRef,$tissueString,$interval,$cutoff,$type,$geneHashRef,$transcriptome,$cisOnly);
 	createCircosLinksConf($dataDirectory,$organism,$confDirectory,$tissueString);
 	#createCircosLinksConfAndData($dataDirectory,$organism,$confDirectory,$cutoff,$tissueString);
 	#*************************************************** TO FIX
@@ -208,7 +208,7 @@ sub createCircosGenesTextConfFile{
 
 sub createCircosGenesTextDataFile{
 	# Create the circos data file that allows labeling of the genes in the module
- 	my ($dataDirectory,$organism,$type)=@_;
+ 	my ($dataDirectory,$organism,$type,$transcriptome)=@_;
 	my %geneHash={};
 	my $end=rindex($dataDirectory,"/",rindex($dataDirectory,"/",rindex($dataDirectory,"/")-1)-1);
 	my $inputFile=substr($dataDirectory,0,$end)."/geneListLocations.txt";
@@ -226,12 +226,17 @@ sub createCircosGenesTextDataFile{
 		my @gs=split(",",$cols[2]);
 		my @trx=split(",",$cols[3]);
 		my @phid=split(",",$cols[4]);
+		my @ensid=split(",",$cols[5]);
 		my $noID=0;
 		my $id="";
 		if($type eq "array"){
 			$id="g".$trx[0];
 		}else{
-			$id=$phid[0];
+		    if($transcriptome eq "ensembl"){
+		        $id=$ensid[0];
+		    }else{
+			    $id=$phid[0];
+			}
 		}
 		if(length($id)<=1){
 			$noID=1;
@@ -326,7 +331,7 @@ sub createCircosEQTLCountLinkDataFiles{
 	# The 2nd column is the location of the SNP
 	# The 3rd column has been modified so the histogram shows up better.
 	# The 3rd column might be modified by adding 5000000
-	my ($dataDirectory,$organism, $chromosomeListRef,$tissueString,$interval,$cutoff,$type,$geneHashRef) = @_;
+	my ($dataDirectory,$organism, $chromosomeListRef,$tissueString,$interval,$cutoff,$type,$geneHashRef,$transcriptome,$cisOnly) = @_;
 	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r');
 	my %geneHash=%{$geneHashRef};
 	my @tissueList=split(";",$tissueString);
@@ -335,7 +340,7 @@ sub createCircosEQTLCountLinkDataFiles{
 	my $numberOfChromosomes = scalar @chromosomeList;
 
 	my $end=rindex($dataDirectory,"/",rindex($dataDirectory,"/",rindex($dataDirectory,"/")-1)-1);
-	my $inputFile=substr($dataDirectory,0,$end)."/geneListEQTLs_".$type.".txt";
+	my $inputFile=substr($dataDirectory,0,$end)."/geneListEQTLs_".$type."_".$transcriptome."_".$cisOnly.".txt";
 	open(INPUT,'<',$inputFile) || die ("Can't open $inputFile:!\n");
 	my %eQTLsHOH={};
 	my %outfileHash;

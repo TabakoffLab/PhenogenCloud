@@ -124,7 +124,11 @@
                 	<tbody id="geneListFilter" style="display:none;">
                     	<TR>
                         	<td>
-                            <%if(myOrganism.equals("Rn")){%>
+                                Median TPM >= : <input type="text" id="filterTPM"><BR>
+                                Heritibility >=: <input type="text" id="filterHerit"><BR>
+                                Has cis-eQTL:<input type="checkbox" id="filterCis"> <BR>
+                                Has trans-eQTL: <input type="checkbox" id="filterTrans"><BR>
+                            <!--<%if(myOrganism.equals("Rn")){%>
                                 
                             	<input name="chkbox" type="checkbox" id="exclude1Exon" value="exclude1Exon" /> Exclude single exon RNA-Seq Transcripts <span class="geneListToolTip" title="This will hide the single exon transcripts from the table when selected."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
                         	<%}%>
@@ -138,6 +142,7 @@
                                                     <option value="0.00001" <%if(forwardPValueCutoff==0.00001){%>selected<%}%>>0.00001</option>
                                             </select> 
                                             <span class="geneListToolTip" title="This will filter out eQTL with lower confidence than the selected threshold.(will not remove rows from the table just the entries in the eQTL columns)"><img src="<%=imagesDir%>icons/info.gif"></span>
+                            -->
                                             <!--<input name="chkbox" type="checkbox" id="rqQTLCBX" value="rqQTLCBX"/>Require an eQTL below cut-off<span title=""><img src="<%=imagesDir%>icons/info.gif"></span>-->
                             </td>
                         	<td>
@@ -155,16 +160,16 @@
                                    
                                 </div>
                                 <div class="columnRight">
-                               		
-                                   
-                                 	
-                                    <input name="chkbox" type="checkbox" id="heritCBX" value="heritCBX" checked="checked" /> Heritability <span class="geneListToolTip" title="Shows/Hides all of the Affymetrix Probeset Heritability data."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
+                                    <input name="chkbox" type="checkbox" id="ensCBX" value="ensCBX" checked="checked"/> Ensembl Transcriptome Data <span class="geneListToolTip" title="Shows/Hides all of the Affymetrix Probeset data."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
+                                    <input name="chkbox" type="checkbox" id="reconstCBX" value="reconstCBX" checked="checked"/> Reconstruction Transcriptome Data <span class="geneListToolTip" title="Shows/Hides all of the Affymetrix Probeset data."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
+                                    <input name="chkbox" type="checkbox" id="arrayCBX" value="arrayCBX" /> All Array Data <span class="geneListToolTip" title="Shows/Hides all of the Affymetrix Probeset data."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
+                                    <!--<input name="chkbox" type="checkbox" id="heritCBX" value="heritCBX" checked="checked" /> Array Heritability <span class="geneListToolTip" title="Shows/Hides all of the Affymetrix Probeset Heritability data."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
                                 	
-                                	<input name="chkbox" type="checkbox" id="dabgCBX" value="dabgCBX" checked="checked" /> Detection Above Background <span class="geneListToolTip" title="Shows/Hides all of the Affymetrix Probeset Detection Above Background data."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
+                                	<input name="chkbox" type="checkbox" id="dabgCBX" value="dabgCBX" checked="checked" /> Array Detection Above Background <span class="geneListToolTip" title="Shows/Hides all of the Affymetrix Probeset Detection Above Background data."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
                                     
-                                    <input name="chkbox" type="checkbox" id="eqtlAllCBX" value="eqtlAllCBX" checked="checked" /> eQTLs All <span class="geneListToolTip" title="Shows/Hides all of the eQTL columns."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
+                                    <input name="chkbox" type="checkbox" id="eqtlAllCBX" value="eqtlAllCBX" checked="checked" /> Array eQTLs All <span class="geneListToolTip" title="Shows/Hides all of the eQTL columns."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
                                     
-                                    <input name="chkbox" type="checkbox" id="eqtlCBX" value="eqtlCBX" checked="checked" />eQTLs Tissues <span class="geneListToolTip" title="Shows/Hides all of the eQTL tissue specific columns while preserving a list of transcript clusters with a link to the circos plot."><img src="<%=imagesDir%>icons/info.gif"></span>
+                                    <input name="chkbox" type="checkbox" id="eqtlCBX" value="eqtlCBX" checked="checked" />Array eQTLs Tissues <span class="geneListToolTip" title="Shows/Hides all of the eQTL tissue specific columns while preserving a list of transcript clusters with a link to the circos plot."><img src="<%=imagesDir%>icons/info.gif"></span>-->
                                 </div>
 
                             </TD>
@@ -201,7 +206,9 @@
                         	<%}%> 
                         class="center noSort topLine">Transcript Information</th>
                         <%if(myOrganism.equals("Rn")){%>
-                        <th colspan="6"  class="center noSort topLine" title="HRDP v5 Ribosome Depleted TotalRNA Data">HRDP v5 Ribosome Depleted TotalRNA
+                        <th colspan="10"  class="center noSort topLine" title="Ensembl Transcriptome HRDP v5 Ribosome Depleted TotalRNA Data">Ensembl Transcriptome HRDP v5 Ribosome Depleted TotalRNA
+                            <div class="inpageHelp" style="display:inline-block; "><img id="HelpRNASeqSummary" class="helpImage" src="../web/images/icons/help.png" /></div></th>
+                        <th colspan="10"  class="center noSort topLine" title="Reconstruction Transcriptome HRDP v5 Ribosome Depleted TotalRNA Data">Reconstruction Transcriptome HRDP v5 Ribosome Depleted TotalRNA
                             <div class="inpageHelp" style="display:inline-block; "><img id="HelpRNASeqSummary" class="helpImage" src="../web/images/icons/help.png" /></div></th>
                         <%}%>
                         <th colspan="<%=4+tissuesList1.length*2+tissuesList2.length*2%>"  class="center noSort topLine" title="Dataset is available by going to Microarray Analysis Tools -> Analyze Precompiled Dataset or Downloads.">Affy Exon 1.0 ST PhenoGen Public Dataset(
@@ -222,8 +229,10 @@
                         class="topLine noSort noBox"></th>
                         <th colspan="1"  class="leftBorder noSort"></th>
                         <th colspan="1"  class="rightBorder noSort"></th>
-                        <th colspan="3"  class="leftBorder rightBorder topLine noSort">Whole Brain</th>
-                        <th colspan="3"  class="rightBorder topLine noSort">Liver</th>
+                        <th colspan="5"  class="leftBorder rightBorder topLine noSort">Whole Brain</th>
+                        <th colspan="5"  class="rightBorder topLine noSort">Liver</th>
+                        <th colspan="5"  class="leftBorder rightBorder topLine noSort">Whole Brain</th>
+                        <th colspan="5"  class="rightBorder topLine noSort">Liver</th>
                         <th colspan="1"  class="leftBorder rightBorder noSort"></th>
                         <th colspan="<%=tissuesList1.length%>"  class="center noSort topLine">Probe Sets > 0.33 Heritability
                           <div class="inpageHelp" style="display:inline-block; "><img id="HelpProbeHerit" class="helpImage" src="../web/images/icons/help.png" /></div></th>
@@ -254,8 +263,18 @@
                         colspan="1"
                         <%}%>  
                         class="topLine leftBorder rightBorder noSort"># Transcripts <span class="geneListToolTip" title="The number of transcripts assigned to this gene.  Ensembl is the number of ensembl annotated transcripts.  RNA-Seq is the number of RNA-Seq transcripts assigned to this gene.  The RNA-Seq Transcript Matches column contains additional details about why transcripts were or were not matched to a particular gene."><img src="<%=imagesDir%>icons/info.gif"></span></th>
-                        <th colspan="3" class="leftBorder rightBorder noSort noBox"></th>
-                        <th colspan="3" class="leftBorder rightBorder noSort noBox"></th>
+                        <th colspan="2" class="leftBorder rightBorder noSort noBox">TPM</th>
+                        <th colspan="1" class="leftBorder rightBorder noSort noBox"></th>
+                        <th colspan="2" class="leftBorder rightBorder noSort noBox">eQTL</th>
+                        <th colspan="2" class="leftBorder rightBorder noSort noBox">TPM</th>
+                        <th colspan="1" class="leftBorder rightBorder noSort noBox"></th>
+                        <th colspan="2" class="leftBorder rightBorder noSort noBox">eQTL</th>
+                        <th colspan="2" class="leftBorder rightBorder noSort noBox">TPM</th>
+                        <th colspan="1" class="leftBorder rightBorder noSort noBox"></th>
+                        <th colspan="2" class="leftBorder rightBorder noSort noBox">eQTL</th>
+                        <th colspan="2" class="leftBorder rightBorder noSort noBox">TPM</th>
+                        <th colspan="1" class="leftBorder rightBorder noSort noBox"></th>
+                        <th colspan="2" class="leftBorder rightBorder noSort noBox">eQTL</th>
                         <th colspan="1"  class="leftBorder rightBorder noSort"></th>
                         <th colspan="<%=tissuesList1.length%>"  class="leftBorder rightBorder noSort noBox"></th>
                         <th colspan="<%=tissuesList1.length%>"  class="leftBorder rightBorder noSort noBox"></th>
@@ -282,12 +301,26 @@
                     <TH>Ensembl</TH>
                     <%if(myOrganism.equals("Rn")){%>
                     	<TH>RNA-Seq</TH>
-                        <TH>Heritiblity</TH>
-                        <TH>eQTL Count <= <%=forwardPValueCutoff%></TH>
-                        <TH>Max eQTL Location</TH>
-                        <TH>Heritiblity</TH>
-                        <TH>eQTL Count <= <%=forwardPValueCutoff%></TH>
-                        <TH>Max eQTL Location</TH>
+                        <TH>Median</TH>
+                        <TH>Range</TH>
+                        <TH>Heritibility</TH>
+                        <TH>cis</TH>
+                        <TH>trans</TH>
+                        <TH>Median</TH>
+                        <TH>Range</TH>
+                        <TH>Heritibility</TH>
+                        <TH>cis</TH>
+                        <TH>trans</TH>
+                        <TH>Median</TH>
+                        <TH>Range</TH>
+                        <TH>Heritibility</TH>
+                        <TH>cis</TH>
+                        <TH>trans</TH>
+                        <TH>Median</TH>
+                        <TH>Range</TH>
+                        <TH>Heritibility</TH>
+                        <TH>cis</TH>
+                        <TH>trans</TH>
                     <%}%>
                     
                     <TH>Total Probe Sets <span class="geneListToolTip" title="The total number of non-masked probesets that overlap with any region of an Ensembl transcript<%if(myOrganism.equals("Rn")){%> or an RNA-Seq transcript<%}%>."><img src="<%=imagesDir%>icons/info.gif"></span></TH>
@@ -314,10 +347,15 @@
                         <%DecimalFormat df2 = new DecimalFormat("#.##");
                         DecimalFormat df0 = new DecimalFormat("###");
                         DecimalFormat df4 = new DecimalFormat("#.####");
-						
+                        DecimalFormat dfe = new DecimalFormat("0.##E0");
+						Object[] geneIDs=geneHM.keySet().toArray();
+						StringBuilder geneIDList=new StringBuilder();
+						for(int i=0;i< geneIDs.length;i++){
+						    geneIDList.append(",'"+geneIDs[i]+"'");
+                        }
+						HashMap <String,HashMap<String,HashMap<String,Double>>> tpm=gdt.getTPM(geneIDList.substring(1),"97,98");
 			for(int i=0;i<fullGeneList.size();i++){
                             edu.ucdenver.ccp.PhenoGen.data.Bio.Gene curGene=fullGeneList.get(i);
-                            
                             if(geneHM.containsKey(curGene.getGeneID())){
                             TranscriptCluster tc=curGene.getTranscriptCluster();
                             HashMap hCount=curGene.getHeritCounts();
@@ -553,6 +591,7 @@
                                     <%=curGene.getTranscriptCountRna()%>
                                 </TD>
                                 <%RNASeqHeritQTLData rna=curGene.getRNASeq();
+
                                 if(rna!=null){
                                     String bHerit="";
                                     String lHerit="";
@@ -562,7 +601,7 @@
                                     if(rna.getHerit("Liver")>=0){
                                         lHerit=df2.format(rna.getHerit("Liver"));
                                     }
-                                    Double bPv=0.0;
+                                    /*Double bPv=0.0;
                                     Double lPv=0.0;
                                     String bMax=rna.getMaxQTL("Whole Brain");
                                     if(!bMax.equals("")){
@@ -575,21 +614,117 @@
                                         lPv=Double.parseDouble(lMax.substring(0,lMax.indexOf(":")));
                                         lPv=Math.pow(10.0,-1*lPv);
                                         lMax="chr"+lMax.substring(lMax.indexOf(":")+1);
+                                    }*/
+
+                                    HashMap<String,Double> brain=null;
+                                    HashMap<String,Double> liver=null;
+                                    if(tpm.containsKey("Brain") && tpm.get("Brain").containsKey(curGene.getGeneID())) {
+                                            brain = tpm.get("Brain").get(curGene.getGeneID());
+                                    }
+                                    if(tpm.containsKey("Liver") && tpm.get("Liver").containsKey(curGene.getGeneID())) {
+                                            liver = tpm.get("Liver").get(curGene.getGeneID());
+                                    }
+                                    String cisValueB=rna.getMinCisQTL("Whole Brain","ensembl");
+                                    double cisPvalB=-1;
+                                    String cisLocationB="";
+                                    if(cisValueB!=null && !cisValueB.equals("")){
+                                        cisPvalB=Double.parseDouble(cisValueB.substring(0,cisValueB.indexOf(":")));
+                                        cisLocationB="chr"+cisValueB.substring(cisValueB.indexOf(":")+1);
+                                    }
+                                    String transValueB=rna.getMinTransQTL("Whole Brain","ensembl");
+                                    double transPvalB = -1;
+                                    String transLocationB="";
+                                    if(transValueB!=null && !transValueB.equals("")) {
+                                        transPvalB = Double.parseDouble(transValueB.substring(0, transValueB.indexOf(":")));
+                                        transLocationB = "chr" + transValueB.substring(transValueB.indexOf(":") + 1);
+                                    }
+                                    String cisValueL=rna.getMinCisQTL("Liver","ensembl");
+                                    double cisPvalL=-1;
+                                    String cisLocationL="";
+                                    if(cisValueL!=null && !cisValueL.equals("")){
+                                        cisPvalL=Double.parseDouble(cisValueL.substring(0,cisValueL.indexOf(":")));
+                                        cisLocationL="chr"+cisValueL.substring(cisValueL.indexOf(":")+1);
+                                    }
+                                    String transValueL=rna.getMinTransQTL("Liver","ensembl");
+                                    double transPvalL = -1;
+                                    String transLocationL="";
+                                    if(transValueL !=null && !transValueL.equals("")) {
+                                        transPvalL = Double.parseDouble(transValueL.substring(0, transValueL.indexOf(":")));
+                                        transLocationL = "chr" + transValueL.substring(transValueL.indexOf(":") + 1);
                                     }
                                 %>
-                                <TD class="leftBorder"><%=bHerit%></TD>
-                                <TD><%if(rna.getQTLCount("Whole Brain")==0){%><%}else{%><%=rna.getQTLCount("Whole Brain")%><%}%></TD>
-                                <TD><%=df4.format(bPv)+"<BR>"+bMax%></TD>
-                                <TD class="leftBorder"><%=lHerit%> </TD>
-                                <TD><%if(rna.getQTLCount("Liver")==0){%><%}else{%><%=rna.getQTLCount("Liver")%><%}%></TD>
-                                <TD ><%=df4.format(lPv)+"<BR>"+lMax%></TD>
+                                    <TD class="leftBorder"><%if(brain!=null && brain.containsKey("ensmed")){%><%=brain.get("ensmed")%><%}%></TD>
+                                    <TD><%if(brain!=null && brain.containsKey("ensmed")){%><%=brain.get("ensmin")%>-<%=brain.get("ensmax")%><%}%></TD>
+                                    <TD><%if(brain!=null && brain.containsKey("geneHerit") && brain.get("geneHerit")>0){%><%=df2.format(brain.get("geneHerit"))%><%}%></TD>
+                                    <TD><%if(cisPvalB>-1){%><%=dfe.format(cisPvalB)%><BR><%=cisLocationB%><%}%></TD>
+                                    <TD><%if(transPvalB>-1){%><%=dfe.format(transPvalB)%><BR><%=transLocationB%><%}%></TD>
+                                    <TD class="leftBorder"><%if(liver!=null && liver.containsKey("ensmed")){%><%=liver.get("ensmed")%><%}%> </TD>
+                                    <TD><%if(liver!=null && liver.containsKey("ensmed")){%><%=liver.get("ensmin")%>-<%=liver.get("ensmax")%><%}%></TD>
+                                    <TD ><%if(liver!=null && liver.containsKey("geneHerit") && liver.get("geneHerit")>0){%><%=df2.format(liver.get("geneHerit"))%><%}%></TD>
+                                    <TD><%if(cisPvalL>-1){%><%=dfe.format(cisPvalL)%><BR><%=cisLocationL%><%}%></TD>
+                                    <TD><%if(transPvalL>-1){%><%=dfe.format(transPvalL)%><BR><%=transLocationL%><%}%></TD>
+                                <%
+                                        cisValueB=rna.getMinCisQTL("Whole Brain","reconst");
+                                        cisPvalB=-1;
+                                        cisLocationB="";
+                                        if(cisValueB!=null && !cisValueB.equals("")){
+                                            cisPvalB=Double.parseDouble(cisValueB.substring(0,cisValueB.indexOf(":")));
+                                            cisLocationB="chr"+cisValueB.substring(cisValueB.indexOf(":")+1);
+                                        }
+                                        transValueB=rna.getMinTransQTL("Whole Brain","reconst");
+                                        transPvalB = -1;
+                                        transLocationB="";
+                                        if(transValueB!=null && !transValueB.equals("")) {
+                                            transPvalB = Double.parseDouble(transValueB.substring(0, transValueB.indexOf(":")));
+                                            transLocationB = "chr" + transValueB.substring(transValueB.indexOf(":") + 1);
+                                        }
+                                        cisValueL=rna.getMinCisQTL("Liver","reconst");
+                                        cisPvalL=-1;
+                                        cisLocationL="";
+                                        if(cisValueL!=null && !cisValueL.equals("")){
+                                            cisPvalL=Double.parseDouble(cisValueL.substring(0,cisValueL.indexOf(":")));
+                                            cisLocationL="chr"+cisValueL.substring(cisValueL.indexOf(":")+1);
+                                        }
+                                        transValueL=rna.getMinTransQTL("Liver","reconst");
+                                        transPvalL = -1;
+                                        transLocationL="";
+                                        if(transValueL!=null && !transValueL.equals("")) {
+                                            transPvalL = Double.parseDouble(transValueL.substring(0, transValueL.indexOf(":")));
+                                            transLocationL = "chr" + transValueL.substring(transValueL.indexOf(":") + 1);
+                                        }
+                                    %>
+
+                                    <TD class="leftBorder"><%if(brain!=null && brain.containsKey("reconmed")){%><%=brain.get("reconmed")%><%}%></TD>
+                                    <TD><%if(brain!=null && brain.containsKey("reconmed")){%><%=brain.get("reconmin")%>-<%=brain.get("reconmax")%><%}%></TD>
+                                    <TD><%=bHerit%></TD>
+                                    <TD><%if(cisPvalB>-1){%><%=dfe.format(cisPvalB)%><BR><%=cisLocationB%><%}%></TD>
+                                    <TD><%if(transPvalB>-1){%><%=dfe.format(transPvalB)%><BR><%=transLocationB%><%}%></TD>
+                                    <TD class="leftBorder"><%if(liver!=null && liver.containsKey("reconmed")){%><%=liver.get("reconmed")%><%}%> </TD>
+                                    <TD><%if(liver!=null && liver.containsKey("reconmed")){%><%=liver.get("reconmin")%>-<%=liver.get("reconmax")%><%}%></TD>
+                                    <TD ><%=lHerit%></TD>
+                                    <TD><%if(cisPvalL>-1){%><%=dfe.format(cisPvalL)%><BR><%=cisLocationL%><%}%></TD>
+                                    <TD><%if(transPvalL>-1){%><%=dfe.format(transPvalL)%><BR><%=transLocationL%><%}%></TD>
                                 <%}else{%>
                                     <TD class="leftBorder"></TD>
+                                    <TD></TD>
+                                    <TD></TD>
                                     <TD></TD>
                                     <TD></TD>
                                     <TD class="leftBorder"></TD>
                                     <TD></TD>
                                     <TD ></TD>
+                                    <TD></TD>
+                                    <TD></TD>
+                                    <TD class="leftBorder"></TD>
+                                    <TD></TD>
+                                    <TD></TD>
+                                    <TD></TD>
+                                    <TD></TD>
+                                    <TD class="leftBorder"></TD>
+                                    <TD></TD>
+                                    <TD ></TD>
+                                    <TD></TD>
+                                    <TD></TD>
                                 <%}
                                 }%>
                             
@@ -705,20 +840,19 @@
 	if(spec =="Mm"){
 		sortCol=4;
 	}
-	
-	
 	var tblGenes=$('#tblGenes<%=type%>').DataTable({
+        columnDefs: [
+            { targets: [30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49], visible: false}
+        ],
 	bPaginate: false,
 	bProcessing: true,
 	bStateSave: false,
 	bAutoWidth: true,
-	bDeferRender: true,
+	bDeferRender: false,
 	sScrollX: $(this).parent().width()-5,
 	sScrollY: "500px",
 	aaSorting: [[ sortCol, "desc" ]],
-	/*"aoColumnDefs": [
-      { "bVisible": false, "aTargets": geneTargets }
-    ],*/
+
 	sDom: '<"leftSearch"fr><t>',
         buttons: [
             'copy','csv', 'excel', 'pdf'
@@ -728,12 +862,85 @@
 		}*/
 
 	});
-    var tmpContainer=tblGenes.buttons().container();
+    $.fn.dataTable.ext.search.push(
+        function( settings, data, dataIndex ) {
+            var ret=true;
+            var minTPM = parseFloat( $('#filterTPM').val() );
+            var minHerit = parseFloat( $('#filterHerit').val());
+            var tpm1 = parseFloat( data[10] ) || 0;
+            var tpm2 = parseFloat( data[15] ) || 0;
+            var tpm3 = parseFloat( data[20] ) || 0;
+            var tpm4 = parseFloat( data[25] ) || 0;
+            var h1 = parseFloat( data[12] ) || 0;
+            var h2 = parseFloat( data[17] ) || 0;
+            var h3 = parseFloat( data[22] ) || 0;
+            var h4 = parseFloat( data[27] ) || 0;
+
+            var cis1=data[13];
+            var cis2=data[18];
+            var cis3=data[23];
+            var cis4=data[28];
+
+            var trans1=data[14];
+            var trans2=data[19];
+            var trans3=data[24];
+            var trans4=data[29];
+
+            if ( isNaN(minTPM) || (tpm1>=minTPM || tpm2>=minTPM || tpm3>=minTPM || tpm4>=minTPM))
+            {
+
+            }else{
+                ret=false;
+            }
+            if ( isNaN(minHerit) || (h1>=minHerit || h2>=minHerit || h3>=minHerit || h4>=minHerit))
+            {
+
+            }else{
+                ret=false;
+            }
+            if( !$("#filterCis").is(":checked") || (cis1!="" || cis2!=""||cis3!=""||cis4!="")){
+
+            }else{
+                return false;
+            }
+            if( !$("#filterTrans").is(":checked") || (trans1!=""||trans2!=""||trans3!=""||trans4!="") ){
+
+            }else{
+                return false;
+            }
+            return ret;
+        }
+    );
+    $('#filterCis, #filterTrans').click(function(){
+       tblGenes.draw();
+    });
+    $('#filterTPM, #filterHerit').keyup( function() {
+        tblGenes.draw();
+    } );
+    //var tmpContainer=tblGenes.buttons().container();
     //tmpContainer.prepend("<button class=\"dt-button ui-button ui-state-default ui-button-text-only buttons-html5\"  type=\"button\"><span class=\"ui-button-text\">Create PhenoGen Gene List</span></button>")
 	$('.downloadBtns').append(tmpContainer);
 
 	$('#tblGenes_wrapper').css({position: 'relative', top: '-56px'});
 
+    $('#ensCBX').click( function(){
+        var tmpCol=10;
+        var tmpEnd=10;
+        displayColumns(tblGenes, tmpCol,tmpEnd,$('#ensCBX').is(":checked"));
+    });
+    $('#reconstCBX').click( function(){
+        var tmpCol=20;
+        var tmpEnd=10;
+        displayColumns(tblGenes, tmpCol,tmpEnd,$('#reconstCBX').is(":checked"));
+    });
+    $('#arrayCBX').click( function(){
+        var tmpCol=30;
+        var tmpEnd=20;
+        if(spec=="Mm"){
+            tmpCol=7;
+        }
+        displayColumns(tblGenes, tmpCol,tmpEnd,$('#arrayCBX').is(":checked"));
+    });
 	$('#heritCBX').click( function(){
 			var tmpCol=11;
 			if(spec=="Mm"){
@@ -777,7 +984,7 @@
 			if(spec=="Mm"){
 				tmpCol=3;
 			}
-			displayColumns($(tblGenes).dataTable(),tmpCol,1,$('#geneDescCBX').is(":checked"));
+			displayColumns(tblGenes,tmpCol,1,$('#geneDescCBX').is(":checked"));
 	  });
 	  
 	  
@@ -786,7 +993,7 @@
 			if(spec=="Mm"){
 				tmpCol=4;
 			}
-			displayColumns($(tblGenes).dataTable(),tmpCol,2,$('#geneLocCBX').is(":checked"));
+			displayColumns(tblGenes,tmpCol,2,$('#geneLocCBX').is(":checked"));
 	  });
 	  
 	  $('#pvalueCutoffSelect1').change( function(){
@@ -838,7 +1045,9 @@
 		}	
 	}
 
-    tblGenes.fnAdjustColumnSizing();
+
+
+    //tblGenes.fnAdjustColumnSizing();
 	//tblGenes.fnDraw();
 	
 	/*$(window).resize(function(){

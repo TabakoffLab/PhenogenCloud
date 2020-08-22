@@ -41,7 +41,7 @@ sub setupDirectories{
 
 
 sub callCircosReverse{
-	my($cutoff,$organism,$geneCentricPath,$tissueString,$chromosomeString)=@_;
+	my($cutoff,$organism,$geneCentricPath,$tissueString,$chromosomeString,$source)=@_;
 	#
 	# General outline of process:
 	# First, prep circos conf and data files
@@ -50,7 +50,7 @@ sub callCircosReverse{
 	#
 	my $cutoffString = sprintf "%d", $cutoff*10;
 	my $baseDirectory = $geneCentricPath.'/circos'.$cutoffString.'/';
-	my $inputFileName = $geneCentricPath.'/TranscriptClusterDetails.txt';
+	my $inputFileName = $geneCentricPath.'/'.$source.'_geneQTLDetails.txt';
 	print " base directory $baseDirectory \n";
 	my $dataDirectory = $baseDirectory.'data/';
 	print " data directory $dataDirectory \n";
@@ -70,7 +70,11 @@ sub callCircosReverse{
 	}
 	if(!defined($tissueString)){
 		if($organism eq 'Rn'){
-			$tissueString='Brain;Heart;Liver;BAT;';
+		    if($source eq 'seq'){
+		        $tissueString='Brain;Liver;';
+		    }else{
+			    $tissueString='Brain;Heart;Liver;BAT;';
+			}
 			#$tissueString='Brain;Liver;BAT;';
 		}
 		else{
@@ -164,8 +168,9 @@ sub callCircosReverse{
 	my $arg3 = $ARGV[2]; #	Region Centric Path
 	my $arg4 = $ARGV[3]; #	Tissue String
 	my $arg5 = $ARGV[4]; # Chromosome String
+	my $arg6 = $ARGV[5]; # source
 
-	callCircosReverse($arg1, $arg2, $arg3, $arg4, $arg5);
+	callCircosReverse($arg1, $arg2, $arg3, $arg4, $arg5,$arg6);
 
 
 
