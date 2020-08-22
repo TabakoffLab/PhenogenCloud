@@ -2840,15 +2840,19 @@ public class GeneDataTools {
                     tmp.put(keyMed,rsC.getDouble(4));
                     tmp.put(keyMin,rsC.getDouble(5));
                     tmp.put(keyMax,rsC.getDouble(6));
-                    tmp.put("geneHerit", rsC.getDouble(8));
-                    tmp.put("trxHerit",rsC.getDouble(9));
+                    if(id.startsWith("ENS")) {
+                        tmp.put("geneHerit", rsC.getDouble(8));
+                        tmp.put("trxHerit", rsC.getDouble(9));
+                    }
                 }else {
                     HashMap<String, Double> tmp=new HashMap<>();
                     tmp.put(keyMed,rsC.getDouble(4));
                     tmp.put(keyMin,rsC.getDouble(5));
                     tmp.put(keyMax,rsC.getDouble(6));
-                    tmp.put("geneHerit", rsC.getDouble(8));
-                    tmp.put("trxHerit",rsC.getDouble(9));
+                    if(id.startsWith("ENS")) {
+                        tmp.put("geneHerit", rsC.getDouble(8));
+                        tmp.put("trxHerit", rsC.getDouble(9));
+                    }
                     ret.get(tissue).put(mainID, tmp);
                 }
             }

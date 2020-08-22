@@ -12,6 +12,19 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.3</H2>
+                        <div style="margin-left:5px;">
+                            <UL>
+                                <LI>Version 3.7.3 has been released with the following updates.
+                                    <ul><LI>RNA-Seq eQTLs based on HRDP</LI>
+                                        <LI>Heritability based on HRDP</LI>
+                                        <LI>TPM summary</LI>
+                                        <LI>Track Table filtering</LI>
+                                        <LI>Table export to clipboard, csv, xls, and PDF</LI>
+                                        <LI>Ensembl and Reconstruction based eQTLs/TPM/Heritability</LI>
+                                    </ul>
+                            </UL>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.2</H2>
                         <div style="margin-left:5px;">
                             <UL>

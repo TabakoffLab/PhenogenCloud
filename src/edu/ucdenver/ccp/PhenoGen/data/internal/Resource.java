@@ -396,6 +396,7 @@ public class Resource {
                 List<Resource> pubResources6 = Arrays.asList(getPublicationResources6());
                 List<Resource> pubResources7 = Arrays.asList(getPublicationResources7());
                 List<Resource> pubResources8 = Arrays.asList(getPublicationResources8());
+                List<Resource> pubResources9 = Arrays.asList(getPublicationResources9());
                 List<Resource> gtfResources = Arrays.asList(getGTFResources());
                 List<Resource> rsemResources = Arrays.asList(getRNASeqExpressionResources());
 		List<Resource> allResources = new ArrayList<Resource>(expressionResources);
@@ -411,6 +412,7 @@ public class Resource {
                 allResources.addAll(pubResources6);
                 allResources.addAll(pubResources7);
                 allResources.addAll(pubResources8);
+                allResources.addAll(pubResources9);
                 allResources.addAll(gtfResources);
                 allResources.addAll(rsemResources);
 		Resource[] allResourcesArray = myObjectHandler.getAsArray(allResources, Resource.class);
@@ -1410,7 +1412,23 @@ public class Resource {
         Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
         return resourceArray;
     }
-         
+
+    public Resource[] getPublicationResources9() {
+        log.debug("in getPublicationResources9");
+        String pubFilePath="/downloads/Publication/saba_lrap/";
+        List<Resource> resourceList = new ArrayList<Resource>();
+
+        PublicationFile[] fileList = new PublicationFile[1];
+        fileList[0]=new PublicationFile("LRAP KO transcpriptome merged w/ Ensembl",pubFilePath+"lncKO_merged_wEnsembl.annotated.gtf.zip");
+        resourceList.add(new Resource(220, "Rat", "","WT/KO Transcriptome GTF",fileList,"\"A Long Non-Coding RNA (Lrap) Modulates Brain Gene Expression and Levels of Alcohol Consumption in Rats\" by L. Saba et. al."));
+        fileList = new PublicationFile[2];
+        fileList[0]=new PublicationFile("Gene Count Matrix",pubFilePath+"gene_count_matrix.txt.zip");
+        fileList[1]=new PublicationFile("Isoform Count Matrix",pubFilePath+"isoform_count_matrix.txt.zip");
+        resourceList.add(new Resource(221, "Rat", "","Gene/Isoform Count Matrices",fileList,"\"A Long Non-Coding RNA (Lrap) Modulates Brain Gene Expression and Levels of Alcohol Consumption in Rats\" by L. Saba et. al."));
+        Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
+        return resourceArray;
+    }
+
 	/**
 	 * Returns one Resource object from an array of Resource objects
 	 * @param myResources	an array of Resource objects 
