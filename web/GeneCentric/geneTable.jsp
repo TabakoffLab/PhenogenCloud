@@ -124,10 +124,10 @@
                 	<tbody id="geneListFilter" style="display:none;">
                     	<TR>
                         	<td>
-                                TPM >= : <BR>
-                                Heritibility >=: <BR>
-                                Has cis-eQTL: <BR>
-                                Has trans-eQTL: <BR>
+                                Median TPM >= : <input type="text" id="filterTPM"><BR>
+                                Heritibility >=: <input type="text" id="filterHerit"><BR>
+                                Has cis-eQTL:<input type="checkbox" id="filterCis"> <BR>
+                                Has trans-eQTL: <input type="checkbox" id="filterTrans"><BR>
                             <!--<%if(myOrganism.equals("Rn")){%>
                                 
                             	<input name="chkbox" type="checkbox" id="exclude1Exon" value="exclude1Exon" /> Exclude single exon RNA-Seq Transcripts <span class="geneListToolTip" title="This will hide the single exon transcripts from the table when selected."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
@@ -862,8 +862,63 @@
 		}*/
 
 	});
-    var tmpContainer=tblGenes.buttons().container();
-    tmpContainer.prepend("<button class=\"dt-button ui-button ui-state-default ui-button-text-only buttons-html5\"  type=\"button\"><span class=\"ui-button-text\">Create PhenoGen Gene List</span></button>")
+    $.fn.dataTable.ext.search.push(
+        function( settings, data, dataIndex ) {
+            var ret=true;
+            var minTPM = parseFloat( $('#filterTPM').val() );
+            var minHerit = parseFloat( $('#filterHerit').val());
+            var tpm1 = parseFloat( data[10] ) || 0;
+            var tpm2 = parseFloat( data[15] ) || 0;
+            var tpm3 = parseFloat( data[20] ) || 0;
+            var tpm4 = parseFloat( data[25] ) || 0;
+            var h1 = parseFloat( data[12] ) || 0;
+            var h2 = parseFloat( data[17] ) || 0;
+            var h3 = parseFloat( data[22] ) || 0;
+            var h4 = parseFloat( data[27] ) || 0;
+
+            var cis1=data[13];
+            var cis2=data[18];
+            var cis3=data[23];
+            var cis4=data[28];
+
+            var trans1=data[14];
+            var trans2=data[19];
+            var trans3=data[24];
+            var trans4=data[29];
+
+            if ( isNaN(minTPM) || (tpm1>=minTPM || tpm2>=minTPM || tpm3>=minTPM || tpm4>=minTPM))
+            {
+
+            }else{
+                ret=false;
+            }
+            if ( isNaN(minHerit) || (h1>=minHerit || h2>=minHerit || h3>=minHerit || h4>=minHerit))
+            {
+
+            }else{
+                ret=false;
+            }
+            if( !$("#filterCis").is(":checked") || (cis1!="" || cis2!=""||cis3!=""||cis4!="")){
+
+            }else{
+                return false;
+            }
+            if( !$("#filterTrans").is(":checked") || (trans1!=""||trans2!=""||trans3!=""||trans4!="") ){
+
+            }else{
+                return false;
+            }
+            return ret;
+        }
+    );
+    $('#filterCis, #filterTrans').click(function(){
+       tblGenes.draw();
+    });
+    $('#filterTPM, #filterHerit').keyup( function() {
+        tblGenes.draw();
+    } );
+    //var tmpContainer=tblGenes.buttons().container();
+    //tmpContainer.prepend("<button class=\"dt-button ui-button ui-state-default ui-button-text-only buttons-html5\"  type=\"button\"><span class=\"ui-button-text\">Create PhenoGen Gene List</span></button>")
 	$('.downloadBtns').append(tmpContainer);
 
 	$('#tblGenes_wrapper').css({position: 'relative', top: '-56px'});
