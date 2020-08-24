@@ -917,7 +917,7 @@
     $('#filterTPM, #filterHerit').keyup( function() {
         tblGenes.draw();
     } );
-    //var tmpContainer=tblGenes.buttons().container();
+    var tmpContainer=tblGenes.buttons().container();
     //tmpContainer.prepend("<button class=\"dt-button ui-button ui-state-default ui-button-text-only buttons-html5\"  type=\"button\"><span class=\"ui-button-text\">Create PhenoGen Gene List</span></button>")
 	$('.downloadBtns').append(tmpContainer);
 
