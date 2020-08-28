@@ -192,12 +192,12 @@ sub createCircosProbesetTextConfFile{
 	print CONFFILE 'color            = black'."\n";
 	print CONFFILE 'file = '.$dataDirectory.'probesets.txt'."\n";
 	print CONFFILE 'r0 = 1.07r'."\n";
-	print CONFFILE 'r1 = 1.07r+500p'."\n";
+	print CONFFILE 'r1 = 1.07r+1500p'."\n";
 	print CONFFILE 'show_links     = yes'."\n";
 	print CONFFILE 'link_dims      = 0p,0p,20p,0p,10p'."\n";
 	print CONFFILE 'link_thickness = 5p'."\n";
 	print CONFFILE 'link_color     = red'."\n";
-	print CONFFILE 'label_size   = 25p'."\n";
+	print CONFFILE 'label_size   = 18p'."\n";
 	print CONFFILE 'label_font   = default'."\n";
 	print CONFFILE 'padding  = 0p'."\n";
 	print CONFFILE 'rpadding = 0p'."\n";

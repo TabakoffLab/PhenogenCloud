@@ -756,10 +756,17 @@ public class IDecoderClient {
                 "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
         String where=" where idl.level<= ? ";
-        String whereList=" and idl.id1_number in (Select id_number from identifiers where identifier like '";
+        String whereList=" and idl.id1_number in (Select id_number from identifiers where identifier ";
+        String singleID="like '";
+        String listIDs="in ("+geneIDString+")";
         String whereTrgt=" and type.name in  ";
 
-        String finalQuery=query+where+whereList+geneIDString+"' ) ";
+        String finalQuery=query+where+whereList;
+        if(geneIDString.indexOf(",")>0){
+            finalQuery = finalQuery + listIDs +")";
+        }else {
+            finalQuery = finalQuery + singleID + geneIDString + "' ) ";
+        }
         if (targetsList != null && !targetsList.contains("Location")) {
             finalQuery = finalQuery +whereTrgt+  targetString + " ";
         }
@@ -768,6 +775,7 @@ public class IDecoderClient {
 
         log.debug("in getRecords");
         try(Connection conn=pool.getConnection()){
+            log.debug("iDecoder Query:\n"+finalQuery);
             PreparedStatement pstmt = conn.prepareStatement(finalQuery);
             pstmt.setInt(1,num_iterations+1);
             ResultSet rs = pstmt.executeQuery();
