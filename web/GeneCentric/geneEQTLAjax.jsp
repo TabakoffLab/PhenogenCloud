@@ -78,6 +78,12 @@
 	if(request.getParameter("trxCB")!=null){
 		trxID=FilterInput.getFilteredInput(request.getParameter("trxCB"));
 	}
+	if(request.getParameter("transcriptome")!=null){
+		transcriptome=FilterInput.getFilteredInput(request.getParameter("transcriptome"));
+	}
+	if(request.getParameter("cisOnly")!=null){
+		cisOnly=FilterInput.getFilteredInput(request.getParameter("cisOnly"));
+	}
 
 	if(source.equals("seq")) {
 		trxList = gdt.getTranscriptList(id, myOrganism, "Merged", genomeVer,version);

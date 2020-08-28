@@ -50,7 +50,9 @@ function SetupAnonSession(){
                 var uuid=JSON.stringify(data2.uuid);
                 that.UUID=uuid;
                 that.saveUUID();
-                that.pageSetup();
+                if(that.pageSetup) {
+                    that.pageSetup();
+                }
                 $('#createGeneList').show();
                 $('#linkEmail').show();
             },

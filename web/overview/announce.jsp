@@ -12,6 +12,29 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #5</H2>
+                        <div style="margin-left:5px;">
+                            <h3>Identifying genes from QTL using RNA expression and the PhenoGen website 8/28/2020 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://bit.ly/osga_2020-08-28">Register</a>
+                            Goals of this webinar (QTL to gene/molecular networks):<BR>
+                            <UL>
+                                <LI>Demonstrate how to use the PhenoGen website to identify transcripts:</LI>
+                                <LI>Physically located within a QTL</LI>
+                                <LI>Physically located within a QTL and expressed in brain</LI>
+                                <LI>With a brain cis eQTL within the QTL</LI>
+                                <LI>With any brain eQTL within the QTL</LI>
+                                <LI>Within a co-expression network controlled from the same region as the QTL</LI>
+                            </UL>
+                            <BR>
+
+                            Presented by:<BR>
+                            Dr. Laura Saba<BR>
+                            Associate Professor<BR>
+                            Department of Pharmaceutical Sciences<BR>
+                            University of Colorado Anschutz Medical Campus<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.3</H2>
                         <div style="margin-left:5px;">
                             <UL>
