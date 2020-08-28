@@ -60,6 +60,8 @@
 			var path=$("#hiddenGeneCentricPath").val();
 			var version=$('#version').val();
 			var geneSymboltmp=$("#hiddenGeneSymbol").val();
+			var transcriptome=$('#transriptome').val();
+			var cisOnly = $('#cisTrans').val();
 
 			if($('#trxCB').val()!=="gene"){
 				geneSymbol=$('#trxCB').val();

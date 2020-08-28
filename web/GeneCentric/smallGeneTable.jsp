@@ -710,9 +710,9 @@
 	bPaginate: false,
 	bProcessing: true,
 	bAutoWidth: true,
-	bDeferRender: true,
-	sScrollX: $(this).parent().width()-5,
-	sScrollY: "500px",
+	bDeferRender: false,
+	sScrollX: "100%",
+	sScrollY: "550px",
 	aaSorting: [[ sortCol, "desc" ]],
 	/*"aoColumnDefs": [
       { "bVisible": false, "aTargets": geneTargets }

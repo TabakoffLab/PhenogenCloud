@@ -128,22 +128,7 @@
                                 Heritibility >=: <input type="text" id="filterHerit"><BR>
                                 Has cis-eQTL:<input type="checkbox" id="filterCis"> <BR>
                                 Has trans-eQTL: <input type="checkbox" id="filterTrans"><BR>
-                            <!--<%if(myOrganism.equals("Rn")){%>
-                                
-                            	<input name="chkbox" type="checkbox" id="exclude1Exon" value="exclude1Exon" /> Exclude single exon RNA-Seq Transcripts <span class="geneListToolTip" title="This will hide the single exon transcripts from the table when selected."><img src="<%=imagesDir%>icons/info.gif"></span><BR />
-                        	<%}%>
-                        
-                            				eQTL P-Value Cut-off:
-                                             <select name="pvalueCutoffSelect1" id="pvalueCutoffSelect1">
-                                            		<option value="0.1" <%if(forwardPValueCutoff==0.1){%>selected<%}%>>0.1</option>
-                                                    <option value="0.01" <%if(forwardPValueCutoff==0.01){%>selected<%}%>>0.01</option>
-                                                    <option value="0.001" <%if(forwardPValueCutoff==0.001){%>selected<%}%>>0.001</option>
-                                                    <option value="0.0001" <%if(forwardPValueCutoff==0.0001){%>selected<%}%>>0.0001</option>
-                                                    <option value="0.00001" <%if(forwardPValueCutoff==0.00001){%>selected<%}%>>0.00001</option>
-                                            </select> 
-                                            <span class="geneListToolTip" title="This will filter out eQTL with lower confidence than the selected threshold.(will not remove rows from the table just the entries in the eQTL columns)"><img src="<%=imagesDir%>icons/info.gif"></span>
-                            -->
-                                            <!--<input name="chkbox" type="checkbox" id="rqQTLCBX" value="rqQTLCBX"/>Require an eQTL below cut-off<span title=""><img src="<%=imagesDir%>icons/info.gif"></span>-->
+
                             </td>
                         	<td>
                             	<div class="columnLeft">
@@ -353,8 +338,11 @@
 						for(int i=0;i< geneIDs.length;i++){
 						    geneIDList.append(",'"+geneIDs[i]+"'");
                         }
-						HashMap <String,HashMap<String,HashMap<String,Double>>> tpm=gdt.getTPM(geneIDList.substring(1),"97,98");
-			for(int i=0;i<fullGeneList.size();i++){
+						HashMap <String,HashMap<String,HashMap<String,Double>>> tpm=new HashMap<String,HashMap<String,HashMap<String,Double>>>();
+						if(geneIDList.length()>1) {
+                            tpm=gdt.getTPM(geneIDList.substring(1), "97,98");
+                        }
+			            for(int i=0;i<fullGeneList.size();i++){
                             edu.ucdenver.ccp.PhenoGen.data.Bio.Gene curGene=fullGeneList.get(i);
                             if(geneHM.containsKey(curGene.getGeneID())){
                             TranscriptCluster tc=curGene.getTranscriptCluster();
@@ -834,6 +822,47 @@
 		$('#viewTrxDialog').dialog( "option", "position",{ my: "center bottom", at: "center top", of: $(this) });
 		$('#viewTrxDialog').dialog("open").css({'font-size':12});
 	});*/
+
+
+    var buttonCommon = {
+        exportOptions: {
+            format: {
+                /*header: function(data,row,column,node){
+                  if(column<30){
+                      return data;
+                  }else{
+                      return "";
+                  }
+                },*/
+                body: function ( data, row, column, node ) {
+                        data=data.replace(/(<.*?>)*/g,'');
+                        if(column!==0 && column!==3) {
+                            data = data.replace(/\s*/g, '');
+                        }else if(column===3){
+                            data=data.replace(/&nbsp;/g,' ');
+                        }else if(column===0){
+                            data=data.replace(/PRN/g,";PRN");
+                            data=data.replace(/ENS/g,";ENS");
+                            data=data.substring(1);
+                        }
+                        if(data.indexOf("ENS")===0 && data.indexOf("AllOrganisms:")>0){
+                            data=data.substring(0,data.indexOf("AllOrganisms:"));
+                        }
+                        if(column===7||column===8||column===9||column===11||column===14||column===16||column===19||column===21||column===24||column===26){
+                            data='\u200C' +data;
+
+                        }else if(column===12||column===13||column===17||column===18||column===22||column===23||column===27||column===28){
+                            data=data.replace(/chr/g,' ');
+                        }
+                       /*if(column>29){
+                            data="";
+                        }*/
+                        return data;
+                }
+            },
+            columns:[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
+        }
+    };
 	
 	//var geneTargets=[1];
 	var sortCol=5;
@@ -847,15 +876,23 @@
 	bPaginate: false,
 	bProcessing: true,
 	bStateSave: false,
-	bAutoWidth: true,
+	bAutoWidth: false,
 	bDeferRender: false,
-	sScrollX: $(this).parent().width()-5,
+	sScrollX: "100%",
 	sScrollY: "500px",
 	aaSorting: [[ sortCol, "desc" ]],
 
 	sDom: '<"leftSearch"fr><t>',
         buttons: [
-            'copy','csv', 'excel', 'pdf'
+            $.extend( true, {}, buttonCommon, {
+                extend: 'copyHtml5'
+            } ),
+            $.extend( true, {}, buttonCommon, {
+                extend: 'csvHtml5'
+            } ),
+            $.extend( true, {}, buttonCommon, {
+                extend: 'excelHtml5'
+            } )
         ]
 	/*"oTableTools": {
 			"sSwfPath": "/css/swf/copy_csv_xls_pdf.swf"

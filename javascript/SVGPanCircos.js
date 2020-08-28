@@ -98,9 +98,9 @@ function setupHandlers(root){
 	});
 
 	if(navigator.userAgent.toLowerCase().indexOf('webkit') >= 0)
-		window.addEventListener('mousewheel', handleMouseWheel, false); // Chrome/Safari
+		window.addEventListener('mousewheel', handleMouseWheel, {passive:false}); // Chrome/Safari
 	else
-		window.addEventListener('DOMMouseScroll', handleMouseWheel, false); // Others
+		window.addEventListener('DOMMouseScroll', handleMouseWheel, {passive:false}); // Others
 }
 
 /**
