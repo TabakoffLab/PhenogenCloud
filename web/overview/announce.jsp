@@ -12,10 +12,16 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #6</H2>
+                        <div style="margin-left:5px;">
+                            <h3>With Dr. Saunak Sen  9/11/2020 </h3><BR>
+                            More information coming soon.  See the opar.io site for series information.
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #5</H2>
                         <div style="margin-left:5px;">
                             <h3>Identifying genes from QTL using RNA expression and the PhenoGen website 8/28/2020 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://bit.ly/osga_2020-08-28">Register</a>
+                            <a href="https://youtu.be/9DJm5cJgVis">View Here</a>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/9DJm5cJgVis" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             Goals of this webinar (QTL to gene/molecular networks):<BR>
                             <UL>
                                 <LI>Demonstrate how to use the PhenoGen website to identify transcripts:</LI>
@@ -72,7 +78,7 @@
                         <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #3</H2>
                         <div style="margin-left:5px;">
                             <h3>QTL to gene/molecular networks 6/12/2020 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://bit.ly/osga_2020-06-12">Register</a>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/8jiNHuOgr1A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             Goals of this webinar (QTL to gene/molecular networks):<BR>
                             <UL>
                                 <li>Define eQTL</li>

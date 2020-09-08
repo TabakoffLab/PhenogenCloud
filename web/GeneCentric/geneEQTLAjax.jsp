@@ -6,6 +6,7 @@
 <%
 
 	String myOrganism="Rn";
+	String defaultGenomeVer="rn6";
 	String id="";
 	String chromosome="";
 	String genomeVer="";
@@ -47,8 +48,9 @@
 		if(myOrganism.equals("Rn")){
 			panel="BNLX/SHRH";
 			fullOrg="Rattus_norvegicus";
+			defaultGenomeVer="rn6";
 		}else{
-                    
+                    defaultGenomeVer="mm10";
                     panel="ILS/ISS";
                     fullOrg="Mus_musculus";
 		}
@@ -66,11 +68,17 @@
 	if(request.getParameter("id")!=null){
 		id=FilterInput.getFilteredInput(request.getParameter("id"));
 	}
-        if(request.getParameter("source")!=null){
+	if(request.getParameter("source")!=null){
 		source=FilterInput.getFilteredInput(request.getParameter("source"));
 	}
-        if(request.getParameter("genomeVer")!=null){
+
+	if(request.getParameter("genomeVer")!=null){
 		genomeVer=request.getParameter("genomeVer");
+		if(genomeVer.startsWith("rn")||genomeVer.startsWith("mm")){
+
+		}else{
+			genomeVer=defaultGenomeVer;
+		}
 	}
 	if(request.getParameter("version")!=null){
 		version=FilterInput.getFilteredInput(request.getParameter("version"));
