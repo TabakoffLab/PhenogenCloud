@@ -12,10 +12,68 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #8</H2>
+                        <div style="margin-left:5px;">
+                            <h3>Using genetic and non-genetic covariates in QTL studies 10/9/2020 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://bit.ly/osga_2020-10-09">Free Registration Here</a><BR>
+                            Goals of this webinar (quantitative trait to genetic loci):<BR>
+                            <UL>
+                                <LI>Identify covariates and mediators in QTL studies</LI>
+                                <LI>Adjust for covariates in QTL scans</LI>
+                                <LI>Review genetic relatedness in segregating populations</LI>
+                                <LI>Adjust for genetic relatedness using linear mixed models</LI>
+                            </UL>
+                            <BR>
+                            Dr. Saunak Sen<BR>
+                            Professor and Chief of Biostatistics<BR>
+                            Department of Preventative Medicine<BR>
+                            University of Tennessee Health Science Center<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #7</H2>
+                        <div style="margin-left:5px;">
+                            <h3>Introduction to Weighted Gene Co-expression Network Analysis 9/25/2020 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://youtu.be/OpWEHazyQLA">View Here</a>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/OpWEHazyQLA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar (molecular networks):<BR>
+                            <UL>
+                                <LI>Introduction and motivation for co-expression network analysis</LI>
+                                <LI>Basics of weighted gene co-expression network analysis</LI>
+                                <LI>Step-by-step guide to WGCNA using the wgcna package in R.</LI>
+                            </UL>
+                            Background reading available at: <a href="http://bit.ly/osga_wgcna">http://bit.ly/osga_wgcna</a>
+                            <BR>
+                            Presented by:<BR>
+                            Dr. Laura Saba<BR>
+                            Associate Professor<BR>
+                            Department of Pharmaceutical Sciences<BR>
+                            University of Colorado Anschutz Medical Campus<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+
                         <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #6</H2>
                         <div style="margin-left:5px;">
-                            <h3>With Dr. Saunak Sen  9/11/2020 </h3><BR>
-                            More information coming soon.  See the opar.io site for series information.
+                            <h3> Sex as a Biological Covariate in QTL Studies With Dr. Saunak Sen  9/11/2020 </h3><BR>
+                            <a href="https://youtu.be/dYeJcBbJjRU">View Here</a>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/dYeJcBbJjRU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar (trait variance to QTL):<BR>
+                            <UL>
+                                <LI>Review QTL mapping</LI>
+                                <LI>Understand the role of sex in QTL study design</LI>
+                                <LI>Use sex as a covariate in QTL analysis</LI>
+                                <LI>Understand X chromosome segregation in crosses</LI>
+                                <LI>Make adjustments for X chromosome in QTL analysis</LI>
+                            </UL>
+                            <BR>
+                            Presented by:<BR>
+                            Dr. Saunak Sen<BR>
+                            Professor and Chief of Biostatistics<BR>
+                            Department of Preventative Medicine<BR>
+                            University of Tennessee Health Science Center<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
                         </div>
                         <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #5</H2>
                         <div style="margin-left:5px;">
