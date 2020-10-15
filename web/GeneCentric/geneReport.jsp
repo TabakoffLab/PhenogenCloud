@@ -15,6 +15,7 @@
 		String panel="";
 	String gcPath="";
         String genomeVer="";
+        String defaultGenomeVer="";
         boolean isSmall=false;
         boolean isNovel=false;
 	int selectedGene=0;
@@ -42,9 +43,11 @@
 		if(myOrganism.equals("Rn")){
 			panel="BNLX/SHRH";
 			fullOrg="Rattus_norvegicus";
+			defaultGenomeVer="rn6";
 		}else{
 			panel="ILS/ISS";
 			fullOrg="Mus_musculus";
+			defaultGenomeVer="mm10";
 		}
 	}
 	if(request.getParameter("chromosome")!=null){
@@ -65,6 +68,11 @@
         }
 	if(request.getParameter("genomeVer")!=null){
 		genomeVer=request.getParameter("genomeVer");
+		if(genomeVer.startsWith("rn")||genomeVer.startsWith("mm")){
+
+        }else{
+		    genomeVer=defaultGenomeVer;
+        }
 	}
 	log.debug("after params");
 	gcPath=applicationRoot + contextRoot+"tmpData/browserCache/"+genomeVer+"/geneData/" +id+"/";

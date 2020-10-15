@@ -160,6 +160,11 @@
         } else {
             genomeVer = defaultGenomeVer;
         }
+        if(genomeVer.startsWith("hs")||genomeVer.startsWith("rn")|| genomeVer.startsWith("mm")){
+
+        }else{
+            genomeVer=defaultGenomeVer;
+        }
         log.debug("******\nreading Genome Ver:" + genomeVer);
     }
     int val = -1;
