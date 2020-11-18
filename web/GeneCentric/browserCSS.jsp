@@ -383,6 +383,11 @@ div.checkbox-l3{
     margin-left:25px;
 }
 
+div.rightSearch{
+    float:right;
+    display:inline-block;
+}
+
 @media all and (max-width:30em){
     span.shrt-button{display:block;margin:0.2em auto;}
 }

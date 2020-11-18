@@ -77,7 +77,7 @@
         
 	<div class="brClear"></div>
         <BR><BR>
-	<div class="list_container" style="min-height: 600px;">
+	<div class="list_container" style="margin-bottom:5px;min-height:700px;scroll-behavior: auto;">
 	<form name="chooseGeneList" action="chooseGeneList.jsp" method="get">
             <BR>
             
@@ -128,6 +128,7 @@
 		<input type="hidden" name="action" value="" />
 		<input type="hidden" name="fromQTL" value="<%=fromQTL%>" />
 	</form>
+		<BR><BR><BR>
 	</div>
         <%if(userLoggedIn.getUser_name().equals("anon")){%>
         <div style="width:100%;text-align: center;">
@@ -145,6 +146,7 @@
             </span>
         </div>
         <%}%>
+			<BR><BR><BR>
 	<div class="itemDetails"></div>
 	<div class="newGeneList"></div>
 	<div class="deleteItem"></div>

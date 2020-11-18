@@ -114,17 +114,19 @@
 
         if (manuallyEntered) {
             newGeneList.setGene_list_source("Manually Entered");
+            if(inputGeneList.indexOf(",")>-1){
+                inputGeneList=inputGeneList.replaceAll(",","\n");
+            }
+            //TreeSet geneListSet = new TreeSet();
+            ArrayList<String> resultGeneList=new ArrayList<String>();
 
-            TreeSet geneListSet = new TreeSet();
             StringTokenizer tokenizer = new StringTokenizer(inputGeneList);
             while (tokenizer.hasMoreTokens()) {
                 String token = tokenizer.nextToken();
                 //log.debug("token = " + token);
-                geneListSet.add(token);
+                resultGeneList.add(token);
             }
-
-            ArrayList resultGeneList = new ArrayList(geneListSet);
-
+            //ArrayList resultGeneList = new ArrayList(geneListSet);
             geneListID = newGeneList.createGeneList(pool);
             log.debug("geneListID = " + geneListID);
 

@@ -2332,8 +2332,8 @@ public class GeneList {
                             "sc.sort_order, " +
                             "if(gv.group_number='NA', 0, cast(gv.group_number as UNSIGNED))";
 
-            //log.debug("in getGenesAsGeneArray. gene_list_id = "+this.getGene_list_id());
-            //log.debug("query = "+query);
+            log.debug("in getGenesAsGeneArray. gene_list_id = "+this.getGene_list_id());
+            log.debug("query = "+query);
             Gene latestGene = new Gene();
 
             Results myResults = new Results(query, this.getGene_list_id(), conn);
@@ -2437,7 +2437,7 @@ public class GeneList {
                 log.error("wrong whichIidentifier sent to getGenesAsSet");
             }
         }
-
+        log.debug("GeneAsSet size="+geneSet.size());
         return geneSet;
     }
 
@@ -2503,7 +2503,7 @@ public class GeneList {
 
         String[] geneArray = (String[]) myObjectHandler.getAsArray(geneSet, String.class);
 
-        //log.debug("size of Array = "+geneArray.length);
+        log.debug("size of GenesAsArray = "+geneArray.length);
         return geneArray;
     }
 

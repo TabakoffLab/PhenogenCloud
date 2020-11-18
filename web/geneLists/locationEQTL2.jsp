@@ -11,7 +11,8 @@
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setDateHeader("Expires", 0);
     extrasList.add("d3.v4.8.0.min.js");
-    extrasList.add("SVGPanCircos.js");
+    extrasList.add("svg-pan-zoom.3.5.1.min.js");
+    //extrasList.add("SVGPanCircos.js");
     extrasList.add("helper_functions.js");
     extrasList.add("textFlow.js");
     extrasList.add("jquery.twosidedmultiselect.js");
@@ -259,6 +260,12 @@
                 $('span#typeLabel').html(displayType);
                 $('#wait2').hide();
                 $('#forIframe').show();
+                setTimeout(function(){
+                    //root = document.documentElement;
+                    //setupHandlersSVGPanCircos(root);
+                    panZoom = svgPanZoom('#circosGL');
+                },8000);
+
             },
             success: function(data2){
                 $("#forIframe").load(data2.path,{},function(){
@@ -316,7 +323,7 @@
 
                         }).style("cursor","pointer");
                     });
-                    //panZoom = svgPanZoom('#forIframe');
+
 
                 });
             },
@@ -781,7 +788,7 @@
     </script>
     <div style="position:relative;top:-50px;width:100%;"><h2><span id="typeLabel">RNA-Seq</span> Based Gene Level eQTLs</h2></div>
     <div id="circosStatus"></div>
-    <div id="forIframe" style="display:inline-block;text-align:center;/*position:relative;top:-37px;left:50px;*/width:90%;height:950px;max-height: 950px;border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px; padding-bottom:75px;">
+    <div id="forIframe" style="display:inline-block;text-align:center;/*position:relative;top:-37px;left:50px;*/width:90%;height:950px;max-height: 950px;border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px; padding-bottom:75px;overflow: no-display;">
 
     </div>
     <div id="circosEQTLTable">

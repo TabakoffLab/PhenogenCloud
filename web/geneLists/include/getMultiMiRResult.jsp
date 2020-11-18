@@ -9,6 +9,18 @@
 	table#resultSummaryMirGeneTbl tr.selected td, table#resultDetailMirGeneTbl tr.selected td{
 		background:	#bed9ba;
 	}
+	.leftSearch{
+		float: left;
+		display:inline-block;
+	}
+	.centerSearch{
+		text-align: center;
+		display: inline-block;
+	}
+	.rightSearch{
+		float: right;
+		display: inline-block;
+	}
 </style>
 
 <%
@@ -292,8 +304,19 @@ Detailed Summary Table
 			sScrollX: "100%",
 			sScrollY: "580px",
 			aaSorting: [[ 0, "desc" ]],
-			sDom: '<fr><t><i>',
-			buttons: ['copy', 'excel', 'pdf']
+			columnDefs:[{"targets":[2,3,4],"type":"num"}],
+			sDom: '<"centerSearch"fr><"leftSearch"B><t><B><"rightSearch"i>',
+		buttons: [
+			$.extend( true, {}, buttonCommon, {
+				extend: 'copyHtml5'
+			} ),
+			$.extend( true, {}, buttonCommon, {
+				extend: 'csvHtml5'
+			} ),
+			$.extend( true, {}, buttonCommon, {
+				extend: 'excelHtml5'
+			} )
+		]
 	});
 	
 	var tblMirDetailResult=$('#resultDetailMirGeneTbl').DataTable({
@@ -302,8 +325,18 @@ Detailed Summary Table
 			sScrollX: "100%",
 			sScrollY: "580px",
 			aaSorting: [[ 0, "desc" ]],
-			sDom: '<fr><t><i>',
-			buttons: ['copy', 'excel', 'pdf']
+			sDom: '<"leftSearch"B><"centerSearch"fr><t><iB>',
+		buttons: [
+			$.extend( true, {}, buttonCommon, {
+				extend: 'copyHtml5'
+			} ),
+			$.extend( true, {}, buttonCommon, {
+				extend: 'csvHtml5'
+			} ),
+			$.extend( true, {}, buttonCommon, {
+				extend: 'excelHtml5'
+			} )
+		]
 	});
 	$('#resultDetail').hide();
 	
@@ -368,5 +401,10 @@ Detailed Summary Table
     			}
 			});
 	});
-	
+
+
+	function buttonCommon(){
+
+	}
+
 </script>

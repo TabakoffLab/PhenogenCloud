@@ -3265,7 +3265,7 @@ public class IDecoderClient {
                 }
             }
         }
-        //log.debug("startSet now = "); myDebugger.print(startSet);
+        log.debug("startSet now = "); myDebugger.print(startSet);
         return startSet;
     }
 

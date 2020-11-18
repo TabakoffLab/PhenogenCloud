@@ -107,9 +107,6 @@
 	
 %>
 
-
-
-
 <div id="geneList"  style="position:relative;top:56px;border-color:#CCCCCC; border-width:1px 0px 0px 0px; border-style:inset;margin-bottom: 80px;">
 
                 <table class="geneFilter">
@@ -810,6 +807,9 @@
 				 </tbody>
               </table>
     <div class="downloadBtns" style="text-align: left;margin-top:10px;">Export As:</div>
+    <script type="text/javascript">
+        <%@ include file="/javascript/Anon_session.js"%>
+    </script>
 <script type="text/javascript">
 	var spec="<%=myOrganism%>";
 	
@@ -882,7 +882,7 @@
 	sScrollY: "500px",
 	aaSorting: [[ sortCol, "desc" ]],
 
-	sDom: '<"leftSearch"fr><t>',
+	sDom: '<"leftSearch"fr><"rightSearch"i><t>',
         buttons: [
             $.extend( true, {}, buttonCommon, {
                 extend: 'copyHtml5'
@@ -954,9 +954,8 @@
     $('#filterTPM, #filterHerit').keyup( function() {
         tblGenes.draw();
     } );
-    var tmpContainer=tblGenes.buttons().container();
-    //tmpContainer.prepend("<button class=\"dt-button ui-button ui-state-default ui-button-text-only buttons-html5\"  type=\"button\"><span class=\"ui-button-text\">Create PhenoGen Gene List</span></button>")
-	$('.downloadBtns').append(tmpContainer);
+
+
 
 	$('#tblGenes_wrapper').css({position: 'relative', top: '-56px'});
 
@@ -1082,21 +1081,20 @@
 		}	
 	}
 
+    var tmpContainer=tblGenes;
 
-
-    //tblGenes.fnAdjustColumnSizing();
-	//tblGenes.fnDraw();
-	
-	/*$(window).resize(function(){
-			tblGenes.
-		});*/
 </script>
+    <%@ include file="/web/GeneCentric/include/saveToGeneList.jsp" %>
 
+    <script>
+        var creategeneList=PhenoGenGeneList(tblGenes,3);
+    </script>
 
           <%}else{%>
           	No genes found in this region.  Please expand the region and try again.
           <%}%>
 
 </div><!-- end GeneList-->
+
 
 

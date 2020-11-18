@@ -2929,14 +2929,6 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                 $('div#wgcnaGoTable').hide();
                 $('div#wgcnaModuleTable').show();
                 $('span#modTableName').html(that.selectedModule.MOD_NAME);
-                d3.select("div#tableExportCtl").selectAll("span").remove();
-                d3.select("div#tableExportCtl").append("span")
-                        .attr("class","button")
-                        .style("margin-right","10px")
-                        .on("click",function(){
-                           $('#moduleTable').tableExport({type:'csv',escape:'false'});
-                        })
-                        .html("Export CSV");
                 if($.fn.DataTable.isDataTable( 'table#moduleTable' )){
 					$('table#moduleTable').DataTable().destroy();
 				}
@@ -2960,12 +2952,46 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
 		                d3.select(this).append("td").html(d.LinkSum.toFixed(2));
 		                //d3.select(this).append("td").html(function(){return tmpI+1;});
 				});
-		        $('table#moduleTable').DataTable({
+		        that.datatbl=$('table#moduleTable').DataTable({
 						bPaginate: false,
 						aaSorting: [[ 4, "desc" ]],
-						sDom: 'fiB<t>',
-					buttons: ['copy', 'excel', 'pdf']
+						sDom: '<"centerSearch"f>i<t>',
+					buttons: [
+						$.extend( true, {}, that.buttonCommon, {
+							extend: 'copyHtml5'
+						} ),
+						$.extend( true, {}, that.buttonCommon, {
+							extend: 'csvHtml5'
+						} ),
+						$.extend( true, {}, that.buttonCommon, {
+							extend: 'excelHtml5'
+						} )
+					],
+					"columnDefs": [
+						{ "type": "num", "targets": [3,4] }
+					]
 				});
+
+				setTimeout(function(){
+					that.PhenogenList=PhenoGenGeneList(that.datatbl,1,undefined,organism,"#tableExportCtlMod");
+				},50);
+
+
+				that.buttonCommon = {
+					exportOptions: {
+						format: {
+							body: function ( data, row, column, node ) {
+								data=data.replace(/(<.*?>)*/g,'');
+								data = data.replace(/\s*/g, '');
+								if(column===3||column===4){
+									data=data.replace(/&nbsp;/g,' ');
+								}
+								return data;
+							}
+						},
+						columns:[0,1,2,3,4]
+					}};
+
 				if(testFireFox){
 					/*setTimeout(function(){
 						$("div#moduleTable_filter").css("display","inline-block");
@@ -3157,18 +3183,62 @@ function WGCNABrowser(id,region,geneList,disptype,viewtype,tissue){
                     }
                     event.stopPropagation();
                 });
-            
-                
-                $('table#mirTable').DataTable({
+
+
+			that.datatbl=$('table#mirTable').DataTable({
                                 bPaginate: false,
                                 /*"bProcessing": true,
                                 "bStateSave": false,
                                 "bAutoWidth": true,
                                 "bDeferRender": true,*/
                                 aaSorting: [[ 4, "desc" ]],
-                                sDom: 'fB<"rightTable"i><t>',
-								buttons: ['copy', 'excel', 'pdf']
+                                sDom: '<"leftSearch"B><"centerSearch"f><"rightTable"i><t>',
+					buttons: [
+						$.extend( true, {}, that.buttonCommon, {
+							extend: 'copyHtml5'
+						} ),
+						$.extend( true, {}, that.buttonCommon, {
+							extend: 'csvHtml5'
+						} ),
+						$.extend( true, {}, that.buttonCommon, {
+							extend: 'excelHtml5'
+						} )
+					]
                         });
+
+			that.PhenogenList=PhenoGenGeneList(that.datatbl,4,that.buttonCommon);
+
+			that.buttonCommon = {
+				exportOptions: {
+					format: {
+						body: function ( data, row, column, node ) {
+							data=data.replace(/(<.*?>)*/g,'');
+							if(column!==0 && column!==3) {
+								data = data.replace(/\s*/g, '');
+							}else if(column===3){
+								data=data.replace(/&nbsp;/g,' ');
+							}else if(column===0){
+								data=data.replace(/PRN/g,";PRN");
+								data=data.replace(/ENS/g,";ENS");
+								data=data.substring(1);
+							}
+							if(data.indexOf("ENS")===0 && data.indexOf("AllOrganisms:")>0){
+								data=data.substring(0,data.indexOf("AllOrganisms:"));
+							}
+							if(column===7||column===8||column===9||column===11||column===14||column===16||column===19||column===21||column===24||column===26){
+								data='\u200C' +data;
+
+							}else if(column===12||column===13||column===17||column===18||column===22||column===23||column===27||column===28){
+								data=data.replace(/chr/g,' ');
+							}
+							/*if(column>29){
+                                 data="";
+                             }*/
+							return data;
+						}
+					},
+					columns:[0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]
+				}};
            
         };
         

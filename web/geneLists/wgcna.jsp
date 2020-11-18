@@ -14,7 +14,7 @@
     extrasList.add("datatables.1.10.21.min.js");
     extrasList.add("d3.v4.8.0.min.js");
     //extrasList.add("jquery.dataTables.1.10.9.min.js");
-    extrasList.add("wgcnaBrowser1.3.8.js");
+    extrasList.add("wgcnaBrowser1.3.9.js");
     extrasList.add("svg-pan-zoom.3.5.1.min.js");
 
         //extrasList.add("tableExport/tableExport.js");

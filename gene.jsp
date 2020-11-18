@@ -31,6 +31,7 @@
 <%
     log.debug("top of page");
     String myGene = "";
+    String message="";
     String section = "";
     String myDisplayGene = "";
     String defView = "3";
@@ -559,6 +560,10 @@
                     if (min < 1) {
                         min = 1;
                     }
+                    if((max-min)>5000000){
+                        message="Region was greater than the recommended maximum of 5Mbp.  The region has been adjusted to minimum coordinate + 5Mbp.";
+                        max=min+5000000;
+                    }
                     DecimalFormat df0 = new DecimalFormat("#,###");
                     myDisplayGene = chromosome + ":" + df0.format(min) + "-" + df0.format(max);
                     fullGeneList = gdt.getRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false,false);
@@ -647,8 +652,10 @@
 
 
 <div style="text-align:center;width:100%;">
-
-
+    <%if(message.length()>0){%>
+        <span style="color:#FF0000;"><%=message%></span>
+        <BR><BR>
+    <%}%>
     <form method="post"
           action="gene.jsp"
           enctype="application/x-www-form-urlencoded"
@@ -681,8 +688,8 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                         <img src="<%=imagesDir%>/icons/info.gif"></span>
                     <BR>
                     ex. chr1:1-50000 or Agt
-                </label>
-                <BR><BR>
+                </label><BR><BR>
+
                 <label>Species:
                     <select name="speciesCB" id="speciesCB">
                         <option value="Rn" <%if(myOrganism!=null && myOrganism.equals("Rn")){%>selected<%}%>>Rattus

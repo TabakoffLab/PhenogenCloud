@@ -12,10 +12,62 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen update 3.7.4</H2>
+                        <div style="margin-left:5px;">
+                            11/18/20 update to v3.7.4
+                            <UL>
+                                <LI>You can now create gene gists from Genome Browser tables - Filter tables from tracks, eQTLs, WGCNA based on expression/tissue and then use gene list tools on the list.</LI>
+                                <LI>Implemented a reasonable region restriction of 5Mbp for now. - We are working to create a less detailed view that will be displayed in larger regions.</LI>
+                                <LI>Bug Fixes</LI>
+                            </UL>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #10</H2>
+                        <div style="margin-left:5px;">
+                            <h3> 11/20/2020 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://bit.ly/osga_2020-11-20">Free Registration Here</a><BR>
+                            Goals of this webinar (introduction to causal inference in genetic studies):<BR>
+                            <UL>
+                                <LI>Express causal inference as a missing data problem (counterfactual framework)</LI>
+                                <LI>Outline assumptions needed for causal inference</LI>
+                                <LI>Express causal information as (directed acyclic) graphs</LI>
+                                <LI>Outline how to use graphs to guide analytic strategy</LI>
+                            </UL>
+                            <BR>
+                            Dr. Saunak Sen<BR>
+                            Professor and Chief of Biostatistics<BR>
+                            Department of Preventative Medicine<BR>
+                            University of Tennessee Health Science Center<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #9</H2>
+                        <div style="margin-left:5px;">
+                            <h3> Introduction to GeneWeaver: Integrating and analyzing heterogeneous functional genomics data 10/23/2020</h3><BR>
+                            <a href="https://youtu.be/Vq3vocdMWLQ">View Here</a>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/Vq3vocdMWLQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar:<BR>
+                            <UL>
+                                <LI>Compare a user's gene list with multiple functional genomics data sets</LI>
+                                <LI>Compare and contrast gene lists with data currently available and integrated in GeneWeaver</LI>
+                                <LI>Explore functional relationships among genes and disease across species</LI>
+                            </UL>
+                            <BR>
+                            Dr. Elissa Chesler<BR>
+                            Professor<BR>
+                            The Jackson Laboratory<BR>
+                            <BR>
+                            Dr. Erich Baker<BR>
+                            Professor and Chair<BR>
+                            Department of Computer Science<BR>
+                            Baylor University<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #8</H2>
                         <div style="margin-left:5px;">
                             <h3>Using genetic and non-genetic covariates in QTL studies 10/9/2020 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://bit.ly/osga_2020-10-09">Free Registration Here</a><BR>
+                            <a href="https://youtu.be/1U_4DCSDq9U">View Here</a>
+                            <iframe width="560" height="315" src="https://www.youtube.com/embed/1U_4DCSDq9U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             Goals of this webinar (quantitative trait to genetic loci):<BR>
                             <UL>
                                 <LI>Identify covariates and mediators in QTL studies</LI>
