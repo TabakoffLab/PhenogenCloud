@@ -84,12 +84,12 @@ var root = document.documentElement;
 
 var state = 'none', svgRoot = null, stateTarget, stateOrigin, stateTf;
 
-setupHandlers(root);
+//setupHandlers(root);
 
 /**
  * Register handlers
  */
-function setupHandlers(root){
+function setupHandlersSVGPanCircos(root){
 	setAttributes(root, {
 		"onmouseup" : "handleMouseUp(evt)",
 		"onmousedown" : "handleMouseDown(evt)",
@@ -130,18 +130,29 @@ function getRoot(root) {
  * Instance an SVGPoint object with given event coordinates.
  */
 function getEventPoint(evt) {
-	var p = root.createSVGPoint();
+	var p;
+	if(svgRoot.createSVGPoint) {
+		p = svgRoot.createSVGPoint();
 
-	p.x = evt.clientX;
-	p.y = evt.clientY;
-
+		p.x = evt.clientX;
+		p.y = evt.clientY;
+	}else{
+		p={x:evt.clientX,
+			y:evt.clientY};
+	}
 	return p;
 }
 
 function newerGetEventPoint(xval,yval){
- 		var p = root.createSVGPoint();
-		p.x = xval;
-		p.y = yval;
+ 		var p;
+ 		if(svgRoot.createSVGPoint) {
+			p = svgRoot.createSVGPoint();
+			p.x = xval;
+			p.y = yval;
+		}else{
+ 			p={x:xval,
+			y:yval};
+		}
 		return p;
  	}
 

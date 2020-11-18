@@ -694,7 +694,7 @@
             <span id="filterBtn2" class="filter button">Filter Rows</span>
         </div>
         <BR/>
-
+        <div class="downloadBtns" style="text-align: left;margin-bottom: 10px;">Export As:</div>
         <TABLE name="items" id="tblFrom" class="list_base" cellpadding="0" cellspacing="0" border="0" width="100%">
             <THEAD>
             <tr>
@@ -933,6 +933,7 @@
 
             </tbody>
         </table>
+        <div class="downloadBtns" style="text-align: left;margin-bottom: 10px;">Export As:</div>
     </div>
     <BR/><BR/><BR/>
 
@@ -963,7 +964,7 @@
             sScrollX: "100%",
             sScrollY: "100%",
             bDeferRender: false,
-            sDom: '<"leftSearch"frB><t>',
+            sDom: '<"leftSearch"fr><"rightSearch"i><t>',
             buttons: [
                 $.extend( true, {}, buttonCommon, {
                     extend: 'copyHtml5'
