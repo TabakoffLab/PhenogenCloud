@@ -12,11 +12,20 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen update 3.7.5</H2>
+                        <div style="margin-left:5px;">
+                            12/11/20 update to v3.7.5
+                            <UL>
+                                <LI>Sampled counts from every strain are now available as well as total counts.</LI>
+                                <LI>You can create a custom view and select total/sampled count and choos the density of the count tracks.</LI>
+                                <LI>Bug Fixes</LI>
+                            </UL>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen update 3.7.4</H2>
                         <div style="margin-left:5px;">
                             11/18/20 update to v3.7.4
                             <UL>
-                                <LI>You can now create gene gists from Genome Browser tables - Filter tables from tracks, eQTLs, WGCNA based on expression/tissue and then use gene list tools on the list.</LI>
+                                <LI>You can now create gene lists from Genome Browser tables - Filter tables from tracks, eQTLs, WGCNA based on expression/tissue and then use gene list tools on the list.</LI>
                                 <LI>Implemented a reasonable region restriction of 5Mbp for now. - We are working to create a less detailed view that will be displayed in larger regions.</LI>
                                 <LI>Bug Fixes</LI>
                             </UL>

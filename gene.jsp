@@ -36,6 +36,7 @@
     String myDisplayGene = "";
     String defView = "3";
     String overideGV = "N";
+    String UUID="";
     boolean scriptError = false;
     boolean organismError = false;
     boolean popup = false;
@@ -65,6 +66,9 @@
     }
     if (request.getParameter("section") != null) {
         section = FilterInput.getFilteredInput(request.getParameter("section"));
+    }
+    if (request.getParameter("uuid") != null) {
+        UUID = FilterInput.getFilteredInput(request.getParameter("uuid"));
     }
     pageTitle = "Genome/Transcriptome Browser " + myGene;
     pageDescription = "Genome/Transcriptome Browser provides a vizualization of Microarray and RNA-Seq data along the genome as well as summarize eQTL/WGCNA data for genes and/or regions.";
@@ -177,7 +181,7 @@
         defView = Integer.toString(val + 10);
     }
     log.debug("*****\ncurGenome:" + genomeVer);
-    ArrayList<BrowserView> views = bt.getBrowserViews(genomeVer,"");
+    ArrayList<BrowserView> views = bt.getBrowserViews(genomeVer,UUID);
     log.debug("*****\nView length:" + views.size());
     String[] tissuesList1 = new String[1];
     String[] tissuesList2 = new String[1];
@@ -804,10 +808,16 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                         <input type="checkbox" class="custviewCbx" id="cbxTrackReadCounts">
                                         <label >Strain Read counts</label><BR>
                                         <div class="checkbox-l3" style="display:none;" id="ReadCountsOpts">
+                                            Display Density:
+                                            <select class="custviewSel" id="selDensity">
+                                                <option value="1">Dense</option>
+                                                <option value="2">Full</option>
+                                            </select><BR>
                                             Select Count type:
-                                                <select>
+                                                <select class="custviewSel" id="selReadCountType">
                                                     <option value="total">Total Read Counts</option>
-                                                    <option value="sampled" disabled="disabled">Sampled Read Counts</option>
+                                                    <option value="sampled">Sampled Read Counts</option>
+
                                                 </select><BR>
                                             <!--<input type="checkbox" class="custviewCbx" id="cbxTrackOptConstScale">
                                             <label >Use same Y-axis scale for all</label><BR>-->
@@ -942,6 +952,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
         <input type="hidden" name="firstENSArray" id="firstENSArray" value="<%=firstENSString%>"/>
         <input type="hidden" name="geneSelect" id="geneSelect" value="<%=selectedGene%>"/>
         <input type="hidden" name="genomeVer" id="genomeVer" value="<%=genomeVer%>"/>
+            <input type="hidden" name="uuid" id="uuid" value="<%=UUID%>"/>
     </form>
     <%if (genURL.size() > 1) {%>
     <BR><BR>
@@ -1060,10 +1071,19 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
          if(submitVer==''){
          submitVer=defaultGenomeVer;
          }*/
+
+        params={genomeVer: genomeVer};
+        if(PhenogenAnonSession){
+            params["UUID"]=PhenogenAnonSession.UUID;
+        }else{
+            PhenogenAnonSession=SetupAnonSession();
+            PhenogenAnonSession.setupSession();
+            params["UUID"]=PhenogenAnonSession.UUID;
+        }
         $.ajax({
             url: tmpContext + "getBrowserViews.jsp",
             type: 'GET',
-            data: {genomeVer: genomeVer},
+            data: params,
             dataType: 'json',
             success: function (data2) {
                 defviewList = data2;

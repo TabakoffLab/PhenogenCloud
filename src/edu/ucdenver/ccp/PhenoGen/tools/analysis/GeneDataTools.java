@@ -1558,7 +1558,7 @@ public class GeneDataTools {
         }
         return completedSuccessfully;
     }
-    public String generateXMLTrack(String chromosome,int min,int max,String panel,String track,String organism,String genomeVer,int rnaDatasetID,int arrayTypeID,String folderName,int binSize){
+    public String generateXMLTrack(String chromosome,int min,int max,String panel,String track,String organism,String genomeVer,int rnaDatasetID,int arrayTypeID,String folderName,int binSize,String version,int countType){
         String status="";
         try{
             //Connection tmpConn=pool.getConnection();
@@ -1637,7 +1637,13 @@ public class GeneDataTools {
             }else if (organism.equals("Mm")) {
                 perlArgs[3] = "Mouse";
             }
-            perlArgs[4] = track;
+            String tmpTrack=track+"_"+version+";";
+            if(countType==1){
+                tmpTrack=tmpTrack+"Total;";
+            }else if(countType==2){
+                tmpTrack=tmpTrack+"Norm;";
+            }
+            perlArgs[4] = tmpTrack;
             perlArgs[5] = panel;
             perlArgs[6]=chromosome;
              perlArgs[7] = Integer.toString(min);

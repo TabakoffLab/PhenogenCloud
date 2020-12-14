@@ -66,7 +66,7 @@ public class BrowserTools{
     public int createCustomTrack(int uid,String trackclass, String trackname, String description, String organism,String genomeVer,String settings, int order,String genCat,String category,String controls,Boolean vis,String location,String fileName,String type){
         BrowserTrack bt=new BrowserTrack();
         int trackID=-1;
-        BrowserTrack newTrack=new BrowserTrack(uid, trackclass, trackname, description, organism,settings, order,genCat,category,controls,vis,location,fileName,type,new Timestamp((new Date()).getTime()),genomeVer);
+        BrowserTrack newTrack=new BrowserTrack(uid, trackclass, trackname, description, organism,settings, order,genCat,category,controls,vis,location,fileName,type,new Timestamp((new Date()).getTime()),genomeVer,-1);
         trackID=newTrack.saveToDB(genomeVer,pool);
         return trackID;
     }
@@ -108,7 +108,7 @@ public class BrowserTools{
         }
         return ret;
     }
-    public boolean editCustomView(String trackString, int viewID, int userID, String name, String email,String genomeVer,int datasetVer,String countDefault,String strainList){
+    public boolean editCustomView(String trackString, int viewID, int userID, String name, String email,String genomeVer,int datasetVer,String countDefault,String strainList,String countDensity){
         boolean success=false;
         BrowserView bv=new BrowserView();
         BrowserTrack bt=new BrowserTrack();
@@ -125,7 +125,7 @@ public class BrowserTools{
         log.debug("update tracks");
         curView.setName(name);
         curView.setEmail(email);
-        curView.updateView(pool);
+        curView.updateView(countDensity,pool);
         log.debug("update view");
         success=true;
 

@@ -235,7 +235,19 @@ sub createXMLFile
 		$arrayTypeID=22;
 	}
 	if(index($type,"illumina")>-1 or index($type,"helicos")>-1 ){
-		unlink $outputDir."bincount.".$binSize.".".$type.".xml";
+	    my $rnaCountRef;
+        my $ver="";
+        my $countType="";
+        if(index($type,"_")>-1){
+            $ver=substr($type,index($type,"_")+1);
+            if(index($ver,";")>-1){
+                my $tmpVer=substr($ver,0,index($ver,";"));
+                my $countType=substr($ver,index($ver,";")+1);
+                $ver=$tmpVer;
+            }
+            $type=substr($type,0,index($type,"_"));
+        }
+		unlink $outputDir."bincount.".$binSize.".".$type.".".$countType.".xml";
 		my $rnaCountStart=time();
 		if(index($chromosome,"chr")>-1){
 			$chromosome=substr($chromosome,3);
@@ -248,17 +260,7 @@ sub createXMLFile
 		#}
 		#print ("min:$minCoord\nmax:$maxCoord\nroundMin:$roundMin\nroundMax:$roundMax\n");
 		
-		my $rnaCountRef;
-		my $ver="";
-		my $countType="";
-		if(index($type,"_")>-1){
-            $ver=substr($type,index($type,"_")+1);
-            if(index($ver,";")>-1){
-                my $tmpVer=substr($ver,0,index($ver,";"));
-                my $countType=substr($ver,index($ver,";")+1);
-                $ver=$tmpVer;
-            }
-        }
+
         $rnaCountRef=readRNACountsDataFromMongo($chromosome,$species,$publicID,$panel,$type,$countType,$ver,$roundMin,$roundMax,$genomeVer,$dsn,$usr,$passwd,$mongoDsn,$mongoUser,$mongoPasswd);
 		
 		my %rnaCountHOH=%$rnaCountRef;

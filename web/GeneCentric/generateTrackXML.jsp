@@ -22,10 +22,10 @@ import="org.json.*" %>
 <%
     gdt.setSession(session);
 String chromosome="",panel="",myOrganism="",track="",folderName="",bedFile="",outputFile="",web="",type="",genomeVer="",version="";
-int min=0,max=0,rnaDatasetID=0,arrayTypeID=0,binSize=0;
+int min=0,max=0,rnaDatasetID=0,arrayTypeID=0,binSize=0,countType=1;
 double forwardPValueCutoff=0;
 if(request.getParameter("chromosome")!=null){
-		chromosome=request.getParameter("chromosome").trim();
+		chromosome=FilterInput.getFilteredInput(request.getParameter("chromosome").trim());
 }
 if(request.getParameter("track")!=null){
 		track=request.getParameter("track").trim();
@@ -34,7 +34,7 @@ if(request.getParameter("folder")!=null){
 		folderName=request.getParameter("folder").trim();
 }
 	if(request.getParameter("version")!=null){
-		version=request.getParameter("version").trim();
+		version=FilterInput.getFilteredInput(request.getParameter("version").trim());
 	}
 if(request.getParameter("minCoord")!=null){
 	try{
@@ -51,7 +51,7 @@ if(request.getParameter("maxCoord")!=null){
 	}
 }
 if(request.getParameter("panel")!=null){
-		panel=request.getParameter("panel").trim();
+		panel=FilterInput.getFilteredInput(request.getParameter("panel").trim());
 }
 if(request.getParameter("rnaDatasetID")!=null){
 	try{
@@ -75,7 +75,7 @@ if(request.getParameter("binSize")!=null){
 	}
 }
 if(request.getParameter("myOrganism")!=null){
-		myOrganism=request.getParameter("myOrganism").trim();
+		myOrganism=FilterInput.getFilteredInput(request.getParameter("myOrganism").trim());
 }else{
 	if(!panel.equals("")){
 		if(panel.equals("BNLX/SHRH")){
@@ -105,6 +105,9 @@ if(request.getParameter("type")!=null){
 if(request.getParameter("genomeVer")!=null){
     genomeVer=request.getParameter("genomeVer");
 }
+	if(request.getParameter("countType")!=null){
+		countType=Integer.parseInt(request.getParameter("countType"));
+	}
 %>
 
 
@@ -113,7 +116,7 @@ if(request.getParameter("genomeVer")!=null){
 	try {
 		AsyncGenerateTrack agt = new AsyncGenerateTrack(gdt, session, pool);
 		if (!track.startsWith("custom") && bedFile.equals("") && outputFile.equals("")) {
-			agt.setupGenerateTrackXML(chromosome, min, max, panel, track, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, folderName, binSize);
+			agt.setupGenerateTrackXML(chromosome, min, max, panel, track, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, folderName, binSize,version,countType);
 		} else if (track.startsWith("custom")) {
 			log.debug("Generating custom xml track");
 			if (web.startsWith("http")) {
