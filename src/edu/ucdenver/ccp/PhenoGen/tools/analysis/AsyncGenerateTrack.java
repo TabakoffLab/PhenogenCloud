@@ -67,6 +67,8 @@ public class AsyncGenerateTrack extends Thread {
     private String outFile="";
     private String type="";
     private String web="";
+    private String version="";
+    private int countType=0;
 
     private int minCoord=0;
     private int maxCoord=0;
@@ -86,7 +88,7 @@ public class AsyncGenerateTrack extends Thread {
         log = Logger.getRootLogger();
     }
 
-    public void setupGenerateTrackXML(String chr,int min,int max,String panel,String track,String org,String genomeVer,int rnaDatasetID,int arrayTypeID,String folderName,int binSize) {
+    public void setupGenerateTrackXML(String chr,int min,int max,String panel,String track,String org,String genomeVer,int rnaDatasetID,int arrayTypeID,String folderName,int binSize,String version,int countType) {
         log.debug("in AsynGeneDataTools()");
         this.chrom=chr;
         this.minCoord=min;
@@ -99,6 +101,8 @@ public class AsyncGenerateTrack extends Thread {
         this.organism=org;
         this.outputDir=folderName;
         this.binSize=binSize;
+        this.version=version;
+        this.countType=countType;
         this.execType=this.GENERATE_TRACK_XML;
     }
 
@@ -153,7 +157,7 @@ public class AsyncGenerateTrack extends Thread {
         Date start=new Date();
         try{
             if(execType==this.GENERATE_TRACK_XML){
-                gdt.generateXMLTrack(chrom,minCoord,maxCoord,panel,track,organism,genomeVer,rnaDatasetID,arrayTypeID,outputDir,binSize);
+                gdt.generateXMLTrack(chrom,minCoord,maxCoord,panel,track,organism,genomeVer,rnaDatasetID,arrayTypeID,outputDir,binSize,version,countType);
             }else if(execType==this.GENERATE_CUSTOM_REMOTE_TRACK_XML){
                 gdt.generateCustomRemoteXMLTrack(chrom,minCoord,maxCoord,track,organism,outputDir,bedFile,outFile,type,web,binSize);
             }else if(execType==this.GENERATE_CUSTOM_BED_TRACK_XML){

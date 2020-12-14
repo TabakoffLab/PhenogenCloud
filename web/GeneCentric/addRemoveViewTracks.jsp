@@ -21,6 +21,7 @@
     String viewName="";
     String assocEmail="";
     String countDefault="total";
+    String countDensity="1";
     String strainList="";
     int tmpuserID=-1;
 
@@ -53,8 +54,11 @@
     if(request.getParameter("countStrains")!=null){
         strainList=FilterInput.getFilteredInput(request.getParameter("countStrains"));
     }
+    if(request.getParameter("countDensity")!=null){
+        countDensity=FilterInput.getFilteredInput(request.getParameter("countDensity"));
+    }
     //getCurrentView
-    boolean updated=bt.editCustomView(trackString,viewID,tmpuserID,viewName,assocEmail,genomeVer,dsVer,countDefault,strainList);
+    boolean updated=bt.editCustomView(trackString,viewID,tmpuserID,viewName,assocEmail,genomeVer,dsVer,countDefault,strainList,countDensity);
     response.setContentType("application/json");
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
     response.setDateHeader("Expires", 0);

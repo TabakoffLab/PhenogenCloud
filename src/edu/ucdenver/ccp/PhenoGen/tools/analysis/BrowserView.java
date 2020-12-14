@@ -82,7 +82,7 @@ public class BrowserView{
         query=query+queryP2+" order by bv.bvid";
                         
         String trackquery="select bvt.bvid,bt.TRACKID, bt.USER_ID, bt.TRACK_CLASS, bt.TRACK_NAME, bt.TRACK_DESC, bt.ORGANISM, bt.CATEGORY_GENERIC, bt.CATEGORY, bt.DISPLAY_OPTS,"+
-                        "bt.VISIBLE, bt.CUSTOM_LOCATION, bt.CUSTOM_DATE, bt.CUSTOM_FILE_ORIGINAL, bt.CUSTOM_TYPE,bts.settings,bvt.ordering "+
+                        "bt.VISIBLE, bt.CUSTOM_LOCATION, bt.CUSTOM_DATE, bt.CUSTOM_FILE_ORIGINAL, bt.CUSTOM_TYPE,bts.settings,bvt.ordering,bts.TRACKSETTINGID "+
                         " from BROWSER_VIEWS_TRACKS bvt,BROWSER_TRACKS bt, BROWSER_TRACK_SETTINGS bts where "+
                         " bvt.trackid=bt.trackid and bvt.tracksettingid=bts.tracksettingid "+
                         " and bt.visible=1 "+
@@ -140,7 +140,8 @@ public class BrowserView{
                     String type=rs.getString(15);
                     String sett=rs.getString(16);
                     int order=rs.getInt(17);
-                    BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,sett,order,genCat,cat,controls,vis,location,file,type,ts,genomeVer);
+                    int settingID=rs.getInt(18);
+                    BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,sett,order,genCat,cat,controls,vis,location,file,type,ts,genomeVer,settingID);
                     if(hm.containsKey(bvid)){
                         hm.get(bvid).addTrack(tmpBT);
                     }
@@ -176,7 +177,7 @@ public class BrowserView{
         String query="select bv.BVID,bv.USER_ID,bv.NAME,bv.DESCRIPTION,bv.ORGANISM,bv.VISIBLE,bv.IMAGE_SETTINGS,gbv.genome_id from BROWSER_VIEWS bv, BROWSER_GV2VIEW gbv "+
                         "where bv.bvid="+viewid+" and bv.bvid=gbv.bvid";
         String trackquery="select bvt.bvid,bt.TRACKID, bt.USER_ID, bt.TRACK_CLASS, bt.TRACK_NAME, bt.TRACK_DESC, bt.ORGANISM, bt.CATEGORY_GENERIC, bt.CATEGORY, bt.DISPLAY_OPTS,"+
-                        "bt.VISIBLE, bt.CUSTOM_LOCATION, bt.CUSTOM_DATE, bt.CUSTOM_FILE_ORIGINAL, bt.CUSTOM_TYPE,bts.settings,bvt.ordering"+
+                        "bt.VISIBLE, bt.CUSTOM_LOCATION, bt.CUSTOM_DATE, bt.CUSTOM_FILE_ORIGINAL, bt.CUSTOM_TYPE,bts.settings,bvt.ordering,bts.TRACKSETTINGID "+
                         " from BROWSER_VIEWS_TRACKS bvt,BROWSER_TRACKS bt, BROWSER_TRACK_SETTINGS bts "+
                         " where bvt.trackid=bt.trackid and bvt.tracksettingid=bts.tracksettingid "+
                         " and bt.visible=1 and bvt.bvid ="+viewid+" "+
@@ -221,7 +222,8 @@ public class BrowserView{
                     String type=rs.getString(15);
                     String sett=rs.getString(16);
                     int order=rs.getInt(17);
-                    BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,sett,order,genCat,cat,controls,vis,location,file,type,ts,bvGenomeVer);
+                    int settingID=rs.getInt(18);
+                    BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,sett,order,genCat,cat,controls,vis,location,file,type,ts,bvGenomeVer,settingID);
                     ret.addTrack(tmpBT);
                 }
                 ps.close();
@@ -705,6 +707,8 @@ public class BrowserView{
                 for(int i=0;i<trackList.length;i++){
                     String trackClass=trackList[i].substring(0, trackList[i].indexOf(","));
                     String setting=trackList[i].substring(trackList[i].indexOf(",")+1);
+                    //String curDen=setting.substring(0,setting.indexOf(","));
+                    //if(curDen.equals(den))
                     if(hm.containsKey(trackClass)){//check and update?
                         TrackSettings ts=hm.get(trackClass);
                         if(ts.getOrder() != i){
@@ -803,12 +807,14 @@ public class BrowserView{
     }
 
 
-    public String updateTracks(DataSource pool){
+    public String saveTracksToDB(String countDensity,DataSource pool){
         boolean success=false;
         String ret="";
 
         String insert="insert into BROWSER_VIEWS_TRACKS (BVID,TRACKID,TRACKSETTINGID,ORDERING) VALUES (?,?,?,?)";
         String insertSettings="insert into BROWSER_TRACK_SETTINGS (SETTINGS) VALUES (?)";
+
+        String settingQuery="select tracksettingid from BROWSER_VIEWS_TRACKS where bvid=? and trackid=?";
 
         String update="update BROWSER_VIEWS_TRACKS set ORDERING=? where bvid="+this.id+ " and trackid=?";
         String updateSettings="update BROWSER_TRACK_SETTINGS set SETTINGS=? where TRACKSETTINGID=?";
@@ -828,13 +834,30 @@ public class BrowserView{
                     ips.setInt(2, btList.get(i).getID());
                     ips.execute();
                     ips.close();
+                    int settingID=btList.get(i).getSettingID();
+                    if(settingID<0) {
+                        ips = conn.prepareStatement(settingQuery);
+                        ips.setInt(1, this.id);
+                        ips.setInt(2, btList.get(i).getID());
+                        ResultSet rs = ips.executeQuery();
 
-                    //Currently we don't need to do this so it's commented out
-                    /*PreparedStatement ips = conn.prepareStatement(updateSettings);
-                    ips.setString(1, setting);
-                    ips.setInt(2, btList.get(i).getTrackSettingID());
-                    ips.execute();
-                    ips.close();*/
+                        if (rs.next()) {
+                            settingID = rs.getInt(1);
+                        }
+                        ips.close();
+                    }
+                    if(settingID>-1) {
+                        String setting = btList.get(i).getDefaultSettings();
+                        if (btList.get(i).getTrackClass().indexOf("illuminaTotal") > -1) {
+                            setting = countDensity + setting.substring(setting.indexOf(","));
+                        }
+                        //Currently we don't need to do this so it's commented out
+                        PreparedStatement ips2 = conn.prepareStatement(updateSettings);
+                        ips2.setString(1, setting);
+                        ips2.setInt(2, settingID);
+                        ips2.execute();
+                        ips2.close();
+                    }
 
                 }
             }
@@ -848,7 +871,11 @@ public class BrowserView{
                     //ips.setInt(1,newSettingID);
                     //log.debug("update");
                     //log.debug("setting:" + btList.get(i).getDefaultSettings());
-                    ips.setString(1, btList.get(i).getDefaultSettings());
+                    String setting=btList.get(i).getDefaultSettings();
+                    if(btList.get(i).getTrackClass().indexOf("illuminaTotal")>-1) {
+                        setting=countDensity+setting.substring(setting.indexOf(","));
+                    }
+                    ips.setString(1, setting);
                     ips.executeUpdate();
                     ResultSet rsID = ips.getGeneratedKeys();
                     if (rsID.next()) {
@@ -916,9 +943,9 @@ public class BrowserView{
         return ret;
     }
 
-    public void updateView(DataSource pool){
+    public void updateView(String countDensity,DataSource pool){
         log.debug("before update tracks to DB");
-        updateTracks(pool);
+        saveTracksToDB(countDensity,pool);
         log.debug("after update tracks to DB");
         if(!this.name.equals("") || !this.email.equals("")){
             try(Connection conn=pool.getConnection();){

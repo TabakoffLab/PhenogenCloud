@@ -20,6 +20,7 @@
                     beforeSend: function(){
                         that.setStatus("Creating View");
                         that.toggleGO();
+                        $("#uuid").val(PhenogenAnonSession.UUID);
                     },
                     success: function(data2){
                         that.viewID=data2.viewID;
@@ -68,11 +69,13 @@
                 name=$("#viewName").val();
                 email=$("#assocEmail").val();
                 dsVer=$("#selDataTotalVer").val();
+                that.cDefault=$("#selReadCountType").val();
+                that.countDensity=$("#selDensity").val();
                 $.ajax({
                     url: "/web/GeneCentric/addRemoveViewTracks.jsp",
                     type: 'GET',
                     cache: false,
-                    data: {tracks:includeString,viewID:that.viewID,genomeVer: genomeVer,name:name,email: email,version:dsVer,countStrains:strainString,countDefault:that.cDefault},
+                    data: {tracks:includeString,viewID:that.viewID,genomeVer: genomeVer,name:name,email: email,version:dsVer,countStrains:strainString,countDefault:that.cDefault,countDensity:that.countDensity},
                     dataType: 'json',
                     beforeSend: function () {
                         that.curTimeout = -1;
@@ -102,6 +105,9 @@
         };
         //Utility Functions
         that.setup=function(){
+            $(".custviewSel").on("change",function(){
+                that.submitChanges();
+            });
             $(".custviewCbx").on("click", function(){
                 if($(this).attr("id").indexOf("cbxData")==0){
                     divName=$(this).attr("id").substr(7);

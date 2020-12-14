@@ -311,10 +311,18 @@ function ViewMenu(level){
 		if(!pathPrefix){
 			tmpContext="";
 		}
+		params={genomeVer: genomeVer};
+		if(PhenogenAnonSession){
+			params["UUID"]=PhenogenAnonSession.UUID;
+		}else{
+			PhenogenAnonSession=SetupAnonSession();
+			PhenogenAnonSession.setupSession();
+			params["UUID"]=PhenogenAnonSession.UUID;
+		}
 		$.ajax({
 				url: tmpContext+"getBrowserViews.jsp",
    				type: 'GET',
-				data: {genomeVer: genomeVer },
+				data: params,
 				dataType: 'json',
                 success: function(d){ 
                     that.viewList=[];
