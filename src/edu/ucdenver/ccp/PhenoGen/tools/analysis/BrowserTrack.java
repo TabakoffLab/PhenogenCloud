@@ -28,6 +28,7 @@ public class BrowserTrack{
     private String genericCategory="";
     private String category="";
     private int order=-1;
+    private int settingID=-1;
     private String controls="";
     private boolean visible=true;
     private String location="";
@@ -66,15 +67,15 @@ public class BrowserTrack{
     public BrowserTrack( int userid,  String trackclass,
                         String trackname, String description, String organism,String settings, int order,
                         String genCat,String category,String controls,Boolean vis,String location,
-                        String fileName,String fileType,Timestamp ts,String genomeVer){
+                        String fileName,String fileType,Timestamp ts,String genomeVer,int settingID){
         this(-1,userid, trackclass, trackname,description, organism,settings, order, genCat,category,controls,vis,location,
-                fileName,fileType,ts,genomeVer);
+                fileName,fileType,ts,genomeVer,settingID);
 
     }
     public BrowserTrack(int id, int userid,  String trackclass, 
                 String trackname, String description, String organism,String settings, int order,
                 String genCat,String category,String controls,Boolean vis,String location,
-                String fileName,String fileType,Timestamp ts,String genomeVer){
+                String fileName,String fileType,Timestamp ts,String genomeVer,int settingID){
         this.ts = null;
         this.id=id;
         this.userid=userid;
@@ -93,6 +94,7 @@ public class BrowserTrack{
         this.originalFile=fileName;
         this.type=fileType;
         this.gV=genomeVer;
+        this.settingID=settingID;
 
         nullStrainTracks.put("RefSeq",1);
         nullStrainTracks.put("EnsemblAnnotation",1);
@@ -148,7 +150,7 @@ public class BrowserTrack{
                     String file=rs.getString(13);
                     String type=rs.getString(14);
                     String gV=rs.getString(15);
-                    BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,"",0,genCat,cat,controls,vis,location,file,type,t,gV);
+                    BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,"",0,genCat,cat,controls,vis,location,file,type,t,gV,-1);
                     ret.add(tmpBT);
                 }
                 
@@ -192,7 +194,7 @@ public class BrowserTrack{
                     Timestamp t=rs.getTimestamp(12);
                     String file=rs.getString(13);
                     String type=rs.getString(14);
-                    ret=new BrowserTrack(tid,uid,tclass,name,desc,org,"",0,genCat,cat,controls,vis,location,file,type,t,"");
+                    ret=new BrowserTrack(tid,uid,tclass,name,desc,org,"",0,genCat,cat,controls,vis,location,file,type,t,"",-1);
                 }
                 
                 ps.close();
@@ -277,9 +279,17 @@ public class BrowserTrack{
         if(!nullStrainTrackType.equals("")){
             nullStrainTrackType=nullStrainTrackType.substring(1);
             if(nullStrainTrackType.indexOf(",")>0) {
-                query = query +and+" ("+tissueQuery+" and bt.strain is null and bt.track_Type in (" + nullStrainTrackType + ") ) ";
+                query = query +and+" (";
+                if(!tissueQuery.equals("")){
+                    query=query +tissueQuery+" and ";
+                }
+                query=query + " bt.strain is null and bt.track_Type in (" + nullStrainTrackType + ") ) ";
             }else{
-                query = query +and +" ( "+tissueQuery+" and bt.strain is null and bt.track_type = " + nullStrainTrackType + ") ";
+                query = query +and +" ( ";
+                if(!tissueQuery.equals("")){
+                    query=query+tissueQuery+" and ";
+                }
+                query=query+" bt.strain is null and bt.track_type = " + nullStrainTrackType + ") ";
             }
             and=" or ";
         }
@@ -341,7 +351,7 @@ public class BrowserTrack{
         if(and.equals(" or ")){
             query=query+" )";
         }
-        log.debug("find Tracks for trackString:\n");
+        log.debug("********find Tracks for trackString:\n");
         log.debug(query);
         PreparedStatement ps=null;
         try(Connection conn=pool.getConnection();) {
@@ -364,7 +374,7 @@ public class BrowserTrack{
                 String file=rs.getString(13);
                 String type=rs.getString(14);
                 String gV=rs.getString(18);
-                BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,"",0,genCat,cat,controls,vis,location,file,type,t,gV);
+                BrowserTrack tmpBT=new BrowserTrack(tid,uid,tclass,name,desc,org,"",0,genCat,cat,controls,vis,location,file,type,t,gV,-1);
                 ret.add(tmpBT);
             }
 
@@ -518,6 +528,14 @@ public class BrowserTrack{
 
     public void setDBStatus(String dbStatus) {
         this.dbStatus = dbStatus;
+    }
+
+    public int getSettingID() {
+        return settingID;
+    }
+
+    public void setSettingID(int settingID) {
+        this.settingID = settingID;
     }
 
     public String getDefaultSettings(){

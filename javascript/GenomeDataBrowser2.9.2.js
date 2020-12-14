@@ -85,7 +85,7 @@ mouseOnly.probeMouse=1;
 
 var mmVer="Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer="Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer="PhenoGen v3.7.4(11/18/2020)";
+var siteVer="PhenoGen v3.7.5(12/11/2020)";
 
 var trackBinCutoff=10000;
 var customTrackLevel=-1;
@@ -1649,7 +1649,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 								}else if(track=="heartilluminaSmall"){
 									newTrack= HeartIlluminaSmallTrack(that,data,track,density);
 								}else if(track.indexOf("illuminaTotal")>-1){
-									newTrack=StrainSpecificIlluminaTotalTrack(that,data,track,density);
+									newTrack=StrainSpecificIlluminaTotalTrack(that,data,track,density,additionalOptions);
 								}
 								that.addTrackList(newTrack);
 							}else{
@@ -1686,7 +1686,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 							}else if(track==="heartilluminaSmall"){
 								newTrack= HeartIlluminaSmallTrack(that,data,track,density);
 							}else if(track.indexOf("illuminaTotal")>-1){
-								newTrack=StrainSpecificIlluminaTotalTrack(that,data,track,density);
+								newTrack=StrainSpecificIlluminaTotalTrack(that,data,track,density,additionalOptions);
 							}
 							that.addTrackList(newTrack);
                                                         }catch(er){}
@@ -3284,7 +3284,7 @@ function toolTipSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type){
 			}else if(track==="heartilluminaSmall"){
 				newTrack= HeartIlluminaSmallTrack(that,data,track,curDensity);
 			}else if(track.indexOf("illuminaTotal")>-1){
-				newTrack=StrainSpecificIlluminaTotalTrack(that,data,track,curDensity);
+				newTrack=StrainSpecificIlluminaTotalTrack(that,data,track,curDensity,additionalOptions);
 			}
 			if(that.levelNumber===99){
 				if(that.updateTimeoutHandle[track]!==0){
@@ -10332,8 +10332,8 @@ function BrainIlluminaTotalMinusTrack(gsvg,data,trackClass,density){
 	that.redraw();
 	return that;
 }
-function StrainSpecificIlluminaTotalTrack(gsvg,data,trackClass,density){
-	var that= CountTrack(gsvg,data,trackClass,density);
+function StrainSpecificIlluminaTotalTrack(gsvg,data,trackClass,density,additionalOptions){
+	var that= CountTrack(gsvg,data,trackClass,density,additionalOptions);
 	var strain=trackClass.substr(trackClass.indexOf("-")+1);
 	var strand=".";
 	if(trackClass.indexOf("Plus")>0){
@@ -10348,7 +10348,11 @@ function StrainSpecificIlluminaTotalTrack(gsvg,data,trackClass,density){
 		tissue="Liver";
 	}
 	that.graphColorText=gsvg.strainSpecificCountColors(strain);
-	var lbl=strain+" "+tissue+" "+strand+" Strand Total-RNA Read Counts";
+	var sampTxt="";
+	if(that.countType==="2"){
+		sampTxt=" Sampled";
+	}
+	var lbl=strain+" "+tissue+" "+strand+" Strand Total-RNA"+sampTxt+" Read Counts";
 	that.updateLabel(lbl);
 	that.redrawLegend();
 	that.redraw();
@@ -10445,20 +10449,11 @@ function SpliceJunctionTrack(gsvg,data,trackClass,label,density,additionalOption
 	return that;
 }
 function CustomCountTrack(gsvg,data,trackClass,density,additionalOptions){
-	var that= CountTrack(gsvg,data,trackClass,density);
+	var that= CountTrack(gsvg,data,trackClass,density,additionalOptions);
 	that.graphColorText="#4E85A6";
 	that.updateControl=0;
 	var lbl="Custom Count Track";
-	var opts=additionalOptions.split(",");
-	if(opts.length>0){
-		for(var j=0;j<opts.length;j++){
-			if(j==0){
-				that.dataFileName=opts[j].substr(9);
-			}else if(opts[j].indexOf("Name=")){
-				lbl=opts[j].substr(5);
-			}
-		}
-	}
+
 
 
 	that.updateFullData = function(retry,force){
@@ -10580,7 +10575,7 @@ function CustomCountTrack(gsvg,data,trackClass,density,additionalOptions){
 	return that;
 }
 /*Generic numeric track which displays numeric values accross the genome*/
-function CountTrack(gsvg,data,trackClass,density){
+function CountTrack(gsvg,data,trackClass,density,additionalOptions){
 	var that= Track(gsvg,data,trackClass,"Generic Counts");
 	that.loadedDataMin=that.xScale.domain()[0];
 	that.loadedDataMax=that.xScale.domain()[1];
@@ -10593,11 +10588,41 @@ function CountTrack(gsvg,data,trackClass,density){
 	that.data=data;
 	that.density=density;
 	that.prevDensity=density;
+	that.countType=1;
 	that.displayBreakDown=null;
 	var tmpMin=that.gsvg.xScale.domain()[0];
 	var tmpMax=that.gsvg.xScale.domain()[1];
 	var len=tmpMax-tmpMin;
-	
+	console.log(that.trackClass+":"+additionalOptions);
+	var opts=additionalOptions.split(",");
+
+		if(opts.length>1){
+			tmp=opts[1].split(":");
+			that.scaleMin=tmp[0]*1;
+			that.scaleMax=tmp[1]*1;
+		}else if(opts.length>3){
+			if(opts.length>4) {
+				that.countType = opts[2] * 1;
+				//that.version=opts[3];
+			}else{
+				//that.version=opts[3];
+			}
+		}else if(opts.length>4){
+
+		}
+
+	if(opts.length>0){
+		if(opts[0]){
+			that.countType=opts[0]*1;
+		}
+	}
+	if(opts.length>1){
+		if(opts[1]){
+
+
+		}
+	}
+
 	that.fullDataTimeOutHandle=0;
 
 	that.ttTrackList=[];
@@ -10884,7 +10909,7 @@ function CountTrack(gsvg,data,trackClass,density){
 								   				type: 'GET',
 								   				cache: false,
                                 				async:true,
-												data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:tmpPanel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: that.trackClass, folder: that.gsvg.folderName,binSize:that.bin},
+												data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:tmpPanel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: that.trackClass, folder: that.gsvg.folderName,binSize:that.bin,countType:that.countType},
 												//data: {chromosome: chr,minCoord:minCoord,maxCoord:maxCoord,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism, track: that.trackClass, folder: folderName,binSize:that.bin},
 												dataType: 'json',
 								    			success: function(data2){
@@ -11231,16 +11256,18 @@ function CountTrack(gsvg,data,trackClass,density){
 		that.prevSetting.density=that.density;
 		that.prevSetting.scaleMin=that.scaleMin;
 		that.prevSetting.scaleMax=that.scaleMax;
+		that.prevSetting.countType=that.countType;
 	};
 
 	that.revertPrevious=function(){
 		that.density=that.prevSetting.density;
 		that.scaleMin=that.prevSetting.scaleMin;
 		that.scaleMax=that.prevSetting.scaleMax;
+		that.countType=that.prevSetting.countType;
 	};
 
 	that.generateTrackSettingString=function(){
-		return that.trackClass+","+that.density+","+that.include+";";
+		return that.trackClass+","+that.density+","+that.scaleMin+":"+that.scaleMax+","+that.countType+";";
 	};
 
 	that.generateSettingsDiv=function(topLevelSelector){
@@ -11271,6 +11298,8 @@ function CountTrack(gsvg,data,trackClass,density){
 						var id=that.trackClass+"Dense"+that.level+"Select";
 						if(selClass[1]=="colorSelect"){
 							id=that.trackClass+that.level+"colorSelect";
+						}else if(selClass[1]=="countSelect"){
+							id=that.trackClass+that.level+"countSelect";
 						}
 						var sel=div.append("select").attr("id",id)
 							.attr("name",selClass[1]);
