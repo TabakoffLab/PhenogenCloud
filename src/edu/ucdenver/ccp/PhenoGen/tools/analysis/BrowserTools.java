@@ -125,7 +125,7 @@ public class BrowserTools{
         log.debug("update tracks");
         curView.setName(name);
         curView.setEmail(email);
-        curView.updateView(countDensity,pool);
+        curView.updateView(countDensity,countDefault,pool);
         log.debug("update view");
         success=true;
 

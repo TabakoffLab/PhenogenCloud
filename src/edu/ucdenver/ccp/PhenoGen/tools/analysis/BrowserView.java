@@ -807,7 +807,7 @@ public class BrowserView{
     }
 
 
-    public String saveTracksToDB(String countDensity,DataSource pool){
+    public String saveTracksToDB(String countDensity,String countDefault,DataSource pool){
         boolean success=false;
         String ret="";
 
@@ -816,7 +816,7 @@ public class BrowserView{
 
         String settingQuery="select tracksettingid from BROWSER_VIEWS_TRACKS where bvid=? and trackid=?";
 
-        String update="update BROWSER_VIEWS_TRACKS set ORDERING=? where bvid="+this.id+ " and trackid=?";
+        String update="update BROWSER_VIEWS_TRACKS set ORDERING=? where bvid=? and trackid=?";
         String updateSettings="update BROWSER_TRACK_SETTINGS set SETTINGS=? where TRACKSETTINGID=?";
 
         String delete="delete from BROWSER_VIEWS_TRACKS where bvid=? and trackid=?";
@@ -831,7 +831,8 @@ public class BrowserView{
                     log.debug(update);
                     PreparedStatement ips = conn.prepareStatement(update);
                     ips.setInt(1, i);
-                    ips.setInt(2, btList.get(i).getID());
+                    ips.setInt(2,this.id);
+                    ips.setInt(3, btList.get(i).getID());
                     ips.execute();
                     ips.close();
                     int settingID=btList.get(i).getSettingID();
@@ -840,7 +841,6 @@ public class BrowserView{
                         ips.setInt(1, this.id);
                         ips.setInt(2, btList.get(i).getID());
                         ResultSet rs = ips.executeQuery();
-
                         if (rs.next()) {
                             settingID = rs.getInt(1);
                         }
@@ -848,12 +848,22 @@ public class BrowserView{
                     }
                     if(settingID>-1) {
                         String setting = btList.get(i).getDefaultSettings();
+                        String newSetting=setting;
                         if (btList.get(i).getTrackClass().indexOf("illuminaTotal") > -1) {
-                            setting = countDensity + setting.substring(setting.indexOf(","));
+                            String[] settings=setting.split(",");
+                            for(int j=0;j<settings.length;j++){
+                                if(j==0){
+                                    newSetting=countDensity;
+                                }else if(j==2){
+                                    newSetting =newSetting+","+countDefault ;
+                                }else {
+                                    newSetting = newSetting+ "," + settings[j];
+                                }
+                            }
+                            //setting = countDensity + setting.substring(setting.indexOf(","));
                         }
-                        //Currently we don't need to do this so it's commented out
                         PreparedStatement ips2 = conn.prepareStatement(updateSettings);
-                        ips2.setString(1, setting);
+                        ips2.setString(1, newSetting);
                         ips2.setInt(2, settingID);
                         ips2.execute();
                         ips2.close();
@@ -872,10 +882,21 @@ public class BrowserView{
                     //log.debug("update");
                     //log.debug("setting:" + btList.get(i).getDefaultSettings());
                     String setting=btList.get(i).getDefaultSettings();
+                    String newSetting=setting;
                     if(btList.get(i).getTrackClass().indexOf("illuminaTotal")>-1) {
-                        setting=countDensity+setting.substring(setting.indexOf(","));
+                        String[] settings=setting.split(",");
+                        for(int j=0;j<settings.length;j++){
+                            if(j==0){
+                                newSetting=countDensity;
+                            }else if(j==2){
+                                newSetting =newSetting+","+countDefault ;
+                            }else {
+                                newSetting = newSetting+ "," + settings[j];
+                            }
+                        }
+                        //setting=countDensity+setting.substring(setting.indexOf(","));
                     }
-                    ips.setString(1, setting);
+                    ips.setString(1, newSetting);
                     ips.executeUpdate();
                     ResultSet rsID = ips.getGeneratedKeys();
                     if (rsID.next()) {
@@ -943,9 +964,9 @@ public class BrowserView{
         return ret;
     }
 
-    public void updateView(String countDensity,DataSource pool){
+    public void updateView(String countDensity,String countDefault,DataSource pool){
         log.debug("before update tracks to DB");
-        saveTracksToDB(countDensity,pool);
+        saveTracksToDB(countDensity,countDefault,pool);
         log.debug("after update tracks to DB");
         if(!this.name.equals("") || !this.email.equals("")){
             try(Connection conn=pool.getConnection();){
