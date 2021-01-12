@@ -50,6 +50,11 @@
     }
     if(request.getParameter("countDefault")!=null){
         countDefault=FilterInput.getFilteredInput(request.getParameter("countDefault"));
+        if(countDefault.equals("sampled")){
+            countDefault="2";
+        }else if(countDefault.equals("total")){
+            countDefault="1";
+        }
     }
     if(request.getParameter("countStrains")!=null){
         strainList=FilterInput.getFilteredInput(request.getParameter("countStrains"));

@@ -242,12 +242,22 @@ sub createXMLFile
             $ver=substr($type,index($type,"_")+1);
             if(index($ver,";")>-1){
                 my $tmpVer=substr($ver,0,index($ver,";"));
-                my $countType=substr($ver,index($ver,";")+1);
+                $countType=substr($ver,index($ver,";")+1);
                 $ver=$tmpVer;
             }
             $type=substr($type,0,index($type,"_"));
+        }elsif(index($type,";")>-1){
+            $countType=substr($type,index($type,";")+1);
+            $type=substr($type,0,index($type,";"));
         }
-		unlink $outputDir."bincount.".$binSize.".".$type.".".$countType.".xml";
+        if(index($countType,";")>-1){
+            $countType=substr($countType,0,index($countType,";"));
+        }
+        if($countType ne ""){
+		    unlink $outputDir."bincount.".$binSize.".".$type.".".$countType.".xml";
+		}else{
+		    unlink $outputDir."bincount.".$binSize.".".$type.".xml";
+		}
 		my $rnaCountStart=time();
 		if(index($chromosome,"chr")>-1){
 			$chromosome=substr($chromosome,3);
@@ -261,7 +271,7 @@ sub createXMLFile
 		#print ("min:$minCoord\nmax:$maxCoord\nroundMin:$roundMin\nroundMax:$roundMax\n");
 		
 
-        $rnaCountRef=readRNACountsDataFromMongo($chromosome,$species,$publicID,$panel,$type,$countType,$ver,$roundMin,$roundMax,$genomeVer,$dsn,$usr,$passwd,$mongoDsn,$mongoUser,$mongoPasswd);
+        my $rnaCountRef=readRNACountsDataFromMongo($chromosome,$species,$publicID,$panel,$type,$countType,$ver,$roundMin,$roundMax,$genomeVer,$dsn,$usr,$passwd,$mongoDsn,$mongoUser,$mongoPasswd);
 		
 		my %rnaCountHOH=%$rnaCountRef;
 		my $rnaCountEnd=time();
@@ -281,14 +291,19 @@ sub createXMLFile
 			}else{
 				mkdir $outputDir."tmp";
 			}
-			createRNACountXMLTrack(\%rnaBinned,$outputDir."tmp/".$roundMin."_".$roundMax.".bincount.".$binSize.".".$type.".xml");
+			if($countType ne ""){
+			    createRNACountXMLTrack(\%rnaBinned,$outputDir."tmp/".$roundMin."_".$roundMax.".bincount.".$binSize.".".$type.".".$countType.".xml");
+			}else{
+			    createRNACountXMLTrack(\%rnaBinned,$outputDir."tmp/".$roundMin."_".$roundMax.".bincount.".$binSize.".".$type.".xml");
+			}
+
 		}else{
                     if(-d $outputDir."tmp"){
 				
                     }else{
                             mkdir $outputDir."tmp";
                     }
-                    createRNAFullCountXMLTrack(\%rnaCountHOH,$outputDir."tmp/".$roundMin."_".$roundMax.".count.".$type.".xml");
+                    createRNAFullCountXMLTrack(\%rnaCountHOH,$outputDir."tmp/".$roundMin."_".$roundMax.".count.".$type.".".$countType.".xml");
                 }
 		#createRNACountXMLTrack(\%rnaCountHOH,$outputDir."count".$type.".xml");
 	}

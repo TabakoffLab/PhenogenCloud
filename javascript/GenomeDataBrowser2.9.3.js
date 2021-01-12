@@ -85,7 +85,7 @@ mouseOnly.probeMouse=1;
 
 var mmVer="Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer="Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer="PhenoGen v3.7.5(12/11/2020)";
+var siteVer="PhenoGen v3.7.6(1/12/2020)";
 
 var trackBinCutoff=10000;
 var customTrackLevel=-1;
@@ -1569,12 +1569,24 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				var tmpMax=that.xScale.domain()[1];
 				var len=tmpMax-tmpMin;
 				var tmpBin=calculateBin(len,that.width);
+				var tmpOpts=additionalOptions.split(",");
+				var tmpCount="Total";
+				var countType=1;
+				if(tmpOpts.length>2){
+					tmp=tmpOpts[1]*1;
+					if(tmp===2){
+						tmpCount="Norm";
+						countType=2;
+					}
+				}else{
+					tmpCount="";
+				}
 				//var file=dataPrefix+"tmpData/regionData/"+that.folderName+"/count"+track+".xml";
-				var file=dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/tmp/"+tmpMin+"_"+tmpMax+".count."+track+".xml";
+				var file=dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/tmp/"+tmpMin+"_"+tmpMax+".count."+track+"."+tmpCount+".xml";
 				if(tmpBin>0){
 					tmpMin=tmpMin-(tmpMin%tmpBin);
 					tmpMax=tmpMax+(tmpBin-(tmpMax%tmpBin));
-					file=dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/tmp/"+tmpMin+"_"+tmpMax+".bincount."+tmpBin+"."+track+".xml";
+					file=dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.folderName+"/tmp/"+tmpMin+"_"+tmpMax+".bincount."+tmpBin+"."+track+"."+tmpCount+".xml";
 				}
 				d3.xml(file,function (error,d){
 					if(error){
@@ -1592,7 +1604,7 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				   				type: 'GET',
 				   				cache: false,
                                 async:true,
-								data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:tmpPanel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: track, folder: that.folderName,binSize:tmpBin},
+								data: {chromosome: chr,minCoord:tmpMin,maxCoord:tmpMax,panel:tmpPanel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism,genomeVer:genomeVer, track: track, folder: that.folderName,binSize:tmpBin,countType:countType},
 								dataType: 'json',
 				    			success: function(data2){
 				    				/*if(ga){
@@ -10349,7 +10361,7 @@ function StrainSpecificIlluminaTotalTrack(gsvg,data,trackClass,density,additiona
 	}
 	that.graphColorText=gsvg.strainSpecificCountColors(strain);
 	var sampTxt="";
-	if(that.countType==="2"){
+	if(that.countType===2){
 		sampTxt=" Sampled";
 	}
 	var lbl=strain+" "+tissue+" "+strand+" Strand Total-RNA"+sampTxt+" Read Counts";
@@ -10595,33 +10607,18 @@ function CountTrack(gsvg,data,trackClass,density,additionalOptions){
 	var len=tmpMax-tmpMin;
 	console.log(that.trackClass+":"+additionalOptions);
 	var opts=additionalOptions.split(",");
-
-		if(opts.length>1){
-			tmp=opts[1].split(":");
+	console.log(opts);
+	if(opts.length>1){
+			tmp=opts[0].split(":");
 			that.scaleMin=tmp[0]*1;
 			that.scaleMax=tmp[1]*1;
-		}else if(opts.length>3){
-			if(opts.length>4) {
-				that.countType = opts[2] * 1;
-				//that.version=opts[3];
-			}else{
-				//that.version=opts[3];
-			}
-		}else if(opts.length>4){
-
-		}
-
-	if(opts.length>0){
-		if(opts[0]){
-			that.countType=opts[0]*1;
-		}
+			console.log("scale:"+that.scaleMin+":"+that.scaleMax);
 	}
-	if(opts.length>1){
-		if(opts[1]){
-
-
-		}
+	if(opts.length>2){
+				that.countType = opts[1] * 1;
+				console.log("countType:"+that.countType);
 	}
+
 
 	that.fullDataTimeOutHandle=0;
 
@@ -10881,15 +10878,20 @@ function CountTrack(gsvg,data,trackClass,density,additionalOptions){
 
 		that.showLoading();
 		that.bin=that.calculateBin(len);
+		var tmpCountType="Total";
+		if(that.countType===2){
+			tmpCountType="Norm";
+		}
 		//console.log("update "+that.trackClass);
+
 		var tag="Count";
-		var file=dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.gsvg.folderName+"/tmp/"+tmpMin+"_"+tmpMax+".count."+that.trackClass+".xml";
+		var file=dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.gsvg.folderName+"/tmp/"+tmpMin+"_"+tmpMax+".count."+that.trackClass+"."+tmpCountType+".xml";
 		if(that.bin>0){
 			tmpMin=tmpMin-(that.bin*2);
 			tmpMin=tmpMin-(tmpMin%(that.bin*2));
 			tmpMax=tmpMax+(that.bin*2);
 			tmpMax=tmpMax+(that.bin*2-(tmpMax%(that.bin*2)));
-			file=dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.gsvg.folderName+"/tmp/"+tmpMin+"_"+tmpMax+".bincount."+that.bin+"."+that.trackClass+".xml";
+			file=dataPrefix+"tmpData/browserCache/"+genomeVer+"/regionData/"+that.gsvg.folderName+"/tmp/"+tmpMin+"_"+tmpMax+".bincount."+that.bin+"."+that.trackClass+"."+tmpCountType+".xml";
 		}
 		//console.log("file="+file);
 		//console.log("folder="+that.gsvg.folderName);
