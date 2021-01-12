@@ -314,53 +314,60 @@ public class IDecoderClient {
 
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearch");
-        String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
-        //
-        // Match on organism if the target is not 'Homologene ID'
-        //
-        String organismString = "";
-        if (!targetsList.contains("Homologene ID")) {
-            organismString = "and id1.organism = '" + organism + "' and id2.organism = '" + organism + "' ";
-        }
-
-        String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
-                "from id_lookup idl left outer join identifiers id1 on idl.id1_number=id1.id_number " +
-                "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
-                "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
-
-        String where=" where idl.level<= ? ";
-        String whereList=" and idl.id1_number in (Select id_number from identifiers where identifier in ( ";
-        String whereTrgt=" and type.name in  ";
-
-        String finalQuery=query+where+whereList+idString+" ) ) ";
-        if (targetsList != null && !targetsList.contains("Location")) {
-            finalQuery = finalQuery +whereTrgt+  targetString + " ";
-        }
-        finalQuery = finalQuery + organismString +" ";
-        finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
-
-        log.debug("in getRecords");
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement pstmt = conn.prepareStatement(finalQuery);
-            pstmt.setInt(1,num_iterations+1);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                Identifier foundID = new Identifier(rs.getString(13));
-                LinkedHashSet<Identifier> resultIDSet = new LinkedHashSet<Identifier>();
-                if(resultsHashMap.containsKey(foundID)){
-                    resultIDSet = (LinkedHashSet<Identifier>) resultsHashMap.get(foundID);
-                }
-                Identifier relatedID = new Identifier(rs.getInt(1), rs.getString(2),
-                        rs.getLong(3), rs.getString(4), rs.getString(5),
-                        rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10),
-                        rs.getString(11));
-                resultIDSet.add(relatedID);
-                resultsHashMap.put(foundID, resultIDSet);
+        if(idString.indexOf("[")==-1 && idString.indexOf("]")==-1 && idString.indexOf("{")==-1 && idString.indexOf("}")==-1) {
+            String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
+            if (targetString.indexOf(",") == -1) {
+                targetString = "'" + targetsList + "'";
             }
-            pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
-            throw e;
+            //
+            // Match on organism if the target is not 'Homologene ID'
+            //
+            String organismString = "";
+            if (!targetsList.contains("Homologene ID")) {
+                organismString = " and id1.organism = '" + organism + "' and id2.organism = '" + organism + "' ";
+            }
+
+            String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
+                    "from id_lookup idl left outer join identifiers id1 on idl.id1_number=id1.id_number " +
+                    "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
+                    "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
+
+            String where = " where idl.level<= ? ";
+            String whereList = " and idl.id1_number in (Select id_number from identifiers where identifier in ( ";
+            String whereTrgt = " and type.name in  ";
+            if (targetString.indexOf(",") == -1) {
+                whereTrgt = " and type.name = ";
+            }
+            String finalQuery = query + where + whereList + idString + " ) ) ";
+            if (targetsList != null && !targetsList.contains("Location")) {
+                finalQuery = finalQuery + whereTrgt + targetString + " ";
+            }
+            finalQuery = finalQuery + organismString + " ";
+            finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
+
+            log.debug("in getRecords");
+            try (Connection conn = pool.getConnection()) {
+                PreparedStatement pstmt = conn.prepareStatement(finalQuery);
+                pstmt.setInt(1, num_iterations + 1);
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    Identifier foundID = new Identifier(rs.getString(13));
+                    LinkedHashSet<Identifier> resultIDSet = new LinkedHashSet<Identifier>();
+                    if (resultsHashMap.containsKey(foundID)) {
+                        resultIDSet = (LinkedHashSet<Identifier>) resultsHashMap.get(foundID);
+                    }
+                    Identifier relatedID = new Identifier(rs.getInt(1), rs.getString(2),
+                            rs.getLong(3), rs.getString(4), rs.getString(5),
+                            rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10),
+                            rs.getString(11));
+                    resultIDSet.add(relatedID);
+                    resultsHashMap.put(foundID, resultIDSet);
+                }
+                pstmt.close();
+            } catch (SQLException e) {
+                log.debug("SQL Exception:", e);
+                throw e;
+            }
         }
         log.debug("resultsHashMap contains " + resultsHashMap.size() + " entries");
         return resultsHashMap;
@@ -388,53 +395,61 @@ public class IDecoderClient {
 
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearch");
-        String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
-        //
-        // Match on organism if the target is not 'Homologene ID'
-        //
-        String organismString = "";
-        if (!targetsList.contains("Homologene ID")) {
-            organismString = "and id1.organism = '" + organism + "' and id2.organism = '" + organism + "' ";
-        }
-
-        String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
-                "from id_lookup idl left outer join identifiers id1 on idl.id1_number=id1.id_number " +
-                "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
-                "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
-
-        String where=" where idl.level<= ? ";
-        String whereList=" and idl.id1_number in (Select id_number from identifiers where identifier_lower in ( ";
-        String whereTrgt=" and type.name in  ";
-
-        String finalQuery=query+where+whereList+idString+" ) ) ";
-        if (targetsList != null && !targetsList.contains("Location")) {
-            finalQuery = finalQuery +whereTrgt+  targetString + " ";
-        }
-        finalQuery = finalQuery + organismString+" ";
-        finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
-
-        log.debug("in getRecords");
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement pstmt = conn.prepareStatement(finalQuery);
-            pstmt.setInt(1,num_iterations+1);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                Identifier foundID = new Identifier(rs.getString(13).toLowerCase());
-                LinkedHashSet<Identifier> resultIDSet = new LinkedHashSet<Identifier>();
-                if(resultsHashMap.containsKey(foundID)){
-                    resultIDSet = (LinkedHashSet<Identifier>) resultsHashMap.get(foundID);
-                }
-                Identifier relatedID = new Identifier(rs.getInt(1), rs.getString(2),
-                        rs.getLong(3), rs.getString(4), rs.getString(5),
-                        rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10),
-                        rs.getString(11));
-                resultIDSet.add(relatedID);
-                resultsHashMap.put(foundID, resultIDSet);
+        if(idString.indexOf("[")==-1 && idString.indexOf("]")==-1 && idString.indexOf("{")==-1 && idString.indexOf("}")==-1) {
+            String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
+            if (targetString.indexOf(",") == -1) {
+                targetString = "'" + targetsList + "'";
             }
-            pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
-            throw e;
+            //
+            // Match on organism if the target is not 'Homologene ID'
+            //
+            String organismString = "";
+            if (!targetsList.contains("Homologene ID")) {
+                organismString = "and id1.organism = '" + organism + "' and id2.organism = '" + organism + "' ";
+            }
+
+            String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
+                    "from id_lookup idl left outer join identifiers id1 on idl.id1_number=id1.id_number " +
+                    "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
+                    "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
+
+            String where = " where idl.level<= ? ";
+            String whereList = " and idl.id1_number in (Select id_number from identifiers where identifier_lower in ( ";
+            String whereTrgt = " and type.name in  ";
+            if (targetString.indexOf(",") == -1) {
+                whereTrgt = " and type.name = ";
+            }
+
+            String finalQuery = query + where + whereList + idString + " ) ) ";
+            if (targetsList != null && !targetsList.contains("Location")) {
+                finalQuery = finalQuery + whereTrgt + targetString + " ";
+            }
+            finalQuery = finalQuery + organismString + " ";
+            finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
+
+            log.debug("in getRecords");
+            try (Connection conn = pool.getConnection()) {
+                PreparedStatement pstmt = conn.prepareStatement(finalQuery);
+                pstmt.setInt(1, num_iterations + 1);
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    Identifier foundID = new Identifier(rs.getString(13).toLowerCase());
+                    LinkedHashSet<Identifier> resultIDSet = new LinkedHashSet<Identifier>();
+                    if (resultsHashMap.containsKey(foundID)) {
+                        resultIDSet = (LinkedHashSet<Identifier>) resultsHashMap.get(foundID);
+                    }
+                    Identifier relatedID = new Identifier(rs.getInt(1), rs.getString(2),
+                            rs.getLong(3), rs.getString(4), rs.getString(5),
+                            rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10),
+                            rs.getString(11));
+                    resultIDSet.add(relatedID);
+                    resultsHashMap.put(foundID, resultIDSet);
+                }
+                pstmt.close();
+            } catch (SQLException e) {
+                log.debug("SQL Exception:", e);
+                throw e;
+            }
         }
         log.debug("resultsHashMap contains " + resultsHashMap.size() + " entries");
         return resultsHashMap;
@@ -740,62 +755,70 @@ public class IDecoderClient {
     private HashMap<Identifier, Set<Identifier>> doSearchAll(String geneIDString,String organism, DataSource pool) throws SQLException {
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearchAll");
-        String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
-        //
-        // Match on organism if the target is not 'Homologene ID'
-        //
-        String organismString = "";
-
-        if (!targetsList.contains("Homologene ID")) {
-            //organismString = "and id.organism = '" + organism + "' ";
-            organismString = "and id1.organism = '" + organism + "' and id2.organism = '" + organism + "' ";
-        }
-        String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
-                "from id_lookup idl left outer join identifiers id1 on idl.id1_number=id1.id_number " +
-                "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
-                "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
-
-        String where=" where idl.level<= ? ";
-        String whereList=" and idl.id1_number in (Select id_number from identifiers where identifier ";
-        String singleID="like '";
-        String listIDs="in ("+geneIDString+")";
-        String whereTrgt=" and type.name in  ";
-
-        String finalQuery=query+where+whereList;
-        if(geneIDString.indexOf(",")>0){
-            finalQuery = finalQuery + listIDs +")";
-        }else {
-            finalQuery = finalQuery + singleID + geneIDString + "' ) ";
-        }
-        if (targetsList != null && !targetsList.contains("Location")) {
-            finalQuery = finalQuery +whereTrgt+  targetString + " ";
-        }
-        finalQuery = finalQuery + organismString +" ";
-        finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
-
-        log.debug("in getRecords");
-        try(Connection conn=pool.getConnection()){
-            log.debug("iDecoder Query:\n"+finalQuery);
-            PreparedStatement pstmt = conn.prepareStatement(finalQuery);
-            pstmt.setInt(1,num_iterations+1);
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                Identifier foundID = new Identifier(rs.getString(13));
-                LinkedHashSet<Identifier> resultIDSet = new LinkedHashSet<Identifier>();
-                if(resultsHashMap.containsKey(foundID)){
-                    resultIDSet = (LinkedHashSet<Identifier>) resultsHashMap.get(foundID);
-                }
-                Identifier relatedID = new Identifier(rs.getInt(1), rs.getString(2),
-                        rs.getLong(3), rs.getString(4), rs.getString(5),
-                        rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10),
-                        rs.getString(11));
-                resultIDSet.add(relatedID);
-                resultsHashMap.put(foundID, resultIDSet);
+        if(geneIDString.indexOf("[")==-1 && geneIDString.indexOf("]")==-1 && geneIDString.indexOf("{")==-1 && geneIDString.indexOf("}")==-1) {
+            String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
+            if (targetString.indexOf(",") == -1) {
+                targetString = "'" + targetsList + "'";
             }
-            pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
-            throw e;
+            //
+            // Match on organism if the target is not 'Homologene ID'
+            //
+            String organismString = "";
+
+            if (!targetsList.contains("Homologene ID")) {
+                //organismString = "and id.organism = '" + organism + "' ";
+                organismString = "and id1.organism = '" + organism + "' and id2.organism = '" + organism + "' ";
+            }
+            String query = "select idl.IDENT_TYPE_ID,type.NAME,id2.id_number,id2.identifier,id2.chromosome,id2.map_location,id2.cM,id2.start_bp,type.category,id2.organism,'',idl.id1_number,id1.identifier " +
+                    "from id_lookup idl left outer join identifiers id1 on idl.id1_number=id1.id_number " +
+                    "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
+                    "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
+
+            String where = " where idl.level<= ? ";
+            String whereList = " and idl.id1_number in (Select id_number from identifiers where identifier ";
+            String singleID = "like '";
+            String listIDs = "in (" + geneIDString + ")";
+            String whereTrgt = " and type.name in  ";
+            if (targetString.indexOf(",") == -1) {
+                whereTrgt = " and type.name = ";
+            }
+
+            String finalQuery = query + where + whereList;
+            if (geneIDString.indexOf(",") > 0) {
+                finalQuery = finalQuery + listIDs + ")";
+            } else {
+                finalQuery = finalQuery + singleID + geneIDString + "' ) ";
+            }
+            if (targetsList != null && !targetsList.contains("Location")) {
+                finalQuery = finalQuery + whereTrgt + targetString + " ";
+            }
+            finalQuery = finalQuery + organismString + " ";
+            finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
+
+            log.debug("in getRecords");
+            try (Connection conn = pool.getConnection()) {
+                log.debug("iDecoder Query:\n" + finalQuery);
+                PreparedStatement pstmt = conn.prepareStatement(finalQuery);
+                pstmt.setInt(1, num_iterations + 1);
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    Identifier foundID = new Identifier(rs.getString(13));
+                    LinkedHashSet<Identifier> resultIDSet = new LinkedHashSet<Identifier>();
+                    if (resultsHashMap.containsKey(foundID)) {
+                        resultIDSet = (LinkedHashSet<Identifier>) resultsHashMap.get(foundID);
+                    }
+                    Identifier relatedID = new Identifier(rs.getInt(1), rs.getString(2),
+                            rs.getLong(3), rs.getString(4), rs.getString(5),
+                            rs.getString(6), rs.getString(7), rs.getString(8), rs.getString(9), rs.getString(10),
+                            rs.getString(11));
+                    resultIDSet.add(relatedID);
+                    resultsHashMap.put(foundID, resultIDSet);
+                }
+                pstmt.close();
+            } catch (SQLException e) {
+                log.debug("SQL Exception:", e);
+                throw e;
+            }
         }
         log.debug("resultsHashMap contains " + resultsHashMap.size() + " entries");
         return resultsHashMap;

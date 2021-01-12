@@ -33,7 +33,8 @@
                         <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #10</H2>
                         <div style="margin-left:5px;">
                             <h3> 11/20/2020 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://bit.ly/osga_2020-11-20">Free Registration Here</a><BR>
+                            <a href="https://youtu.be/twJNYOL3qfA">View Here</a><BR>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/twJNYOL3qfA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                             Goals of this webinar (introduction to causal inference in genetic studies):<BR>
                             <UL>
                                 <LI>Express causal inference as a missing data problem (counterfactual framework)</LI>
