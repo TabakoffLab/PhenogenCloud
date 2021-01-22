@@ -266,7 +266,8 @@
                                          "above, my privileges on this site may be restricted or revoked." + "\n" +
                                          "Select 'OK' if you agree to the terms outlined above.");
         	if (answer) {
-                	return true;
+                	$("#action").val("Register");
+				    document.getElementById("registration").submit();
         	} else {
                 	return false;
         	}
@@ -280,7 +281,7 @@
 		action="<%=accessDir%>registration.jsp" 
 		enctype="application/x-www-form-urlencoded" 
 		onSubmit="return IsUserFormComplete(this)" 
-		name="registration">
+		name="registration" id="registration">
 	<BR>
 
 			<div class="title"> Provide the following information </div>
@@ -486,14 +487,7 @@
 				<td><input type="text" name="country" value="<%=newUser.getCountry()%>" size="10"> </td>		
 			</tr>
              <tr><td colspan="100%">&nbsp;</td></tr>
-			<TR>
-                    <TD colspan="4" >
-                    	<div style="text-align:center;width:100%">
-                            <div class="g-recaptcha" data-sitekey="<%=pub%>"></div>
-                	</div>
-                    </TD>
-                </TR>
-            <tr><td colspan="100%">&nbsp;</td></tr>
+
 			<tr><td colspan="100%" class="center">
 			<input type="checkbox" id="termscheckbox"><%=twoSpaces%> I agree to the <a href="http://www.ucdenver.edu/POLICY/Pages/LegalNotices.aspx">Legal Notices</a> and <a href="http://www.ucdenver.edu/policy/Pages/PrivacyPolicy.aspx">Privacy Policy</a> 
 
@@ -501,8 +495,15 @@
             
 			<tr><td colspan="100%">&nbsp;</td></tr>
 			<tr><td>&nbsp;</td><td>&nbsp;</td><td>
+				<input type="hidden" id="action" name="action" value="">
 			<input type="reset" value="Reset"><%=tenSpaces%>
-			<input type="submit" name="action" value="Register" onClick="return codeOfEthicsMsg()" disabled="true" id="registerSubmitBtn">
+				<button id="registerSubmitBtn"
+						class="g-recaptcha"
+						disabled="disabled"
+						data-sitekey="<%=pub%>"
+						data-callback='codeOfEthicsMsg'
+						data-action='submit'>Submit</button>
+			<!--<input type="submit" name="action" value="Register" onClick="return codeOfEthicsMsg()" disabled="true" id="registerSubmitBtn">-->
 
 			</td></tr>
 			</table>

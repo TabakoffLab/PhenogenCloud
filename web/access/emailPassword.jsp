@@ -38,7 +38,8 @@
 	pub=myProperties.getProperty("PUBLIC");
 	secret=myProperties.getProperty("SECRET");
 
-	log.info("In emailPassword.jsp.");
+	//log.debug("In emailPassword.jsp.");
+	//log.debug("action="+action);
 
 	String msg ="Enter the email address you used during registration OR enter your first and last name.<BR>"+
 		"An email will be sent to you containing your password.";
@@ -94,10 +95,11 @@
 
 <% if (!msg.equals("Your website password has been sent to your email address.")) { %> 
 	
-	<div id="emailPassword">
+	<div id="emailPassworddiv">
 	<form   method="post"
         action="<%=accessDir%>emailPassword.jsp"
         name="emailPassword"
+			id="emailPassword"
         enctype="application/x-www-form-urlencoded" >
 	<BR><BR>
 	<table class="list_base">
@@ -121,16 +123,21 @@
         <TR>
                     <TD colspan="100%" >
                     	
-                           <div style="text-align:center;width:100%">
+                           <!--<div style="text-align:center;width:100%">
                                 <div class="g-recaptcha" data-sitekey="<%=pub%>"></div>
-                            </div>
+                            </div>-->
                 	
                     </TD>
                 </TR>
          <tr><td colspan="100%">&nbsp;</td></tr>
 		<tr><td>&nbsp;</td>
-		<td><input type="reset" name="reset" value="Reset"> <%=twoSpaces%>
-		<input type="submit" name="action" value="Send Password" onClick="return IsPasswordRequestFormComplete()"></td>
+		<td><input type="hidden" id="action" name="action" value="">
+			<input type="reset" name="reset" value="Reset"> <%=twoSpaces%>
+			<button class="g-recaptcha"
+					data-sitekey="<%=pub%>"
+					data-callback='IsPasswordRequestFormComplete'
+					data-action='SendPassword'>Send Password</button>
+		<!--<input type="submit" name="action" value="Send Password" onClick="return IsPasswordRequestFormComplete()">--></td>
 		</tr>
 	</table>
 	</form>
@@ -142,34 +149,41 @@
 	<div class="brClear"></div>
 	<%@ include file="/web/common/basicFooter.jsp" %>
         <script type="text/javascript">
+			function IsPasswordRequestFormComplete(){
+				console.log("beginIsPassword");
+				if ($("#emailAddress").val() != '' &&
+						$("#firstName").val() != '' &&
+						$("#lastName").val() != '') {
+					alert('Enter either your email address OR your first and last name, but not both.');
+					$("#emailAddress").focus();
+					return false;
+				}
+				if ($("#emailAddress").val() == '' &&
+						$("#firstName").val() == '' &&
+						$("#lastName").val() == '') {
+					alert('Enter either your email address or your first and last name before proceeding.');
+					$("#emailAddress").focus();
+					return false;
+				}
+				if ($("#emailAddress").val() == '' &&( ( $("#firstName").val() != '' &&
+						$("#lastName").val() == '') ||
+						($("#firstName").val() == '' &&
+								$("#lastName").val() != '') ) ) {
+					alert('Enter both your first and last name before proceeding.');
+					$("#emailAddress").focus();
+					return false;
+				}
+				console.log("endIsPassword");
+				$("#action").val("Send Password");
+				document.getElementById("emailPassword").submit();
+			}
+
+
+
                 $(document).ready(function() {
 						$("#emailAddress").focus();
 						//document.emailPassword.emailAddress.focus();
                         setTimeout("setupMain()", 100);
                 });
-	function IsPasswordRequestFormComplete(){
 
-		if ($("#emailAddress").val() != '' &&
-        		$("#firstName").val() != '' &&
-        		$("#lastName").val() != '') { 
-                	alert('Enter either your email address OR your first and last name, but not both.');
-                    $("#emailAddress").focus();
-                	return false;
-		}
-        	if ($("#emailAddress").val() == '' &&
-        		$("#firstName").val() == '' &&
-        		$("#lastName").val() == '') { 
-                	alert('Enter either your email address or your first and last name before proceeding.');
-                    $("#emailAddress").focus();
-                	return false;
-		}
-        	if (($("#firstName").val() != '' &&
-        		$("#lastName").val() == '') ||
-        		($("#firstName").val() == '' &&
-        		$("#lastName").val() != '')) {
-                	alert('Enter both your first and last name before proceeding.');
-                    $("#emailAddress").focus();
-                	return false;
-        	}
-	}
 	</script>
