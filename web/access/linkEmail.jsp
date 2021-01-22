@@ -36,9 +36,7 @@
     </style>
     
 <%if(anonU.getEmail().equals("")){%>
-<form method="post" 
-      action="" 
-        enctype="application/x-www-form-urlencoded">
+
     <div id="linkForm" style="text-align: left;">
         <div>
             By completing this form you will be able to request an email to recover this session on a different computer or browser.  You also will be able to receive alerts when tools that require extra time complete.
@@ -47,53 +45,54 @@
             <input type="email"  id="emailTxt" style="width:90%;height:34px;" value="<%=anonU.getObfuscatedEmail()%>" required>
         </div>
         <BR>
-        <div>
-        <span id="captcha"  ></span>
-        </div>
-        <BR>
 
-        <input type="button" name="action" value="Link Email" onClick="saveEmail()" id="linkEmailSubmitBtn">
+        <button id="linkEmailBtn" class="g-recaptcha" onclick="saveEmail()"
+                data-sitekey="<%=pub%>"
+                data-action='linkEmail'>Link Email</button>
     </div><BR>
 <span id="linkStatus"></span>
-</form>
-<!--<script src='https://www.google.com/recaptcha/api.js'></script>-->
+
+<script src='https://www.google.com/recaptcha/api.js?render=<%=pub%>'></script>
 <script type="text/javascript">
-    
-    grecaptcha.render('captcha', {
-          'sitekey' : '<%=pub%>'
-        });
-        
+    console.log("loading.......");
     function saveEmail(){
+        console.log("save email");
         var email=$("#emailTxt").val();
-        var gresp=$("#g-recaptcha-response").val();
-        
-        
+        var sitekey=$("#linkEmailBtn").data("sitekey");
+        grecaptcha.ready(function() {
+        grecaptcha.execute(sitekey, {action: 'linkEmail'}).then(function(token) {
         $.ajax({
-                                    url: "<%=contextRoot%>/web/access/saveLinkEmail.jsp",
-                                    type: 'GET',
-                                    cache: false,
-                                    data: { "uuid":PhenogenAnonSession.UUID, "email":email,"g-recaptcha-response":gresp },
-                                    dataType: 'json',
-                                    beforeSend: function(){
-                                        $("#linkStatus").html("Submitting...");
-                                    },
-                                    success: function(data2){
-                                         console.log(data2);
-                                         $("#linkStatus").html(data2.status);
-                                         if(data2.status==="Successfully linked email address."){
-                                             $("#linkForm").hide();
-                                             setTimeout(function(){
-                                                    $('#linkEmailDialog').dialog("close");
-                                                },5000);      
-                                         }
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.log("ERROR:"+error);
-                                        $("#linkStatus").html(error);
-                                    }
-                                });
-        
+        url: "/web/access/saveLinkEmail.jsp",
+        type: 'GET',
+        cache: false,
+        data: { "uuid":PhenogenAnonSession.UUID, "email":email,"g-recaptcha-response":token },
+        dataType: 'json',
+        beforeSend: function(){
+        $("#linkStatus").html("Submitting...");
+        },
+        success: function(data2){
+        console.log(data2);
+        $("#linkStatus").html(data2.status);
+        if(data2.status==="Successfully linked email address."){
+        $("#linkForm").hide();
+        setTimeout(function(){
+        $('#linkEmailDialog').dialog("close");
+        },20000);
+        }
+        },
+        error: function(xhr, status, error) {
+        console.log("ERROR:"+error);
+        $("#linkStatus").html(error);
+        }
+        });
+        });
+        }   );
+
+
+
     }
+        
+
 </script>
 
 <%}else{%>

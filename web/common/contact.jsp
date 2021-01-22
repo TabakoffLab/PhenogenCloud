@@ -24,13 +24,13 @@
 	pub=myProperties.getProperty("PUBLIC");
 	secret=myProperties.getProperty("SECRET");
 
-
+    log.debug("action="+action);
 	String msg = "";
 	String msgColor="#FF0000";
 	String emailAddress="";
 	String subject="";
 	String feedback="";
-	if (action != null && action.equals("Submit")) {
+	if (action != null && action.equals("submit")) {
             emailAddress = (String) request.getParameter("emailAddress");
             subject = (String) request.getParameter("subject");
             feedback = (String) request.getParameter("feedback").trim();
@@ -67,7 +67,7 @@
                     //response.sendRedirect(commonDir + "startPage.jsp");
                 }*/
             }else{
-			msg="Please make sure that there is a check mark by the \"I'm not a robot\" field below and try again.";
+			    msg="Please make sure that there is a check mark by the \"I'm not a robot\" field below and try again.";
             }
 	}
 	//mySessionHandler.createSessionActivity(session.getId(), "Looked at contact page", dbConn);
@@ -93,6 +93,7 @@ pageDescription="Contact Us, provide feedback or ask questions";
                 
                     <form   method="post"
                         action="contact.jsp"
+                            id="contact"
                         name="contact"
                         enctype="application/x-www-form-urlencoded">
                 <table width="800">
@@ -121,17 +122,21 @@ pageDescription="Contact Us, provide feedback or ask questions";
                     <td colspan="4"><textarea name="feedback" cols="120" rows="10"><%=feedback%></textarea></td>
                 </tr>
                 <tr><td colspan="4">&nbsp;</td></tr>
-                <TR>
+                <!--<TR>
                     <TD colspan="4" >
                     	 <div style="text-align:center;width:100%">
                                 <div class="g-recaptcha" data-sitekey="<%=pub%>"></div>
                          </div>
                     </TD>
-                </TR>
+                </TR>-->
                 <tr>
                     <td colspan="4" align="center">
+                        <input type="hidden" id="action" name="action" value="">
                     <input type="reset" name="reset" value="Reset"> <%=tenSpaces%>
-                        <input type="submit" name="action" value="Submit">
+                        <button class="g-recaptcha"
+                                data-sitekey="<%=pub%>"
+                                data-callback='onSubmit'
+                                data-action='submit'>Submit</button>
                     </td>
                 </tr>
                 <tr><td colspan="4">&nbsp;</td></tr>
@@ -145,7 +150,13 @@ pageDescription="Contact Us, provide feedback or ask questions";
 
 	<%@ include file="/web/common/footer.jsp" %>
   <script type="text/javascript">
+      function onSubmit(token) {
+          $('#action').val("submit");
+          document.getElementById("contact").submit();
+      }
     $(document).ready(function() {
-	setTimeout("setupMain()", 100); 
+
+
+	    setTimeout("setupMain()", 100);
     });
   </script>
