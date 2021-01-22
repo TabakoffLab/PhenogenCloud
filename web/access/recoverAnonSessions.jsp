@@ -33,9 +33,7 @@
     </style>
     
 
-<form method="post" 
-      action="" 
-        enctype="application/x-www-form-urlencoded">
+
     <div id="recoverLinkForm" style="text-align: left;">
         <div>
             After submitting you will receive an email with links to recover any session associated with your email address.
@@ -43,53 +41,51 @@
             Email Address: <BR>
             <input type="email"  id="recoveremailTxt" style="width:90%;height:34px;" value="" required>
         </div>
-        <BR>
-        <div>
-        <span id="recovercaptcha"  ></span>
-        </div>
-        <BR>
 
-        <input type="button" name="action" value="Request Session Links" onClick="recoverSession()" id="recoverSessionSubmitBtn">
+        <BR>
+        <button id="requestSessionBtn" class="g-recaptcha" onclick="recoverSession()"
+                data-sitekey="<%=pub%>"
+                data-action='SendPassword'>Request Session Links</button>
+        <!--<input type="button" name="action" value="Request Session Links" onClick="recoverSession()" id="recoverSessionSubmitBtn">-->
     </div><BR>
 <span id="recoverLinkStatus"></span>
-</form>
-<!--<script src='https://www.google.com/recaptcha/api.js'></script>-->
+
+<script src='https://www.google.com/recaptcha/api.js?render=<%=pub%>'></script>
 <script type="text/javascript">
-    
-    grecaptcha.render('recovercaptcha', {
-          'sitekey' : '<%=pub%>'
+    function recoverSession() {
+        var email = $("#recoveremailTxt").val();
+        var sitekey = $("#requestSessionBtn").data("sitekey");
+        //var gresp=$("#g-recaptcha-response").val();
+        grecaptcha.ready(function () {
+            grecaptcha.execute(sitekey, {action: 'recoverSession'}).then(function (token) {
+
+                $.ajax({
+                    url: "/web/access/recoverSession.jsp",
+                    type: 'GET',
+                    cache: false,
+                    data: {"email": email, "g-recaptcha-response": token},
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $("#recoverLinkStatus").html("Submitting...");
+                    },
+                    success: function (data2) {
+                        console.log(data2);
+                        $("#recoverLinkStatus").html(data2.status);
+                        if (data2.status === "Recovery Email has been sent.") {
+                            $("#recoverLinkForm").hide();
+                            setTimeout(function () {
+                                $('#recoverSession').dialog("close");
+                            }, 5000);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("ERROR:" + error);
+                        $("#recoverLinkStatus").html(error);
+                    }
+                });
+
+            });
         });
-        
-    function recoverSession(){
-        var email=$("#recoveremailTxt").val();
-        var gresp=$("#g-recaptcha-response").val();
-        
-        
-        $.ajax({
-                                    url: "<%=contextRoot%>/web/access/recoverSession.jsp",
-                                    type: 'GET',
-                                    cache: false,
-                                    data: { "email":email,"g-recaptcha-response":gresp },
-                                    dataType: 'json',
-                                    beforeSend: function(){
-                                        $("#recoverLinkStatus").html("Submitting...");
-                                    },
-                                    success: function(data2){
-                                         console.log(data2);
-                                         $("#recoverLinkStatus").html(data2.status);
-                                         if(data2.status==="Recovery Email has been sent."){
-                                             $("#recoverLinkForm").hide();
-                                             setTimeout(function(){
-                                                    $('#recoverSession').dialog("close");
-                                                },5000);      
-                                         }
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.log("ERROR:"+error);
-                                        $("#recoverLinkStatus").html(error);
-                                    }
-                                });
-        
     }
 </script>
 

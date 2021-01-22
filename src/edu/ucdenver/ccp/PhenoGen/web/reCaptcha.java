@@ -61,6 +61,25 @@ public class reCaptcha {
                     if(valid.toLowerCase().contains("true")){
                         verified=true;
                     }
+                }else if(jsonResult.indexOf("\"score\":")>-1){
+                    int start=jsonResult.indexOf("\"score\":")+8;
+                    int end=jsonResult.indexOf(",",start);
+                    String valid="";
+                    if(end==-1){
+                        valid=jsonResult.substring(start);
+                    }else{
+                        valid=jsonResult.substring(start,end);
+                    }
+                    double score=-1.0;
+                    try{
+                        score=Double.parseDouble(valid);
+                        log.debug("score:"+score);
+                    }catch(Exception e){
+                        log.error("Parse score error.",e);
+                    }
+                    if(score>0.7){
+                        verified=true;
+                    }
                 }
             }
             else{
