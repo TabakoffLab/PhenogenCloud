@@ -42,7 +42,7 @@ if(request.getParameter("region")!=null){
 	region=request.getParameter("region");
 }
 if(request.getParameter("genomeVer")!=null){
-        genomeVer=request.getParameter("genomeVer");
+        genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 }
 if(request.getParameter("source")!=null){
         source=request.getParameter("source");

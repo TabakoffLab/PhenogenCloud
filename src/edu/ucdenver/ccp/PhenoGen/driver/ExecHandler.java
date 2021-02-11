@@ -90,15 +90,15 @@ public class ExecHandler {
 		try {
                         log.debug("before execFunctionPath");
                         File tmp=new File(execFunctionPath);
-                        log.debug("before proc.");
-                        log.debug(functionArgs);
-                        for(int i=0;i<functionArgs.length;i++){
+                        //log.debug("before proc.");
+                        //log.debug(functionArgs);
+                        /*for(int i=0;i<functionArgs.length;i++){
                             log.debug(i+":"+functionArgs[i]);
                         }
                         log.debug(envVariables);
                         for(int i=0;i<envVariables.length;i++){
                             log.debug(i+"env:"+envVariables[i]);
-                        }
+                        }*/
                         Runtime r= Runtime.getRuntime();
                         log.debug("after runtime");
 	                Process p =r.exec(
@@ -106,24 +106,24 @@ public class ExecHandler {
 				envVariables,
 				tmp);
 
-                        log.debug("after proc");
+                        //log.debug("after proc");
 			errorFileName = filePrefix +"_execErrors.txt";
 			outputFileName = filePrefix +"_execOut.out";
 
-                        log.debug("after outputfiles");
+                        //log.debug("after outputfiles");
                         FileOutputStream outputStream = new FileOutputStream(outputFileName);
                         FileOutputStream errorStream = new FileOutputStream(errorFileName);
-                        log.debug("after open output");
+                        //log.debug("after open output");
                         // any error message?
                         StreamGobbler errorGobbler = new StreamGobbler(p.getErrorStream(), "ERROR", errorStream);
 
                         // any output?
                         StreamGobbler outputGobbler = new StreamGobbler(p.getInputStream(), "OUTPUT", outputStream);
-                        log.debug("after gobblers");
+                        //log.debug("after gobblers");
                         // kick them off
                         errorGobbler.start();
                         outputGobbler.start();
-                        log.debug("after gobbler start");
+                        //log.debug("after gobbler start");
 
 			int wait = p.waitFor();
                         exitValue=wait;

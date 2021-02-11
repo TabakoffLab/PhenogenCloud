@@ -21,7 +21,7 @@
         id = request.getParameter("geneListID");
     }
     if (request.getParameter("genomeVer") != null) {
-        genomeVer = request.getParameter("genomeVer");
+        genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
     }
 
     log.debug("\n genomeVer=" + genomeVer);

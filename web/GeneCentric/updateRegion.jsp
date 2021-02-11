@@ -64,7 +64,7 @@ if(request.getParameter("myOrganism")!=null){
 		myOrganism=request.getParameter("myOrganism").trim();
 }
 if(request.getParameter("genomeVer")!=null){
-		genomeVer=request.getParameter("genomeVer").trim();
+		genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 }
 if(request.getParameter("rnaDatasetID")!=null){
 	try{

@@ -8,11 +8,23 @@ package edu.ucdenver.ccp.PhenoGen.web;
 
 /* for logging messages */
 import java.util.ArrayList;
+//import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import org.apache.log4j.Logger;
 
+
 public class FilterInput {
-  
+
+
+    public static String getFilteredInputGenomeVer(String in){
+        String out="";
+        ArrayList<String> list=new ArrayList<String>();
+        list.add("GenomeVersion");
+        out=getFilteredInput(in,list,"");
+        return out;
+    }
+
   public static String getFilteredInput(String in){
       String out=in;
       ArrayList<String> list= new ArrayList<String>();
@@ -79,7 +91,9 @@ public class FilterInput {
   
   public static String applyFilter(String in,String type,String host){
       String out=in;
-      if(type.equals("CRLF")){
+      if(type.equals("GenomeVersion")){
+          out=filterGenomeVersion(out);
+      }else if(type.equals("CRLF")){
           out=filterCRLF(out);
       }else if(type.equals("Script")){
           out=filterScript(out);
@@ -95,6 +109,15 @@ public class FilterInput {
           out=filterLocalURL(out,host);
       }
       return out;
+  }
+  public static String filterGenomeVersion(String in){
+        String out="";
+        Pattern p=Pattern.compile("^[a-zA-Z]{2}[0-9]{1,2}");
+        Matcher m=p.matcher(in);
+        if(m.find()) {
+            out = m.group(0);
+        }
+        return out;
   }
   public static String filterCRLF(String in){
       String out=in;
