@@ -25,7 +25,7 @@ int tmpuserID=0;
 bt.setSession(session);
 String genomeVer="";
 if(request.getParameter("genomeVer")!=null){
-    genomeVer=request.getParameter("genomeVer");
+    genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 }
 ArrayList<BrowserTrack> tracks=bt.getBrowserTracks(genomeVer);
 

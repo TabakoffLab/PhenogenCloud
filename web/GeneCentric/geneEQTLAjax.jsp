@@ -73,7 +73,7 @@
 	}
 
 	if(request.getParameter("genomeVer")!=null){
-		genomeVer=request.getParameter("genomeVer");
+		genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 		if(genomeVer.startsWith("rn")||genomeVer.startsWith("mm")){
 
 		}else{

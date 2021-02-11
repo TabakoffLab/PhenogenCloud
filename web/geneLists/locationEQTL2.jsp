@@ -111,7 +111,7 @@
         source=FilterInput.getFilteredInput(request.getParameter("source"));
     }
     if(request.getParameter("genomeVer")!=null){
-        genomeVer=FilterInput.getFilteredInput(request.getParameter("genomeVer"));
+        genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
     }
     if(request.getParameter("version")!=null){
         hrdpVer=FilterInput.getFilteredInput(request.getParameter("version"));

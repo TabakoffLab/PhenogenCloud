@@ -71,7 +71,7 @@
 		source=request.getParameter("source");
 	}
         if(request.getParameter("genomeVer")!=null){
-		genomeVer=request.getParameter("genomeVer");
+		genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 	}
 	ArrayList<SmallNonCodingRNA> smncRNA=gdt.getSmallNonCodingRNA(min,max,chromosome,rnaDatasetID,myOrganism);
 	if(min<max){

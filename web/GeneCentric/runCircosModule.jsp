@@ -41,7 +41,7 @@
 			chromosomeString = request.getParameter("chrList");
             }
             if(request.getParameter("genomeVer")!=null){
-			genomeVer = request.getParameter("genomeVer");
+			genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
             }
             
             //For now tissue is static.  Will need to update later in Rat.

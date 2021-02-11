@@ -51,7 +51,7 @@
             source=FilterInput.getFilteredInput(request.getParameter("source"));
         }
         if(request.getParameter("genomeVer")!=null){
-                genomeVer = request.getParameter("genomeVer");
+                genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
         }
         if(request.getParameter("version")!=null){
             version=FilterInput.getFilteredInput(request.getParameter("version"));

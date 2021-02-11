@@ -34,7 +34,7 @@
         trackString=FilterInput.getFilteredInput(request.getParameter("tracks"));
     }
     if(request.getParameter("genomeVer")!=null){
-        genomeVer=FilterInput.getFilteredInput(request.getParameter("genomeVer"));
+        genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
     }
     if(request.getParameter("version")!=null){
         dsVer=Integer.parseInt(FilterInput.getFilteredInput(request.getParameter("version")));

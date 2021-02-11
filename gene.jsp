@@ -159,7 +159,7 @@
     }
     log.debug("*****\nafter species Genome:" + genomeVer);
     if (request.getParameter("genomeVer") != null) {
-        genomeVer = FilterInput.getFilteredInput(request.getParameter("genomeVer").trim());
+        genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer").trim());
         if (!genomeVer.equals("")) {
             overideGV = "Y";
         } else {

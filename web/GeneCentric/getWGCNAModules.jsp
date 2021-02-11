@@ -51,7 +51,7 @@ if(request.getParameter("geneList")!=null){
 	geneList=Integer.parseInt(request.getParameter("geneList"));
 }
 if(request.getParameter("genomeVer")!=null){
-        genomeVer=request.getParameter("genomeVer");
+        genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 }
 if(request.getParameter("source")!=null){
         source=request.getParameter("source");

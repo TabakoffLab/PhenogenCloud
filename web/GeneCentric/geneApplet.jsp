@@ -33,7 +33,7 @@ if(request.getParameter("myOrganism")!=null){
     }
 }
 if(request.getParameter("genomeVer")!=null){
-		genomeVer=request.getParameter("genomeVer").trim();
+		genomeVer=FilterInput.getFilteredInputGenomeVer()request.getParameter("genomeVer"));
 }
 if(genomeVer.equals("rn5")){
 	viewID="10";

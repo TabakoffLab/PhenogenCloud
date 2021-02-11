@@ -103,7 +103,7 @@ if(request.getParameter("type")!=null){
 	type=request.getParameter("type");
 }
 if(request.getParameter("genomeVer")!=null){
-    genomeVer=request.getParameter("genomeVer");
+    genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 }
 	if(request.getParameter("countType")!=null){
 		countType=Integer.parseInt(request.getParameter("countType"));
