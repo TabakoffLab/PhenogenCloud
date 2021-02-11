@@ -36,7 +36,7 @@
 		name=request.getParameter("name");
 	}
         if(request.getParameter("genomeVer")!=null){
-		genomeVer=request.getParameter("genomeVer");
+		genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 	}
 	
 	String now = myObjectHandler.getNowAsMMddyyyy_HHmmss();

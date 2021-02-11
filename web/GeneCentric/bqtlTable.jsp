@@ -70,7 +70,7 @@
 		type=FilterInput.getFilteredInput(request.getParameter("type"));
 	}
 	if(request.getParameter("genomeVer")!=null){
-		genomeVer=request.getParameter("genomeVer");
+		genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 	}
 
 	if(min<max){

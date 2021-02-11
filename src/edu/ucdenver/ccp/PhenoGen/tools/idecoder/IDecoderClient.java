@@ -317,7 +317,7 @@ public class IDecoderClient {
         if(idString.indexOf("[")==-1 && idString.indexOf("]")==-1 && idString.indexOf("{")==-1 && idString.indexOf("}")==-1) {
             String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
             if (targetString.indexOf(",") == -1) {
-                targetString = "'" + targetsList + "'";
+                targetString.substring(1,targetString.length()-1).trim();
             }
             //
             // Match on organism if the target is not 'Homologene ID'
@@ -332,7 +332,7 @@ public class IDecoderClient {
                     "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
                     "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
-            String where = " where idl.level<= ? ";
+            String where = " where idl.level<=  "+(num_iterations + 1);
             String whereList = " and idl.id1_number in (Select id_number from identifiers where identifier in ( ";
             String whereTrgt = " and type.name in  ";
             if (targetString.indexOf(",") == -1) {
@@ -348,7 +348,7 @@ public class IDecoderClient {
             log.debug("in getRecords");
             try (Connection conn = pool.getConnection()) {
                 PreparedStatement pstmt = conn.prepareStatement(finalQuery);
-                pstmt.setInt(1, num_iterations + 1);
+                //pstmt.setInt(1, num_iterations + 1);
                 ResultSet rs = pstmt.executeQuery();
                 while (rs.next()) {
                     Identifier foundID = new Identifier(rs.getString(13));
@@ -398,7 +398,7 @@ public class IDecoderClient {
         if(idString.indexOf("[")==-1 && idString.indexOf("]")==-1 && idString.indexOf("{")==-1 && idString.indexOf("}")==-1) {
             String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
             if (targetString.indexOf(",") == -1) {
-                targetString = "'" + targetsList + "'";
+                targetString = targetString.substring(1,targetString.length()-1).trim();
             }
             //
             // Match on organism if the target is not 'Homologene ID'
@@ -413,7 +413,7 @@ public class IDecoderClient {
                     "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
                     "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
-            String where = " where idl.level<= ? ";
+            String where = " where idl.level <= "+(num_iterations + 1);
             String whereList = " and idl.id1_number in (Select id_number from identifiers where identifier_lower in ( ";
             String whereTrgt = " and type.name in  ";
             if (targetString.indexOf(",") == -1) {
@@ -758,7 +758,7 @@ public class IDecoderClient {
         if(geneIDString.indexOf("[")==-1 && geneIDString.indexOf("]")==-1 && geneIDString.indexOf("{")==-1 && geneIDString.indexOf("}")==-1) {
             String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
             if (targetString.indexOf(",") == -1) {
-                targetString = "'" + targetsList + "'";
+                targetString.substring(1,targetString.length()-1).trim();
             }
             //
             // Match on organism if the target is not 'Homologene ID'
@@ -774,7 +774,7 @@ public class IDecoderClient {
                     "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
                     "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
-            String where = " where idl.level<= ? ";
+            String where = " where idl.level <= "+(num_iterations + 1);
             String whereList = " and idl.id1_number in (Select id_number from identifiers where identifier ";
             String singleID = "like '";
             String listIDs = "in (" + geneIDString + ")";
@@ -799,7 +799,7 @@ public class IDecoderClient {
             try (Connection conn = pool.getConnection()) {
                 log.debug("iDecoder Query:\n" + finalQuery);
                 PreparedStatement pstmt = conn.prepareStatement(finalQuery);
-                pstmt.setInt(1, num_iterations + 1);
+                //pstmt.setInt(1, num_iterations + 1);
                 ResultSet rs = pstmt.executeQuery();
                 while (rs.next()) {
                     Identifier foundID = new Identifier(rs.getString(13));

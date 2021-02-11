@@ -20,7 +20,7 @@
 		id=FilterInput.getFilteredInput(request.getParameter("id"));
 	}
         if(request.getParameter("genomeVer")!=null){
-            genomeVer=request.getParameter("genomeVer");
+            genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
         }
 %>
 

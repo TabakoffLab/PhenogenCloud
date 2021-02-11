@@ -61,7 +61,7 @@ if(request.getParameter("organism")!=null){
 	organism=FilterInput.getFilteredInput(request.getParameter("organism").trim());
 }
 if(request.getParameter("genomeVer")!=null){
-	genomeVer=request.getParameter("genomeVer").trim();
+	genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 }
 %>
 

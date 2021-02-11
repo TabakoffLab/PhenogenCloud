@@ -55,7 +55,7 @@
             isNovel=true;
         }
 	if(request.getParameter("genomeVer")!=null){
-		genomeVer=request.getParameter("genomeVer");
+		genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 	}
 	//gcPath=applicationRoot + contextRoot+"tmpData/browserCache/"+genomeVer+"/geneData/" +id+"/";
 	

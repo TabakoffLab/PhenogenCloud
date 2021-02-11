@@ -83,7 +83,7 @@
         folderName = request.getParameter("folderName");
     }
     if (request.getParameter("genomeVer") != null) {
-        genomeVer = request.getParameter("genomeVer");
+        genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
     }
     if (request.getParameter("dataSource") != null) {
         dataSource = request.getParameter("dataSource");
