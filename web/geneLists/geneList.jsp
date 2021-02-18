@@ -20,6 +20,7 @@
         
 	GeneList.Gene[] myGeneArray = selectedGeneList.getGenesAsGeneArray(pool);
 	session.setAttribute("geneListOrganism",selectedGeneList.getOrganism());
+	String myOrganism=selectedGeneList.getOrganism();
 	log.debug("geneListOrganism="+selectedGeneList.getOrganism());
         //log.debug("iDecoderSet = "); myDebugger.print(iDecoderSet);
         
@@ -74,6 +75,15 @@
 			}
 		}
         mySessionHandler.createGeneListActivity("Viewed geneList contents", pool);
+
+
+	String officialSymbolText = "<a href=\"http://view.ncbi.nlm.nih.gov/gene?term=";
+	String entrezText = "<a href=\"http://view.ncbi.nlm.nih.gov/nucleotide/";
+	String mgiText = "<a href=\"http://www.informatics.jax.org/javawi2/servlet/WIFetch?"+
+			"page=searchTool&amp;selectedQuery=Accession+IDs&amp;query=";
+	String rgdText = "<a href=\"http://rgd.mcw.edu/generalSearch/RgdSearch.jsp?"+
+			"quickSearch=1&amp;searchKeyword=";
+	//String ucscText = "<a href=\"http://genome.ucsc.edu/cgi-bin/hgTracks?org=" +ucscOrganism + "&amp;position=";
 %>
 <%@ include file="/web/geneLists/include/geneListJS.jsp"  %>
 <%@ include file="/web/common/header_adaptive_menu.jsp" %>
@@ -131,6 +141,7 @@
 								}*/
 								if (geneSymbols != null && geneSymbols.size() > 0) {
 								    HashMap<String,Integer> hm = new HashMap<String,Integer>();
+									ArrayList<String> gsList=new ArrayList<String>();
 									%> <td> <%
 											for (Iterator symbolItr = geneSymbols.iterator(); symbolItr.hasNext();) { 
 												Identifier symbol = (Identifier) symbolItr.next();
@@ -140,13 +151,29 @@
 													<a href="/gene.jsp?geneTxt=<%=symbol.getIdentifier()%>&speciesCB=<%=selectedGeneList.getOrganism()%>&auto=Y&newWindow=Y" target="_blank"> <%=symbol.getIdentifier()%> </a> <BR>
 													<%
 													hm.put(symbol.getIdentifier().toLowerCase(),1);
+													gsList.add(symbol.getIdentifier());
 												}
 									}
 									%></td>
 									<TD>
 										<%
-
+											for(int k=0;k<gsList.size();k++){
+												String tmpGS=gsList.get(k);
 										%>
+											<%if(k>0){%>
+												<BR>
+											<%}%>
+											<%=tmpGS%>:
+											<a href="<%=LinkGenerator.getNCBILink(tmpGS,myOrganism)%>" target="_blank">NCBI</a> |
+											<%if(myOrganism.equals("Mm")){%>
+												<a href="<%=LinkGenerator.getMGILink(tmpGS)%>" target="_blank">MGI</a>
+
+											<%}else if(myOrganism.equals("Rn")){%>
+												<a href="<%=LinkGenerator.getRGDLink(tmpGS,myOrganism)%>" target="_blank">RGD</a>
+											<%}%>
+
+										<%}%>
+
 									</TD><%
 								} else { 
 									//log.debug("no gene symbols");	
