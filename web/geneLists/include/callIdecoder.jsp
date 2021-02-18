@@ -12,7 +12,7 @@
 	noIDecoderList = new ArrayList();
 	String[] targets = null;
 	myIDecoderClient.setNum_iterations(0);
-	if (selectedGeneList.getNumber_of_genes() > 800) {
+	if (selectedGeneList.getNumber_of_genes() > 1200) {
 		log.debug("trying to do annotation on list with more than 800 genes");
 		//Error - "Cannot do annotation on list with more than 200 genes"
 		mySessionHandler.createGeneListActivity("Running tools with a gene list containing more than 200 genes", pool);
@@ -56,7 +56,7 @@
 	try {
 		log.debug("calling iDecoderClient");
 		iDecoderSet = myIDecoderClient.getIdentifiersByInputIDAndTarget(selectedGeneList.getGene_list_id(), targets, pool);
-		log.debug("iDecoderSet = "); myDebugger.print(iDecoderSet);
+		//log.debug("iDecoderSet = "); myDebugger.print(iDecoderSet);
 		if(iDecoderSet.size()>0){
 			Iterator itr = iDecoderSet.iterator();
 			ArrayList<Identifier> altDecoderList=new ArrayList<Identifier>();
@@ -91,7 +91,7 @@
 					//thisIdentifier.setLowerCaseIdentifier();
 					//log.debug("******ID"+thisIdentifier.getIdentifier());
 					if (thisIdentifier.getRelatedIdentifiers().size() == 0) {
-						log.debug("remove id:"+thisIdentifier.getIdentifier());
+						//log.debug("remove id:"+thisIdentifier.getIdentifier());
 						noIDecoderList.add(thisIdentifier.getIdentifier());
 					}
 				}
