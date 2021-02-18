@@ -1,9 +1,7 @@
 <%--
-  Created by IntelliJ IDEA.
   User: Spencer Mahaffey
   Date: 10/21/20
   Time: 7:05 PM
-
 --%>
 
 
@@ -31,7 +29,7 @@
             console.log(data);
             for (var i = 0; i < data.length; i++) {
                 console.log(data[i]);
-                if (data.indexOf("<a href") > -1) {
+                if (data[i][col].indexOf("<a href") > -1) {
                     var end = data[i][col].indexOf("</a>");
                     var tmp = data[i][col].substring(0, end);
                     var id = tmp.substring(tmp.lastIndexOf(">") + 1);

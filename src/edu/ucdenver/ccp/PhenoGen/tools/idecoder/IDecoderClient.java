@@ -110,7 +110,7 @@ public class IDecoderClient {
         String query = "select g.gene_id from genes g where g.gene_list_id = ?";
 
         try (Connection conn = pool.getConnection()) {
-            log.debug("iDecoder:\n" + query);
+            //log.debug("iDecoder:\n" + query);
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, geneListID);
             ResultSet rs = pstmt.executeQuery();
@@ -345,7 +345,8 @@ public class IDecoderClient {
             finalQuery = finalQuery + organismString + " ";
             finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
 
-            log.debug("in getRecords");
+            //log.debug("in getRecords");
+            //log.debug("query:\n"+finalQuery);
             try (Connection conn = pool.getConnection()) {
                 PreparedStatement pstmt = conn.prepareStatement(finalQuery);
                 //pstmt.setInt(1, num_iterations + 1);
@@ -427,10 +428,11 @@ public class IDecoderClient {
             finalQuery = finalQuery + organismString + " ";
             finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
 
-            log.debug("in getRecords");
+            //log.debug("in getRecords");
+            //log.debug("final:\n"+finalQuery);
             try (Connection conn = pool.getConnection()) {
                 PreparedStatement pstmt = conn.prepareStatement(finalQuery);
-                pstmt.setInt(1, num_iterations + 1);
+                //pstmt.setInt(1, num_iterations + 1);
                 ResultSet rs = pstmt.executeQuery();
                 while (rs.next()) {
                     Identifier foundID = new Identifier(rs.getString(13).toLowerCase());
@@ -467,14 +469,14 @@ public class IDecoderClient {
         }
         String organism = thisGL.getOrganism();
         log.debug("geneList = " + thisGL.getGene_list_name());
-        String countQuery2 = "select count(*) from geneListGraph";
+
         //
         // Insert the identifiers from the original gene list
         //
         String query = "select g.gene_id from genes g where g.gene_list_id = ?";
 
         try (Connection conn = pool.getConnection()) {
-            log.debug("iDecoder:\n" + query);
+            //log.debug("iDecoder:\n" + query);
             PreparedStatement pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, geneListID);
             ResultSet rs = pstmt.executeQuery();
@@ -489,6 +491,7 @@ public class IDecoderClient {
                 sb.append("'"+rs.getString(1).toLowerCase()+"'");
             }
             pstmt.close();
+            //log.debug("IDString:\n"+sb.toString());
             String idString=sb.toString();
             resultsHashMap = doSearchIDStringLC(idString,organism, pool);
         } catch (SQLException e) {
@@ -795,9 +798,9 @@ public class IDecoderClient {
             finalQuery = finalQuery + organismString + " ";
             finalQuery = finalQuery + "order by idl.id1_number, idl.ident_type_id, id2.identifier";
 
-            log.debug("in getRecords");
+            //log.debug("in getRecords");
             try (Connection conn = pool.getConnection()) {
-                log.debug("iDecoder Query:\n" + finalQuery);
+                //log.debug("iDecoder Query:\n" + finalQuery);
                 PreparedStatement pstmt = conn.prepareStatement(finalQuery);
                 //pstmt.setInt(1, num_iterations + 1);
                 ResultSet rs = pstmt.executeQuery();
@@ -1868,7 +1871,7 @@ public class IDecoderClient {
                 "	from identifier_links3 il3 " +
                 "	where il3.id_number1 = id.id_number)";
 
-        log.debug("These are identifiers that have a row in the identifier_arrays table but don't have any links from them");
+        //log.debug("These are identifiers that have a row in the identifier_arrays table but don't have any links from them");
         //log.debug("query1.5 = "+query);
         PreparedStatement pstmt = conn.prepareStatement(query);
         pstmt.executeUpdate();
@@ -1963,7 +1966,7 @@ public class IDecoderClient {
                 organismString;
         //"and id.organism = ?";
 
-        log.debug("These are identifiers that are one link from the original list");
+        //log.debug("These are identifiers that are one link from the original list");
         //log.debug("query2 = "+query);
         pstmt = conn.prepareStatement(query);
         //pstmt.setString(1, organism);
@@ -2085,7 +2088,7 @@ public class IDecoderClient {
                     "	and ifnull(glg2.array_name, 'None') = ifnull(ia.array_name, 'None') " +
                     "	and glg2.start_id_number = glg.start_id_number)";
 
-            log.debug("These are 2 or more links from the original list");
+            //log.debug("These are 2 or more links from the original list");
             //log.debug("query3 = "+query);
 
             pstmt = conn.prepareStatement(query);
@@ -2196,7 +2199,7 @@ public class IDecoderClient {
 			"and toID.ident_type_id = to_types.ident_type_id "+
 			"order by start_id_number, fromID.ident_type_id, fromID.identifier, toID.ident_type_id, toID.identifier";
                 */
-        log.debug("in getRecords");
+        //log.debug("in getRecords");
         //log.debug("getTab1 query = "+query);
         //log.debug("getTab2 query = "+query2);
         //log.debug("getTab3 query = "+query3);
@@ -2757,7 +2760,7 @@ public class IDecoderClient {
         log.debug("in getIdentifiersByInputID passing in geneListID");
 
         setTargets(targets);
-        //log.debug("targetsList = "+targetsList);
+       // log.debug("targetsList = "+targetsList);
 
         HashMap<Identifier, Set<Identifier>> startHashMap = doSearchCaseInsensitive(geneListID, pool);
         //log.debug("startHashMap = "); myDebugger.print(startHashMap);
@@ -2821,14 +2824,14 @@ public class IDecoderClient {
 
         setTargets(targets);
         HashMap<Identifier, Set<Identifier>> startHashMap = doSearch(geneID, organism, pool);
-        log.debug("startHashMap = ");
-        myDebugger.print(startHashMap);
+        //log.debug("startHashMap = ");
+        //myDebugger.print(startHashMap);
         Set<Identifier> setOfInputIdentifiers = new HashSet<Identifier>();
         for (Iterator inputIDitr = startHashMap.keySet().iterator(); inputIDitr.hasNext(); ) {
             Identifier inputID = (Identifier) inputIDitr.next();
             Set<Identifier> allRelatedIdentifiers = (Set<Identifier>) startHashMap.get(inputID);
-            log.debug("allRelatedIdentifiers = ");
-            myDebugger.print(allRelatedIdentifiers);
+            //log.debug("allRelatedIdentifiers = ");
+            //myDebugger.print(allRelatedIdentifiers);
 
             //Identifier thisInputIdentifier = new Identifier(inputID);
             Set<Identifier> setOfRelatedIdentifiers = new LinkedHashSet<Identifier>();
@@ -3288,7 +3291,7 @@ public class IDecoderClient {
                 }
             }
         }
-        log.debug("startSet now = "); myDebugger.print(startSet);
+        //log.debug("startSet now = "); myDebugger.print(startSet);
         return startSet;
     }
 
@@ -3390,8 +3393,8 @@ public class IDecoderClient {
         log.debug("in getIdentifiersByInputIDAndTarget passing in geneID");
 
         Set<Identifier> startSet = getIdentifiersByInputID(geneID, organism, targets, pool);
-        log.debug("startSet here = ");
-        myDebugger.print(startSet);
+        //log.debug("startSet here = ");
+        //myDebugger.print(startSet);
         for (Iterator inputIDitr = startSet.iterator(); inputIDitr.hasNext(); ) {
             Identifier thisIdentifier = (Identifier) inputIDitr.next();
             Set<Identifier> relatedIdentifiers = thisIdentifier.getRelatedIdentifiers();
@@ -3657,7 +3660,7 @@ public class IDecoderClient {
 
         // First sort the Set of Identifiers
         List<Identifier> myIdentifierList = Arrays.asList(results.toArray((Identifier[]) new Identifier[results.size()]));
-        log.debug("myIdentifierList contains " + myIdentifierList.size() + " entries");
+        //log.debug("myIdentifierList contains " + myIdentifierList.size() + " entries");
         myIdentifierList = new Identifier().sortIdentifiers(myIdentifierList, "identifier");
         Iterator originalIDItr = myIdentifierList.iterator();
 
@@ -3677,7 +3680,7 @@ public class IDecoderClient {
                 }
             }
         }
-        log.debug("after iterating through myIdentifierList");
+        //log.debug("after iterating through myIdentifierList");
         writer.close();
     }
 
@@ -3839,7 +3842,7 @@ public class IDecoderClient {
         BufferedWriter writer = new FileHandler().getBufferedWriter(fileName);
         ObjectHandler myObjectHandler = new ObjectHandler();
         String headerLine = "Original Identifier\tOfficial Symbol\tRefSeq\tMGI/RGD/FlyBase\tUniProt\tUC Santa Cruz";
-        log.debug("headerLine = " + headerLine);
+        //log.debug("headerLine = " + headerLine);
         writer.write(headerLine);
         writer.newLine();
 
