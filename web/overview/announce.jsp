@@ -12,6 +12,73 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #13</H2>
+                        <div style="margin-left:5px;">
+                            <H3>Become a UseR: A brief tour of R</H3>
+                            <h3> 3/12/2021 10am PDT/1pm EDT</h3><BR>
+                            <a href="http://bit.ly/osga_2021-03-12">Register Here</a><BR>
+                            Goals of this webinar:<BR>
+                            <UL>
+                                <LI>Why should one use/learn R?</LI>
+                                <LI>How to install R/Rstudio</LI>
+                                <LI>Learn about R basics: variables, programming, functions</LI>
+                                <LI>Learn about the R package ecosystem that extends its capabilities</LI>
+                                <LI>See a basic statistical analysis example</LI>
+                                <LI>Learn about additional resources</LI>
+                            </UL>
+                            <BR>
+                            Presented by:
+                            Dr. Gregory Farage<BR>
+                            And<BR>
+                            Dr. Saunak Sen<BR>
+                            Professor and Chief of Biostatistics<BR>
+                            Department of Preventative Medicine<BR>
+                            University of Tennessee Health Science Center<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #12</H2>
+                        <div style="margin-left:5px;">
+                            <H3> From GWAS to gene: what are the essential analyses and how do we bring them together using heterogeneous stock rats?</H3>
+                            <h3> 2/26/21 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://youtu.be/aWUxNZ9wS3E">View Here</a><BR>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/aWUxNZ9wS3E" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar<BR>
+                            <UL>
+                                <LI>explain the HS rat population and their history</LI>
+                                <LI>describe the automated pipeline that performs GWAS in HS rats</LI>
+                                <LI>explore the fine mapping of associated regions and explain the various secondary analyses that we use to prioritize genes within associated intervals </LI>
+                            </UL>
+                            <BR>
+                            Abraham A. Palmer, Ph.D.<BR>
+                            Professor & Vice Chair for Basic Research<BR>
+                            Department of Psychiatry<BR>
+                            University of California San Diego<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #11</H2>
+                        <div style="margin-left:5px;">
+                            <H3>Beginner's guide to bulk RNA-Seq analysis</H3>
+                            <h3> 2/12/2021 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://youtu.be/WW94W-DBf2U">View Here</a><BR>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/WW94W-DBf2U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar:<BR>
+                            <UL>
+                                <LI>To give a general overview of the popular Illumina technology for sequencing RNA.</LI>
+                                <LI>To outline several of the key aspects to consider when designing an RNA-Seq study</LI>
+                                <LI>To provide guidance on methods and tools for transforming reads to quantitative expression measurements.</LI>
+                                <LI>To describe statistical models that are typically used for differential expression and why these specialized models are needed.</LI>
+                            </UL>
+                            <BR>
+                            Dr. Laura Saba<BR>
+                            Associate Professor<BR>
+                            Department of Pharmaceutical Sciences<BR>
+                            Skaggs School of Pharmacy and Pharmaceutical Sciences<BR>
+                            University of Colorado Anschutz Medical Campus<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen update 3.7.5</H2>
                         <div style="margin-left:5px;">
                             12/11/20 update to v3.7.5
