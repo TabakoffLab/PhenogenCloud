@@ -1644,11 +1644,16 @@ public class GeneDataTools {
             }else if (organism.equals("Mm")) {
                 perlArgs[3] = "Mouse";
             }
-            String tmpTrack=track+"_"+version+";";
-            if(countType==1){
-                tmpTrack=tmpTrack+"Total;";
-            }else if(countType==2){
-                tmpTrack=tmpTrack+"Norm;";
+            String tmpTrack=track;
+            if(!version.equals("")){
+                tmpTrack=tmpTrack+"_"+version;
+            }
+            if(track.indexOf("illumina")>-1) {
+                if (countType == 1) {
+                    tmpTrack = tmpTrack + ";Total;";
+                } else if (countType == 2) {
+                    tmpTrack = tmpTrack + ";Norm;";
+                }
             }
             perlArgs[4] = tmpTrack;
             perlArgs[5] = panel;

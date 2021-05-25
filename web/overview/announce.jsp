@@ -12,29 +12,38 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #13</H2>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #16</H2>
                         <div style="margin-left:5px;">
-                            <H3>Become a UseR: A brief tour of R</H3>
-                            <h3> 3/12/2021 10am PDT/1pm EDT</h3><BR>
-                            <a href="http://bit.ly/osga_2021-03-12">Register Here</a><BR>
-                            Goals of this webinar:<BR>
+                            <H3> Introduction to the Hybrid Rat Diversity Panel: A renewable rat panel for genetic studies of addiction-related traits</H3>
+                            4/23/21 10am PDT/1pm EDT<BR>
+                            <a href="https://youtu.be/dYIiv01IetQ">View Here</a><BR>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/dYIiv01IetQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar<BR>
+                            The Hybrid Rat Diversity Panel (HRDP) is an inbred panel of rats that included two recombinant inbred panels and a panel of classic inbred strains.
                             <UL>
-                                <LI>Why should one use/learn R?</LI>
-                                <LI>How to install R/Rstudio</LI>
-                                <LI>Learn about R basics: variables, programming, functions</LI>
-                                <LI>Learn about the R package ecosystem that extends its capabilities</LI>
-                                <LI>See a basic statistical analysis example</LI>
-                                <LI>Learn about additional resources</LI>
+                                <LI>To describe hybrid diversity panels, in particular the HRDP, including advantages and disadvantages when studying the role of genetics is substance use disorders, e.g., renewable genomes and the accumulation of behavioral and physiological phenotypes and high throughput omics data.</LI>
+                                <LI>To outline current resources and resources that are being generated.</LI>
+                                <LI>To demonstrate the utility of a renewable genetically diverse rodent population when exploring the interaction between genetics, drug exposure, and behavior.</LI>
                             </UL>
                             <BR>
-                            Presented by:
-                            Dr. Gregory Farage<BR>
-                            And<BR>
-                            Dr. Saunak Sen<BR>
-                            Professor and Chief of Biostatistics<BR>
-                            Department of Preventative Medicine<BR>
+                            Presented by:<BR>
+                            Hao Chen, PhD<BR>
+                            Associate Professor<BR>
+                            Department of Pharmacology, Addiction Science, and Toxicology<BR>
                             University of Tennessee Health Science Center<BR>
                             <BR>
+                            Dr. Laura Saba<BR>
+                            Associate Professor<BR>
+                            Department of Pharmaceutical Sciences<BR>
+                            University of Colorado Anschutz Medical Campus<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #13-15</H2>
+                        <div style="margin-left:5px;">
+                            <H3>15. Introduction to Metabolomics Platforms and Data Analysis</H3> <a href="https://youtu.be/oB1Khk6mt_8">View Here</a><BR>
+                            <H3>14. Landing on Jupyter: A guided tour of interactive notebooks </H3> <a href="https://youtu.be/GVzUNEmpanI">View Here</a><BR>
+                            <H3>13. Become a UseR: A brief tour of R </H3> <a href="https://youtu.be/25-X8_oXBSY">View Here</a><BR><BR>
                             <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
                         </div>
                         <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #12</H2>

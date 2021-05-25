@@ -251,7 +251,12 @@ sub createXMLFile
             $type=substr($type,0,index($type,";"));
         }
         if(index($countType,";")>-1){
-            $countType=substr($countType,0,index($countType,";"));
+            if(index($countType,";")==0){
+                $countType=substr($countType,1);
+            }
+            if(index($countType,";")>-1){
+                $countType=substr($countType,0,index($countType,";"));
+            }
         }
         if($countType ne ""){
 		    unlink $outputDir."bincount.".$binSize.".".$type.".".$countType.".xml";
@@ -484,7 +489,6 @@ sub createXMLFile
 		}else{
 			createLiverTotalXMLTrack(\%brainHOH,$outputDir.$type.".xml");
 		}
-		
 		my $rnaCountEnd=time();
 		print "Track version completed in ".($rnaCountEnd-$rnaCountStart)." sec.\n";	
 	}
