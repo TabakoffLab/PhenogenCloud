@@ -397,6 +397,7 @@ public class Resource {
                 List<Resource> pubResources7 = Arrays.asList(getPublicationResources7());
                 List<Resource> pubResources8 = Arrays.asList(getPublicationResources8());
                 List<Resource> pubResources9 = Arrays.asList(getPublicationResources9());
+                List<Resource> pubResources10 = Arrays.asList(getPublicationResources10());
                 List<Resource> gtfResources = Arrays.asList(getGTFResources());
                 List<Resource> rsemResources = Arrays.asList(getRNASeqExpressionResources());
 		List<Resource> allResources = new ArrayList<Resource>(expressionResources);
@@ -413,6 +414,7 @@ public class Resource {
                 allResources.addAll(pubResources7);
                 allResources.addAll(pubResources8);
                 allResources.addAll(pubResources9);
+                allResources.addAll(pubResources10);
                 allResources.addAll(gtfResources);
                 allResources.addAll(rsemResources);
 		Resource[] allResourcesArray = myObjectHandler.getAsArray(allResources, Resource.class);
@@ -1425,6 +1427,51 @@ public class Resource {
         fileList[0]=new PublicationFile("Gene Count Matrix",pubFilePath+"gene_count_matrix.txt.zip");
         fileList[1]=new PublicationFile("Isoform Count Matrix",pubFilePath+"isoform_count_matrix.txt.zip");
         resourceList.add(new Resource(221, "Rat", "","Gene/Isoform Count Matrices",fileList,"\"A Long Non-Coding RNA (Lrap) Modulates Brain Gene Expression and Levels of Alcohol Consumption in Rats\" by L. Saba et. al."));
+        Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
+        return resourceArray;
+    }
+
+    public Resource[] getPublicationResources10() {
+        log.debug("in getPublicationResources10");
+        String pubFilePath="/downloads/Publication/saba_heartCirc/";
+        List<Resource> resourceList = new ArrayList<Resource>();
+
+        //Raw CEL,miRNA,mRNA
+        PublicationFile[] fileList = new PublicationFile[12];
+        fileList[0]=new PublicationFile("Heart(LV) CircRNA RAW Txt Files(BNLx/SHR x3)",pubFilePath+"raw/BNLx.SHR.Heart.LV.circRNA.rawTxt.zip");
+        fileList[1]=new PublicationFile("Heart(LV) Small RNASeq Fastq (BNLx x4)",pubFilePath+"raw/smallRNA/BNLx.Heart.LV.smallRNA.tar.gz");
+        fileList[2]=new PublicationFile("Heart(LV) Small RNASeq Fastq (SHR x4)",pubFilePath+"raw/smallRNA/SHR.Heart.LV.smallRNA.tar.gz");
+        fileList[3]=new PublicationFile("Heart(LV) Total RNASeq Fastq (BNLx_1)",pubFilePath+"raw/totalRNA/BNLx_1.Heart.LV.totalRNA.fastq.tar.gz");
+        fileList[4]=new PublicationFile("Heart(LV) Total RNASeq Fastq (BNLx_2)",pubFilePath+"raw/totalRNA/BNLx_2.Heart.LV.totalRNA.fastq.tar.gz");
+        fileList[5]=new PublicationFile("Heart(LV) Total RNASeq Fastq (BNLx_3)",pubFilePath+"raw/totalRNA/BNLx_3.Heart.LV.totalRNA.fastq.tar.gz");
+        fileList[6]=new PublicationFile("Heart(LV) Total RNASeq Fastq (BNLx_4)",pubFilePath+"raw/totalRNA/BNLx_4.Heart.LV.totalRNA.fastq.tar.gz");
+        fileList[7]=new PublicationFile("Heart(LV) Total RNASeq Fastq (SHR_1)",pubFilePath+"raw/totalRNA/SHR_1.Heart.LV.totalRNA.fastq.tar.gz");
+        fileList[8]=new PublicationFile("Heart(LV) Total RNASeq Fastq (SHR_2)",pubFilePath+"raw/totalRNA/SHR_2.Heart.LV.totalRNA.fastq.tar.gz");
+        fileList[9]=new PublicationFile("Heart(LV) Total RNASeq Fastq (SHR_3)",pubFilePath+"raw/totalRNA/SHR_3.Heart.LV.totalRNA.fastq.tar.gz");
+        fileList[10]=new PublicationFile("Heart(LV) Total RNASeq Fastq (SHR_4)",pubFilePath+"raw/totalRNA/SHR_4.Heart.LV.totalRNA.fastq.tar.gz");
+        fileList[11]=new PublicationFile("md5 checksums",pubFilePath+"raw/md5_list.txt");
+        resourceList.add(new Resource(230, "Rat", "","Raw Array/Sequencing Files",fileList,"\"A Novel circRNA Highlights a Path to Cardiac Hypertrophy in Spontaneously Hypertensive Rats\" by J. Mahaffey et. al."));
+        //Normalized array,miRNA,mRNA
+        fileList = new PublicationFile[4];
+        fileList[0]=new PublicationFile("circRNA expression",pubFilePath+"expression/BNLx.SHR.Heart.LV.circRNA.expr.csv.zip");
+        fileList[1]=new PublicationFile("miRNA expression",pubFilePath+"expression/BNLx.SHR.Heart.LV.miRNA.expr.csv.zip");
+        fileList[2]=new PublicationFile("mRNA expression",pubFilePath+"expression/BNLx.SHR.Heart.LV.mRNA.expr.csv.zip");
+        fileList[3]=new PublicationFile("md5 checksums",pubFilePath+"expression/md5_list.txt");
+        resourceList.add(new Resource(231, "Rat", "","circRNA/miRNA/mRNA expression",fileList,"\"A Novel circRNA Highlights a Path to Cardiac Hypertrophy in Spontaneously Hypertensive Rats\" by J. Mahaffey et. al."));
+        //Databases
+        fileList = new PublicationFile[4];
+        fileList[0]=new PublicationFile("miRNA Features",pubFilePath+"databases/PhenoGen.miRNA.features.rn6.v1.txt.zip");
+        fileList[1]=new PublicationFile("BNLx precursor/mature(collapsed) miRNA FASTA files",pubFilePath+"databases/BNLx.miRNA.v1.fasta.zip");
+        fileList[2]=new PublicationFile("SHR precursor/mature(collapsed) miRNA FASTA files",pubFilePath+"databases/SHR.miRNA.v1.fasta.zip");
+        fileList[3]=new PublicationFile("md5 checksums",pubFilePath+"databases/md5_list.txt");
+        resourceList.add(new Resource(232, "Rat", "","miRNA databases",fileList,"\"A Novel circRNA Highlights a Path to Cardiac Hypertrophy in Spontaneously Hypertensive Rats\" by J. Mahaffey et. al."));
+        
+        //Databases
+        fileList = new PublicationFile[3];
+        fileList[0]=new PublicationFile("Blood Pressure Phenotype Data",pubFilePath+"phenotype/bloodPressure_strainMeans.csv");
+        fileList[1]=new PublicationFile("Genomic Markers",pubFilePath+"phenotype/GenomicMarker.STAR.rn6.QTLanalysis.30RNAseqRIstrainsSDP.csv");
+        fileList[2]=new PublicationFile("md5 checksums",pubFilePath+"phenotype/md5_list.txt");
+        resourceList.add(new Resource(233, "Rat", "","Phenotype Data/Genomic Markers",fileList,"\"A Novel circRNA Highlights a Path to Cardiac Hypertrophy in Spontaneously Hypertensive Rats\" by J. Mahaffey et. al."));
         Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
         return resourceArray;
     }
