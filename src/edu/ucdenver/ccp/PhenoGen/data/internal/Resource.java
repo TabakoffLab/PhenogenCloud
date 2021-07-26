@@ -1465,7 +1465,7 @@ public class Resource {
         fileList[2]=new PublicationFile("SHR precursor/mature(collapsed) miRNA FASTA files",pubFilePath+"databases/SHR.miRNA.v1.fasta.zip");
         fileList[3]=new PublicationFile("md5 checksums",pubFilePath+"databases/md5_list.txt");
         resourceList.add(new Resource(232, "Rat", "","miRNA databases",fileList,"\"A Novel circRNA Highlights a Path to Cardiac Hypertrophy in Spontaneously Hypertensive Rats\" by J. Mahaffey et. al."));
-        
+
         //Databases
         fileList = new PublicationFile[3];
         fileList[0]=new PublicationFile("Blood Pressure Phenotype Data",pubFilePath+"phenotype/bloodPressure_strainMeans.csv");

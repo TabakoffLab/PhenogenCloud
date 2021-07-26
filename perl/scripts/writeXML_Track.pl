@@ -374,6 +374,274 @@ sub createXMLFile
 	elsif(index($type,"chainNet")>-1){
 
     }
+    elsif(index($type,"ensemblcoding")>-1 or index($type,"ensemblnoncoding")>-1){
+        my $registry = 'Bio::EnsEMBL::Registry';
+    	my $dbAdaptorNum=-1;
+    	my $ranEast=0;
+        my $ensHost=substr($ensDsn,index($ensDsn,"host=")+5);
+        $ensHost=substr($ensHost,0,index($ensHost,";"));
+        my $chr=substr($chromosome,3);
+    	eval{
+    	    print "trying local\n";
+    	    $dbAdaptorNum =$registry->load_registry_from_db(
+    		-host => $ensHost, #'ensembldb.ensembl.org', # alternatively 'useastdb.ensembl.org'
+    		-port => 3306,
+    		-user => $ensUsr,
+    		-pass => $ensPasswd
+    	    );
+    	    print "local finished:$dbAdaptorNum\n";
+    	    1;
+    	}or do{
+    	    print "local ensembl DB is unavailable\n";
+    	    $dbAdaptorNum=-1;
+    	};
+    	if($dbAdaptorNum==-1){
+    	    print "trying useastdb\n";
+    	    $ranEast=1;
+    	    eval{
+    		    $dbAdaptorNum=$registry->load_registry_from_db(
+    			-host => 'useastdb.ensembl.org', #'ensembldb.ensembl.org', # alternatively 'useastdb.ensembl.org'
+    			-port => 5306,
+    			-user => 'anonymous'
+    		    );
+    		    print "east mirror finished:$dbAdaptorNum\n";
+    		    1;
+    	    }or do{
+    		print "ensembl east DB is unavailable\n";
+    		$dbAdaptorNum=-1;
+    	    };
+    	}
+    	if($ranEast==1 && $dbAdaptorNum<1){
+    	    print "trying ensembldb\n";
+    	    # Enable this option if problems occur connecting the above option is faster, but only has current and previous versions of data
+    	    $dbAdaptorNum=$registry->load_registry_from_db(
+    		-host => 'ensembldb.ensembl.org',
+    		-user => 'anonymous'
+    	    );
+    	    print "main finished:$dbAdaptorNum\n";
+    	}
+    	my $slice_adaptor = $registry->get_adaptor( $species, 'Core', 'Slice' );
+        my $tmpslice = $slice_adaptor->fetch_by_region('chromosome', $chr,$minCoord,$maxCoord);
+        my @tmpG=[];
+        my $genes = \@tmpG;
+        my $keepGoing=0;
+        if(defined $tmpslice){
+            $genes = $tmpslice->get_all_Genes();
+            $keepGoing=1;
+            print "Slice and getAllGenes() done.\n";
+        }else{
+            print "skipped slice:".$species.":".$chr.":".$minCoord."-".$maxCoord."\n";
+        }
+        my @genelist=();
+        my @slicelist=();
+        my $regionSize=$maxCoord-$minCoord;
+        my %ensemblHOH;
+        my %GeneHOH;
+
+        my $cntTranscripts=0;
+        my $cntProbesets=0;
+        my $cntExons=0;
+        my $cntGenes=0;
+        my $cntMatchingProbesets=0;
+        while(my $tmpgene=shift @{$genes}){
+            push(@genelist, $tmpgene);
+            push(@slicelist, $tmpslice);
+
+        }
+        print "gene list:".@genelist."\n";
+        if($keepGoing==1){
+            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes($chromosome,$minCoord,$maxCoord,$arrayTypeID,$genomeVer,$dsn,$usr,$passwd);
+            my @probesetHOH = @$probesetHOHRef;
+
+
+            my $ensemblCount=0;
+        	# Loop through  Ensembl Genes
+        	my @addedGeneList=();
+        	while ( my $gene = shift @genelist ) {
+        		my $slice=shift @slicelist;
+        		eval{
+        		my ($geneName, $geneRegion, $geneStart, $geneStop,$geneStrand) = getFeatureInfo($gene);
+        		my $geneChrom = "chr$geneRegion";
+        		my $found=0;
+        		#print "Find: $geneName\n";
+        		foreach my $testName (@addedGeneList){
+        		    #print "$testName:$geneName ";
+        		    if($testName eq $geneName){
+        			#print "Found";
+        			$found=1;
+        		    }else{
+        			#print "Not found";
+        		    }
+        		    #print "\n";
+        		}
+
+        	    if(length($geneRegion)<3&&$found==0){
+        		my $geneBioType    = $gene->biotype();
+        		my $geneExternalName    =$gene->external_name();
+        		my $geneDescription      =$gene->description();
+        		# "adding:$geneName:$geneExternalName\n";
+
+        		push(@addedGeneList,$geneName);
+        		$ensemblHOH{Gene}[$ensemblCount] = {
+        			start => $geneStart,
+        			stop => $geneStop,
+        			ID => $geneName,
+        			strand=>$geneStrand,
+        			chromosome=>$geneChrom,
+        			biotype => $geneBioType,
+        			geneSymbol => $geneExternalName,
+        			source => "Ensembl",
+        			description => $geneDescription,
+        			extStart => $geneStart ,
+        			extStop => $geneStop
+        			};
+        		$GeneHOH{Gene}[$cntGenes]=$ensemblHOH{Gene}[$ensemblCount];
+        		$ensemblCount++;
+        		#print GLFILE "$geneName\t$geneExternalName\t$geneStart\t$geneStop\n";
+
+        		    #Get the transcripts for this gene
+        		    #print "getting transcripts for ".$geneExternalName."\n";
+        		    my $transcripts = $gene->get_all_Transcripts();
+
+        		    $cntTranscripts = 0;
+        		    while ( my $transcript = shift @{$transcripts} ) {
+        			my ($transcriptName, $transcriptRegion, $transcriptStart, $transcriptStop,$transcriptStrand) = getFeatureInfo($transcript);
+        			my $transcriptChrom = "chr$transcriptRegion";
+
+        			$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{start} = $transcriptStart;
+        			$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{stop} = $transcriptStop;
+        			$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{ID} = $transcriptName;
+        			$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{strand} = $transcriptStrand;
+        			$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{chromosome} = $transcriptChrom;
+        			$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{cdsStart} = $transcript->coding_region_start()+ $slice->start() - 1;
+        			$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{cdsStop} = $transcript->coding_region_end()+ $slice->start() - 1;
+        			my $tmpStrand=$transcriptStrand;
+
+        			my $cntExons = 0;
+        			my $cntIntrons=0;
+
+        			#print "getting exons for $transcriptName\n";
+        			# On to the exons
+        			#sort first so introns can be created as we go
+        			my @tmpExons= @{ $transcript->get_all_Exons() };
+        			my @sortedExons = sort { $a->seq_region_start() <=> $b->seq_region_start() } @tmpExons;
+
+        		    foreach my $exon ( @sortedExons ) {
+        				my ($exonName, $exonRegion, $exonStart, $exonStop,$exonStrand) = getFeatureInfo($exon);
+        				#print "get Exons\n";
+        				my $exonChrom = "chr$exonRegion";
+        				# have to offset the stop and start by the slice start
+        				#print "test1".$exon->coding_region_end($transcript)."\n";
+        				#print "test2".$slice->start()."\n";
+
+        				my $coding_region_stop = $exon->coding_region_end($transcript) + $slice->start() - 1;
+        				my $coding_region_start = $exon->coding_region_start($transcript) + $slice->start() - 1;
+        				$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{start} = $exonStart;
+        				$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{stop} = $exonStop;
+        				$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{ID} = $exonName;
+        				$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{strand} = $exonStrand;
+        				$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{chromosome} = $exonChrom;
+        				$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{coding_start} = $coding_region_start;
+        				$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{coding_stop} = $coding_region_stop;
+        				#print "added exon $exonName\n";
+        				my $intronStart=-1;
+        				my $intronStop=-1;
+        				#create intronList
+        				if($cntExons>0){
+        				    $intronStart=$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons-1]{stop}+1;
+        				    $intronStop=$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{start}-1;
+
+        				    $GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{intronList}{intron}[$cntIntrons]{start} = $intronStart;
+        				    $GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{intronList}{intron}[$cntIntrons]{stop} = $intronStop;
+        				    $GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{intronList}{intron}[$cntIntrons]{ID} = $cntIntrons+1;
+        				    $cntIntrons=$cntIntrons+1;
+        				}
+        				#Now find which probesets are associated with each exon	and intron
+        				#Check if the probeset location overlaps the exon location
+        				#if it is not over an exon check to see if it is over an intron
+        				#print "starting to match probesets\n";
+        				my $cntProbesets=0;
+        				my $cntMatchingProbesets=0;
+        				my $cntMatchingIntronProbesets=0;
+        				foreach(@probesetHOH){
+        					    if((($probesetHOH[$cntProbesets]{start} >= $exonStart) and ($probesetHOH[$cntProbesets]{start} <= $exonStop) or
+        						($probesetHOH[$cntProbesets]{stop} >= $exonStart) and ($probesetHOH[$cntProbesets]{stop} <= $exonStop))
+        					       and
+        					        $probesetHOH[$cntProbesets]{strand}==$tmpStrand
+        					    ){
+        						    #This is a probeset overlapping the current exon
+        						    delete $probesetHOH[$cntProbesets]{herit};
+        						    delete $probesetHOH[$cntProbesets]{dabg};
+        						    $GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{ProbesetList}{Probeset}[$cntMatchingProbesets] =
+        							    $probesetHOH[$cntProbesets];
+        						    $cntMatchingProbesets=$cntMatchingProbesets+1;
+        					    }elsif((($probesetHOH[$cntProbesets]{start} >= $intronStart) and ($probesetHOH[$cntProbesets]{start} <= $intronStop) or
+        						($probesetHOH[$cntProbesets]{stop} >= $intronStart) and ($probesetHOH[$cntProbesets]{stop} <= $intronStop))
+        						   and
+        					        $probesetHOH[$cntProbesets]{strand}==$tmpStrand
+        					    ){
+        						    delete $probesetHOH[$cntProbesets]{herit};
+        						    delete $probesetHOH[$cntProbesets]{dabg};
+        						    $GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{intronList}{intron}[$cntIntrons-1]{ProbesetList}{Probeset}[$cntMatchingIntronProbesets] =
+        							    $probesetHOH[$cntProbesets];
+        						    $cntMatchingIntronProbesets=$cntMatchingIntronProbesets+1;
+        					    }
+        					$cntProbesets = $cntProbesets+1;
+        				} # loop through probesets
+
+
+        				if($regionSize<5000000){
+        				    my %snpHOH;
+                        	my @snpList=();
+                        	my @snpStrain=();
+        				    my $snpRef=readSNPDataFromDB($genomeVer,$chromosome,$species,$minCoord,$maxCoord,$mongoDsn,$mongoUser,$mongoPasswd);
+                            %snpHOH=%$snpRef;
+                            @snpStrain=("BNLX","SHRH","SHRJ","F344");
+                            my $cntMatchingSnps=0;
+        				    foreach my $strain(@snpStrain){
+        					#print "match snp strains:".$strain;
+        					my $snpListRef=$snpHOH{$strain}{Snp};
+        					eval{
+        					    @snpList=@$snpListRef;
+        					}or do{
+        					    @snpList=();
+        					};
+        					    #match snps/indels to exons
+        					    my $cntSnps=0;
+        					    foreach(@snpList){
+        						#print "check snp".$snpHOH{Snp}[$cntSnps]{start}."-".$snpHOH{Snp}[$cntSnps]{stop};
+        						    #if($exonStart<$exonStop){# if gene is in the forward direction
+        							if((($snpHOH{$strain}{Snp}[$cntSnps]{start} >= $exonStart) and ($snpHOH{$strain}{Snp}[$cntSnps]{start} <= $exonStop) or
+        							    ($snpHOH{$strain}{Snp}[$cntSnps]{stop} >= $exonStart) and ($snpHOH{$strain}{Snp}[$cntSnps]{stop} <= $exonStop))
+        							){
+        								$GeneHOH{Gene}[$cntGenes]{TranscriptList}{Transcript}[$cntTranscripts]{exonList}{exon}[$cntExons]{VariantList}{Variant}[$cntMatchingSnps] = $snpHOH{$strain}{Snp}[$cntSnps];
+        								$cntMatchingSnps++;
+        								#print "Exon Variant";
+        							}
+        						    $cntSnps++;
+        					    } # loop through snps/indels
+        				    }
+        				}
+
+        				$cntExons=$cntExons+1;
+        				#print "finished matching probesets\n";
+        		    } # loop through exons
+        		    $cntTranscripts = $cntTranscripts+1;
+        		} # loop through transcripts
+        		#$GeneHOH{Gene}[$cntGenes]{TranscriptCountEnsembl}=$cntTranscripts;
+        		$cntGenes=$cntGenes+1;
+
+        	    }# if to process only if chromosome is valid
+        	}or do{
+        	    my $e = $@;
+                print("Error: $e\n");
+        	}
+        	}# loop through genes
+        	#close GLFILE;
+            }
+        	createProteinCodingXMLTrack(\%ensemblHOH,$outputDir."ensemblcoding.xml",1);
+        	createProteinCodingXMLTrack(\%ensemblHOH,$outputDir."ensemblnoncoding.xml",0);
+    }
 	elsif(index($type,"brainTotal")>-1 or index($type,"liverTotal")>-1 or index($type,"heartTotal")>-1 or index($type,"braincoding")>-1 or index($type,"mergedTotal")>-1 or index($type,"brainnoncoding")>-1){
         my $ver=substr($type,index($type,"_")+1);
         print "Type:$type\n";
@@ -911,7 +1179,22 @@ sub createXMLFile
 #			push(@geneAOH, \%gene);
 #		}
 		createLiverTotalXMLTrack($geneHOHRef,$outputDir.$type.".xml");
-	}
+	}elsif(index($type,"probe")>-1){
+        my $psTimeStart=time();
+    	my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes($chromosome,$minCoord,$maxCoord,$arrayTypeID,$genomeVer,$dsn,$usr,$passwd);
+    	my @probesetHOH = @$probesetHOHRef;
+    	my $psTimeEnd=time();
+    	createProbesetXMLTrack(\@probesetHOH,$outputDir."probe.xml");
+    	print "Probeset Time=".($psTimeEnd-$psTimeStart)."sec\n";
+	}elsif(index($type,"qtl")>-1){
+             my $qStart=time();
+             	my $qtlRef=readQTLDataFromDB($chromosome,$species,$minCoord,$maxCoord,$genomeVer,$dsn,$usr,$passwd);
+             	my %qtlHOH=%$qtlRef;
+             	createQTLXMLTrack(\%qtlHOH,$outputDir."qtl.xml",$chromosome);
+             	my $qEnd=time();
+             	print "QTLs completed in ".($qEnd-$qStart)." sec.\n";
+
+     	}
 	
 	my $scriptEnd=time();
 	print " script completed in ".($scriptEnd-$scriptStart)." sec.\n";

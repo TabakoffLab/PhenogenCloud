@@ -564,9 +564,9 @@
                     if (min < 1) {
                         min = 1;
                     }
-                    if((max-min)>5000000){
-                        message="Region was greater than the recommended maximum of 5Mbp.  The region has been adjusted to minimum coordinate + 5Mbp.";
-                        max=min+5000000;
+                    if((max-min)>10000000){
+                        message="Region was greater than the recommended maximum of 10Mbp.  The region has been adjusted to minimum coordinate + 10Mbp.";
+                        max=min+10000000;
                     }
                     DecimalFormat df0 = new DecimalFormat("#,###");
                     myDisplayGene = chromosome + ":" + df0.format(min) + "-" + df0.format(max);

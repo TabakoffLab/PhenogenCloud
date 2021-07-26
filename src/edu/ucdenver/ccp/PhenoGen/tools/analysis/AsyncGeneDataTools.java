@@ -68,7 +68,7 @@ public class AsyncGeneDataTools extends Thread {
     private int usageID=0;
     private boolean done=false;
     private boolean isEnsemblGene=true;
-    private String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_TOOLS=? , RESULT=? where TRANS_DETAIL_ID=?";
+    //private String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_TOOLS=? , RESULT=? where TRANS_DETAIL_ID=?";
     private String[] tissues=new String[2];
     private ExecHandler myExec_session = null;
 
@@ -140,7 +140,7 @@ public class AsyncGeneDataTools extends Thread {
                 done=true;
                 Date end=new Date();
 
-                try (Connection conn=pool.getConnection()){
+                /*try (Connection conn=pool.getConnection()){
                     PreparedStatement ps=conn.prepareStatement(updateSQL);
                     long returnTimeMS=end.getTime()-start.getTime();
                     ps.setLong(1, returnTimeMS);
@@ -151,7 +151,7 @@ public class AsyncGeneDataTools extends Thread {
                     ps.close();
                 }catch(SQLException e){
                     log.error("Error saving AsyncGeneDataTools Timing",e);
-                }
+                }*/
             }
 
             log.debug("AsyncGeneDataTools DONE");
@@ -159,7 +159,7 @@ public class AsyncGeneDataTools extends Thread {
             done=true;
             log.error("Error processing initial files in AsyncGeneDataTools",ex);
             Date end=new Date();
-            try (Connection conn2=pool.getConnection()){
+            /*try (Connection conn2=pool.getConnection()){
 
                 PreparedStatement ps=conn2.prepareStatement(updateSQL);
                 long returnTimeMS=end.getTime()-start.getTime();
@@ -171,7 +171,7 @@ public class AsyncGeneDataTools extends Thread {
                 conn2.close();
             }catch(SQLException e){
                 log.error("Error saving AsyncGeneDataTools Timing",e);
-            }
+            }*/
             String fullerrmsg=ex.getMessage();
             StackTraceElement[] tmpEx=ex.getStackTrace();
             for(int i=0;i<tmpEx.length;i++){

@@ -90,8 +90,8 @@ public class GeneDataTools {
     private String returnGeneSymbol="";
     private boolean isSessionSet=false;
 
-    private String insertUsage="insert into TRANS_DETAIL_USAGE (INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?)";
-    String updateSQL="update TRANS_DETAIL_USAGE set TIME_TO_RETURN=? , RESULT=? where TRANS_DETAIL_ID=?";
+    //private String insertUsage="insert into TRANS_DETAIL_USAGE (INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?)";
+    //String updateSQL="update TRANS_DETAIL_USAGE set TIME_TO_RETURN=? , RESULT=? where TRANS_DETAIL_ID=?";
     private HashMap eQTLRegions=new HashMap();
     //HashMap<String,HashMap> cacheHM=new HashMap<String,HashMap>();
     //ArrayList<String> cacheList=new ArrayList<String>();
@@ -441,7 +441,7 @@ public class GeneDataTools {
         HashMap<String,String> source=this.getGenomeVersionSource(genomeVer);
         log.debug("source"+source.keySet().toString()+source.values().toString());
         log.debug("source:"+source.get("ensembl"));
-        try(Connection conn=pool.getConnection()){
+        /*try(Connection conn=pool.getConnection()){
             PreparedStatement ps=conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
             //ps.setInt(1, usageID);
             ps.setString(1,inputID);
@@ -457,7 +457,7 @@ public class GeneDataTools {
 
         }catch(SQLException e){
             log.error("Error saving Transcription Detail Usage",e);
-        }
+        }*/
         Date endDBSetup=new Date();
         log.debug("Insert usage:"+(endDBSetup.getTime()-start.getTime())+"ms");
         //EnsemblIDList can be a comma separated list break up the list
@@ -595,7 +595,7 @@ public class GeneDataTools {
 
         }
         log.debug("\ngetRegion:"+(endRegion.getTime()-endFindGen.getTime())+"ms");
-        try(Connection conn=pool.getConnection()){
+        /*try(Connection conn=pool.getConnection()){
             PreparedStatement ps=conn.prepareStatement(updateSQL, 
 						ResultSet.TYPE_SCROLL_INSENSITIVE,
 						ResultSet.CONCUR_UPDATABLE);
@@ -608,7 +608,7 @@ public class GeneDataTools {
             ps.close();
         }catch(SQLException e){
             log.error("Error saving Transcription Detail Usage",e);
-        }
+        }*/
         Date endDB=new Date();
         
         log.debug("Timing:");
@@ -747,7 +747,7 @@ public class GeneDataTools {
             this.chrom = chromosome;
             String inputID = organism + ":" + chromosome + ":" + minCoord + "-" + maxCoord;
             HashMap<String, String> source = this.getGenomeVersionSource(genomeVer);
-            try (Connection conn = pool.getConnection()) {
+           /* try (Connection conn = pool.getConnection()) {
 
                 PreparedStatement ps = conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
                 //ps.setInt(1, usageID);
@@ -763,7 +763,7 @@ public class GeneDataTools {
                 ps.close();
             } catch (SQLException e) {
                 log.error("Error saving Transcription Detail Usage", e);
-            }
+            }*/
 
             //EnsemblIDList can be a comma separated list break up the list
             boolean error = false;
@@ -878,7 +878,7 @@ public class GeneDataTools {
                 addFromQTLS(ret, transInQTLsCore, transInQTLsExtended, transInQTLsFull);
             }
 
-            try (Connection conn = pool.getConnection()) {
+            /*try (Connection conn = pool.getConnection()) {
                 PreparedStatement ps = conn.prepareStatement(updateSQL,
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_UPDATABLE);
@@ -891,7 +891,7 @@ public class GeneDataTools {
                 ps.close();
             } catch (SQLException e) {
                 log.error("Error saving Transcription Detail Usage", e);
-            }
+            }*/
         }
         return ret;
     }

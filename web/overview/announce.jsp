@@ -12,6 +12,27 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #17 </H2>
+                        <div style="margin-left:5px;">
+                            <H3> Identifying sample mix-ups in eQTL data</H3>
+                            6/11/21 10am PDT/1pm EDT<BR><BR>
+                            <a href="https://youtu.be/h5gF7YnffeI">View Here</a><BR>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/h5gF7YnffeI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar:<BR>
+                            Sample mix-ups interfere with our ability to detect genotype-phenotype associations. However, the presence of numerous eQTL with strong effects provides the opportunity to not just identify sample mix-ups, but also to correct them.<BR>
+                            <UL>
+                                <LI>To illustrate methods for identifying sample duplicates and errors in sex annotations</LI>
+                                <LI>To illustrate methods for identifying sample mix-ups in DNA and RNA samples from experimental cross data</LI>
+                            </UL>
+                            <BR>
+                            Presented by:<BR>
+                            Karl Broman, PhD<BR>
+                            Professor<BR>
+                            Department of Biostatistics & Medical Informatics<BR>
+                            University of Wisconsin-Madison<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #16</H2>
                         <div style="margin-left:5px;">
                             <H3> Introduction to the Hybrid Rat Diversity Panel: A renewable rat panel for genetic studies of addiction-related traits</H3>
