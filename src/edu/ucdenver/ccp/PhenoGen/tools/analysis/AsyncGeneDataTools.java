@@ -68,7 +68,7 @@ public class AsyncGeneDataTools extends Thread {
     private int usageID=0;
     private boolean done=false;
     private boolean isEnsemblGene=true;
-    private String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_TOOLS=? , RESULT=? where TRANS_DETAIL_ID=?";
+    //private String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_TOOLS=? , RESULT=? where TRANS_DETAIL_ID=?";
     private String[] tissues=new String[2];
     private ExecHandler myExec_session = null;
 
@@ -140,7 +140,7 @@ public class AsyncGeneDataTools extends Thread {
                 done=true;
                 Date end=new Date();
 
-                try (Connection conn=pool.getConnection()){
+                /*try (Connection conn=pool.getConnection()){
                     PreparedStatement ps=conn.prepareStatement(updateSQL);
                     long returnTimeMS=end.getTime()-start.getTime();
                     ps.setLong(1, returnTimeMS);
@@ -151,7 +151,7 @@ public class AsyncGeneDataTools extends Thread {
                     ps.close();
                 }catch(SQLException e){
                     log.error("Error saving AsyncGeneDataTools Timing",e);
-                }
+                }*/
             }
 
             log.debug("AsyncGeneDataTools DONE");
@@ -159,7 +159,7 @@ public class AsyncGeneDataTools extends Thread {
             done=true;
             log.error("Error processing initial files in AsyncGeneDataTools",ex);
             Date end=new Date();
-            try (Connection conn2=pool.getConnection()){
+            /*try (Connection conn2=pool.getConnection()){
 
                 PreparedStatement ps=conn2.prepareStatement(updateSQL);
                 long returnTimeMS=end.getTime()-start.getTime();
@@ -171,7 +171,7 @@ public class AsyncGeneDataTools extends Thread {
                 conn2.close();
             }catch(SQLException e){
                 log.error("Error saving AsyncGeneDataTools Timing",e);
-            }
+            }*/
             String fullerrmsg=ex.getMessage();
             StackTraceElement[] tmpEx=ex.getStackTrace();
             for(int i=0;i<tmpEx.length;i++){
@@ -870,6 +870,7 @@ public class AsyncGeneDataTools extends Thread {
                 ps.setInt(3,curTissue.getDatasetID());
                 log.debug(selectTrx+"\norg:"+org+"\nchr:"+chr+"\nds:"+curTissue.getDatasetID()+"\n");
                 ResultSet rs=ps.executeQuery();
+                int sbCount=0;
                 while (rs.next()){
                     String gID=rs.getString(1);
                     //String trxID=rs.getString(2);
@@ -890,31 +891,32 @@ public class AsyncGeneDataTools extends Thread {
                         }
                         sb.append("'"+gID+"'");
                         sbGeneList.append(gID);
+                        sbCount++;
                     }
                     if(!featHM.containsKey(gID)){
                         featList.add(tmpGene);
                         featHM.put(gID, 1);
                     }
-                    //featList.add(tmpTrx);
-                    //log.debug("\n&&&&&&&&&&&&&&&&&&&&&&&& trx:"+trxID+"::"+geneID);
+
                 }
                 ps.close();
                 log.debug("between queries");
                 perlGeneList=sbGeneList.toString();
                 log.debug("gl:"+perlGeneList);
-                ps=conn.prepareStatement(selectR2+sb.toString()+" )");
-                ps.setInt(1,curTissue.getDatasetID());
-                rs=ps.executeQuery();
-                log.debug(rs.getStatement());
-                while (rs.next()){
-                    String geneID=rs.getString(1);
-                    String trxID=rs.getString(2);
-                    double gHerit=rs.getDouble(3);
-                    double tHerit=rs.getDouble(4);
-                    log.debug("processTotal:R2:"+geneID+":"+trxID);
-                    GeneID tmpGene=genes.get(geneID);
-                    if(trxID!=null && !trxID.equals("")) {
-                        TrxID tmpTrx = new TrxID(trxID, tHerit);
+                if(sbCount>0) {
+                    ps = conn.prepareStatement(selectR2 + sb.toString() + " )");
+                    ps.setInt(1, curTissue.getDatasetID());
+                    rs = ps.executeQuery();
+                    log.debug(rs.getStatement());
+                    while (rs.next()) {
+                        String geneID = rs.getString(1);
+                        String trxID = rs.getString(2);
+                        double gHerit = rs.getDouble(3);
+                        double tHerit = rs.getDouble(4);
+                        log.debug("processTotal:R2:" + geneID + ":" + trxID);
+                        GeneID tmpGene = genes.get(geneID);
+                        if (trxID != null && !trxID.equals("")) {
+                            TrxID tmpTrx = new TrxID(trxID, tHerit);
                         /*boolean found = false;
                         for (int i = 0; i < tmpGene.getTranscripts().size() && !found; i++) {
                             if (tmpGene.getTranscripts().get(i).getID().equals(trxID)) {
@@ -922,12 +924,13 @@ public class AsyncGeneDataTools extends Thread {
                             }
                         }
                         if (!found) {*/
-                        tmpGene.addTranscript(tmpTrx);
-                        featList.add(tmpTrx);
-                        //}
+                            tmpGene.addTranscript(tmpTrx);
+                            featList.add(tmpTrx);
+                            //}
+                        }
                     }
+                    ps.close();
                 }
-                ps.close();
                 conn.close();
                 log.debug("after R2");
                 log.debug("PERLGENELIST:\n"+perlGeneList);

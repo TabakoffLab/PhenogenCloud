@@ -12,6 +12,103 @@
     
 		<H2>Announcements</H2>
                     <div  style="overflow:auto;height:92%;">
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #17 </H2>
+                        <div style="margin-left:5px;">
+                            <H3> Identifying sample mix-ups in eQTL data</H3>
+                            6/11/21 10am PDT/1pm EDT<BR><BR>
+                            <a href="https://youtu.be/h5gF7YnffeI">View Here</a><BR>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/h5gF7YnffeI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar:<BR>
+                            Sample mix-ups interfere with our ability to detect genotype-phenotype associations. However, the presence of numerous eQTL with strong effects provides the opportunity to not just identify sample mix-ups, but also to correct them.<BR>
+                            <UL>
+                                <LI>To illustrate methods for identifying sample duplicates and errors in sex annotations</LI>
+                                <LI>To illustrate methods for identifying sample mix-ups in DNA and RNA samples from experimental cross data</LI>
+                            </UL>
+                            <BR>
+                            Presented by:<BR>
+                            Karl Broman, PhD<BR>
+                            Professor<BR>
+                            Department of Biostatistics & Medical Informatics<BR>
+                            University of Wisconsin-Madison<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #16</H2>
+                        <div style="margin-left:5px;">
+                            <H3> Introduction to the Hybrid Rat Diversity Panel: A renewable rat panel for genetic studies of addiction-related traits</H3>
+                            4/23/21 10am PDT/1pm EDT<BR>
+                            <a href="https://youtu.be/dYIiv01IetQ">View Here</a><BR>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/dYIiv01IetQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar<BR>
+                            The Hybrid Rat Diversity Panel (HRDP) is an inbred panel of rats that included two recombinant inbred panels and a panel of classic inbred strains.
+                            <UL>
+                                <LI>To describe hybrid diversity panels, in particular the HRDP, including advantages and disadvantages when studying the role of genetics is substance use disorders, e.g., renewable genomes and the accumulation of behavioral and physiological phenotypes and high throughput omics data.</LI>
+                                <LI>To outline current resources and resources that are being generated.</LI>
+                                <LI>To demonstrate the utility of a renewable genetically diverse rodent population when exploring the interaction between genetics, drug exposure, and behavior.</LI>
+                            </UL>
+                            <BR>
+                            Presented by:<BR>
+                            Hao Chen, PhD<BR>
+                            Associate Professor<BR>
+                            Department of Pharmacology, Addiction Science, and Toxicology<BR>
+                            University of Tennessee Health Science Center<BR>
+                            <BR>
+                            Dr. Laura Saba<BR>
+                            Associate Professor<BR>
+                            Department of Pharmaceutical Sciences<BR>
+                            University of Colorado Anschutz Medical Campus<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #13-15</H2>
+                        <div style="margin-left:5px;">
+                            <H3>15. Introduction to Metabolomics Platforms and Data Analysis</H3> <a href="https://youtu.be/oB1Khk6mt_8">View Here</a><BR>
+                            <H3>14. Landing on Jupyter: A guided tour of interactive notebooks </H3> <a href="https://youtu.be/GVzUNEmpanI">View Here</a><BR>
+                            <H3>13. Become a UseR: A brief tour of R </H3> <a href="https://youtu.be/25-X8_oXBSY">View Here</a><BR><BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #12</H2>
+                        <div style="margin-left:5px;">
+                            <H3> From GWAS to gene: what are the essential analyses and how do we bring them together using heterogeneous stock rats?</H3>
+                            <h3> 2/26/21 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://youtu.be/aWUxNZ9wS3E">View Here</a><BR>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/aWUxNZ9wS3E" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar<BR>
+                            <UL>
+                                <LI>explain the HS rat population and their history</LI>
+                                <LI>describe the automated pipeline that performs GWAS in HS rats</LI>
+                                <LI>explore the fine mapping of associated regions and explain the various secondary analyses that we use to prioritize genes within associated intervals </LI>
+                            </UL>
+                            <BR>
+                            Abraham A. Palmer, Ph.D.<BR>
+                            Professor & Vice Chair for Basic Research<BR>
+                            Department of Psychiatry<BR>
+                            University of California San Diego<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
+                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #11</H2>
+                        <div style="margin-left:5px;">
+                            <H3>Beginner's guide to bulk RNA-Seq analysis</H3>
+                            <h3> 2/12/2021 10am PDT/1pm EDT</h3><BR>
+                            <a href="https://youtu.be/WW94W-DBf2U">View Here</a><BR>
+                            <iframe width="300" height="215" src="https://www.youtube.com/embed/WW94W-DBf2U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            Goals of this webinar:<BR>
+                            <UL>
+                                <LI>To give a general overview of the popular Illumina technology for sequencing RNA.</LI>
+                                <LI>To outline several of the key aspects to consider when designing an RNA-Seq study</LI>
+                                <LI>To provide guidance on methods and tools for transforming reads to quantitative expression measurements.</LI>
+                                <LI>To describe statistical models that are typically used for differential expression and why these specialized models are needed.</LI>
+                            </UL>
+                            <BR>
+                            Dr. Laura Saba<BR>
+                            Associate Professor<BR>
+                            Department of Pharmaceutical Sciences<BR>
+                            Skaggs School of Pharmacy and Pharmaceutical Sciences<BR>
+                            University of Colorado Anschutz Medical Campus<BR>
+                            <BR>
+                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+                        </div>
                         <H2 style="font-weight: bold;font-size:20px;">PhenoGen update 3.7.5</H2>
                         <div style="margin-left:5px;">
                             12/11/20 update to v3.7.5

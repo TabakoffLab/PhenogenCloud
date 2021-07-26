@@ -85,7 +85,7 @@ mouseOnly.probeMouse=1;
 
 var mmVer="Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer="Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer="PhenoGen v3.7.7(2/18/2021)";
+var siteVer="PhenoGen v3.7.8(5/25/2021)";
 
 var trackBinCutoff=10000;
 var customTrackLevel=-1;
@@ -1569,7 +1569,14 @@ function GenomeSVG(div,imageWidth,minCoord,maxCoord,levelNumber,title,type,allow
 				var tmpMax=that.xScale.domain()[1];
 				var len=tmpMax-tmpMin;
 				var tmpBin=calculateBin(len,that.width);
-				var tmpOpts=additionalOptions.split(",");
+				var tmpOpts=[];
+				if(additionalOptions){
+					if(additionalOptions.indexOf(",")>0) {
+						tmpOpts = additionalOptions.split(",");
+					}else{
+						tmpOpts[0]=additionalOptions;
+					}
+				}
 				var tmpCount="Total";
 				var countType=1;
 				if(tmpOpts.length>2){
@@ -7615,7 +7622,7 @@ function RefSeqTrack(gsvg,data,trackClass,label,additionalOptions){
 			if(error){
 				//console.log(error);
 				if(retry==0){
-					var tmpContext=contextPath +"/"+ pathPrefix;
+					var tmpContext="/"+ pathPrefix;
 					if(!pathPrefix){
 						tmpContext="";
 					}
@@ -10604,8 +10611,14 @@ function CountTrack(gsvg,data,trackClass,density,additionalOptions){
 	var tmpMax=that.gsvg.xScale.domain()[1];
 	var len=tmpMax-tmpMin;
 	console.log(that.trackClass+":"+additionalOptions);
-	var opts=additionalOptions.split(",");
-	console.log(opts);
+	var opts=[];
+	if(additionalOptions){
+		if(additionalOptions.indexOf(",")>0) {
+			opts = additionalOptions.split(",");
+		}else{
+			opts[0]=additionalOptions;
+		}
+	}
 	if(opts.length>1){
 			tmp=opts[0].split(":");
 			that.scaleMin=tmp[0]*1;
@@ -11521,7 +11534,14 @@ function PolyATrack(gsvg,data,trackClass,label,density,additionalOptions){
 
 function CustomTranscriptTrack(gsvg,data,trackClass,label,density,additionalOptions){
 	var that=GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOptions);
-	var opts=additionalOptions.split(",");
+	var opts=[];
+	if(additionalOptions){
+		if(additionalOptions.indexOf(",")>0) {
+			opts = additionalOptions.split(",");
+		}else{
+			opts[0]=additionalOptions;
+		}
+	}
 	that.xmlTag="Feature";
 	that.xmlTagBlockElem="block";
 	that.density=density;
@@ -12677,7 +12697,14 @@ function GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOpt
 
 function CircRNATrack(gsvg,data,trackClass,label,density,additionalOptions){
 	var that=GenericTranscriptTrack(gsvg,data,trackClass,label,density,additionalOptions);
-	var opts=additionalOptions.split(",");
+	var opts=[];
+	if(additionalOptions){
+		if(additionalOptions.indexOf(",")>0) {
+			opts = additionalOptions.split(",");
+		}else{
+			opts[0]=additionalOptions;
+		}
+	}
 	that.density=density;
 	if(opts.length>0){
 		that.dataFileName=opts[0].substr(9);
