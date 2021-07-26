@@ -90,8 +90,8 @@ public class GeneDataTools {
     private String returnGeneSymbol="";
     private boolean isSessionSet=false;
 
-    private String insertUsage="insert into TRANS_DETAIL_USAGE (INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?)";
-    String updateSQL="update TRANS_DETAIL_USAGE set TIME_TO_RETURN=? , RESULT=? where TRANS_DETAIL_ID=?";
+    //private String insertUsage="insert into TRANS_DETAIL_USAGE (INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?)";
+    //String updateSQL="update TRANS_DETAIL_USAGE set TIME_TO_RETURN=? , RESULT=? where TRANS_DETAIL_ID=?";
     private HashMap eQTLRegions=new HashMap();
     //HashMap<String,HashMap> cacheHM=new HashMap<String,HashMap>();
     //ArrayList<String> cacheList=new ArrayList<String>();
@@ -333,13 +333,20 @@ public class GeneDataTools {
         int[] rnaDS=getOrganismSpecificIdentifiers(organism,tissue,genomeVer,version);
         if(geneID.startsWith("ENS")){
             geneID=translateENStoPRN(Integer.toString(rnaDS[1]),geneID);
-            if(geneID.length()>1) {
+            if(geneID.length()>1 && geneID.indexOf(",")==-1) {
                 geneID = geneID.substring(1, geneID.length() - 1);
             }
         }
         String trxQuery="select isoform_id,merge_isoform_id from rna_transcripts rt " +
-                "where rt.rna_dataset_id="+rnaDS[1] +" "+
-                "and rt.gene_id='"+geneID+"' or rt.merge_gene_id='"+geneID+"'";
+                "where rt.rna_dataset_id="+rnaDS[1] +" ";
+
+
+        if(geneID.indexOf(",")>-1){
+            trxQuery= trxQuery+" and rt.gene_id in ( "+geneID+" ) or rt.merge_gene_id in ("+geneID+") ";
+        }else{
+            trxQuery=trxQuery+" and rt.gene_id='"+geneID+"' or rt.merge_gene_id='"+geneID+"'";
+        }
+
         log.debug("\ntrx ID list Query:\n"+trxQuery);
         try(Connection conn=pool.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(trxQuery);
@@ -434,7 +441,7 @@ public class GeneDataTools {
         HashMap<String,String> source=this.getGenomeVersionSource(genomeVer);
         log.debug("source"+source.keySet().toString()+source.values().toString());
         log.debug("source:"+source.get("ensembl"));
-        try(Connection conn=pool.getConnection()){
+        /*try(Connection conn=pool.getConnection()){
             PreparedStatement ps=conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
             //ps.setInt(1, usageID);
             ps.setString(1,inputID);
@@ -450,7 +457,7 @@ public class GeneDataTools {
 
         }catch(SQLException e){
             log.error("Error saving Transcription Detail Usage",e);
-        }
+        }*/
         Date endDBSetup=new Date();
         log.debug("Insert usage:"+(endDBSetup.getTime()-start.getTime())+"ms");
         //EnsemblIDList can be a comma separated list break up the list
@@ -588,7 +595,7 @@ public class GeneDataTools {
 
         }
         log.debug("\ngetRegion:"+(endRegion.getTime()-endFindGen.getTime())+"ms");
-        try(Connection conn=pool.getConnection()){
+        /*try(Connection conn=pool.getConnection()){
             PreparedStatement ps=conn.prepareStatement(updateSQL, 
 						ResultSet.TYPE_SCROLL_INSENSITIVE,
 						ResultSet.CONCUR_UPDATABLE);
@@ -601,7 +608,7 @@ public class GeneDataTools {
             ps.close();
         }catch(SQLException e){
             log.error("Error saving Transcription Detail Usage",e);
-        }
+        }*/
         Date endDB=new Date();
         
         log.debug("Timing:");
@@ -740,7 +747,7 @@ public class GeneDataTools {
             this.chrom = chromosome;
             String inputID = organism + ":" + chromosome + ":" + minCoord + "-" + maxCoord;
             HashMap<String, String> source = this.getGenomeVersionSource(genomeVer);
-            try (Connection conn = pool.getConnection()) {
+           /* try (Connection conn = pool.getConnection()) {
 
                 PreparedStatement ps = conn.prepareStatement(insertUsage, PreparedStatement.RETURN_GENERATED_KEYS);
                 //ps.setInt(1, usageID);
@@ -756,7 +763,7 @@ public class GeneDataTools {
                 ps.close();
             } catch (SQLException e) {
                 log.error("Error saving Transcription Detail Usage", e);
-            }
+            }*/
 
             //EnsemblIDList can be a comma separated list break up the list
             boolean error = false;
@@ -871,7 +878,7 @@ public class GeneDataTools {
                 addFromQTLS(ret, transInQTLsCore, transInQTLsExtended, transInQTLsFull);
             }
 
-            try (Connection conn = pool.getConnection()) {
+            /*try (Connection conn = pool.getConnection()) {
                 PreparedStatement ps = conn.prepareStatement(updateSQL,
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_UPDATABLE);
@@ -884,7 +891,7 @@ public class GeneDataTools {
                 ps.close();
             } catch (SQLException e) {
                 log.error("Error saving Transcription Detail Usage", e);
-            }
+            }*/
         }
         return ret;
     }
@@ -1637,11 +1644,16 @@ public class GeneDataTools {
             }else if (organism.equals("Mm")) {
                 perlArgs[3] = "Mouse";
             }
-            String tmpTrack=track+"_"+version+";";
-            if(countType==1){
-                tmpTrack=tmpTrack+"Total;";
-            }else if(countType==2){
-                tmpTrack=tmpTrack+"Norm;";
+            String tmpTrack=track;
+            if(!version.equals("")){
+                tmpTrack=tmpTrack+"_"+version;
+            }
+            if(track.indexOf("illumina")>-1) {
+                if (countType == 1) {
+                    tmpTrack = tmpTrack + ";Total;";
+                } else if (countType == 2) {
+                    tmpTrack = tmpTrack + ";Norm;";
+                }
             }
             perlArgs[4] = tmpTrack;
             perlArgs[5] = panel;

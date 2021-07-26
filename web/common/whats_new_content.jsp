@@ -28,6 +28,38 @@ span.control{
 		background:#989898;
 	}
 </style>
+<div class="whats_new version"><p><H3>Version 3.7.5</H3><BR> 12/11/2020</p></div>
+    <UL>
+        <LI>Sampled counts from every strain are now available as well as total counts.</LI>
+        <LI>You can create a custom view and select total/sampled count and choos the density of the count tracks.</LI>
+        <LI>Bug Fixes</LI>
+    </UL>
+
+<HR>
+
+<div class="whats_new version"><p><H3>Version 3.7.4</H3><BR>11/18/2020</p></div>
+    <UL>
+        <LI>You can now create gene lists from Genome Browser tables - Filter tables from tracks, eQTLs, WGCNA based on expression/tissue and then use gene list tools on the list.</LI>
+        <LI>Implemented a reasonable region restriction of 5Mbp for now. - We are working to create a less detailed view that will be displayed in larger regions.</LI>
+        <LI>Bug Fixes</LI>
+    </UL>
+<HR>
+
+<div class="whats_new version"><p><H3>Version 3.7.3</H3><BR>8/26/2020</p></div>
+
+    <UL>
+        <LI>Version 3.7.3 has been released with the following updates.
+            <ul><LI>RNA-Seq eQTLs based on HRDP</LI>
+                <LI>Heritability based on HRDP</LI>
+                <LI>TPM summary</LI>
+                <LI>Track Table filtering</LI>
+                <LI>Table export to clipboard, csv, xls, and PDF</LI>
+                <LI>Ensembl and Reconstruction based eQTLs/TPM/Heritability</LI>
+            </ul>
+    </UL>
+
+<HR>
+
 <div class="whats_new version"><p><h3>Version: v3.7.2</h3><BR />7/8/2020</p></div>
 
     <UL>

@@ -48,6 +48,7 @@
         Resource[] myPublicationResources7 = myResource.getPublicationResources7();
 		Resource[] myPublicationResources8 = myResource.getPublicationResources8();
 	Resource[] myPublicationResources9 = myResource.getPublicationResources9();
+	Resource[] myPublicationResources10 = myResource.getPublicationResources10();
 
         Resource[] myGTFResources=myResource.getGTFResources();
 	// Sort by organism first, dataset second (seems backwards!)
@@ -538,7 +539,32 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 		action="resources.jsp" 
 		enctype="application/x-www-form-urlencoded"
 		name="resources">
-		<div class="title">Data Files for "A Long Non-Coding RNA (Lrap) Modulates Brain Gene Expression and Levels of Alcohol Consumption in Rats" by Saba, L. et. al. (submitted, Genes, Brain and Behavior)
+
+		<div class="title">Data Files for "A Novel circRNA Highlights a Path to Cardiac Hypertrophy in Spontaneously Hypertensive Rats" by Mahaffey, J. et. al. (submitted, BMC Biology)
+		</div>
+		<table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
+			<thead>
+			<tr class="col_title">
+				<th>Data</th>
+				<TH>Files</TH>
+			</tr>
+			</thead>
+			<tbody>
+			<% for (Resource resource: myPublicationResources10) { %>
+			<tr id="<%=resource.getID()%>">
+
+				<TD><%=resource.getDescription()%></TD>
+				<td class="actionIcons">
+					<div class="linkedImg download" type="pub"><div>
+				</td>
+			</tr>
+			<% } %>
+
+			</tbody>
+		</table>
+		<BR><BR>
+
+		<div class="title">Data Files for "A Long Non-Coding RNA (Lrap) Modulates Brain Gene Expression and Levels of Alcohol Consumption in Rats" by Saba, L. et. al. (Feb 2021, Genes, Brain and Behavior)<a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/32893479/">Abstract</a>
 		</div>
 		<table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
 			<thead>
@@ -561,7 +587,7 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 			</tbody>
 		</table>
 		<BR><BR>
-		<div class="title">Data Files for "Insight into genetic regulation of miRNA in mouse brain" by Kordas, G. et. al. (submitted, BMC Genomics)
+		<div class="title">Data Files for "Insight into genetic regulation of miRNA in mouse brain" by Kordas, G. et. al. (Nov 2019, BMC Genomics)<a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/31722663/">Abstract</a>
 		</div>
 		<table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
 			<thead>
@@ -586,8 +612,8 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 			</tbody>
 		</table>
 		<BR><BR>
-            <div class="title">Data Files for "Condition-adaptive fusion graphical lasso (CFGL): an adaptive procedure for inferring condition-specific gene co-expression network." by Lyu, Y., Xue, L., Zhang, F., Koch, H., Saba, L., Kechris, K., & Li, Q. (in press, PLoS Computational Biology)
-               </div>
+            <div class="title">Data Files for "Condition-adaptive fusion graphical lasso (CFGL): an adaptive procedure for inferring condition-specific gene co-expression network." by Lyu, Y., Xue, L., Zhang, F., Koch, H., Saba, L., Kechris, K., & Li, Q. (Sept 2018, PLoS Computational Biology)
+				<a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/30240439/">Abstract</a></div>
 		      <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
                         <thead>
                             <tr class="col_title">
@@ -608,7 +634,7 @@ pageDescription="Data resources available for downloading includes Microarrays, 
 			</tbody>
 		</table>
                         <BR><BR>
-             <div class="title">Data Files for "Predictive Modeling of miRNA-mediated Predisposition to Alcohol-related Phenotypes in Mouse" by Pratyaydipta Rudra et al. (submitted, BMC Genomics)
+             <div class="title">Data Files for "Predictive Modeling of miRNA-mediated Predisposition to Alcohol-related Phenotypes in Mouse" by Pratyaydipta Rudra et al. (Aug 2018, BMC Genomics)<a target="_blank" href="https://pubmed.ncbi.nlm.nih.gov/30157779/">Abstract</a>
                </div>
 		      <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
                         <thead>

@@ -26,7 +26,7 @@ public class SyncAndClose {
     BufferedWriter outGroup;
     BufferedWriter outIndiv;
     int usageID;
-    String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_EXPR=? , RESULT=? where TRANS_DETAIL_ID=?";
+    //String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_EXPR=? , RESULT=? where TRANS_DETAIL_ID=?";
     String message="";
     String outputDir="";
     private Logger log = null;
@@ -95,7 +95,7 @@ public class SyncAndClose {
             indivf.renameTo(indivfinal);
             log.debug("Indiv File Renamed\n"+indivf+"->"+indivfinal+"\n");
             end=new Date();
-            try(Connection conn=pool.getConnection()){
+            /*try(Connection conn=pool.getConnection()){
                 PreparedStatement ps=null;
 
                 ps=conn.prepareStatement(updateSQL,
@@ -111,7 +111,7 @@ public class SyncAndClose {
                 ps.close();
             }catch(SQLException ex){
                 log.error("Error saving AsyncGeneDataExpr Timing",ex);
-            }
+            }*/
         }
     }
 
