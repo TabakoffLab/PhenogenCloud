@@ -158,7 +158,7 @@ sub getGO{
     my $registry = 'Bio::EnsEMBL::Registry';
     my $dbAdaptorNum =$registry->load_registry_from_db( 
     		-host => $host, #'ensembldb.ensembl.org', # alternatively 'useastdb.ensembl.org'
-    		-port => "3306",
+    		-port => "6033",
     		-user => $user,
     		-pass => $passwd
     	    );
