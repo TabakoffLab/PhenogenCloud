@@ -289,6 +289,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="exprCol" id="expRegionKidney" style="display:inline-block;">
+                    
+                    <div style="width:100%;text-align: center;"><H2><span id="regionExprTitlek"></span></h2></div>
+                    <BR>
+                    <div id="chartKidneyregionExpr" style="width:98%;">
+                        <div id="kidneyExprLoading" style="text-align: center;">
+                            <img src="/web/images/wait.gif"><BR>
+                            Loading...
+                        </div>
+                    </div>
+                </div>
             </div>
         </div><!--collapsableReport end-->
     </div>
@@ -401,6 +412,7 @@
             if ($(window).width() < 1500) {
                 pe.rbChart.setWidth("98%");
                 pe.rlChart.setWidth("98%");
+                pe.rkChart.setWidth("98%");
             }
         }, 5000);
         //svgList[1].updateLinks();
@@ -412,12 +424,18 @@
                 if (pe.rlChart) {
                     pe.rlChart.setWidth("98%");
                 }
+                if (pe.rkChart) {
+                    pe.rkChart.setWidth("98%");
+                }
             } else {
                 if (pe && pe.rbChart) {
                     pe.rbChart.setWidth("45%");
                 }
                 if (pe && pe.rlChart) {
                     pe.rlChart.setWidth("45%");
+                }
+                if (pe && pe.rkChart) {
+                    pe.rkChart.setWidth("45%");
                 }
             }
         });

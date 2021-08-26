@@ -678,11 +678,15 @@
                 if (rna != null) {
                     String bHerit = "";
                     String lHerit = "";
+                    String kHerit = "";
                     if (rna.getHerit("Whole Brain") >= 0) {
                         bHerit = df2.format(rna.getHerit("Whole Brain"));
                     }
                     if (rna.getHerit("Liver") >= 0) {
                         lHerit = df2.format(rna.getHerit("Liver"));
+                    }
+                    if (rna.getHerit("Kidney") >= 0) {
+                        kHerit = df2.format(rna.getHerit("Kidney"));
                     }
                                     /*Double bPv=0.0;
                                     Double lPv=0.0;
@@ -701,11 +705,15 @@
 
                     HashMap<String, Double> brain = null;
                     HashMap<String, Double> liver = null;
+                    HashMap<String, Double> kidney = null;
                     if (tpm.containsKey("Brain") && tpm.get("Brain").containsKey(curGene.getGeneID())) {
                         brain = tpm.get("Brain").get(curGene.getGeneID());
                     }
                     if (tpm.containsKey("Liver") && tpm.get("Liver").containsKey(curGene.getGeneID())) {
                         liver = tpm.get("Liver").get(curGene.getGeneID());
+                    }
+                    if (tpm.containsKey("Kidney") && tpm.get("Kidney").containsKey(curGene.getGeneID())) {
+                        kidney = tpm.get("Kidney").get(curGene.getGeneID());
                     }
                     String cisValueB = rna.getMinCisQTL("Whole Brain", "ensembl");
                     double cisPvalB = -1;
@@ -735,6 +743,20 @@
                         transPvalL = Double.parseDouble(transValueL.substring(0, transValueL.indexOf(":")));
                         transLocationL = "chr" + transValueL.substring(transValueL.indexOf(":") + 1);
                     }
+                    String cisValueK = rna.getMinCisQTL("Kidney", "ensembl");
+                    double cisPvalK = -1;
+                    String cisLocationK = "";
+                    if (cisValueK != null && !cisValueK.equals("")) {
+                        cisPvalK = Double.parseDouble(cisValueK.substring(0, cisValueK.indexOf(":")));
+                        cisLocationK = "chr" + cisValueK.substring(cisValueK.indexOf(":") + 1);
+                    }
+                    String transValueK = rna.getMinTransQTL("Kidney", "ensembl");
+                    double transPvalK = -1;
+                    String transLocationK = "";
+                    if (transValueK != null && !transValueK.equals("")) {
+                        transPvalK = Double.parseDouble(transValueK.substring(0, transValueK.indexOf(":")));
+                        transLocationK = "chr" + transValueK.substring(transValueK.indexOf(":") + 1);
+                    }
             %>
             <TD class="leftBorder"><%if (brain != null && brain.containsKey("ensmed")) {%><%=brain.get("ensmed")%><%}%></TD>
             <TD><%if (brain != null && brain.containsKey("ensmed")) {%><%=brain.get("ensmin")%>-<%=brain.get("ensmax")%><%}%></TD>
@@ -746,11 +768,11 @@
             <TD><%if (liver != null && liver.containsKey("geneHerit") && liver.get("geneHerit") > 0) {%><%=df2.format(liver.get("geneHerit"))%><%}%></TD>
             <TD><%if (cisPvalL > -1) {%><%=dfe.format(cisPvalL)%><BR><%=cisLocationL%><%}%></TD>
             <TD><%if (transPvalL > -1) {%><%=dfe.format(transPvalL)%><BR><%=transLocationL%><%}%></TD>
-            <TD class="leftBorder"><%if (liver != null && liver.containsKey("ensmed")) {%><%=liver.get("ensmed")%><%}%></TD>
-            <TD><%if (liver != null && liver.containsKey("ensmed")) {%><%=liver.get("ensmin")%>-<%=liver.get("ensmax")%><%}%></TD>
-            <TD><%if (liver != null && liver.containsKey("geneHerit") && liver.get("geneHerit") > 0) {%><%=df2.format(liver.get("geneHerit"))%><%}%></TD>
-            <TD><%if (cisPvalL > -1) {%><%=dfe.format(cisPvalL)%><BR><%=cisLocationL%><%}%></TD>
-            <TD><%if (transPvalL > -1) {%><%=dfe.format(transPvalL)%><BR><%=transLocationL%><%}%></TD>
+            <TD class="leftBorder"><%if (kidney != null && kidney.containsKey("ensmed")) {%><%=kidney.get("ensmed")%><%}%></TD>
+            <TD><%if (kidney != null && kidney.containsKey("ensmed")) {%><%=kidney.get("ensmin")%>-<%=kidney.get("ensmax")%><%}%></TD>
+            <TD><%if (kidney != null && kidney.containsKey("geneHerit") && kidney.get("geneHerit") > 0) {%><%=df2.format(kidney.get("geneHerit"))%><%}%></TD>
+            <TD><%if (cisPvalK > -1) {%><%=dfe.format(cisPvalK)%><BR><%=cisLocationK%><%}%></TD>
+            <TD><%if (transPvalK > -1) {%><%=dfe.format(transPvalK)%><BR><%=transLocationK%><%}%></TD>
             <%
                 cisValueB = rna.getMinCisQTL("Whole Brain", "reconst");
                 cisPvalB = -1;
@@ -780,6 +802,20 @@
                     transPvalL = Double.parseDouble(transValueL.substring(0, transValueL.indexOf(":")));
                     transLocationL = "chr" + transValueL.substring(transValueL.indexOf(":") + 1);
                 }
+                cisValueK = rna.getMinCisQTL("Kidney", "reconst");
+                cisPvalK = -1;
+                cisLocationK = "";
+                if (cisValueK != null && !cisValueK.equals("")) {
+                    cisPvalK = Double.parseDouble(cisValueK.substring(0, cisValueK.indexOf(":")));
+                    cisLocationK = "chr" + cisValueK.substring(cisValueK.indexOf(":") + 1);
+                }
+                transValueK = rna.getMinTransQTL("Kidney", "reconst");
+                transPvalK = -1;
+                transLocationK = "";
+                if (transValueK != null && !transValueK.equals("")) {
+                    transPvalK = Double.parseDouble(transValueK.substring(0, transValueK.indexOf(":")));
+                    transLocationK = "chr" + transValueK.substring(transValueK.indexOf(":") + 1);
+                }
             %>
 
             <TD class="leftBorder"><%if (brain != null && brain.containsKey("reconmed")) {%><%=brain.get("reconmed")%><%}%></TD>
@@ -794,12 +830,12 @@
             </TD>
             <TD><%if (cisPvalL > -1) {%><%=dfe.format(cisPvalL)%><BR><%=cisLocationL%><%}%></TD>
             <TD><%if (transPvalL > -1) {%><%=dfe.format(transPvalL)%><BR><%=transLocationL%><%}%></TD>
-            <TD class="leftBorder"><%if (liver != null && liver.containsKey("reconmed")) {%><%=liver.get("reconmed")%><%}%></TD>
-            <TD><%if (liver != null && liver.containsKey("reconmed")) {%><%=liver.get("reconmin")%>-<%=liver.get("reconmax")%><%}%></TD>
-            <TD><%=lHerit%>
+            <TD class="leftBorder"><%if (kidney != null && kidney.containsKey("reconmed")) {%><%=kidney.get("reconmed")%><%}%></TD>
+            <TD><%if (kidney != null && kidney.containsKey("reconmed")) {%><%=kidney.get("reconmin")%>-<%=kidney.get("reconmax")%><%}%></TD>
+            <TD><%=kHerit%>
             </TD>
-            <TD><%if (cisPvalL > -1) {%><%=dfe.format(cisPvalL)%><BR><%=cisLocationL%><%}%></TD>
-            <TD><%if (transPvalL > -1) {%><%=dfe.format(transPvalL)%><BR><%=transLocationL%><%}%></TD>
+            <TD><%if (cisPvalK > -1) {%><%=dfe.format(cisPvalK)%><BR><%=cisLocationK%><%}%></TD>
+            <TD><%if (transPvalK > -1) {%><%=dfe.format(transPvalK)%><BR><%=transLocationK%><%}%></TD>
             <%} else {%>
             <TD class="leftBorder"></TD>
             <TD></TD>
