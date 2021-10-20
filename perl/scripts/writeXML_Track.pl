@@ -385,7 +385,7 @@ sub createXMLFile
     	    print "trying local\n";
     	    $dbAdaptorNum =$registry->load_registry_from_db(
     		-host => $ensHost, #'ensembldb.ensembl.org', # alternatively 'useastdb.ensembl.org'
-    		-port => 3306,
+    		-port => 6033,
     		-user => $ensUsr,
     		-pass => $ensPasswd
     	    );
@@ -642,7 +642,7 @@ sub createXMLFile
         	createProteinCodingXMLTrack(\%ensemblHOH,$outputDir."ensemblcoding.xml",1);
         	createProteinCodingXMLTrack(\%ensemblHOH,$outputDir."ensemblnoncoding.xml",0);
     }
-	elsif(index($type,"brainTotal")>-1 or index($type,"liverTotal")>-1 or index($type,"heartTotal")>-1 or index($type,"braincoding")>-1 or index($type,"mergedTotal")>-1 or index($type,"brainnoncoding")>-1){
+	elsif(index($type,"brainTotal")>-1 or index($type,"liverTotal")>-1 or index($type,"heartTotal")>-1 or index($type,"kidneyTotal")>-1 or index($type,"braincoding")>-1 or index($type,"mergedTotal")>-1 or index($type,"brainnoncoding")>-1){
         my $ver=substr($type,index($type,"_")+1);
         print "Type:$type\n";
         print "Ver:$ver\n";
@@ -908,7 +908,7 @@ sub createXMLFile
 			    #print "$host\n";
 			    $dbAdaptorNum =$registry->load_registry_from_db(
 				-host => $ensHost, #'ensembldb.ensembl.org', # alternatively 'useastdb.ensembl.org'
-				-port => 3306,
+				-port => 6033,
 				-user => $ensUsr,
 				-pass => $ensPasswd
 			    );

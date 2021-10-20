@@ -396,7 +396,8 @@
             Properties myProperties = new Properties();
             File myPropertiesFile = new File(dbPropertiesFile);
             myProperties.load(new FileInputStream(myPropertiesFile));
-			String dsn = "dbi:mysql:database="+myProperties.getProperty("DATABASE")+";host="+myProperties.getProperty("HOST")+";port=3306";
+			String port=myProperties.getProperty("PORT");
+			String dsn = "dbi:mysql:database="+myProperties.getProperty("DATABASE")+";host="+myProperties.getProperty("HOST")+";port="+port;
             //String dsn = "dbi:"+ myProperties.getProperty("PLATFORM")+ ":" + myProperties.getProperty("DATABASE");
             String OracleUserName = myProperties.getProperty("USER");
             String password = myProperties.getProperty("PASSWORD");			
