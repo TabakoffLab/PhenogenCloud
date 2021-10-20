@@ -11,15 +11,40 @@
 
 
 <H2>Announcements</H2>
-<div style="overflow:auto;height:92%;">
+<div style="overflow:auto;height:92%;margin-left: 10px;">
     <H2 style="font-weight: bold;font-size:20px;">Kidney RNA-Seq </H2>
     <div style="margin-left:5px;">
         9/7/21 - Kidney transcriptome and HXB/BXH expression values are avaialble in the genome browser. eQTLs and WGCNA results will be available soon.
     </div>
-    <H2 style="font-weight: bold;font-size:20px;">Upcoming OSGA Webinar #21 </H2>
+    <H2 style="font-weight: bold;font-size:20px;">Upcoming OSGA Webinar #22 </H2>
+    <H3>Guide to evaluating the application of machine learning methods in genetics literature</H3>
+    10/22/21 10am PDT/1pm EDT<BR><BR>
+    <a href="https://bit.ly/osga_2021-10-22">Register Here</a><BR>
+    Summary of this webinar:<BR>
+    <BR>
+    <ul>
+        <li>To describe the relationship between artificial intelligence (AI), machine learning (ML), and deep learning (DL).</li>
+        <li>To describe general scenarios when ML is appropriate.</li>
+        <li>To understand methods for comparing the performance of different ML algorithms</li>
+        <li>To layout general criteria to examine when evaluating literature that includes machine learning algorithms</li>
+    </ul>
+
+
+
+
+    <BR><BR>
+    Laura Saba, PhD<BR>
+    Associate Professor<BR>
+    Department of Pharmaceutical Sciences<BR>
+    University of Colorado Anschutz Medical Campus<BR>
+    <BR>
+    <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #21 </H2>
     <H3>A Primer on Brain Proteomics and protein-QTL Analysis for Substance Use Disorders</H3>
     10/8/21 10am PDT/1pm EDT<BR><BR>
-    <a href="https://bit.ly/osga_2021-10-08">Register Here</a><BR>
+    <a href="https://youtu.be/qDNKVVjopXk">View Here</a><BR>
+    <iframe width="300" height="215" src="https://www.youtube.com/embed/qDNKVVjopXk" title="YouTube video player" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
     Summary of this webinar:<BR>
     <BR>
     To give a general introduction to proteomics technologies and data processing/normalization<BR>
