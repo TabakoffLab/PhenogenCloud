@@ -117,7 +117,7 @@
             $("#tissuesMStsms option[value='Heart']").remove();
             $("#tissuesMS option[value='BAT']").remove();
             $("#tissuesMStsms option[value='BAT']").remove();
-            $("#tissuesMS").append('<option value="Kidney" selected>Kidney</option>')
+            $("#tissuesMS").append('<option value="Kidney" disabled>Kidney</option>')
             $("td#trxClusterCB").hide();
             $("span#versionSelect").show();
         } else {
@@ -528,7 +528,8 @@ At least one tissue MUST be included in the Circos plot."><img src="<%=imagesDir
 
                                 %>
 
-                                <option value="<%=tissueNameArray[i]%>" selected><%=tissuesList1[i]%>
+                                <option value="<%=tissueNameArray[i]%>" <%if(tissueNameArray[i].equals("Kidney")){%>disabled
+                                        <%}else{%>selected<%}%>><%=tissuesList1[i]%>
                                 </option>
 
                                 <%

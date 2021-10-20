@@ -9,538 +9,730 @@
  *      
 --%>
 
-    
-		<H2>Announcements</H2>
-                    <div  style="overflow:auto;height:92%;">
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #17 </H2>
-                        <div style="margin-left:5px;">
-                            <H3> Identifying sample mix-ups in eQTL data</H3>
-                            6/11/21 10am PDT/1pm EDT<BR><BR>
-                            <a href="https://youtu.be/h5gF7YnffeI">View Here</a><BR>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/h5gF7YnffeI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar:<BR>
-                            Sample mix-ups interfere with our ability to detect genotype-phenotype associations. However, the presence of numerous eQTL with strong effects provides the opportunity to not just identify sample mix-ups, but also to correct them.<BR>
-                            <UL>
-                                <LI>To illustrate methods for identifying sample duplicates and errors in sex annotations</LI>
-                                <LI>To illustrate methods for identifying sample mix-ups in DNA and RNA samples from experimental cross data</LI>
-                            </UL>
-                            <BR>
-                            Presented by:<BR>
-                            Karl Broman, PhD<BR>
-                            Professor<BR>
-                            Department of Biostatistics & Medical Informatics<BR>
-                            University of Wisconsin-Madison<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #16</H2>
-                        <div style="margin-left:5px;">
-                            <H3> Introduction to the Hybrid Rat Diversity Panel: A renewable rat panel for genetic studies of addiction-related traits</H3>
-                            4/23/21 10am PDT/1pm EDT<BR>
-                            <a href="https://youtu.be/dYIiv01IetQ">View Here</a><BR>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/dYIiv01IetQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar<BR>
-                            The Hybrid Rat Diversity Panel (HRDP) is an inbred panel of rats that included two recombinant inbred panels and a panel of classic inbred strains.
-                            <UL>
-                                <LI>To describe hybrid diversity panels, in particular the HRDP, including advantages and disadvantages when studying the role of genetics is substance use disorders, e.g., renewable genomes and the accumulation of behavioral and physiological phenotypes and high throughput omics data.</LI>
-                                <LI>To outline current resources and resources that are being generated.</LI>
-                                <LI>To demonstrate the utility of a renewable genetically diverse rodent population when exploring the interaction between genetics, drug exposure, and behavior.</LI>
-                            </UL>
-                            <BR>
-                            Presented by:<BR>
-                            Hao Chen, PhD<BR>
-                            Associate Professor<BR>
-                            Department of Pharmacology, Addiction Science, and Toxicology<BR>
-                            University of Tennessee Health Science Center<BR>
-                            <BR>
-                            Dr. Laura Saba<BR>
-                            Associate Professor<BR>
-                            Department of Pharmaceutical Sciences<BR>
-                            University of Colorado Anschutz Medical Campus<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #13-15</H2>
-                        <div style="margin-left:5px;">
-                            <H3>15. Introduction to Metabolomics Platforms and Data Analysis</H3> <a href="https://youtu.be/oB1Khk6mt_8">View Here</a><BR>
-                            <H3>14. Landing on Jupyter: A guided tour of interactive notebooks </H3> <a href="https://youtu.be/GVzUNEmpanI">View Here</a><BR>
-                            <H3>13. Become a UseR: A brief tour of R </H3> <a href="https://youtu.be/25-X8_oXBSY">View Here</a><BR><BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #12</H2>
-                        <div style="margin-left:5px;">
-                            <H3> From GWAS to gene: what are the essential analyses and how do we bring them together using heterogeneous stock rats?</H3>
-                            <h3> 2/26/21 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://youtu.be/aWUxNZ9wS3E">View Here</a><BR>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/aWUxNZ9wS3E" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar<BR>
-                            <UL>
-                                <LI>explain the HS rat population and their history</LI>
-                                <LI>describe the automated pipeline that performs GWAS in HS rats</LI>
-                                <LI>explore the fine mapping of associated regions and explain the various secondary analyses that we use to prioritize genes within associated intervals </LI>
-                            </UL>
-                            <BR>
-                            Abraham A. Palmer, Ph.D.<BR>
-                            Professor & Vice Chair for Basic Research<BR>
-                            Department of Psychiatry<BR>
-                            University of California San Diego<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #11</H2>
-                        <div style="margin-left:5px;">
-                            <H3>Beginner's guide to bulk RNA-Seq analysis</H3>
-                            <h3> 2/12/2021 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://youtu.be/WW94W-DBf2U">View Here</a><BR>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/WW94W-DBf2U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar:<BR>
-                            <UL>
-                                <LI>To give a general overview of the popular Illumina technology for sequencing RNA.</LI>
-                                <LI>To outline several of the key aspects to consider when designing an RNA-Seq study</LI>
-                                <LI>To provide guidance on methods and tools for transforming reads to quantitative expression measurements.</LI>
-                                <LI>To describe statistical models that are typically used for differential expression and why these specialized models are needed.</LI>
-                            </UL>
-                            <BR>
-                            Dr. Laura Saba<BR>
-                            Associate Professor<BR>
-                            Department of Pharmaceutical Sciences<BR>
-                            Skaggs School of Pharmacy and Pharmaceutical Sciences<BR>
-                            University of Colorado Anschutz Medical Campus<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen update 3.7.5</H2>
-                        <div style="margin-left:5px;">
-                            12/11/20 update to v3.7.5
-                            <UL>
-                                <LI>Sampled counts from every strain are now available as well as total counts.</LI>
-                                <LI>You can create a custom view and select total/sampled count and choos the density of the count tracks.</LI>
-                                <LI>Bug Fixes</LI>
-                            </UL>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen update 3.7.4</H2>
-                        <div style="margin-left:5px;">
-                            11/18/20 update to v3.7.4
-                            <UL>
-                                <LI>You can now create gene lists from Genome Browser tables - Filter tables from tracks, eQTLs, WGCNA based on expression/tissue and then use gene list tools on the list.</LI>
-                                <LI>Implemented a reasonable region restriction of 5Mbp for now. - We are working to create a less detailed view that will be displayed in larger regions.</LI>
-                                <LI>Bug Fixes</LI>
-                            </UL>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #10</H2>
-                        <div style="margin-left:5px;">
-                            <h3> 11/20/2020 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://youtu.be/twJNYOL3qfA">View Here</a><BR>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/twJNYOL3qfA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar (introduction to causal inference in genetic studies):<BR>
-                            <UL>
-                                <LI>Express causal inference as a missing data problem (counterfactual framework)</LI>
-                                <LI>Outline assumptions needed for causal inference</LI>
-                                <LI>Express causal information as (directed acyclic) graphs</LI>
-                                <LI>Outline how to use graphs to guide analytic strategy</LI>
-                            </UL>
-                            <BR>
-                            Dr. Saunak Sen<BR>
-                            Professor and Chief of Biostatistics<BR>
-                            Department of Preventative Medicine<BR>
-                            University of Tennessee Health Science Center<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #9</H2>
-                        <div style="margin-left:5px;">
-                            <h3> Introduction to GeneWeaver: Integrating and analyzing heterogeneous functional genomics data 10/23/2020</h3><BR>
-                            <a href="https://youtu.be/Vq3vocdMWLQ">View Here</a>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/Vq3vocdMWLQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar:<BR>
-                            <UL>
-                                <LI>Compare a user's gene list with multiple functional genomics data sets</LI>
-                                <LI>Compare and contrast gene lists with data currently available and integrated in GeneWeaver</LI>
-                                <LI>Explore functional relationships among genes and disease across species</LI>
-                            </UL>
-                            <BR>
-                            Dr. Elissa Chesler<BR>
-                            Professor<BR>
-                            The Jackson Laboratory<BR>
-                            <BR>
-                            Dr. Erich Baker<BR>
-                            Professor and Chair<BR>
-                            Department of Computer Science<BR>
-                            Baylor University<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #8</H2>
-                        <div style="margin-left:5px;">
-                            <h3>Using genetic and non-genetic covariates in QTL studies 10/9/2020 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://youtu.be/1U_4DCSDq9U">View Here</a>
-                            <iframe width="560" height="315" src="https://www.youtube.com/embed/1U_4DCSDq9U" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar (quantitative trait to genetic loci):<BR>
-                            <UL>
-                                <LI>Identify covariates and mediators in QTL studies</LI>
-                                <LI>Adjust for covariates in QTL scans</LI>
-                                <LI>Review genetic relatedness in segregating populations</LI>
-                                <LI>Adjust for genetic relatedness using linear mixed models</LI>
-                            </UL>
-                            <BR>
-                            Dr. Saunak Sen<BR>
-                            Professor and Chief of Biostatistics<BR>
-                            Department of Preventative Medicine<BR>
-                            University of Tennessee Health Science Center<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #7</H2>
-                        <div style="margin-left:5px;">
-                            <h3>Introduction to Weighted Gene Co-expression Network Analysis 9/25/2020 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://youtu.be/OpWEHazyQLA">View Here</a>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/OpWEHazyQLA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar (molecular networks):<BR>
-                            <UL>
-                                <LI>Introduction and motivation for co-expression network analysis</LI>
-                                <LI>Basics of weighted gene co-expression network analysis</LI>
-                                <LI>Step-by-step guide to WGCNA using the wgcna package in R.</LI>
-                            </UL>
-                            Background reading available at: <a href="http://bit.ly/osga_wgcna">http://bit.ly/osga_wgcna</a>
-                            <BR>
-                            Presented by:<BR>
-                            Dr. Laura Saba<BR>
-                            Associate Professor<BR>
-                            Department of Pharmaceutical Sciences<BR>
-                            University of Colorado Anschutz Medical Campus<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
 
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #6</H2>
-                        <div style="margin-left:5px;">
-                            <h3> Sex as a Biological Covariate in QTL Studies With Dr. Saunak Sen  9/11/2020 </h3><BR>
-                            <a href="https://youtu.be/dYeJcBbJjRU">View Here</a>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/dYeJcBbJjRU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar (trait variance to QTL):<BR>
-                            <UL>
-                                <LI>Review QTL mapping</LI>
-                                <LI>Understand the role of sex in QTL study design</LI>
-                                <LI>Use sex as a covariate in QTL analysis</LI>
-                                <LI>Understand X chromosome segregation in crosses</LI>
-                                <LI>Make adjustments for X chromosome in QTL analysis</LI>
-                            </UL>
-                            <BR>
-                            Presented by:<BR>
-                            Dr. Saunak Sen<BR>
-                            Professor and Chief of Biostatistics<BR>
-                            Department of Preventative Medicine<BR>
-                            University of Tennessee Health Science Center<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #5</H2>
-                        <div style="margin-left:5px;">
-                            <h3>Identifying genes from QTL using RNA expression and the PhenoGen website 8/28/2020 10am PDT/1pm EDT</h3><BR>
-                            <a href="https://youtu.be/9DJm5cJgVis">View Here</a>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/9DJm5cJgVis" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar (QTL to gene/molecular networks):<BR>
-                            <UL>
-                                <LI>Demonstrate how to use the PhenoGen website to identify transcripts:</LI>
-                                <LI>Physically located within a QTL</LI>
-                                <LI>Physically located within a QTL and expressed in brain</LI>
-                                <LI>With a brain cis eQTL within the QTL</LI>
-                                <LI>With any brain eQTL within the QTL</LI>
-                                <LI>Within a co-expression network controlled from the same region as the QTL</LI>
-                            </UL>
-                            <BR>
+<H2>Announcements</H2>
+<div style="overflow:auto;height:92%;">
+    <H2 style="font-weight: bold;font-size:20px;">Kidney RNA-Seq </H2>
+    <div style="margin-left:5px;">
+        9/7/21 - Kidney transcriptome and HXB/BXH expression values are avaialble in the genome browser. eQTLs and WGCNA results will be available soon.
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">Upcoming OSGA Webinar #21 </H2>
+    <H3>A Primer on Brain Proteomics and protein-QTL Analysis for Substance Use Disorders</H3>
+    10/8/21 10am PDT/1pm EDT<BR><BR>
+    <a href="https://bit.ly/osga_2021-10-08">Register Here</a><BR>
+    Summary of this webinar:<BR>
+    <BR>
+    To give a general introduction to proteomics technologies and data processing/normalization<BR>
+    To present a pipeline for correcting sample mix-ups in proteomic data.<BR>
+    To discuss rat brain proteome and protein QTL analysis for Substance Use Disorders.<BR>
+    <BR><BR>
+    Xusheng Wang, PhD<BR>
+    Assistant Professor<BR>
+    Department of Biology<BR>
+    University of North Dakota<BR>
+    <BR>
+    Robert W. Williams, PhD<BR>
+    Professor and Chair<BR>
+    Department of Genetics, Genomics, and Informatics<BR>
+    University of Tennessee Health Science Center<BR>
+    <BR>
+    <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #20 </H2>
 
-                            Presented by:<BR>
-                            Dr. Laura Saba<BR>
-                            Associate Professor<BR>
-                            Department of Pharmaceutical Sciences<BR>
-                            University of Colorado Anschutz Medical Campus<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.3</H2>
-                        <div style="margin-left:5px;">
-                            <UL>
-                                <LI>Version 3.7.3 has been released with the following updates.
-                                    <ul><LI>RNA-Seq eQTLs based on HRDP</LI>
-                                        <LI>Heritability based on HRDP</LI>
-                                        <LI>TPM summary</LI>
-                                        <LI>Track Table filtering</LI>
-                                        <LI>Table export to clipboard, csv, xls, and PDF</LI>
-                                        <LI>Ensembl and Reconstruction based eQTLs/TPM/Heritability</LI>
-                                    </ul>
-                            </UL>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.2</H2>
-                        <div style="margin-left:5px;">
-                            <UL>
-                                <LI>Version 3.7.2 has been released with the following updates.
-                                    <ul><LI>RNA-Seq eQTLs
-                                        <UL>
-                                            <LI>Gene Track Summaries now include RNA-Seq based eQTL summaries</LI>
-                                            <LI>Modules for a region can be selected base on overlap of the module QTL with the region.</LI>
-                                            <LI>Genes with an eQTL that overlaps the region are now available based on RNA-Seq and Microarrays</LI>
-                                        </UL>
-                                    </LI>
-                                        <LI>Custom Views
-                                            <UL>
-                                                <LI>Total Counts for all 45 strains to date are available.</LI>
-                                            </UL>
-                                        </LI>
-                                        <LI>Read counts for all 45 strains are available to add as browser tracks.</LI>
-                                        <LI>Bug Fixes</LI>
-                                    </ul>
-                            </UL>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #3</H2>
-                        <div style="margin-left:5px;">
-                            <h3>QTL to gene/molecular networks 6/12/2020 10am PDT/1pm EDT</h3><BR>
-                            <iframe width="300" height="215" src="https://www.youtube.com/embed/8jiNHuOgr1A" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            Goals of this webinar (QTL to gene/molecular networks):<BR>
-                            <UL>
-                                <li>Define eQTL</li>
-                                <li>Examine the role of eQTL in the relationship of genes and molecular networks with phenotypic QTL</li>
-                                <li>eQTL for co-expression networks</li>
-                            </UL>
-                            <BR>
+    <H3> Organizing data in spreadsheets</H3>
+    9/24/21 10am PDT/1pm EDT<BR><BR><BR>
+    <a href="https://youtu.be/t74E0a90gkA">View Here</a><BR>
+    <iframe width="300" height="215" src="https://www.youtube.com/embed/t74E0a90gkA" title="YouTube video player" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    Summary of this webinar:<BR>
+    <BR>
+    Spreadsheets are widely used software tools for data entry, storage, analysis, and visualization. Focusing on the data entry and storage aspects,
+    this
+    presentation will offer practical recommendations for organizing spreadsheet data to reduce errors and ease later analyses. The basic principles
+    are: be
+    consistent, write dates like YYYY-MM-DD, do not leave any cells empty, put just one thing in a cell, organize the data as a single rectangle (with
+    subjects as rows and variables as columns, and with a single header row), create a data dictionary, do not include calculations in the raw data
+    files,
+    do not use font color or highlighting as data, choose good names for things, make backups, use data validation to avoid data entry errors, and save
+    the
+    data in plaintext files.
+    Broman KW, Woo KH (2018) Data organization in spreadsheets. The American Statistician 78:2–10 (<a
+        href="https://doi.org/gdz6cm">https://doi.org/gdz6cm</a>)
+    <BR>
+    Karl Broman, PhD<BR>
+    Professor<BR>
+    Department of Biostatistics & Medical Informatics<BR>
+    University of Wisconsin-Madison<BR>
+    <BR>
+    <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
 
-                            Presented by:<BR>
-                            Dr. Laura Saba<BR>
-                            Associate Professor<BR>
-                            Department of Pharmaceutical Sciences<BR>
-                            University of Colorado Anschutz Medical Campus<BR>
-                            <BR>
-                            <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">Webinar Series </H2>
-                        <div style="margin-left:5px;">
-                            <h3><a href="http://opar.io/webinar_series_1.html">Quantitative Genetics Tools</a></h3>
-                            The NIDA Center of Excellence in Omics, Systems Genetics, and the Addictome has put together a <a href="http://opar.io/webinar_series_1.html">webinar
-                            series, Quantitative Genetics Tools for Mapping Trait Variation to Mechanisms, Therapeutics, and
-                            Interventions</a>. The goal of this series is to transverse the path from trait variance to QTL to gene
-                            variant to molecular networks to mechanisms to therapeutic and interventions. The target audience for
-                            this series are those new to the field of quantitative genetics, so please pass this information on to
-                            your trainees or colleagues.<BR>
-                            Webinar #3 - 6/12/2020 10amPDT/1pm EDT - QTL to gene/molecular networks - <a href="https://bit.ly/osga_2020-06-12">Register</a>
-                            <a href="http://opar.io/webinar_series_1.html">More Information</a><BR>
-                            <a href="http://opar.io/webinar_series_1.html">Previously Recorded Webinars</a>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.1</H2>
-                        <div style="margin-left:5px;">
-                            <UL>
-                                <LI>Version 3.7.1 has been released with the following updates.
-                                    <ul><LI>Downloads
-                                        <UL>
-                                            <LI>Tissue Specific/Merged Reconstruction GTFs</LI>
-                                            <LI>Normalized Expression Values for Ensembl/Reconstruction, Gene/Transcript, Strain Means/Individual values</LI>
-                                        </UL>
-                                        </LI>
-                                        <LI>Custom Views
-                                            <UL>
-                                                <LI>Build a custom view on the fly by selecting a few check boxes simply select sissue and track types.</LI>
-                                                <LI>Views can be named and saved for future use</LI>
-                                            </UL>
-                                        </LI>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #19 </H2>
+    <div style="margin-left:5px;">
+        <H3> A Rube Goldbergian Approach to Scheduling Rodent Behavior Experiments and Data Collection</H3>
+        9/10/21 10am PDT/1pm EDT<BR><BR>
+        <a href="https://youtu.be/gLd8UePUQmA">View Here</a><BR>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/gLd8UePUQmA" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Summary of this webinar:<BR>
+        Large-scale rodent behavioral experiments with complicated testing procedures conducted over several years (e.g., genetic mapping of operant
+        drug
+        taking) need rigorous control on the quality of the data. This webinar will discuss methods used in my lab where we generate ready to use MedPC
+        macros
+        from a spreadsheet for new test sessions, cell phone notification on the completion of behavioral tests, nightly automated data assembly, daily
+        notification of procedural changes for individual animals. Potential errors are checked automatically at several points with messages sent to
+        the
+        users.
+        This system is put together using a relational database (sqlite), several ad hoc computer programs (perl, python, or shell), a cloud storage
+        service
+        (Dropbox), and a messaging system (slack). By turning much of the experiment planning and error checking procedure into computer code, we
+        improve
+        experimental efficiency and data quality.<BR>
 
-                                    </ul>
-                            </UL>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7</H2>
-                        <div style="margin-left:5px;">
-                            <UL>
-                                <LI>Version 3.7 has been released with HRDP v5.
-                                    <ul><LI>Transcriptomes are now based on the full HXB/BXH RI panel in brain and liver and available inbred strains now including the F344/Stm and LE/Stm strains. </LI>
-                                        <LI>Updated WGCNA, expression values, eQTLs, and transcriptomes are available.</LI>
-                                        <LI>Transcript level expression is available for the full panel.</LI>
-                                        <LI>Transcript level eQTLs are now available once you've selected a gene.</LI>
-                                    <LI> Transcript level WGCNA is coming in the next 1-2 months. </LI>
-                                    </ul>
-                                <LI>CircularRNA data is availble now. This includes predictions from BNLx/SHR in Brain/Heart/Liver using CIRI 2.0 and CircExplorer2.  Also Heart left ventricle includes data from more than 12,000 previously described cirRNAs using cirRNA arrays.  Full reports are coming soon but the browser includes tracks with annotation and structure all available data.</LI>
-                            </UL>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.6</H2>
-                        <div style="margin-left:5px;">
-                            <UL>
-                                <LI>Version 3.6 has been released with HRDP v4.  Transcriptomes are now based on the full HXB/BXH RI panel in brain and liver and available inbred strains except for the F344/Stm and LE/Stm.  The FXLE/LEXF parents will be included in HRDP v5.
-                                    Updated WGCNA, expression values, eQTLs, and transcriptomes are available.  Transcript level WGCNA is coming in the next 1-2 months.  Transcript level expression is available again now for the full panel.</LI>
-                                <LI>Links to Literature searches for gene-gene/gene-keyword relationshipts and gene-Addiction relationships.</LI>
-                                <LI>Shortcuts to the genome browser to get you to sections of interest more directly.</LI>
-                                <LI>New gene list eQTL image/browser.</LI>
-                            </UL>
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">Rat Genomics Workshop 8/2-8/3</H2>
-                        <div style="margin-left:5px;">
-                            <H3>Look for another workshop spring/summer 2020</H3>
-                        <a href="/downloads/SuRGeFlyer_2019.pdf">Summer of Rat Genomics and Genetics Workshop - Aug 2nd-3rd, 2019 - Colorado - NIDA Center for Omics, Systems Genetics and the Addictome</a><BR>
-                            Come to Colorado in August for a 2-day hands-on workshop on web-based tools for rat genetics/genomics including RGD, GeneNetwork2, PhenoGen, GeneWeaver, and several others.  Offered by the NIDA Center for Omics, Systems Genetics, and the Addictiome.<BR>
-                            <a href="https://github.com/OSGA-OPAR/SuRGe_2019">More Info</a> <BR>
-                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSew8JI0K9L89jZ-7lWca11bGQZCR_F-9DBUt7zy8D-yCB11Kw/viewform">Registration</a>
+        <BR>
+        Hao Chen, PhD<BR>
+        Associate Professor<BR>
+        Department of Pharmacology, Addiction Science, and Toxicology<BR>
+        University of Tennessee Health Science Center<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #17 </H2>
+    <div style="margin-left:5px;">
+        <H3> Identifying sample mix-ups in eQTL data</H3>
+        6/11/21 10am PDT/1pm EDT<BR><BR>
+        <a href="https://youtu.be/h5gF7YnffeI">View Here</a><BR>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/h5gF7YnffeI" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar:<BR>
+        Sample mix-ups interfere with our ability to detect genotype-phenotype associations. However, the presence of numerous eQTL with strong effects
+        provides
+        the opportunity to not just identify sample mix-ups, but also to correct them.<BR>
+        <UL>
+            <LI>To illustrate methods for identifying sample duplicates and errors in sex annotations</LI>
+            <LI>To illustrate methods for identifying sample mix-ups in DNA and RNA samples from experimental cross data</LI>
+        </UL>
+        <BR>
+        Presented by:<BR>
+        Karl Broman, PhD<BR>
+        Professor<BR>
+        Department of Biostatistics & Medical Informatics<BR>
+        University of Wisconsin-Madison<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #16</H2>
+    <div style="margin-left:5px;">
+        <H3> Introduction to the Hybrid Rat Diversity Panel: A renewable rat panel for genetic studies of addiction-related traits</H3>
+        4/23/21 10am PDT/1pm EDT<BR>
+        <a href="https://youtu.be/dYIiv01IetQ">View Here</a><BR>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/dYIiv01IetQ" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar<BR>
+        The Hybrid Rat Diversity Panel (HRDP) is an inbred panel of rats that included two recombinant inbred panels and a panel of classic inbred
+        strains.
+        <UL>
+            <LI>To describe hybrid diversity panels, in particular the HRDP, including advantages and disadvantages when studying the role of genetics
+                is
+                substance use disorders, e.g., renewable genomes and the accumulation of behavioral and physiological phenotypes and high throughput
+                omics
+                data.
+            </LI>
+            <LI>To outline current resources and resources that are being generated.</LI>
+            <LI>To demonstrate the utility of a renewable genetically diverse rodent population when exploring the interaction between genetics, drug
+                exposure,
+                and behavior.
+            </LI>
+        </UL>
+        <BR>
+        Presented by:<BR>
+        Hao Chen, PhD<BR>
+        Associate Professor<BR>
+        Department of Pharmacology, Addiction Science, and Toxicology<BR>
+        University of Tennessee Health Science Center<BR>
+        <BR>
+        Dr. Laura Saba<BR>
+        Associate Professor<BR>
+        Department of Pharmaceutical Sciences<BR>
+        University of Colorado Anschutz Medical Campus<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #13-15</H2>
+    <div style="margin-left:5px;">
+        <H3>15. Introduction to Metabolomics Platforms and Data Analysis</H3> <a href="https://youtu.be/oB1Khk6mt_8">View Here</a><BR>
+        <H3>14. Landing on Jupyter: A guided tour of interactive notebooks </H3> <a href="https://youtu.be/GVzUNEmpanI">View Here</a><BR>
+        <H3>13. Become a UseR: A brief tour of R </H3> <a href="https://youtu.be/25-X8_oXBSY">View Here</a><BR><BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #12</H2>
+    <div style="margin-left:5px;">
+        <H3> From GWAS to gene: what are the essential analyses and how do we bring them together using heterogeneous stock rats?</H3>
+        <h3> 2/26/21 10am PDT/1pm EDT</h3><BR>
+        <a href="https://youtu.be/aWUxNZ9wS3E">View Here</a><BR>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/aWUxNZ9wS3E" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar<BR>
+        <UL>
+            <LI>explain the HS rat population and their history</LI>
+            <LI>describe the automated pipeline that performs GWAS in HS rats</LI>
+            <LI>explore the fine mapping of associated regions and explain the various secondary analyses that we use to prioritize genes within
+                associated
+                intervals
+            </LI>
+        </UL>
+        <BR>
+        Abraham A. Palmer, Ph.D.<BR>
+        Professor & Vice Chair for Basic Research<BR>
+        Department of Psychiatry<BR>
+        University of California San Diego<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #11</H2>
+    <div style="margin-left:5px;">
+        <H3>Beginner's guide to bulk RNA-Seq analysis</H3>
+        <h3> 2/12/2021 10am PDT/1pm EDT</h3><BR>
+        <a href="https://youtu.be/WW94W-DBf2U">View Here</a><BR>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/WW94W-DBf2U" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar:<BR>
+        <UL>
+            <LI>To give a general overview of the popular Illumina technology for sequencing RNA.</LI>
+            <LI>To outline several of the key aspects to consider when designing an RNA-Seq study</LI>
+            <LI>To provide guidance on methods and tools for transforming reads to quantitative expression measurements.</LI>
+            <LI>To describe statistical models that are typically used for differential expression and why these specialized models are needed.</LI>
+        </UL>
+        <BR>
+        Dr. Laura Saba<BR>
+        Associate Professor<BR>
+        Department of Pharmaceutical Sciences<BR>
+        Skaggs School of Pharmacy and Pharmaceutical Sciences<BR>
+        University of Colorado Anschutz Medical Campus<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">PhenoGen update 3.7.5</H2>
+    <div style="margin-left:5px;">
+        12/11/20 update to v3.7.5
+        <UL>
+            <LI>Sampled counts from every strain are now available as well as total counts.</LI>
+            <LI>You can create a custom view and select total/sampled count and choos the density of the count tracks.</LI>
+            <LI>Bug Fixes</LI>
+        </UL>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">PhenoGen update 3.7.4</H2>
+    <div style="margin-left:5px;">
+        11/18/20 update to v3.7.4
+        <UL>
+            <LI>You can now create gene lists from Genome Browser tables - Filter tables from tracks, eQTLs, WGCNA based on expression/tissue and then
+                use
+                gene
+                list tools on the list.
+            </LI>
+            <LI>Implemented a reasonable region restriction of 5Mbp for now. - We are working to create a less detailed view that will be displayed in
+                larger
+                regions.
+            </LI>
+            <LI>Bug Fixes</LI>
+        </UL>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #10</H2>
+    <div style="margin-left:5px;">
+        <h3> 11/20/2020 10am PDT/1pm EDT</h3><BR>
+        <a href="https://youtu.be/twJNYOL3qfA">View Here</a><BR>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/twJNYOL3qfA" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar (introduction to causal inference in genetic studies):<BR>
+        <UL>
+            <LI>Express causal inference as a missing data problem (counterfactual framework)</LI>
+            <LI>Outline assumptions needed for causal inference</LI>
+            <LI>Express causal information as (directed acyclic) graphs</LI>
+            <LI>Outline how to use graphs to guide analytic strategy</LI>
+        </UL>
+        <BR>
+        Dr. Saunak Sen<BR>
+        Professor and Chief of Biostatistics<BR>
+        Department of Preventative Medicine<BR>
+        University of Tennessee Health Science Center<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #9</H2>
+    <div style="margin-left:5px;">
+        <h3> Introduction to GeneWeaver: Integrating and analyzing heterogeneous functional genomics data 10/23/2020</h3><BR>
+        <a href="https://youtu.be/Vq3vocdMWLQ">View Here</a>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/Vq3vocdMWLQ" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar:<BR>
+        <UL>
+            <LI>Compare a user's gene list with multiple functional genomics data sets</LI>
+            <LI>Compare and contrast gene lists with data currently available and integrated in GeneWeaver</LI>
+            <LI>Explore functional relationships among genes and disease across species</LI>
+        </UL>
+        <BR>
+        Dr. Elissa Chesler<BR>
+        Professor<BR>
+        The Jackson Laboratory<BR>
+        <BR>
+        Dr. Erich Baker<BR>
+        Professor and Chair<BR>
+        Department of Computer Science<BR>
+        Baylor University<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #8</H2>
+    <div style="margin-left:5px;">
+        <h3>Using genetic and non-genetic covariates in QTL studies 10/9/2020 10am PDT/1pm EDT</h3><BR>
+        <a href="https://youtu.be/1U_4DCSDq9U">View Here</a>
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/1U_4DCSDq9U" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar (quantitative trait to genetic loci):<BR>
+        <UL>
+            <LI>Identify covariates and mediators in QTL studies</LI>
+            <LI>Adjust for covariates in QTL scans</LI>
+            <LI>Review genetic relatedness in segregating populations</LI>
+            <LI>Adjust for genetic relatedness using linear mixed models</LI>
+        </UL>
+        <BR>
+        Dr. Saunak Sen<BR>
+        Professor and Chief of Biostatistics<BR>
+        Department of Preventative Medicine<BR>
+        University of Tennessee Health Science Center<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #7</H2>
+    <div style="margin-left:5px;">
+        <h3>Introduction to Weighted Gene Co-expression Network Analysis 9/25/2020 10am PDT/1pm EDT</h3><BR>
+        <a href="https://youtu.be/OpWEHazyQLA">View Here</a>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/OpWEHazyQLA" frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar (molecular networks):<BR>
+        <UL>
+            <LI>Introduction and motivation for co-expression network analysis</LI>
+            <LI>Basics of weighted gene co-expression network analysis</LI>
+            <LI>Step-by-step guide to WGCNA using the wgcna package in R.</LI>
+        </UL>
+        Background reading available at: <a href="http://bit.ly/osga_wgcna">http://bit.ly/osga_wgcna</a>
+        <BR>
+        Presented by:<BR>
+        Dr. Laura Saba<BR>
+        Associate Professor<BR>
+        Department of Pharmaceutical Sciences<BR>
+        University of Colorado Anschutz Medical Campus<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
 
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">Complex Traits Consortium 2019</H2>
-                        <div style="margin-left:5px;">
-                            PDFs of posters for CTC 2019 Meeting:<BR>
-                            <a href="/downloads/CTC_cirRNA_2019.pdf">Circular RNA Array/Predictions</a><BR>
-                            <a href="/downloads/CTC_REST_API_2019.pdf">PhenoGen REST API - gene level data</a><BR>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #6</H2>
+    <div style="margin-left:5px;">
+        <h3> Sex as a Biological Covariate in QTL Studies With Dr. Saunak Sen 9/11/2020 </h3><BR>
+        <a href="https://youtu.be/dYeJcBbJjRU">View Here</a>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/dYeJcBbJjRU" frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar (trait variance to QTL):<BR>
+        <UL>
+            <LI>Review QTL mapping</LI>
+            <LI>Understand the role of sex in QTL study design</LI>
+            <LI>Use sex as a covariate in QTL analysis</LI>
+            <LI>Understand X chromosome segregation in crosses</LI>
+            <LI>Make adjustments for X chromosome in QTL analysis</LI>
+        </UL>
+        <BR>
+        Presented by:<BR>
+        Dr. Saunak Sen<BR>
+        Professor and Chief of Biostatistics<BR>
+        Department of Preventative Medicine<BR>
+        University of Tennessee Health Science Center<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #5</H2>
+    <div style="margin-left:5px;">
+        <h3>Identifying genes from QTL using RNA expression and the PhenoGen website 8/28/2020 10am PDT/1pm EDT</h3><BR>
+        <a href="https://youtu.be/9DJm5cJgVis">View Here</a>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/9DJm5cJgVis" frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar (QTL to gene/molecular networks):<BR>
+        <UL>
+            <LI>Demonstrate how to use the PhenoGen website to identify transcripts:</LI>
+            <LI>Physically located within a QTL</LI>
+            <LI>Physically located within a QTL and expressed in brain</LI>
+            <LI>With a brain cis eQTL within the QTL</LI>
+            <LI>With any brain eQTL within the QTL</LI>
+            <LI>Within a co-expression network controlled from the same region as the QTL</LI>
+        </UL>
+        <BR>
 
-                        </div>
-                        <H2 style="font-weight: bold;font-size:20px;">Phenogen in the Cloud</H2>
-                        <div style="margin-left:5px;">
-                            This is the new home for PhenoGen running in the cloud.  As such, a large number of changes have occurred in the background that will help us maintain the site and improve performance.  Please excuse some ongoing bugs as we are beta testing the site now.  This is not currently the recommended version.
-                            However, we would appreciate any help testing the supported features by simply using this site as you would the previous site.
-                        </div>
-                        <H2> REST API Survey 2/20/2018</H2>
-                        <div style="margin-left:5px;">
-                            Please help us prioritize effort on a REST API to provide access to data on Phenogen.  Take the 1 question survey <a href="#survey">below</a>.
-                        </div>
-                        <H2>PhenoGen v3.4.2 3/9/2018</H2>
-                        <div style="margin-left:5px;">
-                            Added read depth count tracks to the genome browser for whole brain and liver for the inbred strains:
-                            ACI, Dark-Agouti, Cop, F344-NCl, F344-NHsd, LEW-Crl, LEW-SsNHsd, SHRSP, SR-JrHsd, SS-JrHsd, and WKY.
-                        </div>
-                        <H2>PhenoGen v3.4.1 2/16/2018</H2>
-                        <div style="margin-left:5px;">
-                            The Genome/Transcriptome Data Browser can now look up genes by either their gene or transcript PhenoGen ID.
-                        </div>
-                        <H2>NIDA Genetics Consortium Meeting Poster</H2>
-                        <div style="margin-left:5px;">
-                            <span style=" font-weight: bold;"><a href="<%=webDir%>overview/NIDA_Jan_2018.pdf">NIDA Meeting Poster</a> - </span> 
-                            Download the poster from the NIDA meeting with an outline of ways to use our WGCNA Modules and recent examples of our use with phenotype QTLs.
-                            Download <a href="<%=webDir%>overview/NIDA_Jan_2018.pdf">here</a>.
-                        </div>
-                        <H2>PhenoGen v3.4 12/10/2017</H2>
-                        <div style="margin-left:5px;">
-                            <span style=" font-weight: bold;">Recombinant Inbred Small RNA - </span> Added expression data for small RNA features across RI Panel in Whole Brain and Liver. 
-                        </div>
-                        <H2>PhenoGen v3.3 4/30/2017</H2>
-                        <div style="margin-left:5px;">
-                            <span style=" font-weight: bold;">Recombinant Inbred Total RNA - </span> Added expression data for reconstructed transcripts across RI Panel in Whole Brain and Liver.  Added RNA-Seq based WGCNA for Whole Brain and Liver.  
-                            
-                        </div>
-                        <H2>PhenoGen v3.2 11/13/2016</H2>
-                        <div style="margin-left:5px;">
-                            <span style=" font-weight: bold;">Small RNA - </span> added tracks and detail on all known and novel (predicted by MiRDeep and SNOSeeker) small RNAs in Brain, Heart, and Liver from the BNLx/SHR parental strains.
-                            <BR>
-                            <span style=" font-weight: bold;">Merged Total RNA Transcriptome - </span> added a track with the merged transcriptome from the 3 available tissues and assigned new unique PhenoGen IDs to all novel transcripts.
-                        </div>
-                        <H2>PhenoGen v3.1 6/15/2016</H2>
-                        <div style="margin-left:5px;">
-                            <span style=" font-weight: bold;">Rn6 - </span> is available in the browser, for gene list analysis, and both RNA-Seq datasets and microarray datasets have been updated.
-                            <BR>
-                            <span style=" font-weight: bold;">Rat WGCNA - </span> Heart and Liver have been added to the rn6 data.
-                        </div>
-                         <H2>PhenoGen v3.0 5/31/2016</H2>
-                        <div style="margin-left:5px;">
-                            <span style=" font-weight: bold;">Anonymous Gene List</span> - You can now use our gene list analysis tools without registering.  We encourage you to link your email so you don't loose access to previous work.<BR>
-                            <span style=" font-weight: bold;">Rn6 (June 2016):</span> Rn6 - Will be available in June 2016.  Rn6 and Rn5 will be available in the genome browser, public HXB datasets, and gene list analysis tools.
-                              
-                        </div>
-                        <H2>PhenoGen v2.16.1 11/10/2015</H2>
-                        <div style="margin-left:5px;">
-                            <span style=" font-weight: bold;">Security Updates</span> - We now require using HTTPS so all of the data transmitted between your browser and our server is encrypted.  Update your bookmarks.<BR>
-                            <span style=" font-weight: bold;">Future Update:</span> Rn6 - We are still working on updating the Microarrays and RNA-Seq data to Rn6.  Our next major update will include Rn6.
-                              
-                        </div>
-                        <H2>PhenoGen v2.16 7/21/2015</H2>
-                        <div style="margin-left:5px;">
-                            <ul>
-                                <li>Gene List tabs have been reformatted so you can submit submit new analyses and view results and running analyses status from a single page.</LI> 
-                                <li>GO term summaries are available for Gene Lists.</li>
-                                <li>MuliMiR results are available for Rat both in Gene Lists and the browser(individual genes, WGCNA modules).</li>
-                            </ul>   
-                              
-                        </div>
-                        <H2>Minor Updates 6/8/2015</H2>
-                        <div style="margin-left:5px;">
-                            We've made a couple of minor updates since the last release. 
-                            <ul>
-                                <li>The UCSC Repeat Mask track is now available.</li>
-                                <li>You now have the ability to add tracks without going into the edit view option.</li>
-                                <li>We've also fixed a number of bugs and made general functionality improvements.</li>
-                            </ul>   
-                              
-                        </div>
-                        <H2>Workshop Video/Slides 4/16/2015</H2>
-                        <div style="margin-left:5px;text-align: center;">
-                            Watch the workshop:<BR><BR>
-                            <video id="demoVideo" width="250px"  controls="controls" poster="<%=webDir%>demo/slides2_350.png" preload="none">
-                                    	<source src="<%=webDir%>demo/workshop.mp4" type="video/mp4">
-                                        <source src="<%=webDir%>demo/workshop.webm" type="video/webm">
-                                          <object data="<%=webDir%>demo/workshop.mp4" width="100%" >
-                                          </object>
-                                          Your browser is not likely to work with the Genome Browser if you are seeing this message.  Please see <a href="<%=commonDir%>siteRequirements.jsp">Browser Support/Site Requirements</a>
-                                    </video>
-                            <!--<a href="<%=webDir%>overview/PhenoGen.workshop.16Apr15.pdf"><img src="<%=webDir%>overview/slides_150.png" /></a>--><BR>
-                                          OR<BR>
-                            Download the slides from the Informatics Workshop <a href="<%=webDir%>overview/PhenoGen.workshop.16Apr15.pdf">here</A>.
-                        </div>
-                        <H2>v2.15 of PhenoGen 3/7/2015</H2>
-                        <div style="margin-left:5px;">
-                                <img src="<%=webDir%>overview/browseWGCNA_mir_150.png" /><img src="<%=webDir%>overview/browseWGCNA_go_150.png" /><BR />
-                        	We've added GO term summary and miRNA targeting views to the Weighted Gene Co-expression Network Analysis.  Look at what's new for a summary of changes.
-                        </div>
-                        <H2>HTTPS support 2/9/2015</H2>
-                        <div style="margin-left:5px;">
-                        <%if(request.getServerPort()==80){%>
-                        
-                            We now support https to keep your connections more secure.  We will eventually redirect all traffic to the secure site, 
-                            but for now feel free to try it out here: <a href="https://phenogen.ucdenver.edu/PhenoGen/"> https://phenogen.ucdenver.edu/PhenoGen/</a>
-                        
-                        <%}else{%>
-                            
-                            Thank you for trying the secure site.  You can always switch back to the regular site: <a href="http://phenogen.ucdenver.edu/PhenoGen/"> http://phenogen.ucdenver.edu/PhenoGen/</a>
-                        
-                        <%}%>
-                        </div>
-                        <H2>v2.14 of PhenoGen 1/10/2015</H2>
-                        <div style="margin-left:5px;">
-                                <img src="<%=webDir%>overview/browseWGCNA_150.png" /><img src="<%=webDir%>overview/browseWGCNA_eQTL_150.png"/><BR />
-                        	We've added Weighted Gene Co-expression Network Analysis.  Look at what's new for a summary of changes.
-                        </div>
-                    	<H2>v2.13 of PhenoGen 9/27/2014</H2>
-                        <div style="margin-left:5px;">
-                        	We've updated PhenoGen.  Look at what's new for a summary of changes.
-                        </div>
-                    	<H2>Added multiMiR</H2>
-                        <div style=" margin-left:5px;">
-                        	<img src="<%=imagesDir%>multimir_300.png"/><BR />
-                        	Using multiMiR(an R package available <a href="http://multimir.ucdenver.edu/" target="_blank">here</a>) you can view validated and predicted miRNAs that target specific genes.  You can also select a miRNA and view all genes targeted by the miRNA.  multiMiR is avaialble as a new tab for a selected gene in the Genome/Transcriptome Data Browser and in Gene Lists after selecting a list. It is currently available only for mouse genes, but will be available in rat soon.
-                        </div>
-                        <H2>Added Rat Liver Transcriptome</H2>
-                        <div style=" margin-left:5px;">
-                        	We've added rat liver tracks including, a transcriptome reconstructiong track, splice junction track, and stranded read depth count tracks.  Available in the Genome/Transcriptome Browser.
-                        </div>
-                    	<H2>Follow on Facebook/Google+/Twitter</H2>
-                        
-                        <div style=" margin-left:5px;">
-                        	Follow PhenoGen to keep up with new features, demonstrations, and help by providing feedback to direct future updates.<BR />
-                           	<div style="float:left;display:inline-block;position:relative;top:0px;padding-right:5px;">  	
-                                    <div class="fb-follow" data-href="https://www.facebook.com/phenogen" data-width="50px" data-height="16px" data-colorscheme="dark" data-layout="button" data-show-faces="true"></div>
-                           	</div>
-                                <div style="float:left;display:inline-block;">
+        Presented by:<BR>
+        Dr. Laura Saba<BR>
+        Associate Professor<BR>
+        Department of Pharmaceutical Sciences<BR>
+        University of Colorado Anschutz Medical Campus<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.3</H2>
+    <div style="margin-left:5px;">
+        <UL>
+            <LI>Version 3.7.3 has been released with the following updates.
+                <ul>
+                    <LI>RNA-Seq eQTLs based on HRDP</LI>
+                    <LI>Heritability based on HRDP</LI>
+                    <LI>TPM summary</LI>
+                    <LI>Track Table filtering</LI>
+                    <LI>Table export to clipboard, csv, xls, and PDF</LI>
+                    <LI>Ensembl and Reconstruction based eQTLs/TPM/Heritability</LI>
+                </ul>
+        </UL>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.2</H2>
+    <div style="margin-left:5px;">
+        <UL>
+            <LI>Version 3.7.2 has been released with the following updates.
+                <ul>
+                    <LI>RNA-Seq eQTLs
+                        <UL>
+                            <LI>Gene Track Summaries now include RNA-Seq based eQTL summaries</LI>
+                            <LI>Modules for a region can be selected base on overlap of the module QTL with the region.</LI>
+                            <LI>Genes with an eQTL that overlaps the region are now available based on RNA-Seq and Microarrays</LI>
+                        </UL>
+                    </LI>
+                    <LI>Custom Views
+                        <UL>
+                            <LI>Total Counts for all 45 strains to date are available.</LI>
+                        </UL>
+                    </LI>
+                    <LI>Read counts for all 45 strains are available to add as browser tracks.</LI>
+                    <LI>Bug Fixes</LI>
+                </ul>
+        </UL>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #3</H2>
+    <div style="margin-left:5px;">
+        <h3>QTL to gene/molecular networks 6/12/2020 10am PDT/1pm EDT</h3><BR>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/8jiNHuOgr1A" frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Goals of this webinar (QTL to gene/molecular networks):<BR>
+        <UL>
+            <li>Define eQTL</li>
+            <li>Examine the role of eQTL in the relationship of genes and molecular networks with phenotypic QTL</li>
+            <li>eQTL for co-expression networks</li>
+        </UL>
+        <BR>
 
-                                    <a href="https://twitter.com/phenogen" class="twitter-follow-button" data-show-count="false" data-show-screen-name="false" data-lang="en" style="margin-top:5px;"></a>
-                                </div>
-                           
-                            <BR /><BR />
-                        </div>
-                    	<H2>RNA-Seq Data Summary Graphics</H2>
-                        <div style=" margin-left:5px;">
-                    	Rat Brain RNA-Seq data summary graphics are now available. Click below to browse the RNA-Seq data summary:<BR />
-                        <div style="text-align:center;">
-                        <ul>
-                        <li><a href="web/graphics/genome.jsp">View Genome Coverage</a></li>
-                        <li><a href="web/graphics/transcriptome.jsp">View Reconstructed Long RNA Genes(Rat Brain Transcriptome)</a></li>
-                        </ul>
-                        <a href="web/graphics/genome.jsp"><img src="<%=imagesDir%>rnaseq_genome_100.gif" /></a>
-                        <a href="web/graphics/transcriptome.jsp"><img src="<%=imagesDir%>rnaseq_transcriptome_100.gif" /></a>
-                        </div><BR />
-                        Reconstructed transcripts from this RNA-Seq data are still combined with PhenoGen array data in <a href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>createAnnonymousSession.jsp?url=<%=contextRoot%>gene.jsp">Genome/Transcriptome Data Browser</a>.
-                        </div>
-                        
-                   </div>
-                                       
+        Presented by:<BR>
+        Dr. Laura Saba<BR>
+        Associate Professor<BR>
+        Department of Pharmaceutical Sciences<BR>
+        University of Colorado Anschutz Medical Campus<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">Webinar Series </H2>
+    <div style="margin-left:5px;">
+        <h3><a href="http://opar.io/webinar_series_1.html">Quantitative Genetics Tools</a></h3>
+        The NIDA Center of Excellence in Omics, Systems Genetics, and the Addictome has put together a <a href="http://opar.io/webinar_series_1.html">webinar
+        series, Quantitative Genetics Tools for Mapping Trait Variation to Mechanisms, Therapeutics, and
+        Interventions</a>. The goal of this series is to transverse the path from trait variance to QTL to gene
+        variant to molecular networks to mechanisms to therapeutic and interventions. The target audience for
+        this series are those new to the field of quantitative genetics, so please pass this information on to
+        your trainees or colleagues.<BR>
+        Webinar #3 - 6/12/2020 10amPDT/1pm EDT - QTL to gene/molecular networks - <a href="https://bit.ly/osga_2020-06-12">Register</a>
+        <a href="http://opar.io/webinar_series_1.html">More Information</a><BR>
+        <a href="http://opar.io/webinar_series_1.html">Previously Recorded Webinars</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7.1</H2>
+    <div style="margin-left:5px;">
+        <UL>
+            <LI>Version 3.7.1 has been released with the following updates.
+                <ul>
+                    <LI>Downloads
+                        <UL>
+                            <LI>Tissue Specific/Merged Reconstruction GTFs</LI>
+                            <LI>Normalized Expression Values for Ensembl/Reconstruction, Gene/Transcript, Strain Means/Individual values</LI>
+                        </UL>
+                    </LI>
+                    <LI>Custom Views
+                        <UL>
+                            <LI>Build a custom view on the fly by selecting a few check boxes simply select sissue and track types.</LI>
+                            <LI>Views can be named and saved for future use</LI>
+                        </UL>
+                    </LI>
 
-                    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+                </ul>
+        </UL>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.7</H2>
+    <div style="margin-left:5px;">
+        <UL>
+            <LI>Version 3.7 has been released with HRDP v5.
+                <ul>
+                    <LI>Transcriptomes are now based on the full HXB/BXH RI panel in brain and liver and available inbred strains now including the
+                        F344/Stm
+                        and
+                        LE/Stm strains.
+                    </LI>
+                    <LI>Updated WGCNA, expression values, eQTLs, and transcriptomes are available.</LI>
+                    <LI>Transcript level expression is available for the full panel.</LI>
+                    <LI>Transcript level eQTLs are now available once you've selected a gene.</LI>
+                    <LI> Transcript level WGCNA is coming in the next 1-2 months.</LI>
+                </ul>
+            <LI>CircularRNA data is availble now. This includes predictions from BNLx/SHR in Brain/Heart/Liver using CIRI 2.0 and CircExplorer2. Also
+                Heart
+                left
+                ventricle includes data from more than 12,000 previously described cirRNAs using cirRNA arrays. Full reports are coming soon but the
+                browser
+                includes tracks with annotation and structure all available data.
+            </LI>
+        </UL>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">PhenoGen v3.6</H2>
+    <div style="margin-left:5px;">
+        <UL>
+            <LI>Version 3.6 has been released with HRDP v4. Transcriptomes are now based on the full HXB/BXH RI panel in brain and liver and available
+                inbred
+                strains except for the F344/Stm and LE/Stm. The FXLE/LEXF parents will be included in HRDP v5.
+                Updated WGCNA, expression values, eQTLs, and transcriptomes are available. Transcript level WGCNA is coming in the next 1-2 months.
+                Transcript
+                level expression is available again now for the full panel.
+            </LI>
+            <LI>Links to Literature searches for gene-gene/gene-keyword relationshipts and gene-Addiction relationships.</LI>
+            <LI>Shortcuts to the genome browser to get you to sections of interest more directly.</LI>
+            <LI>New gene list eQTL image/browser.</LI>
+        </UL>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">Rat Genomics Workshop 8/2-8/3</H2>
+    <div style="margin-left:5px;">
+        <H3>Look for another workshop spring/summer 2020</H3>
+        <a href="/downloads/SuRGeFlyer_2019.pdf">Summer of Rat Genomics and Genetics Workshop - Aug 2nd-3rd, 2019 - Colorado - NIDA Center for Omics,
+            Systems
+            Genetics and the Addictome</a><BR>
+        Come to Colorado in August for a 2-day hands-on workshop on web-based tools for rat genetics/genomics including RGD, GeneNetwork2, PhenoGen,
+        GeneWeaver,
+        and several others. Offered by the NIDA Center for Omics, Systems Genetics, and the Addictiome.<BR>
+        <a href="https://github.com/OSGA-OPAR/SuRGe_2019">More Info</a> <BR>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSew8JI0K9L89jZ-7lWca11bGQZCR_F-9DBUt7zy8D-yCB11Kw/viewform">Registration</a>
+
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">Complex Traits Consortium 2019</H2>
+    <div style="margin-left:5px;">
+        PDFs of posters for CTC 2019 Meeting:<BR>
+        <a href="/downloads/CTC_cirRNA_2019.pdf">Circular RNA Array/Predictions</a><BR>
+        <a href="/downloads/CTC_REST_API_2019.pdf">PhenoGen REST API - gene level data</a><BR>
+
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">Phenogen in the Cloud</H2>
+    <div style="margin-left:5px;">
+        This is the new home for PhenoGen running in the cloud. As such, a large number of changes have occurred in the background that will help us
+        maintain
+        the site and improve performance. Please excuse some ongoing bugs as we are beta testing the site now. This is not currently the recommended
+        version.
+        However, we would appreciate any help testing the supported features by simply using this site as you would the previous site.
+    </div>
+    <H2> REST API Survey 2/20/2018</H2>
+    <div style="margin-left:5px;">
+        Please help us prioritize effort on a REST API to provide access to data on Phenogen. Take the 1 question survey <a href="#survey">below</a>.
+    </div>
+    <H2>PhenoGen v3.4.2 3/9/2018</H2>
+    <div style="margin-left:5px;">
+        Added read depth count tracks to the genome browser for whole brain and liver for the inbred strains:
+        ACI, Dark-Agouti, Cop, F344-NCl, F344-NHsd, LEW-Crl, LEW-SsNHsd, SHRSP, SR-JrHsd, SS-JrHsd, and WKY.
+    </div>
+    <H2>PhenoGen v3.4.1 2/16/2018</H2>
+    <div style="margin-left:5px;">
+        The Genome/Transcriptome Data Browser can now look up genes by either their gene or transcript PhenoGen ID.
+    </div>
+    <H2>NIDA Genetics Consortium Meeting Poster</H2>
+    <div style="margin-left:5px;">
+        <span style=" font-weight: bold;"><a href="<%=webDir%>overview/NIDA_Jan_2018.pdf">NIDA Meeting Poster</a> - </span>
+        Download the poster from the NIDA meeting with an outline of ways to use our WGCNA Modules and recent examples of our use with phenotype QTLs.
+        Download <a href="<%=webDir%>overview/NIDA_Jan_2018.pdf">here</a>.
+    </div>
+    <H2>PhenoGen v3.4 12/10/2017</H2>
+    <div style="margin-left:5px;">
+        <span style=" font-weight: bold;">Recombinant Inbred Small RNA - </span> Added expression data for small RNA features across RI Panel in Whole
+        Brain
+        and
+        Liver.
+    </div>
+    <H2>PhenoGen v3.3 4/30/2017</H2>
+    <div style="margin-left:5px;">
+        <span style=" font-weight: bold;">Recombinant Inbred Total RNA - </span> Added expression data for reconstructed transcripts across RI Panel in
+        Whole
+        Brain and Liver. Added RNA-Seq based WGCNA for Whole Brain and Liver.
+
+    </div>
+    <H2>PhenoGen v3.2 11/13/2016</H2>
+    <div style="margin-left:5px;">
+        <span style=" font-weight: bold;">Small RNA - </span> added tracks and detail on all known and novel (predicted by MiRDeep and SNOSeeker) small
+        RNAs
+        in
+        Brain, Heart, and Liver from the BNLx/SHR parental strains.
+        <BR>
+        <span style=" font-weight: bold;">Merged Total RNA Transcriptome - </span> added a track with the merged transcriptome from the 3 available
+        tissues
+        and
+        assigned new unique PhenoGen IDs to all novel transcripts.
+    </div>
+    <H2>PhenoGen v3.1 6/15/2016</H2>
+    <div style="margin-left:5px;">
+        <span style=" font-weight: bold;">Rn6 - </span> is available in the browser, for gene list analysis, and both RNA-Seq datasets and microarray
+        datasets
+        have been updated.
+        <BR>
+        <span style=" font-weight: bold;">Rat WGCNA - </span> Heart and Liver have been added to the rn6 data.
+    </div>
+    <H2>PhenoGen v3.0 5/31/2016</H2>
+    <div style="margin-left:5px;">
+        <span style=" font-weight: bold;">Anonymous Gene List</span> - You can now use our gene list analysis tools without registering. We encourage
+        you to
+        link your email so you don't loose access to previous work.<BR>
+        <span style=" font-weight: bold;">Rn6 (June 2016):</span> Rn6 - Will be available in June 2016. Rn6 and Rn5 will be available in the genome
+        browser,
+        public HXB datasets, and gene list analysis tools.
+
+    </div>
+    <H2>PhenoGen v2.16.1 11/10/2015</H2>
+    <div style="margin-left:5px;">
+        <span style=" font-weight: bold;">Security Updates</span> - We now require using HTTPS so all of the data transmitted between your browser and
+        our
+        server is encrypted. Update your bookmarks.<BR>
+        <span style=" font-weight: bold;">Future Update:</span> Rn6 - We are still working on updating the Microarrays and RNA-Seq data to Rn6. Our next
+        major
+        update will include Rn6.
+
+    </div>
+    <H2>PhenoGen v2.16 7/21/2015</H2>
+    <div style="margin-left:5px;">
+        <ul>
+            <li>Gene List tabs have been reformatted so you can submit submit new analyses and view results and running analyses status from a single
+                page.
+            </LI>
+            <li>GO term summaries are available for Gene Lists.</li>
+            <li>MuliMiR results are available for Rat both in Gene Lists and the browser(individual genes, WGCNA modules).</li>
+        </ul>
+
+    </div>
+    <H2>Minor Updates 6/8/2015</H2>
+    <div style="margin-left:5px;">
+        We've made a couple of minor updates since the last release.
+        <ul>
+            <li>The UCSC Repeat Mask track is now available.</li>
+            <li>You now have the ability to add tracks without going into the edit view option.</li>
+            <li>We've also fixed a number of bugs and made general functionality improvements.</li>
+        </ul>
+
+    </div>
+    <H2>Workshop Video/Slides 4/16/2015</H2>
+    <div style="margin-left:5px;text-align: center;">
+        Watch the workshop:<BR><BR>
+        <video id="demoVideo" width="250px" controls="controls" poster="<%=webDir%>demo/slides2_350.png" preload="none">
+            <source src="<%=webDir%>demo/workshop.mp4" type="video/mp4">
+            <source src="<%=webDir%>demo/workshop.webm" type="video/webm">
+            <object data="<%=webDir%>demo/workshop.mp4" width="100%">
+            </object>
+            Your browser is not likely to work with the Genome Browser if you are seeing this message. Please see <a
+                href="<%=commonDir%>siteRequirements.jsp">Browser
+            Support/Site Requirements</a>
+        </video>
+        <!--<a href="<%=webDir%>overview/PhenoGen.workshop.16Apr15.pdf"><img src="<%=webDir%>overview/slides_150.png" /></a>--><BR>
+        OR<BR>
+        Download the slides from the Informatics Workshop <a href="<%=webDir%>overview/PhenoGen.workshop.16Apr15.pdf">here</A>.
+    </div>
+    <H2>v2.15 of PhenoGen 3/7/2015</H2>
+    <div style="margin-left:5px;">
+        <img src="<%=webDir%>overview/browseWGCNA_mir_150.png"/><img src="<%=webDir%>overview/browseWGCNA_go_150.png"/><BR/>
+        We've added GO term summary and miRNA targeting views to the Weighted Gene Co-expression Network Analysis. Look at what's new for a summary of
+        changes.
+    </div>
+    <H2>HTTPS support 2/9/2015</H2>
+    <div style="margin-left:5px;">
+        <%if (request.getServerPort() == 80) {%>
+
+        We now support https to keep your connections more secure. We will eventually redirect all traffic to the secure site,
+        but for now feel free to try it out here: <a href="https://phenogen.ucdenver.edu/PhenoGen/"> https://phenogen.ucdenver.edu/PhenoGen/</a>
+
+        <%} else {%>
+
+        Thank you for trying the secure site. You can always switch back to the regular site: <a href="http://phenogen.ucdenver.edu/PhenoGen/">
+        http://phenogen.ucdenver.edu/PhenoGen/</a>
+
+        <%}%>
+    </div>
+    <H2>v2.14 of PhenoGen 1/10/2015</H2>
+    <div style="margin-left:5px;">
+        <img src="<%=webDir%>overview/browseWGCNA_150.png"/><img src="<%=webDir%>overview/browseWGCNA_eQTL_150.png"/><BR/>
+        We've added Weighted Gene Co-expression Network Analysis. Look at what's new for a summary of changes.
+    </div>
+    <H2>v2.13 of PhenoGen 9/27/2014</H2>
+    <div style="margin-left:5px;">
+        We've updated PhenoGen. Look at what's new for a summary of changes.
+    </div>
+    <H2>Added multiMiR</H2>
+    <div style=" margin-left:5px;">
+        <img src="<%=imagesDir%>multimir_300.png"/><BR/>
+        Using multiMiR(an R package available <a href="http://multimir.ucdenver.edu/" target="_blank">here</a>) you can view validated and predicted
+        miRNAs
+        that
+        target specific genes. You can also select a miRNA and view all genes targeted by the miRNA. multiMiR is avaialble as a new tab for a selected
+        gene
+        in
+        the Genome/Transcriptome Data Browser and in Gene Lists after selecting a list. It is currently available only for mouse genes, but will be
+        available in
+        rat soon.
+    </div>
+    <H2>Added Rat Liver Transcriptome</H2>
+    <div style=" margin-left:5px;">
+        We've added rat liver tracks including, a transcriptome reconstructiong track, splice junction track, and stranded read depth count tracks.
+        Available in
+        the Genome/Transcriptome Browser.
+    </div>
+    <H2>Follow on Facebook/Google+/Twitter</H2>
+
+    <div style=" margin-left:5px;">
+        Follow PhenoGen to keep up with new features, demonstrations, and help by providing feedback to direct future updates.<BR/>
+        <div style="float:left;display:inline-block;position:relative;top:0px;padding-right:5px;">
+            <div class="fb-follow" data-href="https://www.facebook.com/phenogen" data-width="50px" data-height="16px" data-colorscheme="dark"
+                 data-layout="button" data-show-faces="true"></div>
+        </div>
+        <div style="float:left;display:inline-block;">
+
+            <a href="https://twitter.com/phenogen" class="twitter-follow-button" data-show-count="false" data-show-screen-name="false" data-lang="en"
+               style="margin-top:5px;"></a>
+        </div>
+
+        <BR/><BR/>
+    </div>
+    <H2>RNA-Seq Data Summary Graphics</H2>
+    <div style=" margin-left:5px;">
+        Rat Brain RNA-Seq data summary graphics are now available. Click below to browse the RNA-Seq data summary:<BR/>
+        <div style="text-align:center;">
+            <ul>
+                <li><a href="web/graphics/genome.jsp">View Genome Coverage</a></li>
+                <li><a href="web/graphics/transcriptome.jsp">View Reconstructed Long RNA Genes(Rat Brain Transcriptome)</a></li>
+            </ul>
+            <a href="web/graphics/genome.jsp"><img src="<%=imagesDir%>rnaseq_genome_100.gif"/></a>
+            <a href="web/graphics/transcriptome.jsp"><img src="<%=imagesDir%>rnaseq_transcriptome_100.gif"/></a>
+        </div>
+        <BR/>
+        Reconstructed transcripts from this RNA-Seq data are still combined with PhenoGen array data in <a
+            href="<%=commonDir%>selectMenu.jsp?menuURL=<%=accessDir%>createAnnonymousSession.jsp?url=<%=contextRoot%>gene.jsp">Genome/Transcriptome Data
+        Browser</a>.
+    </div>
+
+</div>
+
+
+<script>!function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (!d.getElementById(id)) {
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//platform.twitter.com/widgets.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }
+}(document, "script", "twitter-wjs");</script>
 
 <%@ include file="/web/overview/ovrvw_js.jsp" %>
