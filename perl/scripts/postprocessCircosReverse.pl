@@ -164,12 +164,13 @@ sub postprocessCircosReverse{
 				$colorHash{'Heart'} = 'rgb(251,106,74)';
 				$colorHash{'Liver'} = 'rgb(116,196,118)';
 				$colorHash{'BAT'} = 'rgb(158,154,200)';
+				$colorHash{'Kidney'} = 'rgb(253,180,98)';
 				my @yArray;
 				$yArray[0] = '450.0';
 				$yArray[1] = '575.0';
 				$yArray[2] = '700.0';
 				$yArray[3] = '825.0';		
-				
+				$yArray[4] = '950.0';
 				for(my $i = 0; $i < $numberOfTissues ; $i ++){
 					print $NEWSVGFILEHANDLE '<text x="1475.0" y="',$yArray[$i],'" font-size="64px" font-family="CMUBright-Roman" style="text-anchor:end;fill:',$colorHash{$tissueList[$i]},'" >',$tissueList[$i],'</text>'."\n";
 				}
@@ -227,6 +228,13 @@ sub writeTopLines{
 	print $FILEHANDLE '	stroke: rgb(158,154,200);'."\n"; 
 	print $FILEHANDLE '	fill: none'."\n";
 	print $FILEHANDLE '}	'."\n";
+	print $FILEHANDLE '.Kidney'."\n";
+            	print $FILEHANDLE '	{'."\n";
+            	print $FILEHANDLE '	stroke-opacity: 1.000000; '."\n";
+            	print $FILEHANDLE '	stroke-width: 5.0; '."\n";
+            	print $FILEHANDLE '	stroke: rgb(253,180,98);'."\n";
+            	print $FILEHANDLE '	fill: none'."\n";
+            	print $FILEHANDLE '}	'."\n";
 	print $FILEHANDLE '.tooltip{'."\n";
     print $FILEHANDLE '	font-size: 28px;'."\n";
   	print $FILEHANDLE '}'."\n";
@@ -252,6 +260,9 @@ sub writeTopLines{
     print $FILEHANDLE '.BAT:hover{'."\n";
     print $FILEHANDLE '	opacity: 0.5;'."\n";
     print $FILEHANDLE '}'."\n";
+    print $FILEHANDLE '.Kidney:hover{'."\n";
+        print $FILEHANDLE '	opacity: 0.5;'."\n";
+        print $FILEHANDLE '}'."\n";
         print $FILEHANDLE '    .compass{'."\n";
     print $FILEHANDLE '                         fill:                   #fff;'."\n";
     print $FILEHANDLE '                         stroke:                 #000;'."\n";

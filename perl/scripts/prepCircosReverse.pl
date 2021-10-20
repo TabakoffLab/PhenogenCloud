@@ -282,7 +282,9 @@ sub createCircosLinksConfAndData{
 			elsif($tissue eq "Brown Adipose"){
 				$linkColor = 'purple';
 				$tissue="BAT";
-			}
+			}elsif($tissue eq "Kidney"){
+             				$linkColor = 'orange';
+             			}
 			$keepLink = 0;
 			for(my $j=0; $j < $numberOfTissues; $j++){
 				if($tissueList[$j] eq $tissue){
@@ -410,12 +412,14 @@ sub createCircosPvaluesConfFile{
 	$colorHash{'Brain'}='blue';
 	$colorHash{'Liver'}='green';
 	$colorHash{'BAT'}='purple';
+	$colorHash{'Kidney'}='orange';
 	my %filenameHash;
 	
 	$filenameHash{'Heart'}='circosHeartPValues.txt';
 	$filenameHash{'Brain'}='circosBrainPValues.txt';
 	$filenameHash{'Liver'}='circosLiverPValues.txt';
-	$filenameHash{'BAT'}='circosBATPValues.txt';	
+	$filenameHash{'BAT'}='circosBATPValues.txt';
+	$filenameHash{'Kidney'}='circosKidneyPValues.txt';
 	
 	foreach my $key (keys(%colorHash)){
 	
@@ -481,7 +485,8 @@ sub createCircosPvaluesConfFile{
 	$filenameHash{'Brain'}='circosBrainPValues.txt';
 	$filenameHash{'Liver'}='circosLiverPValues.txt';
 	$filenameHash{'BAT'}='circosBATPValues.txt';	
-	
+	$filenameHash{'Kidney'}='circosKidneyPValues.txt';
+
 	foreach my $key (keys(%colorHash)){
 	
 		print " key $key $colorHash{$key} \n";
@@ -547,6 +552,8 @@ sub createCircosPvaluesDataFiles{
 
 		my $BATFileName = $dataDirectory.'circosBATPValues.txt';
 		open(BATFILE,'>',$BATFileName) || die ("Can't open $BATFileName:!\n");
+		my $kidneyFileName = $dataDirectory.'circosKidneyPValues.txt';
+        		open(KIDNEYFILE,'>',$kidneyFileName) || die ("Can't open $BATFileName:!\n");
 	}
 	# Determine the gene symbols to keep
 	
@@ -570,7 +577,9 @@ sub createCircosPvaluesDataFiles{
 			}
 			elsif($tissue eq 'Brown Adipose'){
 				print BATFILE $inputAOH[$i]{probe_chromosome}." ".$inputAOH[$i]{probe_start}." ".$stopLocation." ".$inputAOH[$i]{pvalue}."\n";
-			}
+			}elsif($tissue eq 'Kidney'){
+             	print KIDNEYFILE $inputAOH[$i]{probe_chromosome}." ".$inputAOH[$i]{probe_start}." ".$stopLocation." ".$inputAOH[$i]{pvalue}."\n";
+            }
 			else{
 				die(" Invalid Tissue in createCircosPvaluesDataFiles.  Organism: $organism  Tissue: $tissue\n");
 			}
@@ -581,6 +590,7 @@ sub createCircosPvaluesDataFiles{
 		close(HEARTFILE);
 		close(LIVERFILE);
 		close(BATFILE);
+		close(KIDNEYFILE);
 	}
 }
 

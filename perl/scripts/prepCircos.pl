@@ -243,12 +243,14 @@ sub createCircosPvaluesConfFile{
 	$colorHash{'Brain'}='blue';
 	$colorHash{'Liver'}='green';
 	$colorHash{'BAT'}='purple';
+	$colorHash{'Kidney'}='orange';
 	my %filenameHash;
 	
 	$filenameHash{'Heart'}='circosHeartPValues.txt';
 	$filenameHash{'Brain'}='circosBrainPValues.txt';
 	$filenameHash{'Liver'}='circosLiverPValues.txt';
-	$filenameHash{'BAT'}='circosBATPValues.txt';	
+	$filenameHash{'BAT'}='circosBATPValues.txt';
+	$filenameHash{'Kidney'}='circosKidneyPValues.txt';
 	
 	foreach my $key (keys(%colorHash)){
 	
@@ -256,8 +258,8 @@ sub createCircosPvaluesConfFile{
 	
 	}
 	
-	my @innerRadiusArray = ('0.80r','0.65r','0.50r','0.35r');
-	my @outerRadiusArray = ('0.80r + 150p','0.65r + 150p','0.50r + 150p','0.35r + 150p');
+	my @innerRadiusArray = ('0.80r','0.65r','0.50r','0.35r','0.20r');
+	my @outerRadiusArray = ('0.80r + 150p','0.65r + 150p','0.50r + 150p','0.35r + 150p','0.20r+150p');
 
 	for(my $i=0; $i<$numberOfTissues; $i++){
 		$plotColor = $colorHash{$tissueList[$i]};
@@ -307,6 +309,9 @@ sub createCircosPvaluesDataFiles{
 	my $BATFileName = $dataDirectory.'circosBATPValues.txt';
 	open(BATFILE,'>',$BATFileName) || die ("Can't open $BATFileName:!\n");
 
+	my $kidneyFileName = $dataDirectory.'circosKidneyPValues.txt';
+    	open(KIDNEYFILE,'>',$kidneyFileName) || die ("Can't open $BATFileName:!\n");
+
 
 	# Go through the eqtl array of hashes and write data to appropriate files
 	my $tissue;
@@ -327,6 +332,8 @@ sub createCircosPvaluesDataFiles{
             }
             elsif($tissue eq 'Brown Adipose'){
                 print BATFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
+            }elsif($tissue eq 'Kidney'){
+                print KIDNEYFILE $eqtlAOH[$i]{chromosome}." ".$eqtlAOH[$i]{location}." ".$stopLocation." ".$eqtlAOH[$i]{pvalue}."\n";
             }
             else{
                 die(" Invalid Tissue in createCircosPvaluesDataFiles.  Organism: $organism  Tissue: $tissue\n");
@@ -337,6 +344,7 @@ sub createCircosPvaluesDataFiles{
 	close(HEARTFILE);
 	close(LIVERFILE);
 	close(BATFILE);
+	close(KIDNEYFILE);
 }
 
 sub createCircosLinksConfAndData{
@@ -396,7 +404,9 @@ sub createCircosLinksConfAndData{
 				}
 				elsif($tissue eq "BAT"){
 					$linkColor = 'purple';
-				}
+				}elsif($tissue eq "Kidney"){
+                 	$linkColor = 'orange';
+                }
 				$linkAOH[$linkCount]{chromosome} = $eqtlAOH[$i]{chromosome};
 				$linkAOH[$linkCount]{location} = $eqtlAOH[$i]{location};
 				$linkAOH[$linkCount]{name} = $eqtlAOH[$i]{name};
@@ -457,7 +467,9 @@ sub writeLink{
 	my ($FILEHANDLE,$LinkFileName,$linkName,$linkColor,$organism,$numberOfTissues) = @_;
 	print $FILEHANDLE "<link ".$linkName.">"."\n";
 	print $FILEHANDLE  "z = 0"."\n";
-	if($numberOfTissues == 4){
+	if($numberOfTissues ==5){
+	    print $FILEHANDLE  "radius = 0.20r"."\n";
+	}elsif($numberOfTissues == 4){
 		print $FILEHANDLE  "radius = 0.35r"."\n";
 	}
 	elsif($numberOfTissues == 3){

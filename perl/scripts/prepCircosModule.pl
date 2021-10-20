@@ -291,20 +291,22 @@ sub createCircosPvaluesConfFile{
 	$colorHash{'Brain'}='blue';
 	$colorHash{'Liver'}='green';
 	$colorHash{'BAT'}='purple';
+	$colorHash{'Kidney'}='orange';
 	my %filenameHash;
 	
 	$filenameHash{'Heart'}='circosHeartPValues.txt';
 	$filenameHash{'Brain'}='circosBrainPValues.txt';
 	$filenameHash{'Liver'}='circosLiverPValues.txt';
-	$filenameHash{'BAT'}='circosBATPValues.txt';	
+	$filenameHash{'BAT'}='circosBATPValues.txt';
+	$filenameHash{'Kidney'}='circosKidneyPValues.txt';
 	
         if($debugLevel >= 2){
             foreach my $key (keys(%colorHash)){
                     print " key $key $colorHash{$key} \n";
             }
 		}
-	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r');
-	my @outerRadiusArray = ('0.85r + 100p','0.75r + 100p','0.65r + 100p','0.55r + 100p');
+	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r','0.45r');
+	my @outerRadiusArray = ('0.85r + 100p','0.75r + 100p','0.65r + 100p','0.55r + 100p','0.45r+100p');
 
 	
 	$plotColor = $colorHash{$tissue};
@@ -339,6 +341,7 @@ sub createCircosPvaluesDataFiles{
 	$filenameHash{'Brain'}='circosBrainPValues.txt';
 	$filenameHash{'Liver'}='circosLiverPValues.txt';
 	$filenameHash{'BAT'}='circosBATPValues.txt';
+	$filenameHash{'Kidney'}='circosKidneyPValues.txt';
 	my $brainFileName =  $dataDirectory.$filenameHash{$tissueString};
 	open(BRAINFILE,'>',$brainFileName) || die ("Can't open $brainFileName:!\n");
 
@@ -419,7 +422,9 @@ sub createCircosLinksConfAndData{
 			}
 			elsif($tissue eq "BAT"){
 				$linkColor = 'purple';
-			}
+			}elsif($tissue eq "Kidney"){
+             	$linkColor = 'orange';
+            }
 
                         my $tmpName=$eqtlAOH[$i]{name};
                         $tmpName =~ s/\./_/g;

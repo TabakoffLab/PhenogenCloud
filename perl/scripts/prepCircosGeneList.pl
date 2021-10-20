@@ -288,10 +288,12 @@ sub createCircosEQTLCountConfFile{
 	my %colorHash;
 	$colorHash{'Brain'}='blues-5-seq';
 	$colorHash{'Liver'}='greens-5-seq';
+    $colorHash{'Kidney'}='oranges-5-seq';
 
 	my %filenameHash;
 	$filenameHash{'Brain'}='circosBrainCount.txt';
 	$filenameHash{'Liver'}='circosLiverCount.txt';
+	$filenameHash{'Kidney'}='circosKidneyCount.txt';
 
 	if($type eq "array") {
 		$colorHash{'Heart'}='reds-5-seq';
@@ -305,8 +307,8 @@ sub createCircosEQTLCountConfFile{
 			print " key $key $colorHash{$key} \n";
 		}
 	}
-	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r');
-	my @outerRadiusArray = ('0.85r + 100p','0.75r + 100p','0.65r + 100p','0.55r + 100p');
+	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r','0.45r');
+	my @outerRadiusArray = ('0.85r + 100p','0.75r + 100p','0.65r + 100p','0.55r + 100p','0.45r+100p');
 
 	for(my $i=0; $i<$numberOfTissues; $i++){
 		$plotColor = $colorHash{$tissueList[$i]};
@@ -332,7 +334,7 @@ sub createCircosEQTLCountLinkDataFiles{
 	# The 3rd column has been modified so the histogram shows up better.
 	# The 3rd column might be modified by adding 5000000
 	my ($dataDirectory,$organism, $chromosomeListRef,$tissueString,$interval,$cutoff,$type,$geneHashRef,$transcriptome,$cisOnly) = @_;
-	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r');
+	my @innerRadiusArray = ('0.85r','0.75r','0.65r','0.55r','0.45r');
 	my %geneHash=%{$geneHashRef};
 	my @tissueList=split(";",$tissueString);
 	my $numberOfTissues = scalar @tissueList;
@@ -348,6 +350,7 @@ sub createCircosEQTLCountLinkDataFiles{
 	open($outfileHash{'Liver'},'>',$dataDirectory.'links_liver.txt');
 	open($outfileHash{'Heart'},'>',$dataDirectory.'links_heart.txt');
 	open($outfileHash{'BAT'},'>',$dataDirectory.'links_bat.txt');
+	open($outfileHash{'Kidney'},'>',$dataDirectory.'links_kidney.txt');
 	my %tissueRadius={};
 	for(my $i=0; $i<$numberOfTissues; $i++) {
 		$tissueRadius{$tissueList[$i]}=$innerRadiusArray[$i];
@@ -409,12 +412,14 @@ sub createCircosEQTLCountLinkDataFiles{
 	close($outfileHash{'Liver'});
 	close($outfileHash{'Heart'});
 	close($outfileHash{'BAT'});
+	close($outfileHash{'Kidney'});
 
 	my %filenameHash;
 	$filenameHash{'Brain'}='circosBrainCount.txt';
 	$filenameHash{'Liver'}='circosLiverCount.txt';
 	$filenameHash{'Heart'}='circosHeartCount.txt';
 	$filenameHash{'BAT'}='circosBATCount.txt';
+	$filenameHash{'Kidney'}='circosKidneyCount.txt';
 	for(my $i=0; $i<$numberOfTissues; $i++){
 		my $outFileName =  $dataDirectory.$filenameHash{$tissueList[$i]};
 		open(OUTFILE,'>',$outFileName) || die ("Can't open $outFileName:!\n");
@@ -488,6 +493,7 @@ sub createCircosLinksConf{
 	$colorHash{'Liver'}="116,196,118,0";
 	$colorHash{'Heart'}="251,106,74,0";
 	$colorHash{'BAT'}="158,154,200,0";
+	$colorHash{'Kidney'}="253,180,98,0";
 	my $radius="0.75r";
 	if($numberOfTissues==1){
 		$radius="0.85r";

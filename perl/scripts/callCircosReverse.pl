@@ -71,7 +71,7 @@ sub callCircosReverse{
 	if(!defined($tissueString)){
 		if($organism eq 'Rn'){
 		    if($source eq 'seq'){
-		        $tissueString='Brain;Liver;';
+		        $tissueString='Brain;Liver;Kidney;';
 		    }else{
 			    $tissueString='Brain;Heart;Liver;BAT;';
 			}

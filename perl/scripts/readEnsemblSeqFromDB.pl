@@ -16,7 +16,7 @@ sub readEnsemblSeqFromDB{
 	my $registry = 'Bio::EnsEMBL::Registry';
 	$registry->load_registry_from_db(
 		-host => $ensHost, #'ensembldb.ensembl.org', # alternatively 'useastdb.ensembl.org'
-		-port => 3306,
+		-port => 6033,
 		-user => $ensUsr,
 		-pass => $ensPasswd
 	    );
