@@ -117,7 +117,7 @@
             $("#tissuesMStsms option[value='Heart']").remove();
             $("#tissuesMS option[value='BAT']").remove();
             $("#tissuesMStsms option[value='BAT']").remove();
-            $("#tissuesMS").append('<option value="Kidney" disabled>Kidney</option>')
+            $("#tissuesMS").append('<option value="Kidney">Kidney</option>')
             $("td#trxClusterCB").hide();
             $("span#versionSelect").show();
         } else {
@@ -371,6 +371,7 @@
                             } else {
                                 selectedOption = version;
                             }
+                            onChange = "";
                             style = "";
                             optionHash = new LinkedHashMap();
                             //optionHash.put("1", "HRDP v3");
@@ -378,7 +379,7 @@
                             optionHash.put("5", "HRDP v5");
                         %><%@ include file="/web/common/selectBox.jsp" %>
 
-                    <!--	<BR><strong>Gene/Transcript:</strong>
+                    <BR><strong>Gene/Transcript:</strong>
 						<span class="eQTLtooltip" title="Select Gene level or individual transcripts."><img src="<%=imagesDir%>icons/info.gif"></span>
 						<%
 							selectName = "trxCB";
@@ -387,13 +388,14 @@
 							}else{
 								selectedOption =trxID;
 							}
+                            onChange = "";
 							style = "";
 							optionHash = new LinkedHashMap();
 							optionHash.put("gene", geneSymbol+" - Gene level");
 							for(int i=0;i<trxList.size();i++){
 								optionHash.put(trxList.get(i), trxList.get(i));
 							}
-						%><%@ include file="/web/common/selectBox.jsp" %>-->
+						%><%@ include file="/web/common/selectBox.jsp" %>
 						</span>
                 <BR>
                 <strong>Transcriptome Data:</strong>
@@ -528,8 +530,7 @@ At least one tissue MUST be included in the Circos plot."><img src="<%=imagesDir
 
                                 %>
 
-                                <option value="<%=tissueNameArray[i]%>" <%if(tissueNameArray[i].equals("Kidney")){%>disabled
-                                        <%}else{%>selected<%}%>><%=tissuesList1[i]%>
+                                <option value="<%=tissueNameArray[i]%>" selected><%=tissuesList1[i]%>
                                 </option>
 
                                 <%
