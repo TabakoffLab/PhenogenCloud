@@ -16,7 +16,7 @@
     String message="";
     String path="";
     String HRDPversion="5";
-    String rnaDSIDs="97,98";
+    String rnaDSIDs="97,98,189";
     String transcriptome="ensembl";
     String cisOnly="all";
 

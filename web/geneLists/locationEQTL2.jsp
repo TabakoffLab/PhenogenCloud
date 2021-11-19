@@ -728,8 +728,7 @@
 
                                     %>
 
-                                    <option value="<%=tissueNameArray[i]%>"
-                                            <%if(tissueNameArray[i].equals("Kidney")){%>disabled<%}else{%>selected<%}%> ><%=tissuesList1[i]%>
+                                    <option value="<%=tissueNameArray[i]%>" selected ><%=tissuesList1[i]%>
                                     </option>
 
                                     <%

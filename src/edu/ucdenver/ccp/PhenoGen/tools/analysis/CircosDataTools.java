@@ -11,13 +11,10 @@ import java.io.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
-import java.util.Date;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 
@@ -189,10 +186,24 @@ public boolean runCircosGeneList(int geneListID,String chromosomeList,String tis
                             trxID = affyID;
                         }
                         if (chr.toLowerCase().startsWith("c")) {
-                            chr = chr.substring(3);
+                            if(chr.startsWith("chr")) {
+                                chr = chr.substring(3);
+                            }else if(chr.startsWith("ch")){
+                                chr=chr.substring(2);
+                            }else if(chr.startsWith("c")){
+                                chr= affID.substring(1);
+                            }
                         }
-                        chr = genomeVer.substring(0, 2) + chr;
-                        out.write(chr + "\t" + min + "\t" + id + "\t" + trxID + "\t" + phenogenID + "\t"+ ensID2.substring(1) +"\n");
+                        if(genomeVer.length()>=3) {
+                            chr = genomeVer.substring(0, 2).toLowerCase() + chr;
+                        }else{
+                            chr="rn"+chr;
+                        }
+                        String tmpENS2="";
+                        if(ensID2.length()>1){
+                            tmpENS2=ensID2.substring(1);
+                        }
+                        out.write(chr + "\t" + min + "\t" + id + "\t" + trxID + "\t" + phenogenID + "\t"+ tmpENS2 +"\n");
                     }
                 } else {
                     message = "Error translating gene list IDs to IDs with eQTLs.";
