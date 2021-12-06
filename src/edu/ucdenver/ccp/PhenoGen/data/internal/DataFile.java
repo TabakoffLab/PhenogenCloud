@@ -17,26 +17,28 @@ import org.apache.log4j.Logger;
 
 /**
  * Class for handling the datafiles available on dataFiles
- *  @author  Cheryl Hornbaker
+ *
+ * @author Cheryl Hornbaker
  */
 
 public abstract class DataFile {
 
-	protected Logger log=null;
+	protected Logger log = null;
 
 	private Debugger myDebugger = new Debugger();
 	private ObjectHandler myObjectHandler = new ObjectHandler();
 	public DataFile[] datafiles = null;
 	private String sysBioDir;
 	private String datasetsDir;
-        private User userLoggedIn = null;
-	private HttpSession session ;
+	private String checksum;
+	private User userLoggedIn = null;
+	private HttpSession session;
 
-        private String dataset;
-        protected String fileName;
-        protected String type;
-        protected String panel;
-        protected String genome;
+	private String dataset;
+	protected String fileName;
+	protected String type;
+	protected String panel;
+	protected String genome;
 
 	public DataFile() {
 		log = Logger.getRootLogger();
@@ -46,8 +48,8 @@ public abstract class DataFile {
 		log = Logger.getRootLogger();
 		setFileName(fileName);
 	}
-        
-        public DataFile(String type, String fileName) {
+
+	public DataFile(String type, String fileName) {
 		log = Logger.getRootLogger();
 		setType(type);
 		setFileName(fileName);
@@ -57,60 +59,76 @@ public abstract class DataFile {
 		log = Logger.getRootLogger();
 		setType(type);
 		setFileName(fileName);
-                setPanel(panel);
+		setPanel(panel);
 	}
-        public DataFile(String type, String fileName, String panel,String genomeVer) {
+
+	public DataFile(String type, String fileName, String panel, String genomeVer) {
+		this(type, fileName, panel, genomeVer, "");
+	}
+
+	public DataFile(String type, String fileName, String panel, String genomeVer, String checksum) {
 		log = Logger.getRootLogger();
 		setType(type);
 		setFileName(fileName);
-                setPanel(panel);
-                setGenome(genomeVer);
+		setPanel(panel);
+		setGenome(genomeVer);
+		setChecksum(checksum);
 	}
 
-        public DataFile(HttpSession session) {
-                log = Logger.getRootLogger();
-		setSession(session); 
+
+	public DataFile(HttpSession session) {
+		log = Logger.getRootLogger();
+		setSession(session);
 		//log.debug("instantiated DataFile setting session variable");
 	}
 
-        public void setDataset(String inString) {
-                this.dataset = inString;
-        }
+	public String getChecksum() {
+		return checksum;
+	}
 
-        public String getDataset() {
-                return this.dataset;
-        }
+	public void setChecksum(String checksum) {
+		this.checksum = checksum;
+	}
 
-        public void setType(String inString) {
-                this.type = inString;
-        }
+	public void setDataset(String inString) {
+		this.dataset = inString;
+	}
 
-        public String getType() {
-                return this.type;
-        }
-        public void setGenome(String inString) {
-                this.genome = inString;
-        }
+	public String getDataset() {
+		return this.dataset;
+	}
 
-        public String getGenome() {
-                return this.genome;
-        }
+	public void setType(String inString) {
+		this.type = inString;
+	}
 
-        public void setFileName(String inString) {
-                this.fileName = inString;
-        }
+	public String getType() {
+		return this.type;
+	}
 
-        public String getFileName() {
-                return this.fileName;
-        }
-        
-        public void setPanel(String p){
-            this.panel=p;
-        }
-        
-        public String getPanel(){
-            return this.panel;
-        }
+	public void setGenome(String inString) {
+		this.genome = inString;
+	}
+
+	public String getGenome() {
+		return this.genome;
+	}
+
+	public void setFileName(String inString) {
+		this.fileName = inString;
+	}
+
+	public String getFileName() {
+		return this.fileName;
+	}
+
+	public void setPanel(String p) {
+		this.panel = p;
+	}
+
+	public String getPanel() {
+		return this.panel;
+	}
 
 	public HttpSession getSession() {
 		log.debug("in getSession");
@@ -120,24 +138,24 @@ public abstract class DataFile {
 	public void setSession(HttpSession inSession) {
 		log.debug("in DataFile.setSession");
 		this.session = inSession;
-	        this.sysBioDir = (String) session.getAttribute("sysBioDir");
-	        this.datasetsDir = (String) session.getAttribute("datasetsDir");
-	        this.userLoggedIn = (User) session.getAttribute("userLoggedIn");
+		this.sysBioDir = (String) session.getAttribute("sysBioDir");
+		this.datasetsDir = (String) session.getAttribute("datasetsDir");
+		this.userLoggedIn = (User) session.getAttribute("userLoggedIn");
 	}
 
-        public void setDataFiles(DataFile[] inDataFiles) {
-                this.datafiles = inDataFiles;
-        }
+	public void setDataFiles(DataFile[] inDataFiles) {
+		this.datafiles = inDataFiles;
+	}
 
-        public DataFile[] getDataFiles() {
-                return this.datafiles;
-        }
+	public DataFile[] getDataFiles() {
+		return this.datafiles;
+	}
 
 	public boolean equals(Object obj) {
 		if (!(obj instanceof DataFile)) return false;
-		return this.fileName.equals(((DataFile)obj).fileName);
+		return this.fileName.equals(((DataFile) obj).fileName);
 	}
-        
+
 	public void print(DataFile myDataFile) {
 		myDataFile.print();
 	}
