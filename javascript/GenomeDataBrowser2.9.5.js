@@ -1717,7 +1717,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
             }
             d3.xml(file, function (error, d) {
                 if (error) {
-                    if (retry === 0 || retry === 3) {
+                    if (retry === 0) {
                         var tmpContext = "/" + pathPrefix;
                         if (!pathPrefix) {
                             tmpContext = "";
@@ -1774,41 +1774,42 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 } else {
                     //console.log(d);
                     if (d == null) {
-                        if (retry >= 4) {
-                            data = new Array();
-                            if (track == "helicos") {
-                                newTrack = HelicosTrack(that, data, track, density);
-                            } else if (track == "illuminaTotal") {
-                                newTrack = IlluminaTotalTrack(that, data, track, density);
-                            } else if (track == "illuminaSmall") {
-                                newTrack = IlluminaSmallTrack(that, data, track, density);
-                            } else if (track == "illuminaPolyA") {
-                                newTrack = IlluminaPolyATrack(that, data, track, density);
-                            } else if (track == "liverilluminaTotalPlus") {
-                                newTrack = LiverIlluminaTotalPlusTrack(that, data, track, density);
-                            } else if (track == "liverilluminaTotalMinus") {
-                                newTrack = LiverIlluminaTotalMinusTrack(that, data, track, density);
-                            } else if (track == "heartilluminaTotalPlus") {
-                                newTrack = HeartIlluminaTotalPlusTrack(that, data, track, density);
-                            } else if (track == "heartilluminaTotalMinus") {
-                                newTrack = HeartIlluminaTotalMinusTrack(that, data, track, density);
-                            } else if (track == "brainilluminaTotalPlus") {
-                                newTrack = BrainIlluminaTotalPlusTrack(that, data, track, density);
-                            } else if (track == "brainilluminaTotalMinus") {
-                                newTrack = BrainIlluminaTotalMinusTrack(that, data, track, density);
-                            } else if (track == "liverilluminaSmall") {
-                                newTrack = LiverIlluminaSmallTrack(that, data, track, density);
-                            } else if (track == "heartilluminaSmall") {
-                                newTrack = HeartIlluminaSmallTrack(that, data, track, density);
-                            } else if (track.indexOf("illuminaTotal") > -1) {
-                                newTrack = StrainSpecificIlluminaTotalTrack(that, data, track, density, additionalOptions);
-                            }
-                            that.addTrackList(newTrack);
-                        } else {
-                            setTimeout(function () {
-                                that.addTrack(track, density, additionalOptions, 4);
-                            }, 3000);
+                        //if (retry >= 4) {
+                        data = new Array();
+                        if (track == "helicos") {
+                            newTrack = HelicosTrack(that, data, track, density);
+                        } else if (track == "illuminaTotal") {
+                            newTrack = IlluminaTotalTrack(that, data, track, density);
+                        } else if (track == "illuminaSmall") {
+                            newTrack = IlluminaSmallTrack(that, data, track, density);
+                        } else if (track == "illuminaPolyA") {
+                            newTrack = IlluminaPolyATrack(that, data, track, density);
+                        } else if (track == "liverilluminaTotalPlus") {
+                            newTrack = LiverIlluminaTotalPlusTrack(that, data, track, density);
+                        } else if (track == "liverilluminaTotalMinus") {
+                            newTrack = LiverIlluminaTotalMinusTrack(that, data, track, density);
+                        } else if (track == "heartilluminaTotalPlus") {
+                            newTrack = HeartIlluminaTotalPlusTrack(that, data, track, density);
+                        } else if (track == "heartilluminaTotalMinus") {
+                            newTrack = HeartIlluminaTotalMinusTrack(that, data, track, density);
+                        } else if (track == "brainilluminaTotalPlus") {
+                            newTrack = BrainIlluminaTotalPlusTrack(that, data, track, density);
+                        } else if (track == "brainilluminaTotalMinus") {
+                            newTrack = BrainIlluminaTotalMinusTrack(that, data, track, density);
+                        } else if (track == "liverilluminaSmall") {
+                            newTrack = LiverIlluminaSmallTrack(that, data, track, density);
+                        } else if (track == "heartilluminaSmall") {
+                            newTrack = HeartIlluminaSmallTrack(that, data, track, density);
+                        } else if (track.indexOf("illuminaTotal") > -1) {
+                            newTrack = StrainSpecificIlluminaTotalTrack(that, data, track, density, additionalOptions);
                         }
+                        that.addTrackList(newTrack);
+                        //newTrack.updateFullData();
+                        /*} else {
+                    setTimeout(function () {
+                        that.addTrack(track, density, additionalOptions, 4);
+                    }, 3000);
+                }*/
                     } else {
                         var data = d.documentElement.getElementsByTagName("Count");
                         var newTrack;
@@ -1845,8 +1846,10 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                         }
                         //success=1;
                     }
+                    //}
                 }
             });
+
         } else if (track.indexOf("spliceJnct") > -1) {
             //var include=$("#"+track+that.levelNumber+"Select").val();
             var tmpMin = that.xScale.domain()[0];
@@ -2073,7 +2076,8 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
 			ga('send','event','trackAdded',track);
 		}*/
         gtag('event', track, {'event_category': 'trackAdded'});
-    };
+    }
+    ;
 
     that.addTrackList = function (newTrack) {
         if (newTrack != null) {
@@ -11278,7 +11282,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         }
         return bin;
     };
-    that.bin = that.calculateBin(len);
+    //that.bin = that.calculateBin(len);
 
 
     that.color = function (d) {
@@ -11353,7 +11357,9 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                 that.svg.selectAll("g.y").remove();
                 that.svg.selectAll(".grid").remove();
                 that.svg.selectAll(".leftLbl").remove();
-                var points = that.svg.selectAll("." + that.trackClass).data(newData, keyStart)
+                var points = that.svg.selectAll("." + that.trackClass).data(newData, keyStart);
+                points.each().remove();
+                points = that.svg.selectAll("." + that.trackClass).data(newData, keyStart);
                 points.enter()
                     .append("rect")
                     .attr("x", function (d) {
@@ -11496,7 +11502,8 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         if (that.loadedDataMin <= tmpMin && tmpMax <= that.loadedDataMax) {
             that.redraw();
         } else {
-            that.updateFullData(0, 1);
+            console.log("Update caused updateFullData()" + this.trackID);
+            that.updateFullData(0, 0);
         }
     };
 
@@ -11507,7 +11514,10 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         var len = tmpMax - tmpMin;
 
         that.showLoading();
-        that.bin = that.calculateBin(len);
+        if (retry === 0 || force == 1) {
+            that.bin = that.calculateBin(len);
+            console.log(that.trackClass + ":bin size:" + that.bin);
+        }
         var tmpCountType = "Total";
         if (that.countType === 2) {
             tmpCountType = "Norm";
@@ -11523,10 +11533,11 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
             tmpMax = tmpMax + (that.bin * 2 - (tmpMax % (that.bin * 2)));
             file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/tmp/" + tmpMin + "_" + tmpMax + ".bincount." + that.bin + "." + that.trackClass + "." + tmpCountType + ".xml";
         }
-        //console.log("file="+file);
-        //console.log("folder="+that.gsvg.folderName);
+        console.log(that.trackClass + ":file=" + file);
+        console.log(that.trackClass + ":folder=" + that.gsvg.folderName);
         d3.xml(file, function (error, d) {
             if (error) {
+                console.log("error:" + that.bin + ":" + file)
                 if (retry == 0 || force == 1) {
                     var tmpContext = "/" + pathPrefix;
                     if (!pathPrefix) {
@@ -11571,7 +11582,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                 }
                 //console.log(error);
                 if (retry < 8) {//wait before trying again
-                    var time = 500;
+                    var time = 1000;
                     /*if(retry==0){
 								time=10000;
 							}*/
@@ -11579,11 +11590,11 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                         that.updateFullData(retry + 1, 0);
                     }, time);
                 } else if (retry < 30) {
-                    var time = 1000;
+                    var time = 2000;
                     that.fullDataTimeOutHandle = setTimeout(function () {
                         that.updateFullData(retry + 1, 0);
                     }, time);
-                } else if (retry < 32) {
+                } else if (retry < 38) {
                     var time = 10000;
                     that.fullDataTimeOutHandle = setTimeout(function () {
                         that.updateFullData(retry + 1, 0);
@@ -11598,10 +11609,10 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                     }, 15000);
                 }
             } else {
-                //console.log("update data");
+                console.log("update data");
                 //console.log(d);
                 if (d == null) {
-                    //console.log("is null");
+                    console.log("is null");
                     if (retry >= 32) {
                         data = new Array();
                         that.draw(data);
@@ -11612,12 +11623,15 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                         }, 5000);
                     }
                 } else {
-                    //console.log("not null is drawing");
+                    console.log("not null is drawing");
                     that.fullDataTimeOutHandle = 0;
                     that.loadedDataMin = tmpMin;
                     that.loadedDataMax = tmpMax;
-                    var data = d.documentElement.getElementsByTagName("Count");
-                    that.draw(data);
+                    setTimeout(function () {
+                        var data = d.documentElement.getElementsByTagName("Count");
+                        that.draw(data);
+                    }, 10);
+
                     //that.hideLoading();
                 }
             }
@@ -11690,6 +11704,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         //d3.selectAll("."+that.trackClass).remove();
         //data.sort(function(a, b){return a.getAttribute("start")-b.getAttribute("start")});
         that.data = data;
+        console.log("draw:" + that.trackClass + ":" + data.length);
         /*if($("#"+that.trackClass+"Dense"+that.gsvg.levelNumber+"Select").length>0){
 			that.density=$("#"+that.trackClass+"Dense"+that.gsvg.levelNumber+"Select").val();
 		}*/
@@ -11708,16 +11723,16 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         var newData = [];
         var newCount = 0;
         var tmpYMax = 0;
-        for (var l = 0; l < data.length; l++) {
-            if (typeof data[l] !== 'undefined') {
-                var start = parseInt(data[l].getAttribute("start"), 10);
-                var stop = parseInt(data[l].getAttribute("stop"), 10);
-                var count = parseInt(data[l].getAttribute("count"), 10);
+        for (var l = 0; l < that.data.length; l++) {
+            if (typeof that.data[l] !== 'undefined') {
+                var start = parseInt(that.data[l].getAttribute("start"), 10);
+                var stop = parseInt(that.data[l].getAttribute("stop"), 10);
+                var count = parseInt(that.data[l].getAttribute("count"), 10);
                 if (that.density != 1 || (that.density == 1 && start != stop)) {
-                    if ((l + 1) < data.length) {
+                    if ((l + 1) < that.data.length) {
                         var startNext = parseInt(data[l + 1].getAttribute("start"), 10);
                         if ((start >= tmpMin && start <= tmpMax) || (startNext >= tmpMin && startNext <= tmpMax)) {
-                            newData[newCount] = data[l];
+                            newData[newCount] = that.data[l];
                             if (count > tmpYMax) {
                                 tmpYMax = count;
                             }
@@ -11727,7 +11742,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                         }
                     } else {
                         if ((start >= tmpMin && start <= tmpMax)) {
-                            newData[newCount] = data[l];
+                            newData[newCount] = that.data[l];
                             if (count > tmpYMax) {
                                 tmpYMax = count;
                             }
@@ -11739,20 +11754,23 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                 }
             }
         }
-        data = newData;
-        that.svg.selectAll("." + that.trackClass).remove();
+        console.log("newData:" + newData.length);
+        ndata = newData;
+        console.log("data:" + ndata.length);
+        //that.svg.selectAll("." + that.trackClass).remove();
         that.svg.select(".y.axis").remove();
         that.svg.select("g.grid").remove();
         that.svg.selectAll(".leftLbl").remove();
         that.svg.select(".area").remove();
         that.svg.selectAll(".area").remove();
         if (that.density == 1) {
+            console.log("draw:den1");
             var tmpMax = that.gsvg.xScale.domain()[1];
-            var points = that.svg.selectAll("." + that.trackClass)
-                .data(data, keyStart);
+            var points = that.svg.selectAll("." + that.trackClass).data(ndata, keyStart);
             points.enter()
                 .append("rect")
                 .attr("x", function (d) {
+                    console.log("x:" + d.getAttribute("start") + ":" + that.xScale(d.getAttribute("start")));
                     return that.xScale(d.getAttribute("start"));
                 })
                 .attr("y", 15)
@@ -11801,8 +11819,10 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                         .duration(200)
                         .style("opacity", 0);
                 });
+
             that.svg.attr("height", 30);
         } else if (that.density == 2) {
+            console.log("draw:den2");
             that.yScale.domain([0, tmpYMax]);
             that.yAxis = d3.axisLeft(that.yScale)
                 .ticks(5);
