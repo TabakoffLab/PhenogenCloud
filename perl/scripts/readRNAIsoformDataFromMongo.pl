@@ -1037,6 +1037,223 @@ sub readRNACountsDataFromMongo{
 }
 
 
+
+
+
+sub readBinnedRNACountsDataFromMongo{
+    my($geneChrom,$organism,$publicUserID,$panel,$type,$countType,$buildVersion,$geneStart,$geneStop,$genomeVer,$dsn,$usr,$passwd,$mongoHost,$mongoUsr,$mongoPwd,$bin,$start,$stop)=@_;
+
+    	my $org="Mm";
+    	if($organism eq "Rat"){
+    		$org="Rn";
+    	}
+
+    	# PERL DBI CONNECT
+    	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+
+    	$geneChrom=uc($geneChrom);
+    	my $tmpType=$type;
+    	if(index($tmpType,"Plus")>-1){
+    	    $tmpType=~s/Plus//;
+    	}elsif(index($tmpType,"Minus")>-1){
+    	    $tmpType=~s/Minus//;
+    	}
+    	$query ="Select rd.shared_id,rd.total_plus,rd.total_minus,rd.norm_plus,rd.norm_minus from rna_dataset rd
+    			where rd.organism = '".$org."' "."
+    			and rd.genome_id='".$genomeVer."'
+    			and rd.user_id= $publicUserID
+    			and rd.visible=0
+    			and rd.description = '".$tmpType."'
+    			and rd.strain_panel like '".$panel."' ";
+    	if($buildVersion eq ""){
+    	    $query=$query."order by build_version DESC";
+    	}else{
+    	    $query=$query." and rd.build_version='".$buildVersion."'";
+    	}
+    	print $type."\n";
+    	print $tmpType."\n";
+    	print $countType."\n";
+    	print $query."\n";
+    	$query_handle = $connect->prepare($query) or die (" RNA Dataset Shared ID query prepare failed \n");
+
+            # EXECUTE THE QUERY
+    	$query_handle->execute() or die ( "RNA Dataset Shared ID query execute failed \n");
+
+            # BIND TABLE COLUMNS TO VARIABLES
+
+    	$query_handle->bind_columns(\$sharedID,\$totalPlus,\$totalMinus,\$normPlus,\$normMinus);
+    	my $listCount=0;
+    	$query_handle->fetch();
+
+    	my $dsid=$sharedID;
+    	if(! $dsid){
+    	    if($countType eq "" ){
+    	        if($totalPlus){
+    	            $countType="Total";
+    	        }elsif($normPlus){
+    	            $countType="Norm";
+    	        }
+    	    }
+    	    if(index($type,"Plus")>0){
+    	        $dsid=$totalPlus;
+    	        if(!$dsid or $countType eq "Norm"){
+    	            $dsid=$normPlus;
+    	        }
+    	    }elsif(index($type,"Minus")>0){
+    	        $dsid=$totalMinus;
+                if(!$dsid or $countType eq "Norm"){
+                    $dsid=$normMinus;
+                }
+
+    	    }
+    	}
+
+    	$query_handle->finish();
+    	$connect->disconnect();
+    	#my %countHOH;
+            print "mongohost:".$mongoHost."\n";
+            #print "mongouser:".$mongoUsr."\n";
+            #print "mongopassword:".$mongoPwd."\n";
+    	my $client = MongoDB::MongoClient->new(host => $mongoHost,username => $mongoUsr, password => $mongoPwd, db_name => 'admin');
+    	my $database   = $client->get_database( 'shared' );
+    	my $col = $database->get_collection( 'RNA_COUNTS_'.$dsid );
+
+    	print "RNA_COUNTS_$dsid\n";
+
+    	$geneChrom=uc($geneChrom);
+    	$geneStart=$geneStart*1;
+    	$geneStop=$geneStop*1;
+    	my $mongoRSObject;
+    	my $rsCursor=$col->query(
+    							{'CHROMOSOME'=>"$geneChrom",
+    							'CHR_START'=>
+    								{'$gte'=>$geneStart,
+    								'$lte'=>$geneStop
+    								}
+    							},
+    							{sort_by => {'CHR_START'=>1}}
+    							);
+
+    	my %binHOH;
+    	$binHOH{Count}=[];
+        my $curStart=$start;
+        my $curStop=$bin+$start;
+        my $binInd=0;
+        my $bp90=$bin-($bin*.9);
+        if($mongoRSObject = $rsCursor->next) {
+           #process bin of data
+            while($curStart<$stop){
+                my %countHOH;
+                my $curPos=$curStart;
+                my $loopCount=0;
+                while($curPos<$curStop and $loopCount<$bin){
+                    my $segStart=$mongoRSObject->{'CHR_START'};
+                    my $segStop=$mongoRSObject->{'CHR_END'};
+                    my $segValue=$mongoRSObject->{'COUNT'};
+                    my $bp=0;
+                    my $skipCur=0;
+                    #find scenario and fill in count
+                    if($segStart==$curPos){#Fill in count with value
+                        if($segStop<=$curStop){
+                            $bp=$segStop-$segStart+1;
+                            $curPos=$segStop+1;
+                        }else{
+                            $bp=$curStop-$segStart;
+                            $curPos=$curStop;
+                        }
+                        if(exists $countHOH{$segValue}){
+                            $countHOH{$segValue}=$countHOH{$segValue}+$bp;
+                        }else{
+                            $countHOH{$segValue}=$bp;
+                        }
+
+                    }elsif($segStart>$curPos){#Fill in count with zeros then value
+                        $bp=$segStart-$curPos+1;
+                        if(exists $countHOH{0}){
+                            $countHOH{0}=$countHOH{0}+$bp;
+                        }
+                        $curPos=$segStart;
+                        $bp=$segStop-$segStart+1;
+                        if(exists $countHOH{$segValue}){
+                            $countHOH{$segValue}=$countHOH{$segValue}+$bp;
+                        }else{
+                            $countHOH{$segValue}=$bp;
+                        }
+                         if($segStop<=$curStop){
+                            $curPos=$segStop+1;
+                         }else{
+                            $curPos=$curStop;
+                         }
+                    }elsif($segStart<$curPos){#error
+                        print "error: ".$segStart."<".$curPos."\n"
+                    }
+                    #fill countHOH
+                    if($mongoRSObject = $rsCursor->next) {
+                        if($mongoRSObject{start}>=$curStop){
+                            $bp=$curStop-$curPos+1;
+                            if(exists $countHOH{0}){
+                                $countHOH{0}=$countHOH{0}+$bp;
+                            }
+                            $curPos=$curStop;
+                        }
+
+                    }else{
+                        if($curPos<$curStop){
+                            $bp=$curStop-$curPos+1;
+                            if(exists $countHOH{0}){
+                                $countHOH{0}=$countHOH{0}+$bp;
+                            }
+                            $curPos=$curStop;
+                        }
+                    }
+                    $loopCount++;
+                }
+                #find 90th percentile
+                my @valueList=keys %countHOH;
+                my @sortVal=sort {$b <=> $a} @valueList;
+                #foreach my $tmpVal(@sortVal){
+                #	print "Vallist:$tmpVal\n";
+                #}
+                my $curBP=0;
+                my $valInd=0;
+                while($valInd<@sortVal and $curBP<$bp90){
+                    my $bp=$countHOH{$sortVal[$valInd]};
+                    $curBP=$curBP+$bp;
+                    #print "comp90\t val[$valInd]=".$sortVal[$valInd]."\t current bp=".$bp."\t total bp=$curBP\n";
+                    $valInd++;
+                }
+                my $binVal=$sortVal[$valInd-1];
+                if ($binVal eq "") {
+                    $binVal=0;
+                }
+
+                #print "$binInd\t$curStart\t$binVal\n";
+                if($binInd>0 and $binHOH{Count}[$binInd-1]{count}==$binVal){
+                    #skip since its the same value.
+                    $binHOH{Count}[$binInd-1]{start}=$binHOH{Count}[$binInd-1]{start}+$bin;
+                    $binHOH{Count}[$binInd-2]{stop}=$curStart+$bin-1;
+                    $binHOH{Count}[$binInd-1]{stop}=$curStart+$bin-1;
+                }else{
+                    $binHOH{Count}[$binInd]{start}=$curStart;
+                    $binHOH{Count}[$binInd]{count}=$binVal;
+                    $binHOH{Count}[$binInd]{stop}=$curStart+$bin-1;
+                    $binInd++;
+                    $binHOH{Count}[$binInd]{start}=$curStart+$bin-1;
+                    $binHOH{Count}[$binInd]{count}=$binVal;
+                    $binHOH{Count}[$binInd]{stop}=$curStart+$bin-1;
+                    $binInd++;
+                }
+                $curStart=$curStop;
+                $curStop=$bin+$curStart;
+            } ## end while
+        } ##end if()
+
+
+    	return (\%binHOH);
+}
+
+
+
 sub readRNACountsDataFromDB{
 	my($geneChrom,$organism,$publicUserID,$panel,$type,$geneStart,$geneStop,$genomeVer,$dsn,$usr,$passwd)=@_;
 	my %countHOH;
