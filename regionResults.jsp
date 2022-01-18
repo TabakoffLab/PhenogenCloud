@@ -198,7 +198,7 @@
         <div id="collapsableImage" class="geneimage">
 
             <div id="geneImage" class="ucscImage" style="display:inline-block;width:100%;">
-                <script src="javascript/gdb.2.9.12.min.js" type="text/javascript"></script>
+                <script src="javascript/gdb.2.9.13.min.js" type="text/javascript"></script>
 
                 <!--<script src="javascript/GenomeDataBrowser2.9.5.js" type="text/javascript"></script>
                 <script src="javascript/GenomeReport2.7.2.js" type="text/javascript"></script>
@@ -290,7 +290,7 @@
                     </div>
                 </div>
                 <div class="exprCol" id="expRegionKidney" style="display:inline-block;">
-                    
+
                     <div style="width:100%;text-align: center;"><H2><span id="regionExprTitlek"></span></h2></div>
                     <BR>
                     <div id="chartKidneyregionExpr" style="width:98%;">
