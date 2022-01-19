@@ -29,7 +29,7 @@ public class RNAPipeline {
     private boolean isStepLoaded;
     private DataSource pool;
     
-    private final String select="select * from RNA_PIPELINE";
+    private final String select="select * from RNA_PIPELINE rp";
     
     
     
@@ -48,7 +48,7 @@ public class RNAPipeline {
     }
 
     public ArrayList<RNAPipeline> getRNAPipelineByResultID(long rnaResultID,DataSource pool){
-        String query=select+" where rna_dataset_result_id="+rnaResultID;
+        String query=select+"  left outer join rna_p2dr rpd on rpd.rna_pipeline_id=rp.rna_pipeline_id where rpd.rna_dataset_result_id="+rnaResultID;
         return getRNAResultsByQuery(query,pool);
     }
     
