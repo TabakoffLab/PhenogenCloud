@@ -12,38 +12,72 @@
 
 <H2>Announcements</H2>
 <div style="overflow:auto;height:92%;margin-left: 10px;">
+
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #25 </H2>
+    <div style="margin-left:5px;">
+        <H3>Mouse Phenome Database: Resources and analysis tools for curated and integrated primary mouse phenotype and genotype data</H3>
+        4/8/22 10am PDT/1pm EDT<BR><BR>
+        <a href="https://bit.ly/osga_2022-04-08">Free Registeration Here</a><BR>
+        <!--<iframe width="300" height="215" src="https://www.youtube.com/embed/qDNKVVjopXk" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+        Summary of this webinar:<BR>
+        The Mouse Phenome Database (MPD; https://phenome.jax.org) is a widely used resource that provides access to primary experimental data, protocols, and
+        analysis tools for mouse phenotyping studies. Data are contributed by investigators around the world and represent a broad scope of phenotyping
+        endpoints
+        and disease-related characteristics in naïve mice and those exposed to drugs, environmental agents, or other treatments. MPD is engineered to facilitate
+        interactive data exploration and quantitative analysis. It encompasses data from inbred strains and other reproducible panels, including HMDP, KOMP,
+        Collaborative Cross (CC), CC-RIX, and founder strains, along with primary data from mapping populations, including historic mapping crosses and advanced
+        high-diversity mouse populations such as Diversity Outbred mice. A new Study Intake Platform (SIP) for data contributors allows domain experts to submit
+        and
+        annotate their own data with relevant ontology terms. Data contributors also provide detailed information for protocols and animal environmental
+        conditions
+        to fulfill ARRIVE guidelines. Data are exposed to analysis tools within MPD and are available through APIs to other systems. We will demonstrate
+        selected
+        MPD tools, including GenomeMUSter (a new imputed SNP grid on 500+ strains of mice, 83+M locations) and a GWAS metanalysis tool.
+        <BR><BR>
+        Presented by:<BR>
+        Molly Bogue and Robyn Ball<BR>
+        With other senior members of the MPD team: Elissa Chesler, Vivek Philip, Dave Walton<BR>
+        The Jackson Laboratory<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
+
     <H2 style="font-weight: bold;font-size:20px;">eQTLs for HRDP v5</H2>
     <div style="margin-left:5px;">
         11/1/21 - Brain/Liver/Kidney eQTLs using the full panel of HRDP animals available 43 strains have now been calculated with GEMMA and are available now.
     </div>
     <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #23 </H2>
-    <H3>Julia: a fast, friendly, and powerful language for data science</H3>
-    11/12/21 10am PDT/1pm EDT<BR><BR>
-    View Here -- Coming soon<BR>
-    <!--<iframe width="300" height="215" src="https://www.youtube.com/embed/qDNKVVjopXk" title="YouTube video player" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
-    Summary of this webinar:<BR>
-    Julia is a high-level dynamic programming language that is gaining popularity. The Julia language is designed for scientific computing and offers several
-    attractive features for data science applications. In this webinar, we will make a case for why a data scientist might consider taking a serious look at
-    Julia. We will show code examples and point the audience to further resources.
-    <BR>
-    <UL>
-        <LI>To articulate why Julia is attractive for data scientists</LI>
-        <LI>To provide an overview of Julia language syntax and design</LI>
-        <LI>To provide additional resources about the Julia language and ecosystem</LI>
-    </UL>
-    <BR><BR>
-    Gregory Farage, PhD<BR>
-    Post-Doctoral Fellow<BR>
-    Department of Preventive Medicine<BR>
-    University of Tennessee Health Science Center<BR>
-    <BR>
-    Saunak Sen, PhD<BR>
-    Professor and Division Chief<BR>
-    Department of Preventive Medicine<BR>
-    University of Tennessee Health Science Center<BR>
-    <BR>
-    <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    <div style="margin-left:5px;">
+        <H3>Julia: a fast, friendly, and powerful language for data science</H3>
+        11/12/21 10am PDT/1pm EDT<BR><BR>
+        <a href="https://youtu.be/cA7d1Zz19OQ">View Here</a><BR>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/cA7d1Zz19OQ" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        Summary of this webinar:<BR>
+        Julia is a high-level dynamic programming language that is gaining popularity. The Julia language is designed for scientific computing and offers
+        several
+        attractive features for data science applications. In this webinar, we will make a case for why a data scientist might consider taking a serious look at
+        Julia. We will show code examples and point the audience to further resources.
+        <BR>
+        <UL>
+            <LI>To articulate why Julia is attractive for data scientists</LI>
+            <LI>To provide an overview of Julia language syntax and design</LI>
+            <LI>To provide additional resources about the Julia language and ecosystem</LI>
+        </UL>
+        <BR><BR>
+        Gregory Farage, PhD<BR>
+        Post-Doctoral Fellow<BR>
+        Department of Preventive Medicine<BR>
+        University of Tennessee Health Science Center<BR>
+        <BR>
+        Saunak Sen, PhD<BR>
+        Professor and Division Chief<BR>
+        Department of Preventive Medicine<BR>
+        University of Tennessee Health Science Center<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
     <H2 style="font-weight: bold;font-size:20px;">Kidney RNA-Seq </H2>
     <div style="margin-left:5px;">
         9/7/21 - Kidney transcriptome and HXB/BXH expression values and eQTLs are avaialble in the genome browser. WGCNA results will be available soon.
