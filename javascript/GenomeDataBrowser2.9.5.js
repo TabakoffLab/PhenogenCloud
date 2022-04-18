@@ -86,7 +86,7 @@ mouseOnly.probeMouse = 1;
 
 var mmVer = "Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer = "Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer = "PhenoGen v3.7.9(8/5/2021)";
+var siteVer = "PhenoGen v3.8.0(3/1/2022)";
 
 var trackBinCutoff = 10000;
 var customTrackLevel = -1;
@@ -3298,6 +3298,12 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 }, 1500);
             });
             if (organism === 'Rn') {
+                var rn7Opt = tmpSel.append('option')
+                    .attr('value', 'rn7')
+                    .html('rn7');
+                if (genomeVer === 'rn7') {
+                    rn7Opt.attr('selected', 'selected');
+                }
                 var rn6Opt = tmpSel.append('option')
                     .attr('value', 'rn6')
                     .html('rn6');
