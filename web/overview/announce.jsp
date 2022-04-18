@@ -12,14 +12,34 @@
 
 <H2>Announcements</H2>
 <div style="overflow:auto;height:92%;margin-left: 10px;">
-
+    <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #26 </H2>
+    <div style="margin-left:5px;">
+        <H3>Genome-wide Association Study Summary Statistics - Where to find them and how to use them</H3>
+        4/22/22 10am PDT/1pm EDT<BR><BR>
+        <a href="https://bit.ly/osga_2022-04-22">Free Registeration Here</a><BR>
+        <!--<iframe width="300" height="215" src="https://www.youtube.com/embed/qDNKVVjopXk" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+        Summary of this webinar:<BR>
+        This presentation will guide attendees with how to access genome-wide association study summary statistics and showcase resources available for
+        annotating these summary data for follow-up analyses, including gene-based analyses, eQTL, and epigenetic annotation as well as causal variable
+        analysis.
+        We will guide attendees through components of a GWAS summary dataset and two excellent resources - FUMA and MASSIVE - that use these summary files as
+        inputs to generate vast amounts of annotations that can be brought forward to answer translational research questions.
+        <BR><BR>
+        Presented by:<BR>
+        Dr. Arpana Agrawal and Dr. Alexander S. Hatoum<BR>
+        Department of Psychiatry<BR>
+        Washington University School of Medicine<BR>
+        <BR>
+        <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
+    </div>
     <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #25 </H2>
     <div style="margin-left:5px;">
         <H3>Mouse Phenome Database: Resources and analysis tools for curated and integrated primary mouse phenotype and genotype data</H3>
         4/8/22 10am PDT/1pm EDT<BR><BR>
-        <a href="https://bit.ly/osga_2022-04-08">Free Registeration Here</a><BR>
-        <!--<iframe width="300" height="215" src="https://www.youtube.com/embed/qDNKVVjopXk" title="YouTube video player" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>-->
+        <a href="https://youtu.be/--2c-LWOMRk">View Here</a><BR>
+        <iframe width="300" height="215" src="https://www.youtube.com/embed/--2c-LWOMRk" title="YouTube video player" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         Summary of this webinar:<BR>
         The Mouse Phenome Database (MPD; https://phenome.jax.org) is a widely used resource that provides access to primary experimental data, protocols, and
         analysis tools for mouse phenotyping studies. Data are contributed by investigators around the world and represent a broad scope of phenotyping
