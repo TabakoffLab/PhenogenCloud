@@ -268,6 +268,96 @@
         </form>
     </div>
     <div id="rnaseq" style="<%if(!section.equals("rnaseq")){%>display:none;<%}%>border-top:1px solid black;">
+
+        <div class="title"> New RNA Sequencing Datasets Experimental Details/Downloads</div>
+        <form method="post"
+              action="resources.jsp"
+              enctype="application/x-www-form-urlencoded"
+              name="resources">
+            <table id="rnaseqTbl" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3">
+                <thead>
+                <tr class="col_title">
+
+                    <TH>Description</TH>
+                    <th>Organism</th>
+                    <th>Strain</th>
+                    <th>Tissue</th>
+                    <th>Seq. Tech.</th>
+                    <th>RNA Type</th>
+                    <th>Read Type</th>
+                    <TH>Genome<BR>Versions</th>
+                    <th>Experimental<BR>Details</th>
+                    <TH>Raw Data Downloads</TH>
+                    <TH>Result Downloads</TH>
+                </tr>
+                </thead>
+                <tbody>
+                <% for (int i = 0; i < publicRNADatasets.size(); i++) {
+                    String tech = "";
+                    ArrayList<String> tmpTech = publicRNADatasets.get(i).getSeqTechFromSamples();
+                    for (int j = 0; j < tmpTech.size(); j++) {
+                        if (j > 0) {
+                            tech = tech + ", ";
+                        }
+                        tech = tech + tmpTech.get(j);
+                    }
+                    String readType = "";
+                    ArrayList<String> tmpType = publicRNADatasets.get(i).getReadTypeFromSamples();
+                    for (int j = 0; j < tmpType.size(); j++) {
+                        if (j > 0) {
+                            readType = readType + ", ";
+                        }
+                        readType = readType + tmpType.get(j);
+                    }
+                    String genomeVer = "";
+                    ArrayList<String> tmpGV = publicRNADatasets.get(i).getResultGenomeVer();
+                    for (int j = 0; j < tmpGV.size(); j++) {
+                        if (j > 0) {
+                            genomeVer = genomeVer + ", ";
+                        }
+                        genomeVer = genomeVer + tmpGV.get(j);
+                    }
+                %>
+                <TR id="<%=publicRNADatasets.get(i).getRnaDatasetID()%>">
+
+                    <TD><%=publicRNADatasets.get(i).getDescription()%>
+                    </TD>
+                    <TD><%=publicRNADatasets.get(i).getOrganism()%>
+                    </TD>
+                    <TD><%=publicRNADatasets.get(i).getPanel()%>
+                    </TD>
+                    <TD><%=publicRNADatasets.get(i).getTissue()%>
+                    </TD>
+                    <TD><%=tech%>
+                    </TD>
+                    <TD><%=publicRNADatasets.get(i).getSeqType()%>
+                    </TD>
+                    <TD><%=readType%>
+                    </TD>
+                    <TD><%=genomeVer%>
+                    </TD>
+                    <td class="actionIcons">
+                        <div class="linkedImg info" type="rnaseqMeta">
+                            <div>
+                    </td>
+                    <td class="actionIcons">
+                        <%if (publicRNADatasets.get(i).getRawDownloadFileCount() > 0) {%>
+                        <div class="linkedImg download" type="rnaseqRaw">
+                            <div>
+                                    <%}%>
+                    </td>
+                    <td class="actionIcons">
+                        <%if (publicRNADatasets.get(i).getResultDownloadCount() > 0) {%>
+                        <div class="linkedImg download" type="rnaseqResults">
+                            <div>
+                                    <%}%>
+                    </td>
+                </TR>
+                <%}%>
+                </tbody>
+            </table>
+        </form>
+        <BR><BR>
         <form method="post"
               action="resources.jsp"
               enctype="application/x-www-form-urlencoded"
@@ -382,95 +472,6 @@
 
         </form>
 
-
-        <div class="title"> New RNA Sequencing Datasets Experimental Details/Downloads</div>
-        <form method="post"
-              action="resources.jsp"
-              enctype="application/x-www-form-urlencoded"
-              name="resources">
-            <table id="rnaseqTbl" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3">
-                <thead>
-                <tr class="col_title">
-
-                    <TH>Description</TH>
-                    <th>Organism</th>
-                    <th>Strain</th>
-                    <th>Tissue</th>
-                    <th>Seq. Tech.</th>
-                    <th>RNA Type</th>
-                    <th>Read Type</th>
-                    <TH>Genome<BR>Versions</th>
-                    <th>Experimental<BR>Details</th>
-                    <TH>Raw Data Downloads</TH>
-                    <TH>Result Downloads</TH>
-                </tr>
-                </thead>
-                <tbody>
-                <% for (int i = 0; i < publicRNADatasets.size(); i++) {
-                    String tech = "";
-                    ArrayList<String> tmpTech = publicRNADatasets.get(i).getSeqTechFromSamples();
-                    for (int j = 0; j < tmpTech.size(); j++) {
-                        if (j > 0) {
-                            tech = tech + ", ";
-                        }
-                        tech = tech + tmpTech.get(j);
-                    }
-                    String readType = "";
-                    ArrayList<String> tmpType = publicRNADatasets.get(i).getReadTypeFromSamples();
-                    for (int j = 0; j < tmpType.size(); j++) {
-                        if (j > 0) {
-                            readType = readType + ", ";
-                        }
-                        readType = readType + tmpType.get(j);
-                    }
-                    String genomeVer = "";
-                    ArrayList<String> tmpGV = publicRNADatasets.get(i).getResultGenomeVer();
-                    for (int j = 0; j < tmpGV.size(); j++) {
-                        if (j > 0) {
-                            genomeVer = genomeVer + ", ";
-                        }
-                        genomeVer = genomeVer + tmpGV.get(j);
-                    }
-                %>
-                <TR id="<%=publicRNADatasets.get(i).getRnaDatasetID()%>">
-
-                    <TD><%=publicRNADatasets.get(i).getDescription()%>
-                    </TD>
-                    <TD><%=publicRNADatasets.get(i).getOrganism()%>
-                    </TD>
-                    <TD><%=publicRNADatasets.get(i).getPanel()%>
-                    </TD>
-                    <TD><%=publicRNADatasets.get(i).getTissue()%>
-                    </TD>
-                    <TD><%=tech%>
-                    </TD>
-                    <TD><%=publicRNADatasets.get(i).getSeqType()%>
-                    </TD>
-                    <TD><%=readType%>
-                    </TD>
-                    <TD><%=genomeVer%>
-                    </TD>
-                    <td class="actionIcons">
-                        <div class="linkedImg info" type="rnaseqMeta">
-                            <div>
-                    </td>
-                    <td class="actionIcons">
-                        <%if (publicRNADatasets.get(i).getRawDownloadFileCount() > 0) {%>
-                        <div class="linkedImg download" type="rnaseqRaw">
-                            <div>
-                                    <%}%>
-                    </td>
-                    <td class="actionIcons">
-                        <%if (publicRNADatasets.get(i).getResultDownloadCount() > 0) {%>
-                        <div class="linkedImg download" type="rnaseqResults">
-                            <div>
-                                    <%}%>
-                    </td>
-                </TR>
-                <%}%>
-                </tbody>
-            </table>
-        </form>
 
     </div>
     <div id="dnaseq" style="<%if(!section.equals("dnaseq")){%>display:none;<%}%>border-top:1px solid black;">
@@ -600,8 +601,10 @@
                     Resource[] resources = pubList.get(i);
             %>
             <%Resource title = resources[0];%>
-            <div class="title"><%=title.getTitle()%><BR><%=title.getAuthor()%><BR><a href="<%=title.getAbstractURL()%>">Abstract</a>
-
+            <div class="title"><%=title.getTitle()%><BR><%=title.getAuthor()%><BR>
+                    <%if(!title.getAbstractURL().equals("")){%>
+                <a href="<%=title.getAbstractURL()%>">Abstract</a>
+                    <%}%>
                 <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
                     <thead>
                     <tr class="col_title">
