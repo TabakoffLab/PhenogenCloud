@@ -120,8 +120,10 @@
 
 
             <%Resource title = pubResources[0];%>
-            <div class="title"><span style="font-size:larger;"><%=title.getTitle()%></span><BR><%=title.getAuthor()%><BR><a href="<%=title.getAbstractURL()%>">Abstract</a>
-
+            <div class="title"><span style="font-size:larger;"><%=title.getTitle()%></span><BR><%=title.getAuthor()%><BR>
+                    <%if(!title.getAbstractURL().equals("")){%>
+                <a href="<%=title.getAbstractURL()%>">Abstract</a>
+                    <%}%>
                 <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
                     <thead>
                     <tr class="col_title">

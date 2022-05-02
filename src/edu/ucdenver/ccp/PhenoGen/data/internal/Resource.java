@@ -455,6 +455,7 @@ public class Resource {
         List<Resource> pubResources9 = Arrays.asList(getPublicationResources9());
         List<Resource> pubResources10 = Arrays.asList(getPublicationResources10());
         List<Resource> pubResources11 = Arrays.asList(getPublicationResources11());
+        List<Resource> pubResources12 = Arrays.asList(getPublicationResources12());
         List<Resource> gtfResources = Arrays.asList(getGTFResources());
         List<Resource> rsemResources = Arrays.asList(getRNASeqExpressionResources());
         List<Resource> allResources = new ArrayList<Resource>(expressionResources);
@@ -473,6 +474,7 @@ public class Resource {
         allResources.addAll(pubResources9);
         allResources.addAll(pubResources10);
         allResources.addAll(pubResources11);
+        allResources.addAll(pubResources12);
         allResources.addAll(gtfResources);
         allResources.addAll(rsemResources);
         Resource[] allResourcesArray = myObjectHandler.getAsArray(allResources, Resource.class);
@@ -1774,7 +1776,7 @@ public class Resource {
         String pubFilePath = "/downloads/Publication/lusk_aptardi/";
         String seqFilePath = "/downloads/DNASeq/";
         List<Resource> resourceList = new ArrayList<Resource>();
-        resourceList.add(new Resource("Beyond genes: Inclusion of alternative splicing and alternative polyadenylation to assess the genetic architecture of predisposition to voluntary alcohol consumption in brain of the HXB/BXH recombinant inbred rat panel", "( R. Lusk et. al., 2021, submitted) ", "", "lusk_2021"));
+        resourceList.add(new Resource("Beyond genes: Inclusion of alternative splicing and alternative polyadenylation to assess the genetic architecture of predisposition to voluntary alcohol consumption in brain of the HXB/BXH recombinant inbred rat panel", "( R. Lusk et. al., 2022, Front. Genet.) ", "https://pubmed.ncbi.nlm.nih.gov/35368676/", "lusk_2021"));
         PublicationFile[] fileList = new PublicationFile[1];
         fileList[0] = new PublicationFile("Alcohol consumption measures", pubFilePath + "StrainMeans_AlcConsumpWk2.txt", "48e8c6d3624f6ef01df1f07e0c0089ce");
         resourceList.add(new Resource(240, "Rat", "", "Alcohol Consumption", fileList, "\"Beyond genes: Inclusion of alternative splicing and alternative polyadenylation to assess the genetic architecture of predisposition to voluntary alcohol consumption in brain of the HXB/BXH recombinant inbred rat panel\" by R. Lusk et. al."));
@@ -1831,10 +1833,43 @@ public class Resource {
         return resourceArray;
     }
 
+    public Resource[] getPublicationResources12() {
+        log.debug("in getPublicationResources12");
+        String pubFilePath = "/downloads/Publication/pattee_eqtl/";
+        String title = "Power and precision: Evaluation and recommendations of quantitative trait analysis methods for RNA expression levels in the Hybrid Rat Diversity Panel";
+        String downloadHeader = "\"" + title + "\" by J. Pattee et. al. ";
+        List<Resource> resourceList = new ArrayList<Resource>();
+        resourceList.add(new Resource(title, "(J. Pattee et. al. - submitted)", "", "pattee_2022"));
+        //geno type
+        PublicationFile[] fileList = new PublicationFile[1];
+        fileList[0] = new PublicationFile("Raw genotype data for the HRDP, including 92 strains and 18342 SNPs.", pubFilePath + "geno_phenogen.txt", "f15e24a9026baa6b9bc30a675cb3bf42");
+        resourceList.add(new Resource(250, "Rat", "", "Raw Genotype Data", fileList, downloadHeader));
+
+        fileList = new PublicationFile[1];
+        fileList[0] = new PublicationFile("SNP coordinates", pubFilePath + "anno_phenogen.txt", "f833ea0c906eafaa8f8396508d53a890");
+        resourceList.add(new Resource(251, "Rat", "", "SNP Meta Data", fileList, downloadHeader));
+
+        fileList = new PublicationFile[1];
+        fileList[0] = new PublicationFile("Kinship matrix estimated from the genotype data", pubFilePath + "kinship_phenogen.txt", "9eeb5e60c829a9f6bcaf7f43e5c63684");
+        resourceList.add(new Resource(252, "Rat", "", "Kinship Matrix", fileList, downloadHeader));
+
+        fileList = new PublicationFile[1];
+        fileList[0] = new PublicationFile("ReadMe", pubFilePath + "README.txt", "91435f23a5e0d8f372a10d4d202772b6");
+        resourceList.add(new Resource(253, "Rat", "", "Read Me", fileList, downloadHeader));
+
+        fileList = new PublicationFile[1];
+        fileList[0] = new PublicationFile("MD5 Checksums", pubFilePath + "md5_list.txt");
+        resourceList.add(new Resource(254, "Rat", "", "MD5 Checksums", fileList, downloadHeader));
+
+        Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
+        return resourceArray;
+    }
+
     public ArrayList<Resource[]> getPublications() {
         ArrayList<Resource[]> pubList = new ArrayList<>();
+        pubList.add(this.getPublicationResources12());
         pubList.add(this.getPublicationResources11());
-        pubList.add(this.getPublicationResources10());
+        //pubList.add(this.getPublicationResources10());
         pubList.add(this.getPublicationResources9());
         pubList.add(this.getPublicationResources8());
         pubList.add(this.getPublicationResources7());
@@ -1849,10 +1884,12 @@ public class Resource {
 
     public HashMap<String, Resource[]> getPublicationHash() {
         HashMap<String, Resource[]> hm = new HashMap<>();
-        Resource[] res = this.getPublicationResources11();
+        Resource[] res = this.getPublicationResources12();
         hm.put(res[0].getHashText(), res);
-        res = this.getPublicationResources10();
+        res = this.getPublicationResources11();
         hm.put(res[0].getHashText(), res);
+        //res = this.getPublicationResources10();
+        //hm.put(res[0].getHashText(), res);
         res = this.getPublicationResources9();
         hm.put(res[0].getHashText(), res);
         res = this.getPublicationResources8();

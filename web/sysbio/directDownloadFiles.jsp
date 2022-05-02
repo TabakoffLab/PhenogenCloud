@@ -53,7 +53,8 @@
       enctype="application/x-www-form-urlencoded"
       name="downloadFiles">
     <% if (type.equals("pub")) {%>
-    <div class="leftTitle">Files That Can Be Downloaded For <%=thisResource.getDownloadHeader()%>:</div>
+    <div class="leftTitle"><%=thisResource.getDescription()%> Files For:<BR> <%=thisResource.getDownloadHeader()%>
+    </div>
     <%} else {%>
     <div style="width:100%; text-align: center;" id="acknowledge">
         Please acknowledge you will properly cite downloaded PhenoGen Data when used in future publications. Additional information on citing PhenoGen can be
