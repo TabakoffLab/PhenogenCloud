@@ -1,65 +1,397 @@
 {
-  "nodes":[
-    {"id":0,"name":"What can you do with PhenoGen?","group":1,"groupName":"main","level":0},
-    {"id":1,"name":"Genome / Transcriptome Data Browser","group":2,"groupName":"genomeBrowse","level":1},
-    {"id":2,"name":"Download Data","group":3,"groupName":"download","level":1},
-    {"id":3,"name":"Microarray Analysis","group":4,"groupName":"microarray","level":1},
-    {"id":4,"name":"QTL Analysis","group":5,"groupName":"qtl","level":1},
-    {"id":5,"name":"Gene List Analysis","group":6,"groupName":"genelist","level":1},
-    {"id":6,"name":"Browse from a Gene","group":2,"groupName":"genomeBrowse","level":2,"descPage":"browseGene.jsp"},
-    {"id":7,"name":"Browse from a Region","group":2,"groupName":"genomeBrowse","level":2,"descPage":"browseRegion.jsp"},
-    {"id":8,"name":"Translate Regions Between Organisms","group":2,"groupName":"genomeBrowse","level":2,"descPage":"browseTranslate.jsp"},
-    {"id":9,"name":"Microarray Data","group":3,"groupName":"download","level":2,"descPage":"downloadMicroarray.jsp"},
-    {"id":10,"name":"RNA-Seq Data","group":3,"groupName":"download","level":2,"descPage":"downloadRNASeq.jsp"},
-    {"id":11,"name":"Access Previously Analyzed Data","group":4,"groupName":"microarray","level":2,"descPage":"microAnalysis.jsp"},
-    {"id":12,"name":"Access Public Data","group":4,"groupName":"microarray","level":2,"descPage":"microPublic.jsp"},
-    {"id":13,"name":"Visualize eQTLs - RNA-Seq","group":5,"groupName":"qtl","level":2,"descPage":"qtlViz.jsp"},
-    {"id":14,"name":"Visualize eQTLs - Microarrays","group":5,"groupName":"qtl","level":2,"descPage":"qtlViz.jsp"},
-    {"id":15,"name":"Annotations","group":6,"groupName":"genelist","level":2,"descPage":"glAnnot.jsp"},
-    {"id":16,"name":"Promoter Analysis","group":6,"groupName":"genelist","level":2,"descPage":"glPromoter.jsp"},
-    {"id":17,"name":"Compare / Share","group":6,"groupName":"genelist","level":2,"descPage":"glShare.jsp"},
-    {"id":18,"name":"Expression Values","group":6,"groupName":"genelist","level":2,"descPage":"glValues.jsp"},
-    {"id":19,"name":"Strain Specific Genomes","group":3,"groupName":"download","level":2,"descPage":"downloadGenome.jsp"},
-    {"id":20,"name":"Genomic Marker Files","group":3,"groupName":"download","level":2,"descPage":"downloadMarker.jsp"},
-    {"id":21,"name":"Homologs","group":6,"groupName":"genelist","level":2,"descPage":"glHomolog.jsp"},
-    {"id":22,"name":"General Info","group":7,"groupName":"announce","level":1},
-    {"id":23,"name":"What's New","group":7,"groupName":"announce","level":2,"descPage":"whats_new.jsp"},
-    {"id":24,"name":"Version Info","group":7,"groupName":"announce","level":2,"descPage":"curVer.jsp"},
-    {"id":25,"name":"Announce- ments","group":7,"groupName":"announce","level":2,"descPage":"announce.jsp"},
-    {"id":26,"name":"multiMiR","group":6,"groupName":"genelist","level":2,"descPage":"glmultiMiR.jsp"},
-    {"id":27,"name":"WGCNA","group":6,"groupName":"genelist","level":2,"descPage":"glWGCNA.jsp"},
-    {"id":28,"name":"Acknowledge- ments","group":7,"groupName":"announce","level":2,"descPage":"acknowledgements.jsp"},
-    {"id":29,"name":"Gene Ontology","group":6,"groupName":"genelist","level":2,"descPage":"glGO.jsp"}
+  "nodes": [
+    {
+      "id": 0,
+      "name": "What can you do with PhenoGen?",
+      "group": 1,
+      "groupName": "main",
+      "level": 0
+    },
+    {
+      "id": 1,
+      "name": "Genome / Transcriptome Data Browser",
+      "group": 2,
+      "groupName": "genomeBrowse",
+      "level": 1
+    },
+    {
+      "id": 2,
+      "name": "Download Data",
+      "group": 3,
+      "groupName": "download",
+      "level": 1
+    },
+    {
+      "id": 3,
+      "name": "Microarray Analysis",
+      "group": 4,
+      "groupName": "microarray",
+      "level": 1
+    },
+    {
+      "id": 4,
+      "name": "QTL Analysis",
+      "group": 5,
+      "groupName": "qtl",
+      "level": 1
+    },
+    {
+      "id": 5,
+      "name": "Gene List Analysis",
+      "group": 6,
+      "groupName": "genelist",
+      "level": 1
+    },
+    {
+      "id": 6,
+      "name": "Browse from a Gene",
+      "group": 2,
+      "groupName": "genomeBrowse",
+      "level": 2,
+      "descPage": "browseGene.jsp"
+    },
+    {
+      "id": 7,
+      "name": "Browse from a Region",
+      "group": 2,
+      "groupName": "genomeBrowse",
+      "level": 2,
+      "descPage": "browseRegion.jsp"
+    },
+    {
+      "id": 8,
+      "name": "Translate Regions Between Organisms",
+      "group": 2,
+      "groupName": "genomeBrowse",
+      "level": 2,
+      "descPage": "browseTranslate.jsp"
+    },
+    {
+      "id": 9,
+      "name": "Microarray Data",
+      "group": 3,
+      "groupName": "download",
+      "level": 2,
+      "descPage": "downloadMicroarray.jsp"
+    },
+    {
+      "id": 10,
+      "name": "RNA-Seq Data",
+      "group": 3,
+      "groupName": "download",
+      "level": 2,
+      "descPage": "downloadRNASeq.jsp"
+    },
+    {
+      "id": 11,
+      "name": "Access Previously Analyzed Data",
+      "group": 4,
+      "groupName": "microarray",
+      "level": 2,
+      "descPage": "microAnalysis.jsp"
+    },
+    {
+      "id": 12,
+      "name": "Access Public Data",
+      "group": 4,
+      "groupName": "microarray",
+      "level": 2,
+      "descPage": "microPublic.jsp"
+    },
+    {
+      "id": 13,
+      "name": "Visualize eQTLs - RNA-Seq",
+      "group": 5,
+      "groupName": "qtl",
+      "level": 2,
+      "descPage": "qtlViz.jsp"
+    },
+    {
+      "id": 14,
+      "name": "Visualize eQTLs - Microarrays",
+      "group": 5,
+      "groupName": "qtl",
+      "level": 2,
+      "descPage": "qtlViz.jsp"
+    },
+    {
+      "id": 15,
+      "name": "Annotations",
+      "group": 6,
+      "groupName": "genelist",
+      "level": 2,
+      "descPage": "glAnnot.jsp"
+    },
+    {
+      "id": 16,
+      "name": "Promoter Analysis",
+      "group": 6,
+      "groupName": "genelist",
+      "level": 2,
+      "descPage": "glPromoter.jsp"
+    },
+    {
+      "id": 17,
+      "name": "Compare / Share",
+      "group": 6,
+      "groupName": "genelist",
+      "level": 2,
+      "descPage": "glShare.jsp"
+    },
+    {
+      "id": 18,
+      "name": "Expression Values",
+      "group": 6,
+      "groupName": "genelist",
+      "level": 2,
+      "descPage": "glValues.jsp"
+    },
+    {
+      "id": 19,
+      "name": "Strain Specific Genomes",
+      "group": 3,
+      "groupName": "download",
+      "level": 2,
+      "descPage": "downloadGenome.jsp"
+    },
+    {
+      "id": 20,
+      "name": "Genomic Marker Files",
+      "group": 3,
+      "groupName": "download",
+      "level": 2,
+      "descPage": "downloadMarker.jsp"
+    },
+    {
+      "id": 21,
+      "name": "Homologs",
+      "group": 6,
+      "groupName": "genelist",
+      "level": 2,
+      "descPage": "glHomolog.jsp"
+    },
+    {
+      "id": 22,
+      "name": "General Info",
+      "group": 7,
+      "groupName": "announce",
+      "level": 1
+    },
+    {
+      "id": 23,
+      "name": "What's New",
+      "group": 7,
+      "groupName": "announce",
+      "level": 2,
+      "descPage": "whats_new.jsp"
+    },
+    {
+      "id": 24,
+      "name": "Version Info",
+      "group": 7,
+      "groupName": "announce",
+      "level": 2,
+      "descPage": "curVer.jsp"
+    },
+    {
+      "id": 25,
+      "name": "Announce- ments",
+      "group": 7,
+      "groupName": "announce",
+      "level": 2,
+      "descPage": "announce.jsp"
+    },
+    {
+      "id": 26,
+      "name": "multiMiR",
+      "group": 6,
+      "groupName": "genelist",
+      "level": 2,
+      "descPage": "glmultiMiR.jsp"
+    },
+    {
+      "id": 27,
+      "name": "WGCNA",
+      "group": 6,
+      "groupName": "genelist",
+      "level": 2,
+      "descPage": "glWGCNA.jsp"
+    },
+    {
+      "id": 28,
+      "name": "Acknowledge- ments",
+      "group": 7,
+      "groupName": "announce",
+      "level": 2,
+      "descPage": "acknowledgements.jsp"
+    },
+    {
+      "id": 29,
+      "name": "Gene Ontology",
+      "group": 6,
+      "groupName": "genelist",
+      "level": 2,
+      "descPage": "glGO.jsp"
+    },
+    {
+      "id": 30,
+      "name": "REST API",
+      "group": 3,
+      "groupName": "download",
+      "level": 2,
+      "descPage": "restapi.jsp"
+    }
   ],
-  "links":[
-    {"source":1,"target":0,"value":3},
-    {"source":2,"target":0,"value":3},
-    {"source":3,"target":0,"value":3},
-    {"source":4,"target":0,"value":3},
-    {"source":5,"target":0,"value":3},
-    {"source":6,"target":1,"value":3},
-    {"source":7,"target":1,"value":3},
-    {"source":8,"target":1,"value":3},
-    {"source":9,"target":2,"value":3},
-    {"source":10,"target":2,"value":3},
-    {"source":11,"target":3,"value":3},
-    {"source":12,"target":3,"value":3},
-    {"source":13,"target":4,"value":3},
-    {"source":14,"target":4,"value":3},
-    {"source":15,"target":5,"value":3},
-    {"source":16,"target":5,"value":3},
-    {"source":17,"target":5,"value":3},
-    {"source":18,"target":5,"value":3},
-    {"source":19,"target":2,"value":3},
-    {"source":20,"target":2,"value":3},
-    {"source":21,"target":5,"value":3},
-    {"source":22,"target":0,"value":3},
-    {"source":23,"target":22,"value":3},
-    {"source":24,"target":22,"value":3},
-    {"source":25,"target":22,"value":3},
-    {"source":26,"target":5,"value":3},
-    {"source":27,"target":5,"value":3},
-    {"source":28,"target":22,"value":3},
-    {"source":29,"target":5,"value":3}
+  "links": [
+    {
+      "source": 1,
+      "target": 0,
+      "value": 3
+    },
+    {
+      "source": 2,
+      "target": 0,
+      "value": 3
+    },
+    {
+      "source": 3,
+      "target": 0,
+      "value": 3
+    },
+    {
+      "source": 4,
+      "target": 0,
+      "value": 3
+    },
+    {
+      "source": 5,
+      "target": 0,
+      "value": 3
+    },
+    {
+      "source": 6,
+      "target": 1,
+      "value": 3
+    },
+    {
+      "source": 7,
+      "target": 1,
+      "value": 3
+    },
+    {
+      "source": 8,
+      "target": 1,
+      "value": 3
+    },
+    {
+      "source": 9,
+      "target": 2,
+      "value": 3
+    },
+    {
+      "source": 10,
+      "target": 2,
+      "value": 3
+    },
+    {
+      "source": 11,
+      "target": 3,
+      "value": 3
+    },
+    {
+      "source": 12,
+      "target": 3,
+      "value": 3
+    },
+    {
+      "source": 13,
+      "target": 4,
+      "value": 3
+    },
+    {
+      "source": 14,
+      "target": 4,
+      "value": 3
+    },
+    {
+      "source": 15,
+      "target": 5,
+      "value": 3
+    },
+    {
+      "source": 16,
+      "target": 5,
+      "value": 3
+    },
+    {
+      "source": 17,
+      "target": 5,
+      "value": 3
+    },
+    {
+      "source": 18,
+      "target": 5,
+      "value": 3
+    },
+    {
+      "source": 19,
+      "target": 2,
+      "value": 3
+    },
+    {
+      "source": 20,
+      "target": 2,
+      "value": 3
+    },
+    {
+      "source": 21,
+      "target": 5,
+      "value": 3
+    },
+    {
+      "source": 22,
+      "target": 0,
+      "value": 3
+    },
+    {
+      "source": 23,
+      "target": 22,
+      "value": 3
+    },
+    {
+      "source": 24,
+      "target": 22,
+      "value": 3
+    },
+    {
+      "source": 25,
+      "target": 22,
+      "value": 3
+    },
+    {
+      "source": 26,
+      "target": 5,
+      "value": 3
+    },
+    {
+      "source": 27,
+      "target": 5,
+      "value": 3
+    },
+    {
+      "source": 28,
+      "target": 22,
+      "value": 3
+    },
+    {
+      "source": 29,
+      "target": 5,
+      "value": 3
+    },
+    {
+      "source": 30,
+      "target": 2,
+      "value": 3
+    }
   ]
 }

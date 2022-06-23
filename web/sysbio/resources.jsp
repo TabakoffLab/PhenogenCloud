@@ -103,7 +103,7 @@
     pageTitle = "Download Resources";
     pageDescription = "Data resources available for downloading includes Microarrays, Sequencing, and GWAS data";
 %>
-<%@ include file="/web/common/header_noBorder.jsp" %>
+<%@ include file="/web/common/header_adaptive_menu.jsp" %>
 <% if (loggedIn && !(userLoggedIn.getUser_name().equals("anon"))) {%>
 <div style="width:100%;">
     <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
@@ -122,6 +122,7 @@
         options may be available. For these types, a window displays that allows you to choose specific files.</h2>
     <div style="width:100%;">
         <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
+            <span id="d7" class="detailMenu <%if(section.equals("rest")){%>selected<%}%>" name="rest">REST API / R</span>
             <span id="d2" class="detailMenu <%if(section.equals("rnaseq")){%>selected<%}%>" name="rnaseq">RNA-Seq</span>
             <span id="d6" class="detailMenu <%if(section.equals("dnaseq")){%>selected<%}%>" name="dnaseq">DNA-Seq</span>
             <span id="d1" class="detailMenu <%if(section.equals("array")){%>selected<%}%>" name="array">Microarray</span>
@@ -129,6 +130,9 @@
             <span id="d4" class="detailMenu <%if(section.equals("pub")){%>selected<%}%>" name="pub">Publications</span>
 
         </div>
+    </div>
+    <div id="rest" style="<%if(!section.equals("rest")){%>display:none;<%}%>border-top:1px solid black;">
+        test
     </div>
     <div id="array" style="<%if(!section.equals("array")){%>display:none;<%}%>border-top:1px solid black;">
         <form method="post"
@@ -268,6 +272,95 @@
         </form>
     </div>
     <div id="rnaseq" style="<%if(!section.equals("rnaseq")){%>display:none;<%}%>border-top:1px solid black;">
+        <div class="title"> New RNA Sequencing Datasets Experimental Details/Downloads</div>
+        <form method="post"
+              action="resources.jsp"
+              enctype="application/x-www-form-urlencoded"
+              name="resources">
+            <table id="rnaseqTbl" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3">
+                <thead>
+                <tr class="col_title">
+
+                    <TH>Description</TH>
+                    <th>Organism</th>
+                    <th>Strain</th>
+                    <th>Tissue</th>
+                    <th>Seq. Tech.</th>
+                    <th>RNA Type</th>
+                    <th>Read Type</th>
+                    <TH>Genome<BR>Versions</th>
+                    <th>Experimental<BR>Details</th>
+                    <TH>Raw Data Downloads</TH>
+                    <TH>Result Downloads</TH>
+                </tr>
+                </thead>
+                <tbody>
+                <% for (int i = 0; i < publicRNADatasets.size(); i++) {
+                    String tech = "";
+                    ArrayList<String> tmpTech = publicRNADatasets.get(i).getSeqTechFromSamples();
+                    for (int j = 0; j < tmpTech.size(); j++) {
+                        if (j > 0) {
+                            tech = tech + ", ";
+                        }
+                        tech = tech + tmpTech.get(j);
+                    }
+                    String readType = "";
+                    ArrayList<String> tmpType = publicRNADatasets.get(i).getReadTypeFromSamples();
+                    for (int j = 0; j < tmpType.size(); j++) {
+                        if (j > 0) {
+                            readType = readType + ", ";
+                        }
+                        readType = readType + tmpType.get(j);
+                    }
+                    String genomeVer = "";
+                    ArrayList<String> tmpGV = publicRNADatasets.get(i).getResultGenomeVer();
+                    for (int j = 0; j < tmpGV.size(); j++) {
+                        if (j > 0) {
+                            genomeVer = genomeVer + ", ";
+                        }
+                        genomeVer = genomeVer + tmpGV.get(j);
+                    }
+                %>
+                <TR id="<%=publicRNADatasets.get(i).getRnaDatasetID()%>">
+
+                    <TD><%=publicRNADatasets.get(i).getDescription()%>
+                    </TD>
+                    <TD><%=publicRNADatasets.get(i).getOrganism()%>
+                    </TD>
+                    <TD><%=publicRNADatasets.get(i).getPanel()%>
+                    </TD>
+                    <TD><%=publicRNADatasets.get(i).getTissue()%>
+                    </TD>
+                    <TD><%=tech%>
+                    </TD>
+                    <TD><%=publicRNADatasets.get(i).getSeqType()%>
+                    </TD>
+                    <TD><%=readType%>
+                    </TD>
+                    <TD><%=genomeVer%>
+                    </TD>
+                    <td class="actionIcons">
+                        <div class="linkedImg info" type="rnaseqMeta">
+                            <div>
+                    </td>
+                    <td class="actionIcons">
+                        <%if (publicRNADatasets.get(i).getRawDownloadFileCount() > 0) {%>
+                        <div class="linkedImg download" type="rnaseqRaw">
+                            <div>
+                                    <%}%>
+                    </td>
+                    <td class="actionIcons">
+                        <%if (publicRNADatasets.get(i).getResultDownloadCount() > 0) {%>
+                        <div class="linkedImg download" type="rnaseqResults">
+                            <div>
+                                    <%}%>
+                    </td>
+                </TR>
+                <%}%>
+                </tbody>
+            </table>
+        </form>
+        <BR><BR><BR>
         <form method="post"
               action="resources.jsp"
               enctype="application/x-www-form-urlencoded"
@@ -382,95 +475,6 @@
 
         </form>
 
-
-        <div class="title"> New RNA Sequencing Datasets Experimental Details/Downloads</div>
-        <form method="post"
-              action="resources.jsp"
-              enctype="application/x-www-form-urlencoded"
-              name="resources">
-            <table id="rnaseqTbl" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3">
-                <thead>
-                <tr class="col_title">
-
-                    <TH>Description</TH>
-                    <th>Organism</th>
-                    <th>Strain</th>
-                    <th>Tissue</th>
-                    <th>Seq. Tech.</th>
-                    <th>RNA Type</th>
-                    <th>Read Type</th>
-                    <TH>Genome<BR>Versions</th>
-                    <th>Experimental<BR>Details</th>
-                    <TH>Raw Data Downloads</TH>
-                    <TH>Result Downloads</TH>
-                </tr>
-                </thead>
-                <tbody>
-                <% for (int i = 0; i < publicRNADatasets.size(); i++) {
-                    String tech = "";
-                    ArrayList<String> tmpTech = publicRNADatasets.get(i).getSeqTechFromSamples();
-                    for (int j = 0; j < tmpTech.size(); j++) {
-                        if (j > 0) {
-                            tech = tech + ", ";
-                        }
-                        tech = tech + tmpTech.get(j);
-                    }
-                    String readType = "";
-                    ArrayList<String> tmpType = publicRNADatasets.get(i).getReadTypeFromSamples();
-                    for (int j = 0; j < tmpType.size(); j++) {
-                        if (j > 0) {
-                            readType = readType + ", ";
-                        }
-                        readType = readType + tmpType.get(j);
-                    }
-                    String genomeVer = "";
-                    ArrayList<String> tmpGV = publicRNADatasets.get(i).getResultGenomeVer();
-                    for (int j = 0; j < tmpGV.size(); j++) {
-                        if (j > 0) {
-                            genomeVer = genomeVer + ", ";
-                        }
-                        genomeVer = genomeVer + tmpGV.get(j);
-                    }
-                %>
-                <TR id="<%=publicRNADatasets.get(i).getRnaDatasetID()%>">
-
-                    <TD><%=publicRNADatasets.get(i).getDescription()%>
-                    </TD>
-                    <TD><%=publicRNADatasets.get(i).getOrganism()%>
-                    </TD>
-                    <TD><%=publicRNADatasets.get(i).getPanel()%>
-                    </TD>
-                    <TD><%=publicRNADatasets.get(i).getTissue()%>
-                    </TD>
-                    <TD><%=tech%>
-                    </TD>
-                    <TD><%=publicRNADatasets.get(i).getSeqType()%>
-                    </TD>
-                    <TD><%=readType%>
-                    </TD>
-                    <TD><%=genomeVer%>
-                    </TD>
-                    <td class="actionIcons">
-                        <div class="linkedImg info" type="rnaseqMeta">
-                            <div>
-                    </td>
-                    <td class="actionIcons">
-                        <%if (publicRNADatasets.get(i).getRawDownloadFileCount() > 0) {%>
-                        <div class="linkedImg download" type="rnaseqRaw">
-                            <div>
-                                    <%}%>
-                    </td>
-                    <td class="actionIcons">
-                        <%if (publicRNADatasets.get(i).getResultDownloadCount() > 0) {%>
-                        <div class="linkedImg download" type="rnaseqResults">
-                            <div>
-                                    <%}%>
-                    </td>
-                </TR>
-                <%}%>
-                </tbody>
-            </table>
-        </form>
 
     </div>
     <div id="dnaseq" style="<%if(!section.equals("dnaseq")){%>display:none;<%}%>border-top:1px solid black;">
@@ -725,7 +729,10 @@
         <div><input type="button" value="Apply" onclick="updateSharedList()"><input type="hidden" value="-99" id="fileID"><span id="status"></span></div>
     </div>
 </div>
-<%@ include file="/web/common/footer.jsp" %>
+
+<%@ include file="/web/common/basicFooter.jsp" %>
+
+
 <script type="text/javascript">
     var curUID =<%=userLoggedIn.getUser_id()%>;
     var section = "<%=section%>";
@@ -733,6 +740,7 @@
     var pipelineModal;
     var metaModal;
     $(document).ready(function () {
+        $(".search").css("position", "relative").css("top", -16);
         $('.toolTip').tooltipster({
             position: 'top-right',
             maxWidth: 250,
