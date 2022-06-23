@@ -26,7 +26,7 @@
     totalPublicArrays = myArrayCounts[0].getPublicCount();
 %>
 
-<div id="welcome" style="height:575px; width:980px; overflow:auto;">
+<div id="welcome" style="min-height:575px;">
 
     <h2>Microarray Tools</h2>
 
@@ -102,4 +102,4 @@
     });
 
 </script>
-<%@ include file="/web/common/footer.jsp" %>
+<%@ include file="/web/common/footer_adaptive.jsp" %>

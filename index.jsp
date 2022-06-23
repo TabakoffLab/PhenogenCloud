@@ -6,7 +6,7 @@
     session.setAttribute("mainFunctionStep", "");
 
     //loggedIn = false;
-
+    extrasList.add("index.css");
     extrasList.add("jquery.fancybox.css");
     extrasList.add("jquery.fancybox-thumbs.css");
     extrasList.add("fancyBox/helpers/jquery.fancybox-thumbs.js");
@@ -82,7 +82,7 @@
     <!--<div id="primary-content">-->
     <div id="welcome" style="width:100%;margin:0px,0px,0px,0px;">
         <h1 id="index" class="homePage">Welcome to PhenoGen Informatics</h1>
-        <H2> The site for quantitative genetics of the transcriptome.</h2>
+        <H2 style="color:#FFFFFF;"> The site for quantitative genetics of the transcriptome.</h2>
         <div style="text-align:center;">
             <%@ include file="/web/common/indexGraph.jsp" %>
         </div>

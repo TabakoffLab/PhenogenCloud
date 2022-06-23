@@ -33,7 +33,7 @@
         <div style=" font-size:12px;">The site for quantitative genetics of the transcriptome.</div>
     </div>
     <div class="header_status">
-        <div class="search" style="width:350px;float:right;">
+        <div class="search" style="width:350px;float:right;position:relative;top:-14px;">
             <script>
                 (function () {
                     var cx = '002251072100941693273:v3xvo3chde4';

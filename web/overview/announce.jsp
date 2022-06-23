@@ -10,8 +10,14 @@
 --%>
 
 
-<H2>Announcements</H2>
-<div style="overflow:auto;height:92%;margin-left: 10px;">
+<H2 style="font-size: 24px;">Announcements</H2>
+<div style="overflow:auto;height:92%;margin-left: 10px;" class="announcement">
+    <H2 style="font-weight: bold;font-size:20px;">REST API</H2>
+    <div style="margin-left:5px;">
+        6/22/22 - The dataset functions on the REST API are available to get files for the current datasets in rn6. Rn7 is coming soon. <BR>
+        <BR>
+        R functions are also available to pull data directly into R.
+    </div>
     <H2 style="font-weight: bold;font-size:20px;">eQTLs for HRDP v5</H2>
     <div style="margin-left:5px;">
         11/1/21 - Brain/Liver/Kidney eQTLs using the full panel of HRDP animals available 43 strains have now been calculated with GEMMA and are available now.

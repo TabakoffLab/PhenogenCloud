@@ -611,3 +611,11 @@ table.index td.full {
 table.index td.none {
     width: 0%;
 }
+
+.announcement h2 {
+    background: #3e3e3e;
+    color: #FFFFFF;
+    margin-top: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}

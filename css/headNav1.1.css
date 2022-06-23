@@ -128,8 +128,8 @@
 }
 
 #footer_adapt {
-    /*position: absolute;*/
-    bottom: 0;
+    position: absolute;
+    bottom: -37px;
     width: 100%;
     height: 60px; /* Height of the footer */
     background-color: #365473;
