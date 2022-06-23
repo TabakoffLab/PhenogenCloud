@@ -86,7 +86,7 @@ mouseOnly.probeMouse = 1;
 
 var mmVer = "Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer = "Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer = "PhenoGen v3.7.9(8/5/2021)";
+var siteVer = "PhenoGen v3.7.10(6/23/2022)";
 
 var trackBinCutoff = 10000;
 var customTrackLevel = -1;
@@ -3279,53 +3279,62 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
         orgVer = rnVer;
     }
     var header = d3.select("div#imageHeader").html("Organism: " + orgVer + "&nbsp&nbsp&nbsp&nbsp" + siteVer);
-    if ($('span#verSelect').length > 0) {
-        var tmpSel = d3.select('span#verSelect').append('select');
-        if (that.allowSelectGenomeVer) {
-            tmpSel.on("change", function () {
-                //$('input#genomeVer').val($(this).val());
-                displayWorking();
-                if (isLocalStorage() === true) {
-                    localStorage.setItem(organism + "DefGenomeVer", $(this).val());
-                } else {
-                    $.cookie(organism + "DefGenomeVer", $(this).val());
+    setTimeout(function () {
+        if ($('span#verSelect').length > 0) {
+            var tmpSel = d3.select('span#verSelect').append('select');
+            if (that.allowSelectGenomeVer) {
+                tmpSel.on("change", function () {
+                    //$('input#genomeVer').val($(this).val());
+                    displayWorking();
+                    if (isLocalStorage() === true) {
+                        localStorage.setItem(organism + "DefGenomeVer", $(this).val());
+                    } else {
+                        $.cookie(organism + "DefGenomeVer", $(this).val());
 
+                    }
+                    changeGenome($(this).val(), that.currentView);
+                    setTimeout(function () {
+                        //console.log("submit genomeVer"+$('input#genomeVer').attr("value"));
+                        $('form#geneCentricForm').submit();
+                    }, 1500);
+                });
+                if (organism === 'Rn') {
+                    console.log("running update org:");
+                    /*var rn7Opt = tmpSel.append('option')
+                        .attr('value', 'rn7')
+                        .html('rn7');
+                    console.log("rn7 added");
+                    if (genomeVer === 'rn7') {
+                        rn7Opt.attr('selected', 'selected');
+                    }*/
+                    var rn6Opt = tmpSel.append('option')
+                        .attr('value', 'rn6')
+                        .html('rn6');
+                    if (genomeVer === 'rn6') {
+                        rn6Opt.attr('selected', 'selected');
+                    }
+                    var rn5Opt = tmpSel.append('option')
+                        .attr('value', 'rn5')
+                        .html('rn5');
+                    if (genomeVer === 'rn5') {
+                        rn5Opt.attr('selected', 'selected');
+                    }
+                } else if (organism === 'Mm') {
+                    var mm10Opt = tmpSel.append('option')
+                        .attr('value', 'mm10')
+                        .html('mm10');
+                    if (genomeVer === 'mm10') {
+                        mm10Opt.attr('selected', 'selected');
+                    }
                 }
-                changeGenome($(this).val(), that.currentView);
-                setTimeout(function () {
-                    //console.log("submit genomeVer"+$('input#genomeVer').attr("value"));
-                    $('form#geneCentricForm').submit();
-                }, 1500);
-            });
-            if (organism === 'Rn') {
-                var rn6Opt = tmpSel.append('option')
-                    .attr('value', 'rn6')
-                    .html('rn6');
-                if (genomeVer === 'rn6') {
-                    rn6Opt.attr('selected', 'selected');
-                }
-                var rn5Opt = tmpSel.append('option')
-                    .attr('value', 'rn5')
-                    .html('rn5');
-                if (genomeVer === 'rn5') {
-                    rn5Opt.attr('selected', 'selected');
-                }
-            } else if (organism === 'Mm') {
-                var mm10Opt = tmpSel.append('option')
-                    .attr('value', 'mm10')
-                    .html('mm10');
-                if (genomeVer === 'mm10') {
-                    mm10Opt.attr('selected', 'selected');
-                }
+                //setTimeout(function(){console.log(genomeVer);tmpSel.property( "value", genomeVer );},1000);
+            } else {
+                tmpSel.append('option')
+                    .attr('value', genomeVer)
+                    .html(genomeVer);
             }
-            //setTimeout(function(){console.log(genomeVer);tmpSel.property( "value", genomeVer );},1000);
-        } else {
-            tmpSel.append('option')
-                .attr('value', genomeVer)
-                .html(genomeVer);
         }
-
-    }
+    }, 500);
     //Add Sequence Track
 
     that.addTrack("genomeSeq", 3, "both", 0);

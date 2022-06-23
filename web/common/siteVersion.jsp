@@ -9,15 +9,17 @@
 --%>
 
 <%@ include file="/web/access/include/login_vars.jsp" %>
-<%pageTitle="Version";
-pageDescription="Current website version and external software versions";%>
-<%@ include file="/web/common/header.jsp" %>
+<%
+    pageTitle = "Version";
+    pageDescription = "Current website version and external software versions";
+%>
+<%@ include file="/web/common/header_adaptive_menu.jsp" %>
 
 
-        <div id="overview-content">
-        <div id="welcome" style="height:845px; width:962px;">
-				<%@ include file="/web/common/siteVersion_content.jsp" %>
-       	</div>
+<div id="overview-content">
+    <div id="welcome" style="height:845px; width:962px;padding-left: 10px;">
+        <%@ include file="/web/common/siteVersion_content.jsp" %>
     </div>
+</div>
 
-<%@ include file="/web/common/footer.jsp" %>
+<%@ include file="/web/common/footer_adaptive.jsp" %>

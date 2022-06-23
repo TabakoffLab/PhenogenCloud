@@ -103,7 +103,7 @@
     pageTitle = "Download Resources";
     pageDescription = "Data resources available for downloading includes Microarrays, Sequencing, and GWAS data";
 %>
-<%@ include file="/web/common/header_noBorder.jsp" %>
+<%@ include file="/web/common/header_adaptive_menu.jsp" %>
 <% if (loggedIn && !(userLoggedIn.getUser_name().equals("anon"))) {%>
 <div style="width:100%;">
     <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
@@ -122,6 +122,7 @@
         options may be available. For these types, a window displays that allows you to choose specific files.</h2>
     <div style="width:100%;">
         <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
+            <span id="d7" class="detailMenu <%if(section.equals("rest")){%>selected<%}%>" name="rest">REST API / R</span>
             <span id="d2" class="detailMenu <%if(section.equals("rnaseq")){%>selected<%}%>" name="rnaseq">RNA-Seq</span>
             <span id="d6" class="detailMenu <%if(section.equals("dnaseq")){%>selected<%}%>" name="dnaseq">DNA-Seq</span>
             <span id="d1" class="detailMenu <%if(section.equals("array")){%>selected<%}%>" name="array">Microarray</span>
@@ -129,6 +130,9 @@
             <span id="d4" class="detailMenu <%if(section.equals("pub")){%>selected<%}%>" name="pub">Publications</span>
 
         </div>
+    </div>
+    <div id="rest" style="<%if(!section.equals("rest")){%>display:none;<%}%>border-top:1px solid black;">
+        test
     </div>
     <div id="array" style="<%if(!section.equals("array")){%>display:none;<%}%>border-top:1px solid black;">
         <form method="post"
@@ -268,7 +272,6 @@
         </form>
     </div>
     <div id="rnaseq" style="<%if(!section.equals("rnaseq")){%>display:none;<%}%>border-top:1px solid black;">
-
         <div class="title"> New RNA Sequencing Datasets Experimental Details/Downloads</div>
         <form method="post"
               action="resources.jsp"
@@ -357,7 +360,8 @@
                 </tbody>
             </table>
         </form>
-        <BR><BR>
+
+        <BR><BR><BR>
         <form method="post"
               action="resources.jsp"
               enctype="application/x-www-form-urlencoded"
@@ -728,7 +732,10 @@
         <div><input type="button" value="Apply" onclick="updateSharedList()"><input type="hidden" value="-99" id="fileID"><span id="status"></span></div>
     </div>
 </div>
-<%@ include file="/web/common/footer.jsp" %>
+
+<%@ include file="/web/common/footer_adaptive.jsp" %>
+
+
 <script type="text/javascript">
     var curUID =<%=userLoggedIn.getUser_id()%>;
     var section = "<%=section%>";
@@ -736,6 +743,7 @@
     var pipelineModal;
     var metaModal;
     $(document).ready(function () {
+        $(".search").css("position", "relative").css("top", -16);
         $('.toolTip').tooltipster({
             position: 'top-right',
             maxWidth: 250,
