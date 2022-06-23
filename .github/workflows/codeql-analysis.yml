@@ -10,7 +10,8 @@
 # supported CodeQL languages.
 #
 name: "CodeQL"
-
+with:
+  debug: true
 on:
   push:
     branches: [ master ]
@@ -65,9 +66,8 @@ jobs:
       #- run: |
       #   make bootstrap
       #   make release
-      - run: |
-          cd src
-          ant
+      - run: ant build.xml
+      - working-directory: ./src
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
