@@ -10,8 +10,14 @@
 --%>
 
 
-<H2>Announcements</H2>
-<div style="overflow:auto;height:92%;margin-left: 10px;">
+<H2 style="font-size: 24px;">Announcements</H2>
+<div style="overflow:auto;height:92%;margin-left: 10px;" class="announcement">
+    <H2 style="font-weight: bold;font-size:20px;">REST API</H2>
+    <div style="margin-left:5px;">
+        6/22/22 - The dataset functions on the REST API are available to get files for the current datasets in rn6. Rn7 is coming soon. <BR>
+        <BR>
+        R functions are also available to pull data directly into R.
+    </div>
     <H2 style="font-weight: bold;font-size:20px;">OSGA Webinar #26 </H2>
     <div style="margin-left:5px;">
         <H3>Genome-wide Association Study Summary Statistics - Where to find them and how to use them</H3>
@@ -62,6 +68,7 @@
         <BR>
         <a href="http://opar.io/webinar_series_1.html">Series Information and Previously Recorded Webinars</a>
     </div>
+
 
     <H2 style="font-weight: bold;font-size:20px;">eQTLs for HRDP v5</H2>
     <div style="margin-left:5px;">

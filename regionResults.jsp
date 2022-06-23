@@ -196,10 +196,9 @@
     <div style="border-color:#CCCCCC; border-width:1px; border-style:inset; text-align:center;">
         <span id="mouseHelp" style=" min-height:20px;">Navigation Hints: Hold mouse over areas of the image for available actions.</span> <BR/>
         <div id="collapsableImage" class="geneimage">
-
             <div id="geneImage" class="ucscImage" style="display:inline-block;width:100%;">
-                <script src="javascript/gdb.2.9.13.min.js" type="text/javascript"></script>
 
+                <script src="javascript/gdb.2.9.14.min.js" type="text/javascript"></script>
                 <!--<script src="javascript/GenomeDataBrowser2.9.5.js" type="text/javascript"></script>
                 <script src="javascript/GenomeReport2.7.2.js" type="text/javascript"></script>
                 <script src="javascript/GenomeViewMenu2.6.3.js" type="text/javascript"></script>
@@ -211,7 +210,6 @@
     </div><!--end Border Div -->
     <div id="regionDiv">
         <BR/>
-
         <div style="width:100%;">
             <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
                 <span id="detail1" class="detailMenu selected" name="regionSummary">Track Details<div class="inpageHelp" style="display:inline-block; "><img
