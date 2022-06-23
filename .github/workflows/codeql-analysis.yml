@@ -66,8 +66,9 @@ jobs:
       #- run: |
       #   make bootstrap
       #   make release
-      - run: ant build.xml
-      - working-directory: ./src
+      - name: Compile
+      run: ant build.xml
+      working-directory: ./src
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
