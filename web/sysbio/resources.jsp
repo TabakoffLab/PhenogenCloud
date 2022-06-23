@@ -98,6 +98,10 @@
     span.action {
         cursor: pointer;
     }
+
+    div {
+        font-size: 16px;
+    }
 </style>
 <%
     pageTitle = "Download Resources";
@@ -132,7 +136,86 @@
         </div>
     </div>
     <div id="rest" style="<%if(!section.equals("rest")){%>display:none;<%}%>border-top:1px solid black;">
-        test
+        <H1 style="background: #3c3c3c;">PhenoGen REST API</H1>
+        <BR>
+        <div>
+            We are building a REST API to provide access to all public data. Eventually this will also
+            include running most functions available through the website. Keep checking back for new functions.
+        </div>
+        <BR>
+        <H2>Domains for Functions Calls:</H2>
+        <BR>
+        <div>
+            Functions can be called at either:<BR>
+            <a href="https://rest.phenogen.org" target="_blank">https://rest.phenogen.org</a><BR>
+            or<BR>
+            <a href="https://rest-test.phenogen.org" target="_blank">https://rest-test.phenogen.org</a><BR>
+            Please note this is a development and testing version of the API. Please do not use this
+            for actual data analysis. Only for development.
+        </div>
+        <BR>
+        <H2>Help</H2>
+        <BR>
+        Documentation at <a href="https://rest-doc.phenogen.org" target="_blank">https://rest-doc.phenogen.org</a>
+        <BR>
+        All functions should include help as a response if you call the function with this appended to the
+        end `?help=Y`. The response returns a JSON object with supported methods and then list of parameters
+        and description of each parameter as well as a list of options if there is a defined list of values.
+        <BR>
+        <BR>
+        <BR>
+        <H1 style="background: #3c3c3c;">PhenoGenRESTR</H1><BR>
+        <div>We are developing methods to call the REST API from R and to retrieve the data directly from PhenoGen into
+            R. For now this is limited to the datasets at https://phenogen.org/web/sysbio/resources.jsp -> New RNA
+            Sequencing Datasets Experimental Details/Downloads
+        </div>
+        <BR>
+        <div>We will turn this into an R package and release it. Check for updates frequently we will try to update along with new REST API
+            functions.
+        </div>
+        <BR>
+        <div>As downloaded this will call the production REST API version (https://rest.phenogen.org).
+            Please use this for all analysis. You are welcome to use the development and test
+            version, by changing the phenogenURL variable to (https://rest-test.phenogen.org), but
+            please only use this for testing and please be aware the rate of calls allows is more limited.
+            <BR><BR>
+            New functions that haven't been deployed to production will appear in testing first and will
+            be implemented in development branch first.
+        </div>
+        <BR>
+        <H2>Currently supported functions:</H2><BR>
+        <BR>
+        <H3> getDatasets()</H3>
+        <div>getDatasets(genomeVer,organism,panel,type,tissue,help) - returns a
+            dataframe containing a list of datasets available. If you specify any parameters
+            it will filter the list based on the parameters. (type must be either "totalRNA"
+            or "smallRNA")
+        </div>
+        <BR><BR>
+        <H3>getDatasetResults()</H3>
+        <div>
+            getDatasetResults(datasetID,help) - returns a list of results for the dataset.
+            Results reflect different types of data, transcriptome reconstruction, RSEM
+            results on a specific version of the transcriptome. From the results you can
+            request a list of files( getDatasetResultFiles() ).
+        </div>
+        <BR><BR>
+        <H3>getDatasetResultFiles()</H3>
+        <div>
+            getDatasetResultFiles(datasetID,resultID,help) - returns a list of files for the
+            dataset/result specified. The results include the URL to download the file and
+            can be given to getDatasetResultFile() to load the file into R.
+        </div>
+        <BR><BR>
+        <H3>getDatasetResultFile()</H3>
+        <div>
+            getDatasetResultFile(URL) - tries to read a table from the given file and return
+            the dataframe. It does support gzipped files and unzipped files. Currently it
+            assumes tab delimited for anything other than .csv. It will change the delimiter
+            if the file ends in .csv.
+        </div>
+
+
     </div>
     <div id="array" style="<%if(!section.equals("array")){%>display:none;<%}%>border-top:1px solid black;">
         <form method="post"
