@@ -78,6 +78,9 @@
 <%@ include file="/web/common/header_adaptive_noMenu.jsp" %>
 <%} else {%>
 <%@ include file="/web/common/header_adaptive_menu.jsp" %>
+<div id="wait1" style="background:#FFFFFF;"><img src="<%=imagesDir%>wait.gif" alt="Working..."/><BR/>Working...Genes
+    should load within 5-10 seconds. Regions depend on the size(ex. 10 Megabases may take ~1 minute).
+</div>
 <%}%>
 <%@ include file="/web/GeneCentric/browserCSS.jsp" %>
 
