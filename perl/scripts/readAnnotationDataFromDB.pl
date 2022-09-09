@@ -66,11 +66,11 @@ sub readTranscriptAnnotationDataFromDB{
 		where rta.source_id=ras.rna_annot_src_id
 		and rta.rna_transcript_id in
 		(Select rt.rna_transcript_id
-			from rna_transcripts rt, rna_exons re,chromosomes c 
+			from rna_transcripts rt, chromosomes c
 			where 
 			c.chromosome_id=rt.chromosome_id 
-			and c.name =  '".uc($geneChrom)."' "."
-			and re.rna_transcript_id=rt.rna_transcript_id ";
+			and c.name =  '".uc($geneChrom)."' ";
+			## "and re.rna_transcript_id=rt.rna_transcript_id ";
                  if(index($dsid,",")>-1){
                     $query=$query." and rt.rna_dataset_id in (".$dsid.")";
                 }else{
