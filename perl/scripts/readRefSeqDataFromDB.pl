@@ -50,7 +50,7 @@ sub readRefSeqDataFromDB{
 			order by g.txStart,g.name2;";
 
 	#if DB is rn6 or mm10 use new query
-	if(index($dsn,"rn6")>-1 || index($dsn,"mm10")>-1){
+	if(index($dsn,"rn7")>-1 || index($dsn,"rn6")>-1 || index($dsn,"mm10")>-1){
 		$query ="SELECT g.name,g.chrom,g.strand,g.txStart,g.txEnd,g.cdsStart,g.cdsEnd,g.exonStarts,g.exonEnds,g.name2,s.status
 			FROM ncbiRefSeq g, ncbiRefSeqLink s
 			where g.chrom='".$geneChrom."'

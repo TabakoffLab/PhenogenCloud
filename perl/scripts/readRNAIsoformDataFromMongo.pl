@@ -59,10 +59,8 @@ sub getRNADatasetFromDB{
     }else{
             $query=$query." and rd2.build_version='".$version."'";
     }
-
-    print $query." order by rd2.build_version\n";
+    print $query."\n";
     $query_handle = $connect->prepare($query) or die (" RNA Isoform query prepare failed \n");
-
     # EXECUTE THE QUERY
     $query_handle->execute() or die ( "RNA Isoform query execute failed \n");
     my $dsid;
@@ -173,7 +171,8 @@ sub readRNAIsoformDataFromDB{
 	#Initializing Arrays
 
 	my %geneHOH; # giant array of hashes and arrays containing probeset data
-	
+
+	if($dsid ne ""){
 	if(length $geneChrom<5) {
 		# DATA SOURCE NAME
 		#$dsn = "dbi:$platform:$service_name";
@@ -474,6 +473,9 @@ sub readRNAIsoformDataFromDB{
 		}
 		#close PSFILE;
 		$geneHOH{ver} = $version;
+	}
+	}else{
+	    print "ERROR: no DSID found\n";
 	}
 	#print "Gene".scalar(keys %geneHOH)."\n";
 	#print "gene name".$geneHOH{Gene}[0]{ID}."\n";

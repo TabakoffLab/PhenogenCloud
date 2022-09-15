@@ -3300,13 +3300,13 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 });
                 if (organism === 'Rn') {
                     console.log("running update org:");
-                    /*var rn7Opt = tmpSel.append('option')
+                    var rn7Opt = tmpSel.append('option')
                         .attr('value', 'rn7')
                         .html('rn7');
                     console.log("rn7 added");
                     if (genomeVer === 'rn7') {
                         rn7Opt.attr('selected', 'selected');
-                    }*/
+                    }
                     var rn6Opt = tmpSel.append('option')
                         .attr('value', 'rn6')
                         .html('rn6');
