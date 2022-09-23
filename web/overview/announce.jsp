@@ -20,6 +20,11 @@
         <BR><BR>
         Come and see the PhenoGen Poster on the Rn7/HRDP v6 Dataset and the REST API.(It will be posted here by the time of the meeting.)
     </div>
+    <H2 style="font-weight: bold;font-size:20px;">Rn7 is available</H2>
+    <div style="margin-left:5px;">
+        9/22/22 - Rn7/HRDPv6 is available in the genome browser. Downloads/REST API update soon. WGCNA and eQTLs are not yet available but will be updated soon.<BR><BR>
+        HRDP v6 includes 58 strains in Brain/Liver. Kidney on HXB/BXH is available. Heart with 1 sample in 20 strains of HXB/BXH is also now available.
+    </div>
     <H2 style="font-weight: bold;font-size:20px;">REST API</H2>
     <div style="margin-left:5px;">
         6/22/22 - The dataset functions on the REST API are available to get files for the current datasets in rn6. Rn7 is coming soon. <BR>

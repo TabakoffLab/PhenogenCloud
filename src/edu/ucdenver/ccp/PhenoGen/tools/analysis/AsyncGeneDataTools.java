@@ -131,7 +131,9 @@ public class AsyncGeneDataTools extends Thread {
             outputRNASeqExprFiles(outputDir, chrom, minCoord, maxCoord, genomeVer, version);
             if (isEnsemblGene) {
                 //log.debug("Before outputProbesetID");
-                outputProbesetIDFiles(outputDir, chrom, minCoord, maxCoord, arrayTypeID, genomeVer);
+                if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
+                    outputProbesetIDFiles(outputDir, chrom, minCoord, maxCoord, arrayTypeID, genomeVer);
+                }
                 //log.debug("before DEHeatMap");
                 //callDEHeatMap(outputDir,chrom, minCoord, maxCoord,arrayTypeID,rnaDatasetID,genomeVer);
                 //log.debug("before Panel HErit");

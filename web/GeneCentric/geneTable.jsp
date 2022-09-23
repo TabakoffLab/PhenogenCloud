@@ -183,6 +183,10 @@
 
 
     <%
+        String hrdpVer = "HRDP v5";
+        if (genomeVer.equals("rn7")) {
+            hrdpVer = "HRDP v6";
+        }
         String[] hTissues = new String[0];
         String[] dTissues = new String[0];
         if (fullGeneList.size() > 0) {
@@ -208,16 +212,28 @@
                     <%}%>
                     class="center noSort topLine">Transcript Information
             </th>
-            <%if (myOrganism.equals("Rn")) {%>
-            <th colspan="15" class="center noSort topLine" title="Ensembl Transcriptome HRDP v5 Ribosome Depleted TotalRNA Data">Ensembl Transcriptome HRDP v5
+            <%
+                if (myOrganism.equals("Rn")) {
+                    String columns = "15";
+                    if (genomeVer.equals("rn7")) {
+                        columns = "20";
+                    }
+            %>
+            <th colspan="<%=columns%>" class="center noSort topLine" title="Ensembl Transcriptome <%=hrdpVer%> Ribosome Depleted TotalRNA Data">Ensembl
+                Transcriptome <%=hrdpVer%>
                 Ribosome Depleted TotalRNA
                 <div class="inpageHelp" style="display:inline-block; "><img id="HelpRNASeqSummary" class="helpImage" src="../web/images/icons/help.png"/></div>
             </th>
-            <th colspan="15" class="center noSort topLine" title="Reconstruction Transcriptome HRDP v5 Ribosome Depleted TotalRNA Data">Reconstruction
-                Transcriptome HRDP v5 Ribosome Depleted TotalRNA
+            <th colspan="<%=columns%>" class="center noSort topLine" title="Reconstruction Transcriptome <%=hrdpVer%> Ribosome Depleted TotalRNA Data">
+                Reconstruction
+                Transcriptome <%=hrdpVer%> Ribosome Depleted TotalRNA
                 <div class="inpageHelp" style="display:inline-block; "><img id="HelpRNASeqSummary" class="helpImage" src="../web/images/icons/help.png"/></div>
             </th>
-            <%}%>
+            <%
+                }
+                if (genomeVer.equals("rn6") || genomeVer.equals("rn5")) {
+            %>
+
             <th colspan="<%=4+tissuesList1.length*2+tissuesList2.length*2%>" class="center noSort topLine"
                 title="Dataset is available by going to Microarray Analysis Tools -> Analyze Precompiled Dataset or Downloads.">Affy Exon 1.0 ST PhenoGen Public
                 Dataset(
@@ -229,7 +245,9 @@
                 )
                 <div class="inpageHelp" style="display:inline-block; "><img id="HelpAffyExon" class="helpImage" src="../web/images/icons/help.png"/></div>
             </th>
+            <%}%>
         </tr>
+
         <tr style="text-align:center;">
             <th
                     <%if (myOrganism.equals("Rn")) {%>
@@ -243,9 +261,12 @@
             <th colspan="5" class="leftBorder rightBorder topLine noSort">Whole Brain</th>
             <th colspan="5" class="leftBorder rightBorder topLine noSort">Liver</th>
             <th colspan="5" class="rightBorder topLine noSort">Kidney</th>
+            <th colspan="5" class="rightBorder topLine noSort">Heart</th>
             <th colspan="5" class="leftBorder rightBorder topLine noSort">Whole Brain</th>
             <th colspan="5" class="leftBorder rightBorder topLine noSort">Liver</th>
             <th colspan="5" class="rightBorder topLine noSort">Kidney</th>
+            <th colspan="5" class="rightBorder topLine noSort">Heart</th>
+            <%if (genomeVer.equals("rn6") || genomeVer.equals("rn5")) {%>
             <th colspan="1" class="leftBorder rightBorder noSort"></th>
             <th colspan="<%=tissuesList1.length%>" class="center noSort topLine">Probe Sets > 0.33 Heritability
                 <div class="inpageHelp" style="display:inline-block; "><img id="HelpProbeHerit" class="helpImage" src="../web/images/icons/help.png"/></div>
@@ -256,6 +277,7 @@
             <th colspan="<%=3+tissuesList2.length*2%>" class="center noSort topLine">eQTLs(Gene/Transcript Cluster ID)
                 <div class="inpageHelp" style="display:inline-block; "><img id="HelpeQTL" class="helpImage" src="../web/images/icons/help.png"/></div>
             </th>
+            <%}%>
         </tr>
         <tr style="text-align:center;">
             <th
@@ -300,6 +322,15 @@
             <th colspan="2" class="leftBorder rightBorder noSort noBox">TPM</th>
             <th colspan="1" class="leftBorder rightBorder noSort noBox"></th>
             <th colspan="2" class="leftBorder rightBorder noSort noBox">eQTL</th>
+            <%if (genomeVer.equals("rn7")) {%>
+            <th colspan="2" class="leftBorder rightBorder noSort noBox">TPM</th>
+            <th colspan="1" class="leftBorder rightBorder noSort noBox"></th>
+            <th colspan="2" class="leftBorder rightBorder noSort noBox">eQTL</th>
+            <th colspan="2" class="leftBorder rightBorder noSort noBox">TPM</th>
+            <th colspan="1" class="leftBorder rightBorder noSort noBox"></th>
+            <th colspan="2" class="leftBorder rightBorder noSort noBox">eQTL</th>
+            <%} else if (genomeVer.equals("rn6") || genomeVer.equals("rn5")) {%>
+
             <th colspan="1" class="leftBorder rightBorder noSort"></th>
             <th colspan="<%=tissuesList1.length%>" class="leftBorder rightBorder noSort noBox"></th>
             <th colspan="<%=tissuesList1.length%>" class="leftBorder rightBorder noSort noBox"></th>
@@ -308,6 +339,7 @@
             <%for (int i = 0; i < tissuesList2.length; i++) {%>
             <TH colspan="2" class="center noSort topLine"><%=tissuesList2[i]%>
             </TH>
+            <%}%>
             <%}%>
         </tr>
 
@@ -367,8 +399,22 @@
             <TH>Heritibility</TH>
             <TH>cis</TH>
             <TH>trans</TH>
-            <%}%>
-
+            <%if (genomeVer.equals("rn7")) {%>
+            <TH>Median</TH>
+            <TH>Range</TH>
+            <TH>Heritibility</TH>
+            <TH>cis</TH>
+            <TH>trans</TH>
+            <TH>Median</TH>
+            <TH>Range</TH>
+            <TH>Heritibility</TH>
+            <TH>cis</TH>
+            <TH>trans</TH>
+            <%
+                    }
+                }
+            %>
+            <%if (genomeVer.equals("rn6") || genomeVer.equals("rn5")) {%>
             <TH>Total Probe Sets <span class="geneListToolTip"
                                        title="The total number of non-masked probesets that overlap with any region of an Ensembl transcript<%if(myOrganism.equals("Rn")){%> or an RNA-Seq transcript<%}%>."><img
                     src="<%=imagesDir%>icons/info.gif"></span></TH>
@@ -402,6 +448,7 @@
                                title="The genomic location of the most significant eQTL for this transcript clusters.  Click the location to view that region."><img
                         src="<%=imagesDir%>icons/info.gif"></span></TH>
             <%}%>
+            <%}%>
         </tr>
         </thead>
 
@@ -420,7 +467,11 @@
             }
             HashMap<String, HashMap<String, HashMap<String, Double>>> tpm = new HashMap<String, HashMap<String, HashMap<String, Double>>>();
             if (geneIDList.length() > 1) {
-                tpm = gdt.getTPM(geneIDList.substring(1), "97,98");
+                if (genomeVer.equals("rn6")) {
+                    tpm = gdt.getTPM(geneIDList.substring(1), "97,98");
+                } else if (genomeVer.equals("rn7")) {
+                    tpm = gdt.getTPM(geneIDList.substring(1), "190,191,192,193");
+                }
             }
             for (int i = 0; i < fullGeneList.size(); i++) {
                 edu.ucdenver.ccp.PhenoGen.data.Bio.Gene curGene = fullGeneList.get(i);
@@ -679,6 +730,7 @@
                     String bHerit = "";
                     String lHerit = "";
                     String kHerit = "";
+                    String hHerit = "";
                     if (rna.getHerit("Whole Brain") >= 0) {
                         bHerit = df2.format(rna.getHerit("Whole Brain"));
                     }
@@ -687,6 +739,9 @@
                     }
                     if (rna.getHerit("Kidney") >= 0) {
                         kHerit = df2.format(rna.getHerit("Kidney"));
+                    }
+                    if (rna.getHerit("Heart") >= 0) {
+                        hHerit = df2.format(rna.getHerit("Heart"));
                     }
                                     /*Double bPv=0.0;
                                     Double lPv=0.0;
@@ -706,6 +761,7 @@
                     HashMap<String, Double> brain = null;
                     HashMap<String, Double> liver = null;
                     HashMap<String, Double> kidney = null;
+                    HashMap<String, Double> heart = null;
                     if (tpm.containsKey("Brain") && tpm.get("Brain").containsKey(curGene.getGeneID())) {
                         brain = tpm.get("Brain").get(curGene.getGeneID());
                     }
@@ -714,6 +770,9 @@
                     }
                     if (tpm.containsKey("Kidney") && tpm.get("Kidney").containsKey(curGene.getGeneID())) {
                         kidney = tpm.get("Kidney").get(curGene.getGeneID());
+                    }
+                    if (tpm.containsKey("Heart") && tpm.get("Heart").containsKey(curGene.getGeneID())) {
+                        heart = tpm.get("Heart").get(curGene.getGeneID());
                     }
                     String cisValueB = rna.getMinCisQTL("Whole Brain", "ensembl");
                     double cisPvalB = -1;
@@ -757,6 +816,20 @@
                         transPvalK = Double.parseDouble(transValueK.substring(0, transValueK.indexOf(":")));
                         transLocationK = "chr" + transValueK.substring(transValueK.indexOf(":") + 1);
                     }
+                    String cisValueH = rna.getMinCisQTL("Heart", "ensembl");
+                    double cisPvalH = -1;
+                    String cisLocationH = "";
+                    if (cisValueH != null && !cisValueH.equals("")) {
+                        cisPvalH = Double.parseDouble(cisValueH.substring(0, cisValueH.indexOf(":")));
+                        cisLocationH = "chr" + cisValueH.substring(cisValueH.indexOf(":") + 1);
+                    }
+                    String transValueH = rna.getMinTransQTL("Heart", "ensembl");
+                    double transPvalH = -1;
+                    String transLocationH = "";
+                    if (transValueH != null && !transValueH.equals("")) {
+                        transPvalH = Double.parseDouble(transValueH.substring(0, transValueH.indexOf(":")));
+                        transLocationH = "chr" + transValueH.substring(transValueH.indexOf(":") + 1);
+                    }
             %>
             <TD class="leftBorder"><%if (brain != null && brain.containsKey("ensmed")) {%><%=brain.get("ensmed")%><%}%></TD>
             <TD><%if (brain != null && brain.containsKey("ensmed")) {%><%=brain.get("ensmin")%>-<%=brain.get("ensmax")%><%}%></TD>
@@ -773,6 +846,14 @@
             <TD><%if (kidney != null && kidney.containsKey("geneHerit") && kidney.get("geneHerit") > 0) {%><%=df2.format(kidney.get("geneHerit"))%><%}%></TD>
             <TD><%if (cisPvalK > -1) {%><%=dfe.format(cisPvalK)%><BR><%=cisLocationK%><%}%></TD>
             <TD><%if (transPvalK > -1) {%><%=dfe.format(transPvalK)%><BR><%=transLocationK%><%}%></TD>
+            testing
+            <% if (genomeVer.equals("rn7")) {%>
+            <TD class="leftBorder"><%if (heart != null && heart.containsKey("ensmed")) {%><%=heart.get("ensmed")%><%}%></TD>
+            <TD><%if (heart != null && heart.containsKey("ensmed")) {%><%=heart.get("ensmin")%>-<%=heart.get("ensmax")%><%}%></TD>
+            <TD><%if (heart != null && heart.containsKey("geneHerit") && heart.get("geneHerit") > 0) {%><%=df2.format(heart.get("geneHerit"))%><%}%></TD>
+            <TD><%if (cisPvalH > -1) {%><%=dfe.format(cisPvalH)%><BR><%=cisLocationH%><%}%></TD>
+            <TD><%if (transPvalH > -1) {%><%=dfe.format(transPvalH)%><BR><%=transLocationH%><%}%></TD>
+            <%}%>
             <%
                 cisValueB = rna.getMinCisQTL("Whole Brain", "reconst");
                 cisPvalB = -1;
@@ -816,6 +897,20 @@
                     transPvalK = Double.parseDouble(transValueK.substring(0, transValueK.indexOf(":")));
                     transLocationK = "chr" + transValueK.substring(transValueK.indexOf(":") + 1);
                 }
+                cisValueH = rna.getMinCisQTL("Heart", "reconst");
+                cisPvalH = -1;
+                cisLocationH = "";
+                if (cisValueH != null && !cisValueH.equals("")) {
+                    cisPvalH = Double.parseDouble(cisValueH.substring(0, cisValueH.indexOf(":")));
+                    cisLocationH = "chr" + cisValueH.substring(cisValueH.indexOf(":") + 1);
+                }
+                transValueH = rna.getMinTransQTL("Heart", "reconst");
+                transPvalH = -1;
+                transLocationH = "";
+                if (transValueH != null && !transValueH.equals("")) {
+                    transPvalH = Double.parseDouble(transValueH.substring(0, transValueH.indexOf(":")));
+                    transLocationH = "chr" + transValueH.substring(transValueH.indexOf(":") + 1);
+                }
             %>
 
             <TD class="leftBorder"><%if (brain != null && brain.containsKey("reconmed")) {%><%=brain.get("reconmed")%><%}%></TD>
@@ -836,7 +931,53 @@
             </TD>
             <TD><%if (cisPvalK > -1) {%><%=dfe.format(cisPvalK)%><BR><%=cisLocationK%><%}%></TD>
             <TD><%if (transPvalK > -1) {%><%=dfe.format(transPvalK)%><BR><%=transLocationK%><%}%></TD>
+
+            <%if (genomeVer.equals("rn7")) {%>
+            <TD class="leftBorder"><%if (heart != null && heart.containsKey("reconmed")) {%><%=heart.get("reconmed")%><%}%></TD>
+            <TD><%if (heart != null && heart.containsKey("reconmed")) {%><%=heart.get("reconmin")%>-<%=heart.get("reconmax")%><%}%></TD>
+            <TD><%=hHerit%>
+            </TD>
+            <TD><%if (cisPvalH > -1) {%><%=dfe.format(cisPvalH)%><BR><%=cisLocationH%><%}%></TD>
+            <TD><%if (transPvalH > -1) {%><%=dfe.format(transPvalH)%><BR><%=transLocationH%><%}%></TD>
+            <%}%>
             <%} else {%>
+
+            <TD class="leftBorder"></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+
+            <TD class="leftBorder"></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+
+            <TD class="leftBorder"></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+
+            <TD class="leftBorder"></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+
+            <TD class="leftBorder"></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+
+            <TD class="leftBorder"></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD></TD>
+            <%if (genomeVer.equals("rn7")) {%>
             <TD class="leftBorder"></TD>
             <TD></TD>
             <TD></TD>
@@ -847,31 +988,13 @@
             <TD></TD>
             <TD></TD>
             <TD></TD>
-            <TD class="leftBorder"></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD class="leftBorder"></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD class="leftBorder"></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD class="leftBorder"></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD></TD>
-            <TD></TD>
+            <%}%>
+
             <%
                     }
                 }
             %>
-
+            <%if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {%>
             <TD class="leftBorder"><%=curGene.getProbeCount()%>
             </TD>
 
@@ -969,7 +1092,11 @@
             <TD class="leftBorder"></TD>
             <TD></TD>
             <%}%>
-            <%}%>
+            <%
+                    }
+                }
+            %>
+
         </TR>
         <%}%>
         <%}%>
@@ -1042,7 +1169,7 @@
             sortCol = 4;
         }
         var tblGenes = $('#tblGenes<%=type%>').DataTable({
-            columnDefs: [
+            /*columnDefs: [
                 <%if(track.contains("brain")){%>
                 {
                     targets: [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59],
@@ -1069,7 +1196,7 @@
                     visible: false
                 }
                 <%}%>
-            ],
+            ],*/
             bPaginate: false,
             bProcessing: true,
             bStateSave: false,

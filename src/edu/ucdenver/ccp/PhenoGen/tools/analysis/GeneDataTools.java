@@ -862,9 +862,13 @@ public class GeneDataTools {
             ret = Gene.readGenes(outputDir + file);
             log.debug("getRegionData() returning gene list of size:" + ret.size());
             if (withRNASeqEQTL) {
-                this.addRegionHeritEQTLs(ret, minCoord, maxCoord, organism, chromosome, "5", "rn6", pValue);
+                if (genomeVer.equals("rn6")) {
+                    this.addRegionHeritEQTLs(ret, minCoord, maxCoord, organism, chromosome, "5", "rn6", pValue);
+                } else if (genomeVer.equals("rn7")) {
+                    this.addRegionHeritEQTLs(ret, minCoord, maxCoord, organism, chromosome, "6", "rn7", pValue);
+                }
             }
-            if (withEQTL) {
+            if (withEQTL && !genomeVer.equals("rn7")) {
                 this.addHeritDABG(ret, minCoord, maxCoord, organism, chromosome, RNADatasetID, arrayTypeID, genomeVer);
                 ArrayList<TranscriptCluster> tcList = getTransControlledFromEQTLs(minCoord, maxCoord, chromosome, arrayTypeID, pValue, "All", genomeVer);
                 HashMap<String, TranscriptCluster> transInQTLsCore = new HashMap<String, TranscriptCluster>();
@@ -2909,10 +2913,14 @@ public class GeneDataTools {
             }
             rsC.close();
             psC.close();
+            String dsList = "97,98,189";
+            if (genomeVer.equals("rn7") || hrdpVer.equals("6")) {
+                dsList = "190,191,192,193";
+            }
             //get region Phenogen Gene IDs
             String heritQ = "select rt.merge_gene_id, rt.herit_gene,rt.rna_dataset_id,rta.annotation from rna_transcripts rt " +
                     " left outer join rna_transcripts_annot rta on rt.rna_transcript_id=rta.rna_transcript_id " +
-                    "where rt.rna_dataset_id in (97,98,189) " +
+                    "where rt.rna_dataset_id in (" + dsList + ") " +
                     "and rt.chromosome_id=" + chrID + " " +
                     "and (( " + min + "<=rt.trstart and rt.trstart<=" + max + ") " +
                     "or ( " + min + "<=rt.trstop and rt.trstop<=" + max + ") " +
@@ -2928,12 +2936,14 @@ public class GeneDataTools {
                     ensemblID = ensemblID.substring(0, ensemblID.indexOf(":"));
                 }
                 String tissue = "";
-                if (rsH.getInt(3) == 97) {
+                if (rsH.getInt(3) == 97 || rsH.getInt(3) == 190) {
                     tissue = "Whole Brain";
-                } else if (rsH.getInt(3) == 98) {
+                } else if (rsH.getInt(3) == 98 || rsH.getInt(3) == 191) {
                     tissue = "Liver";
-                } else if (rsH.getInt(3) == 189) {
+                } else if (rsH.getInt(3) == 189 || rsH.getInt(3) == 192) {
                     tissue = "Kidney";
+                } else if (rsH.getInt(3) == 193) {
+                    tissue = "Heart";
                 }
                 if (ensemblID != null && ensemblID.startsWith("ENSRNOG")) {
                     id = ensemblID;
@@ -2980,7 +2990,7 @@ public class GeneDataTools {
                 //get region eQTLs for Gene IDs
                 String qtlQ = "select s.chromosome_id,s.coord,s.tissue,lse.PROBE_ID,lse.PVALUE,lse.is_cis,lse.cor_pvalue from LOCATION_SPECIFIC_EQTL_HRDP lse " +
                         "inner join snps_hrdp s on s.snp_id=lse.snp_id " +
-                        "where s.rna_dataset_id in (97,98,189) " +
+                        "where s.rna_dataset_id in (" + dsList + ") " +
                         " and s.type='seq' " +
                         " and lse.probe_id in ( " + sb.substring(1) + " )" +
                         " and ( (lse.is_cis=0 and lse.pvalue <= 0.000001 ) " +
