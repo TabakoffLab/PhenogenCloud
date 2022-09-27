@@ -17,14 +17,14 @@ chart = function (params) {
     that.topMarg = 60;
     that.leftMarg = 100;
     that.sortBy = {"col": "", "dir": ""};
-    that.display = {"herit": true, "controls": true};
+    that.display = {"herit": false, "controls": true};
     that.filtered = {};
     that.filterBy = {};
     that.title = "";
     that.titlePrefix = "";
     that.trianglePoints = "0,6 10,6 5,0";
-    that.display.herit = true;
-    that.display.controls = true;
+    //that.display.herit = true;
+    //that.display.controls = true;
     that.filteredID = "";
     that.selectedGene = "";
     that.fadeOutRunning = 0;
@@ -68,8 +68,8 @@ chart = function (params) {
             }
         }
 
-        if (params.displayHerit === false) {
-            that.display.herit = false;
+        if (params.displayHerit) {
+            that.display.herit = params.displayHerit;
         }
         if (params.displayControls === false) {
             that.display.controls = false;
@@ -120,7 +120,7 @@ chart = function (params) {
             d3.select(that.select).append("br");
         }
         that.imgDiv = d3.select(that.select).append("div").attr("id", "imgDiv");
-        that.legendDiv = that.imgDiv.append("div").attr("id", "legendDiv").style("max-height", "150px").style("overflow", "scroll");
+        that.legendDiv = that.imgDiv.append("div").attr("id", "legendDiv").style("max-height", "150px");//.style("overflow", "scroll");
         if (d3.select("#body_wrapper_plain").select("#legendSVGScaleDef").size() == 0) {
             that.legendSVGScaleDef = d3.select("#body_wrapper_plain").append("svg").attr("id", "legendSVGScaleDef").attr("height", 0).attr("width", 0);
             grad = that.legendSVGScaleDef.append("defs").append("linearGradient")
@@ -309,7 +309,7 @@ chart = function (params) {
             tmpSpan = that.divCtrl.append("span").attr("id", "displayCbxs").style("display", "inline-block");
             tmpSpan.append("text").style("margin-right", "8px").text("Display: ");
             //tmpSpan=tmpSpan.append("div").style("height","100%");
-            tmpSpan.append("input").attr("type", "checkbox").attr("id", "")
+            tmpSpan.append("input").attr("type", "checkbox").attr("id", "geneChartcbx")
                 .property("checked", "true")
                 .on("change", function () {
                     sel = d3.select(this).property("checked");
@@ -319,7 +319,7 @@ chart = function (params) {
                         that.filterBy.genes = 1;
                     }
                     that.reset();
-                    that.draw();
+                    //that.draw();
                 }).on("mouseover", function () {
                 that.help.html("Toggle whether or not Genes are displayed");
             }).on("mouseout", function () {
@@ -328,7 +328,7 @@ chart = function (params) {
             tmpSpan.append("text").style("margin-right", "8px").text("Genes");
             //tmpSpan.append("br");
             tmpSpan.append("input").attr("type", "checkbox")
-                .attr("id", "")
+                .attr("id", "trxChartcbx")
                 .property("checked", "true")
                 .on("change", function () {
                     sel = d3.select(this).property("checked");
@@ -338,7 +338,7 @@ chart = function (params) {
                         that.filterBy.trx = 1;
                     }
                     that.reset();
-                    that.draw();
+                    //that.draw();
                 }).on("mouseover", function () {
                 that.help.html("Toggle whether or not Transcripts are displayed");
             }).on("mouseout", function () {
@@ -346,7 +346,7 @@ chart = function (params) {
             });
             tmpSpan.append("text").style("margin-right", "8px").text("Transcripts");
             tmpSpan.append("input").attr("type", "checkbox")
-                .attr("id", "")
+                .attr("id", "heritChartcbx")
                 .property("checked", function () {
                     if (that.display.herit) {
                         return true;
@@ -357,7 +357,7 @@ chart = function (params) {
                     sel = d3.select(this).property("checked");
                     that.display.herit = sel;
                     that.reset();
-                    that.draw();
+                    //that.draw();
                 }).on("mouseover", function () {
                 that.help.html("Toggle whether or not a heritability chart is displayed");
             }).on("mouseout", function () {
@@ -403,8 +403,8 @@ chart = function (params) {
         that.svg.remove();
         that.legendSVG.remove();
         that.svgTop.selectAll("g").remove();
-        that.hChartTop.selectAll("g").remove();
-        that.hChartTop.attr("height", 0);
+        //that.hChartTop.selectAll("g").remove();
+        //that.hChartTop.attr("height", 0);
         that.resetProc = setTimeout(function () {
 
             //setTimeout(function(){
@@ -414,9 +414,9 @@ chart = function (params) {
             that.legendSVG = that.legendSVGTop.append("g");
             that.svg = that.svgTop.append("g")
                 .attr("transform", "translate(" + that.margin.left + "," + that.margin.top + ")");
-            that.hChartTop.selectAll("g").remove();
-            that.hChart = that.hChartTop.append("g")
-                .attr("transform", "translate(" + that.margin.left + "," + that.margin.top + ")");
+            //that.hChartTop.selectAll("g").remove();
+            //that.hChart = that.hChartTop.append("g")
+            //    .attr("transform", "translate(" + that.margin.left + "," + that.margin.top + ")");
             that.calcSize();
             that.draw();
             //},200);
@@ -1395,8 +1395,8 @@ chart = function (params) {
             if (yRangeMax < minY) {
                 yRangeMax = minY;
             }
-            that.hChartTop.attr("width", that.curWidth + that.margin.left + that.margin.right)
-                .attr("height", yRangeMax + that.margin.top + that.margin.bottom);
+            //that.hChartTop.attr("width", that.curWidth + that.margin.left + that.margin.right)
+            //    .attr("height", yRangeMax + that.margin.top + that.margin.bottom);
 
             that.hChart.attr("transform", "translate(" + (that.leftMarg + that.margin.left) + ",0)");
             that.heritScale = d3.scaleLinear().domain([0, 1]).range([0, that.curWidth - that.leftMarg]);
@@ -1533,9 +1533,12 @@ chart = function (params) {
             data: {},
             dataType: 'json',
             success: function (data2) {
-                $('div#brainExprLoading').hide();
+                $('div#leftExprLoading').hide();
+                $('div#rightExprLoading').hide();
+                /*$('div#brainExprLoading').hide();
                 $('div#liverExprLoading').hide();
                 $('div#kidneyExprLoading').hide();
+                $('div#heartExprLoading').hide();*/
                 that.parseMultipleGenes(data2);
                 /*if(ga){
 						ga('send','event','loadChartData',that.dataFile);

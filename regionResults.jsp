@@ -198,9 +198,9 @@
         <div id="collapsableImage" class="geneimage">
             <div id="geneImage" class="ucscImage" style="display:inline-block;width:100%;">
 
-                <script src="javascript/gdb.2.9.14.min.js" type="text/javascript"></script>
-                <!--<script src="javascript/GenomeDataBrowser2.9.5.js" type="text/javascript"></script>
-                <script src="javascript/GenomeReport2.7.2.js" type="text/javascript"></script>
+                <script src="javascript/gdb.2.9.16.min.js" type="text/javascript"></script>
+                <!--<script src="javascript/GenomeDataBrowser2.9.6.js" type="text/javascript"></script>
+                <script src="javascript/GenomeReport2.7.3.js" type="text/javascript"></script>
                 <script src="javascript/GenomeViewMenu2.6.3.js" type="text/javascript"></script>
                 <script src="javascript/GenomeTrackMenu2.6.2.js" type="text/javascript"></script>
                 <script src="javascript/wgcnaBrowser1.3.9.js" type="text/javascript"></script>-->
@@ -214,12 +214,14 @@
             <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
                 <span id="detail1" class="detailMenu selected" name="regionSummary">Track Details<div class="inpageHelp" style="display:inline-block; "><img
                         id="HelpTrackDetails" class="helpImage" src="../web/images/icons/help.png"/></div></span>
+                <%if (myOrganism.equals("Rn") && genomeVer.equals("rn6")) {%>
                 <span id="detail2" class="detailMenu" name="regionEQTLTable">Genes with an eQTL in this region<div class="inpageHelp"
                                                                                                                    style="display:inline-block; "><img
                         id="HelpeQTLTab" class="helpImage" src="../web/images/icons/help.png"/></div></span>
                 <span id="detail3" class="detailMenu" name="regionWGCNAEQTL">WGCNA<div class="inpageHelp" style="display:inline-block; "><img
                         id="HelpRegionWGCNATab" class="helpImage" src="../web/images/icons/help.png"/></div></span>
-                <%if (myOrganism.equals("Rn") && genomeVer.equals("rn6")) {%>
+                <%}%>
+                <%if (myOrganism.equals("Rn") && (genomeVer.equals("rn6") || genomeVer.equals("rn7"))) {%>
                 <span id="detail4" class="detailMenu" name="regionExpr">Expression<div class="inpageHelp" style="display:inline-block; "><img
                         id="HelpRegionExprTab" class="helpImage" src="../web/images/icons/help.png"/></div></span>
                 <%}%>
@@ -266,7 +268,29 @@
             <div style="display:none;overflow: auto;" id="regionExpr" class="exprDiv">
                 <div id="regionExprsrcCtrl" class="srcCtrl" style="text-align:center;"></div>
                 <div class="help" style="width:100%;display:inline-block;text-align:center;"></div>
-                <div class="exprCol" id="expRegionBrain" style="display:inline-block;">
+                <div class="exprCol" id="expRegionLeft" style="display:inline-block;">
+                    <div style="width:100%;text-align: center;"><H2><span id="regionExprTitlel"></span></h2></div>
+                    <BR>
+                    <div id="chartLeftregionExpr" style="width:98%;">
+                        <div id="leftExprLoading" style="text-align: center;">
+                            <img src="/web/images/wait.gif"><BR>
+                            Loading...
+                        </div>
+                    </div>
+
+                </div>
+                <div class="exprCol" id="expRegionRight" style="display:none;">
+                    <div style="width:100%;text-align: center;"><H2><span id="regionExprTitler"></span></h2></div>
+                    <BR>
+                    <div id="chartRightregionExpr" style="width:98%;">
+                        <div id="rightExprLoading" style="text-align: center;">
+                            <img src="/web/images/wait.gif"><BR>
+                            Loading...
+                        </div>
+                    </div>
+
+                </div>
+                <!--<div class="exprCol" id="expRegionBrain" style="display:inline-block;">
                     <div style="width:100%;text-align: center;"><H2><span id="regionExprTitleb"></span></h2></div>
                     <BR>
                     <div id="chartBrainregionExpr" style="width:98%;">
@@ -298,6 +322,19 @@
                         </div>
                     </div>
                 </div>
+                <%if (genomeVer.equals("rn7")) {%>
+                <div class="exprCol" id="expRegionHeart" style="display:inline-block;">
+
+                    <div style="width:100%;text-align: center;"><H2><span id="regionExprTitleh"></span></h2></div>
+                    <BR>
+                    <div id="chartHeartregionExpr" style="width:98%;">
+                        <div id="heartExprLoading" style="text-align: center;">
+                            <img src="/web/images/wait.gif"><BR>
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+                <%}%>-->
             </div>
         </div><!--collapsableReport end-->
     </div>
@@ -407,16 +444,22 @@
                 "type": "heatmap",
                 "featureType": "Long"
             });
-            if ($(window).width() < 1500) {
-                pe.rbChart.setWidth("98%");
+            /*if ($(window).width() < 1200) {
                 pe.rlChart.setWidth("98%");
+                pe.rrChart.setWidth("98%");
                 pe.rkChart.setWidth("98%");
-            }
+            }*/
         }, 5000);
         //svgList[1].updateLinks();
         $(window).resize(function () {
-            if ($(window).width() < 1500 && pe) {
-                if (pe.rbChart) {
+            if ($(window).width() < 1200 && pe) {
+                if (pe.rrChart) {
+                    pe.rrChart.setWidth("98%");
+                }
+                if (pe.rlChart) {
+                    pe.rlChart.setWidth("98%");
+                }
+                /*if (pe.rbChart) {
                     pe.rbChart.setWidth("98%");
                 }
                 if (pe.rlChart) {
@@ -424,9 +467,15 @@
                 }
                 if (pe.rkChart) {
                     pe.rkChart.setWidth("98%");
-                }
+                }*/
             } else {
-                if (pe && pe.rbChart) {
+                if (pe.rrChart) {
+                    pe.rrChart.setWidth("45%");
+                }
+                if (pe.rlChart) {
+                    pe.rlChart.setWidth("45%");
+                }
+                /*if (pe && pe.rbChart) {
                     pe.rbChart.setWidth("45%");
                 }
                 if (pe && pe.rlChart) {
@@ -434,7 +483,7 @@
                 }
                 if (pe && pe.rkChart) {
                     pe.rkChart.setWidth("45%");
-                }
+                }*/
             }
         });
     });

@@ -193,15 +193,16 @@ $(this).removeClass("less");
     <span class="selectdetailMenu selected" name="geneDetail">Gene Details<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneDetailTab"
                                                                                                                                       class="helpGeneRpt"
                                                                                                                                       src="/web/images/icons/help.png"/></div></span>
-    <%if (!isSmall) {%>
-    <span class="selectdetailMenu" name="geneEQTL">Gene eQTLs<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneEqtlTab"
-                                                                                                                         class="helpGeneRpt"
-                                                                                                                         src="/web/images/icons/help.png"/></div></span>
-    <%if (myOrganism.equals("Rn") && genomeVer.equals("rn6")) {%>
+    <%if (myOrganism.equals("Rn") && (genomeVer.equals("rn6") || genomeVer.equals("rn7"))) {%>
     <span class="selectdetailMenu" name="geneApp">Expression Data<div class="inpageHelp" style="display:inline-block; "><img id="HelpGenePSTab"
                                                                                                                              class="helpGeneRpt"
                                                                                                                              src="/web/images/icons/help.png"/></div></span>
     <%}%>
+    <%if (!isSmall && !genomeVer.equals("rn7")) {%>
+    <span class="selectdetailMenu" name="geneEQTL">Gene eQTLs<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneEqtlTab"
+                                                                                                                         class="helpGeneRpt"
+                                                                                                                         src="/web/images/icons/help.png"/></div></span>
+
     <span class="selectdetailMenu" name="geneMIrna">miRNA Targeting Gene(multiMiR)<div class="inpageHelp" style="display:inline-block; "><img
             id="HelpMirTargetTab" class="helpGeneRpt" src="/web/images/icons/help.png"/></div></span>
     <!--<span class="selectdetailMenu" name="geneGO">GO<div class="inpageHelp" style="display:inline-block; "><img id="HelpUCSCImage" class="helpImage" src="/web/images/icons/help.png" /></div></span>-->
@@ -466,7 +467,10 @@ $(this).removeClass("less");
 
             </table>
         </div>
+
+        <%if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {%>
         <div>
+
             <div class="geneReport header" style="width:100%;">
                 Affy Probe Set Data: Overlapping Probe Set Count:<%=curGene.getProbeCount()%>
                 <span class="reporttooltip"
@@ -701,6 +705,7 @@ $(this).removeClass("less");
 
 
         </div>
+        <%}%>
     </div>
 
     <div style="display:none;" id="geneEQTL">

@@ -127,8 +127,8 @@
     int max = 0;
     String selectedEnsemblID = "";
     String regionError = "";
-    String genomeVer = "rn6";
-    String defaultGenomeVer = "rn6";
+    String genomeVer = "rn7";
+    String defaultGenomeVer = "rn7";
 
     Set iDecoderAnswer;
 
@@ -708,12 +708,25 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                     </select>
                 </label>
                 <span class="tooltipster"
-                      title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
+                      title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn7 (available)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
                         src="<%=imagesDir%>/icons/info.gif"></span>
-                or <input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
+                <span id="" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>style="display: none;"<%}%>
+                    <label>
+                        Genome Version:
+                        <select name="genomeVerCB" id="genomeVerCB">
+                            <%if (myOrganism.equals("Rn")) {%>
+                            <option value="rn7">Rn7</option>
+                            <option value="rn6">Rn6</option>
+                            <option value="rn5">Rn5</option>
+                            <%} else { %>
+                            <option value="mm10">Mm10</option>
+                            <%}%>
+                        </select>
+                    </label>
+                </span>
+                <BR><BR>or&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
                           onClick="openTranslateRegion()">
-                <BR><BR>
-                <span style="padding-left:10px;"> <input type="submit" class="goBTN" id="goBTN1" value="Go"
+                <span style="padding-left:10px;float:right;"> <input type="submit" class="goBTN" id="goBTN1" value="Go"
                                                          onClick="return displayWorking()"></span>
 
             </fieldset>
@@ -744,12 +757,14 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                             <%}%>
                         </select>
                     </label>
-                    <span style="padding-left:10px;"> <input type="submit" class="goBTN" id="goBTN2" value="Go"
-                                                             onClick="return displayWorking()"></span>
+
                     <BR><BR>
                     <span style="padding-left:10px;"> <input type="button" name="customBTN" id="customBTN"
                                                              value="Create Custom View"
                                                              onClick="return custView.displayCustom()"></span>
+                    <BR><BR><BR>
+                    <span style="padding-left:10px;float:right;"> <input type="submit" class="goBTN" id="goBTN2" value="Go"
+                                                                         onClick="return displayWorking()"></span>
                 </div>
             </fieldset>
             <div id="createCustomView" style="width:100%;/*overflow: auto;max-height: 400px;*/display:none;">
@@ -763,6 +778,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                         Genome Version:
                         <select id="custGenomeVer">
                             <%if (myOrganism.equals("Rn")) {%>
+                            <option value="rn7">Rn7</option>
                             <option value="rn6">Rn6</option>
                             <option value="rn5">Rn5</option>
                             <%} else { %>
@@ -1163,7 +1179,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
     }
 
     function checkStoredGenomeVersion(curOrganism) {
-        var ver = "rn6";
+        var ver = "rn7";
         if (curOrganism === "Mm") {
             ver = "mm10";
         }
@@ -1184,7 +1200,6 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
     }
 
     function setupDefaultView() {
-
         var tmp = $("#speciesCB").val();
         if (!overideGV) {
             var specStoredGenomeVer = checkStoredGenomeVersion(tmp);
@@ -1326,6 +1341,22 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
         //setupDefaultView();
     });
 
+    $("#genomeVerCB").on("change", function () {
+        var tmp = $("#speciesCB").val();
+        var tmpGV = $("#genomeVerCB").val();
+        if (isLocalStorage() === true) {
+            localStorage.setItem(organism + "DefGenomeVer", tmpGV);
+        } else {
+            $.cookie(organism + "DefGenomeVer", tmpGV);
+
+        }
+        var specStoredGenomeVer = checkStoredGenomeVersion(tmp);
+        $('input#genomeVer').val(specStoredGenomeVer);
+        genomeVer = specStoredGenomeVer;
+        getMainViewData(1);
+        //setupDefaultView();
+    });
+
 </script>
 
 <%if (scriptError) {%>
@@ -1386,7 +1417,7 @@ Hint: Try other synonyms if the first ID that you enter is not found.
     <BR><BR>
     It is possible that the ID is from an older ensembl/genome version or an intermediate version of the ensembl
     database that is not supported on PhenoGen. We only support the latest
-    version of the Ensembl database for each genome version. Currently v79 for rn5 and v84 for rn6.
+    version of the Ensembl database for each genome version. Currently v79 for rn5 and v105 for rn6 and v106 for rn7.
 
     <%}%>
 </div>
