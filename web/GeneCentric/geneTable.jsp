@@ -846,7 +846,7 @@
             <TD><%if (kidney != null && kidney.containsKey("geneHerit") && kidney.get("geneHerit") > 0) {%><%=df2.format(kidney.get("geneHerit"))%><%}%></TD>
             <TD><%if (cisPvalK > -1) {%><%=dfe.format(cisPvalK)%><BR><%=cisLocationK%><%}%></TD>
             <TD><%if (transPvalK > -1) {%><%=dfe.format(transPvalK)%><BR><%=transLocationK%><%}%></TD>
-            testing
+            
             <% if (genomeVer.equals("rn7")) {%>
             <TD class="leftBorder"><%if (heart != null && heart.containsKey("ensmed")) {%><%=heart.get("ensmed")%><%}%></TD>
             <TD><%if (heart != null && heart.containsKey("ensmed")) {%><%=heart.get("ensmin")%>-<%=heart.get("ensmax")%><%}%></TD>
@@ -915,28 +915,24 @@
 
             <TD class="leftBorder"><%if (brain != null && brain.containsKey("reconmed")) {%><%=brain.get("reconmed")%><%}%></TD>
             <TD><%if (brain != null && brain.containsKey("reconmed")) {%><%=brain.get("reconmin")%>-<%=brain.get("reconmax")%><%}%></TD>
-            <TD><%=bHerit%>
-            </TD>
+            <TD><%if (brain != null && brain.containsKey("geneHerit") && brain.get("geneHerit") > 0) {%><%=df2.format(brain.get("geneHerit"))%><%}%></TD>
             <TD><%if (cisPvalB > -1) {%><%=dfe.format(cisPvalB)%><BR><%=cisLocationB%><%}%></TD>
             <TD><%if (transPvalB > -1) {%><%=dfe.format(transPvalB)%><BR><%=transLocationB%><%}%></TD>
             <TD class="leftBorder"><%if (liver != null && liver.containsKey("reconmed")) {%><%=liver.get("reconmed")%><%}%></TD>
             <TD><%if (liver != null && liver.containsKey("reconmed")) {%><%=liver.get("reconmin")%>-<%=liver.get("reconmax")%><%}%></TD>
-            <TD><%=lHerit%>
-            </TD>
+            <TD><%if (liver != null && liver.containsKey("geneHerit") && liver.get("geneHerit") > 0) {%><%=df2.format(liver.get("geneHerit"))%><%}%></TD>
             <TD><%if (cisPvalL > -1) {%><%=dfe.format(cisPvalL)%><BR><%=cisLocationL%><%}%></TD>
             <TD><%if (transPvalL > -1) {%><%=dfe.format(transPvalL)%><BR><%=transLocationL%><%}%></TD>
             <TD class="leftBorder"><%if (kidney != null && kidney.containsKey("reconmed")) {%><%=kidney.get("reconmed")%><%}%></TD>
             <TD><%if (kidney != null && kidney.containsKey("reconmed")) {%><%=kidney.get("reconmin")%>-<%=kidney.get("reconmax")%><%}%></TD>
-            <TD><%=kHerit%>
-            </TD>
+            <TD><%if (kidney != null && kidney.containsKey("geneHerit") && kidney.get("geneHerit") > 0) {%><%=df2.format(kidney.get("geneHerit"))%><%}%></TD>
             <TD><%if (cisPvalK > -1) {%><%=dfe.format(cisPvalK)%><BR><%=cisLocationK%><%}%></TD>
             <TD><%if (transPvalK > -1) {%><%=dfe.format(transPvalK)%><BR><%=transLocationK%><%}%></TD>
 
             <%if (genomeVer.equals("rn7")) {%>
             <TD class="leftBorder"><%if (heart != null && heart.containsKey("reconmed")) {%><%=heart.get("reconmed")%><%}%></TD>
             <TD><%if (heart != null && heart.containsKey("reconmed")) {%><%=heart.get("reconmin")%>-<%=heart.get("reconmax")%><%}%></TD>
-            <TD><%=hHerit%>
-            </TD>
+            <TD><%if (heart != null && heart.containsKey("geneHerit") && heart.get("geneHerit") > 0) {%><%=df2.format(heart.get("geneHerit"))%><%}%></TD>
             <TD><%if (cisPvalH > -1) {%><%=dfe.format(cisPvalH)%><BR><%=cisLocationH%><%}%></TD>
             <TD><%if (transPvalH > -1) {%><%=dfe.format(transPvalH)%><BR><%=transLocationH%><%}%></TD>
             <%}%>

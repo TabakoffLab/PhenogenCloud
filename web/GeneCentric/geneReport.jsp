@@ -467,7 +467,10 @@ $(this).removeClass("less");
 
             </table>
         </div>
+
+        <%if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {%>
         <div>
+
             <div class="geneReport header" style="width:100%;">
                 Affy Probe Set Data: Overlapping Probe Set Count:<%=curGene.getProbeCount()%>
                 <span class="reporttooltip"
@@ -702,6 +705,7 @@ $(this).removeClass("less");
 
 
         </div>
+        <%}%>
     </div>
 
     <div style="display:none;" id="geneEQTL">

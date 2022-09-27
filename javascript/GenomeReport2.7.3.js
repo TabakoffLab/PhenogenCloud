@@ -282,7 +282,11 @@ function loadDivWithPage(divSelector, jspPage, scrollToDiv, params, loadingHTML)
             //setTimeout(displayHelpFirstTime,200);
         },
         error: function (xhr, status, error) {
-            $(divSelector).html("<span style=\"color:#FF0000;\">An error occurred generating this page.  Please try back later.</span>");
+            $(divSelector).html("<span style=\"color:#FF0000;\">An error occurred generating this page.  This can occur when loading the report the first time. Will automatically continue trying to load the report.</span>");
+            setTimeout(function () {
+                loadDivWithPage(divSelector, jspPage, scrollToDiv, params, loadingHTML);
+            }, 15000);
+
         }
     });
 }
@@ -393,6 +397,16 @@ function displayDetailedView(track) {
 
 
 function DisplaySelectedDetailReport(jspPage, params) {
-    loadDivWithPage("div#selectedReport", jspPage, false, params,
-        "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+    timeout = 5;
+    if (jspPage.indexOf("geneReport.jsp") > 0) {
+        $("div#selectedReport").hide();
+        timeout = 3000;
+    }
+    setTimeout(function () {
+        loadDivWithPage("div#selectedReport", jspPage, false, params,
+            "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+        if (jspPage.indexOf("geneReport.jsp") > 0) {
+            $("div#selectedReport").show();
+        }
+    }, timeout);
 }
