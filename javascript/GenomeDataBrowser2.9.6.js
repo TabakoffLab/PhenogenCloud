@@ -4552,7 +4552,7 @@ function Track(gsvgP, dataP, trackClassP, labelP) {
         that.yMaxArr[j] = 0;
         that.yArr[0][j] = 0;
     }
-    that.scanBackYLines = 12;
+    that.scanBackYLines = 65;
     that.xPadding = 2;
     if (that.gsvg.xScale.domain()[1] - that.gsvg.xScale.domain()[0] > 3000000) {
         that.xPadding = 1;
