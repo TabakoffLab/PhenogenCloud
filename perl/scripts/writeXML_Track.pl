@@ -661,18 +661,23 @@ sub createXMLFile {
         if (index($chromosome, "chr") > -1) {
             $chromosome = substr($chromosome, 3);
         }
-        my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr" . $chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $dsn, $usr, $passwd);
-        my @probesetHOH = @$probesetHOHRef;
-
-        my $snpRef = readSNPDataFromDB($genomeVer, $chromosome, $species, $minCoord, $maxCoord, $mongoDsn, $mongoUser, $mongoPasswd);
-        my %snpHOH = %$snpRef;
-        my @snpStrain = ("BNLX", "SHRH", "SHRJ", "F344");
+        my @probesetHOH;
+        my %snpHOH;
         my $rnaType = "totalRNA";
-        if (index($type, "braincoding") > -1) {
-            $rnaType = "PolyA+";
-        }
-        elsif (index($type, "brainnoncoding") > -1) {
-            $rnaType = "NonPolyA+";
+        my @snpStrain;
+        if ($genomeVer eq "rn6" or $genomeVer eq "rn5") {
+            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr" . $chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $dsn, $usr, $passwd);
+            @probesetHOH = @$probesetHOHRef;
+
+            my $snpRef = readSNPDataFromDB($genomeVer, $chromosome, $species, $minCoord, $maxCoord, $mongoDsn, $mongoUser, $mongoPasswd);
+            %snpHOH = %$snpRef;
+            @snpStrain = ("BNLX", "SHRH", "SHRJ", "F344");
+            if (index($type, "braincoding") > -1) {
+                $rnaType = "PolyA+";
+            }
+            elsif (index($type, "brainnoncoding") > -1) {
+                $rnaType = "NonPolyA+";
+            }
         }
         my $isoformHOH = readRNAIsoformDataFromDB($chromosome, $species, $publicID, $panel, $minCoord, $maxCoord, $dsn, $usr, $passwd, 1, $rnaType, $tissue, $ver, $genomeVer);
 
