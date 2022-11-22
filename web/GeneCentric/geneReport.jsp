@@ -432,7 +432,7 @@ $(this).removeClass("less");
                         Literature Based Searches:
                     </TD>
                     <TD><span class="button" style="width:275px;height:37px;pointer;color:#658cb2;" id="chilibotLink">Gene Relationships / Interactions (Chilibot.net)</span><BR>
-                        <span class="button" style="width:275px;height:37px;cursor: pointer;color:#658cb2;" id="ratsPubLink">Gene Relationships for Addiction (Rats.pub/OPAR.io)</span>
+                        <span class="button" style="width:275px;height:37px;cursor: pointer;color:#658cb2;" id="ratsPubLink">Gene Relationships for Addiction (genecup.org)</span>
                     </TD>
                 </TR>
                 <TR>
@@ -941,7 +941,7 @@ $(this).removeClass("less");
     }, 5000);
     setTimeout(function () {
         $('span#ratsPubLink').on('click', function () {
-            window.open("http://rats.pub/progress?query=%09<%=curGene.getGeneSymbol()%>+", "_blank");
+            window.open("https://genecup.org/progress?query=%09<%=curGene.getGeneSymbol()%>+", "_blank");
         });
     }, 10);
     $(window).resize(function () {
