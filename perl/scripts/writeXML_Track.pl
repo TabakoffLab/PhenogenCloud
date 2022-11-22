@@ -282,13 +282,13 @@ sub createXMLFile {
         my $roundMax = $maxCoord;
 
         if ($binSize > 0) {
-            my $ref = null;
-            #if ($genomeVer eq 'rn7') {
-            #    $ref = readBinnedRNACountsDataFromMongoUpdated($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $dsn, $usr, $passwd, $mongoDsn, $mongoUser, $mongoPasswd, $binSize, $roundMin, $roundMax);
-            #}
-            #else {
-            $ref = readBinnedRNACountsDataFromMongo($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $dsn, $usr, $passwd, $mongoDsn, $mongoUser, $mongoPasswd, $binSize, $roundMin, $roundMax);
-            #}
+            my $ref;
+            if ($genomeVer eq 'rn7') {
+                $ref = readBinnedRNACountsDataFromMongoUpdated($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $dsn, $usr, $passwd, $mongoDsn, $mongoUser, $mongoPasswd, $binSize, $roundMin, $roundMax);
+            }
+            else {
+                $ref = readBinnedRNACountsDataFromMongo($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $dsn, $usr, $passwd, $mongoDsn, $mongoUser, $mongoPasswd, $binSize, $roundMin, $roundMax);
+            }
             my %rnaBinned = %$ref;
             if (-d $outputDir . "tmp") {
 

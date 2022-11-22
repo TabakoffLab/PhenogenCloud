@@ -1103,7 +1103,7 @@ sub readBinnedRNACountsDataFromMongoUpdated {
     $query_handle->fetch();
 
     my $dsid = $sharedID;
-    my $pm ="_plus";
+    my $pm = "_plus";
     if (!$dsid) {
         if ($countType eq "") {
             if ($totalPlus) {
@@ -1121,7 +1121,7 @@ sub readBinnedRNACountsDataFromMongoUpdated {
         }
         elsif (index($type, "Minus") > 0) {
             $dsid = $totalMinus;
-            $pm="_minus";
+            $pm = "_minus";
             if (!$dsid or $countType eq "Norm") {
                 $dsid = $normMinus;
             }
@@ -1146,28 +1146,29 @@ sub readBinnedRNACountsDataFromMongoUpdated {
     $geneStop = $geneStop * 1;
     my $mongoRSObject;
     my $rsCursor = $col->query(
-        { 'CHROMOSOME'       => "$geneChrom",
-            'CHR_START'      =>
+        { 'CHROMOSOME'    => "$geneChrom",
+            'CHR_START'   =>
                 { '$gte'   => $geneStart,
                     '$lte' => $geneStop
                 },
-            $strain . $pm => {'$exists'}
+            $strain . $pm => { '$exists' }
             #{ '$or' => {
             #    $strain . "_plus"  => { '$gte' => 1 },
             #    $strain . "_minus" => { '$gte' => 1 },
             #}
-            },
-            { sort_by => { 'CHR_START' => 1 } }
         },
-        { 'CHROMOSOME'         => 1,
-            'CHR_START'        => 1,
-            'CHR_END'        => 1,
-            $strain . $pm  => 1}
-            #$strain . "_minus" => 1 }
+        { sort_by => { 'CHR_START' => 1 } }
+
+        #}#,
+        #{ 'CHROMOSOME'         => 1,
+        #    'CHR_START'        => 1,
+        #    'CHR_END'        => 1,
+        #    $strain . $pm  => 1}
+        #$strain . "_minus" => 1 }
 
     );
 
-    my $column=$strain.$pm;
+    my $column = $strain . $pm;
     my %binHOH;
     $binHOH{Count} = [];
     my $curStart = $start;
@@ -1310,11 +1311,13 @@ sub readBinnedRNACountsDataFromMongo {
 
     $geneChrom = uc($geneChrom);
     my $tmpType = $type;
-    if (index($tmpType, "Plus") > -1) {
-        $tmpType =~ s/Plus//;
-    }
-    elsif (index($tmpType, "Minus") > -1) {
-        $tmpType =~ s/Minus//;
+    if ($genomeVer eq "rn7") {
+        if (index($tmpType, "Plus") > -1) {
+            $tmpType =~ s/Plus//;
+        }
+        elsif (index($tmpType, "Minus") > -1) {
+            $tmpType =~ s/Minus//;
+        }
     }
     $query = "Select rd.shared_id,rd.total_plus,rd.total_minus,rd.norm_plus,rd.norm_minus from rna_dataset rd
     			where rd.organism = '" . $org . "' " . "
