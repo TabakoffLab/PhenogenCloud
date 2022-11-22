@@ -198,12 +198,12 @@
         <div id="collapsableImage" class="geneimage">
             <div id="geneImage" class="ucscImage" style="display:inline-block;width:100%;">
 
-                <script src="javascript/gdb.2.9.16.min.js" type="text/javascript"></script>
-                <!--<script src="javascript/GenomeDataBrowser2.9.6.js" type="text/javascript"></script>
+                <!--<script src="javascript/gdb.2.9.17.min.js" type="text/javascript"></script>-->
+                <script src="javascript/GenomeDataBrowser2.9.6.js" type="text/javascript"></script>
                 <script src="javascript/GenomeReport2.7.3.js" type="text/javascript"></script>
                 <script src="javascript/GenomeViewMenu2.6.3.js" type="text/javascript"></script>
                 <script src="javascript/GenomeTrackMenu2.6.2.js" type="text/javascript"></script>
-                <script src="javascript/wgcnaBrowser1.3.9.js" type="text/javascript"></script>-->
+                <script src="javascript/wgcnaBrowser1.3.9.js" type="text/javascript"></script>
             </div>
         </div>
 

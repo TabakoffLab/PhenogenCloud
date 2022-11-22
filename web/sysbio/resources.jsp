@@ -126,6 +126,7 @@
         options may be available. For these types, a window displays that allows you to choose specific files.</h2>
     <div style="width:100%;">
         <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
+            <span id="d8" class="detailMenu <%if(section.equals("ucsc")){%>selected<%}%>" name="ucsc">UCSC Track Hubs</span>
             <span id="d7" class="detailMenu <%if(section.equals("rest")){%>selected<%}%>" name="rest">REST API / R</span>
             <span id="d2" class="detailMenu <%if(section.equals("rnaseq")){%>selected<%}%>" name="rnaseq">RNA-Seq</span>
             <span id="d6" class="detailMenu <%if(section.equals("dnaseq")){%>selected<%}%>" name="dnaseq">DNA-Seq</span>
@@ -134,6 +135,64 @@
             <span id="d4" class="detailMenu <%if(section.equals("pub")){%>selected<%}%>" name="pub">Publications</span>
 
         </div>
+    </div>
+    <div id="ucsc" style="<%if(!section.equals("ucsc")){%>display:none;<%}%>border-top:1px solid black;">
+        <H1 style="background: #3c3c3c;">PhenoGen UCSC Genome Browser Track Hubs</H1>
+        <BR>
+        <div>
+            In addition to making the tracks available in our browser most tracks are available in a format to use with the <a href="https://genome.ucsc.edu/"
+                                                                                                                               target="_blank">UCSC Genome
+            Browser</a>. Please click on
+            any link below to visit the UCSC Genome Browser with PhenoGen tracks. Tracks below are added as a track hub with multiple tracks you
+            can adjust through the genome browser.
+            Track hubs should remain linked to your UCSC rn7 genome view until you disconnect the track hub.<BR>
+            Note: Many tracks may not be displayed by default as strain specific read counts in a tissue may have more than 100 tracks. If you are unfamiliar
+            with the UCSC Genome browser you can select tracks to display below the image.
+        </div>
+        <BR><BR>
+        <H1 style="background: #3c3c3c;text-align: center;"> HRDP v6 - rn7 - Sept 2022</H1>
+        <span style="text-align: center;">
+        <H2>Transcriptomes with Merged Tissue Specific Read Counts:</H2>
+        <BR>
+        <div>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/hub.txt" target="_blank">MultiTissue
+                Transcriptome</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/brain/hub.txt" target="_blank">Whole Brain
+                Transcriptome</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/hub.txt" target="_blank">Liver
+                Transcriptome</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/hub.txt" target="_blank">Kidney
+                Transcriptome</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/hub.txt" target="_blank">Heart
+                Transcriptome</a><BR><BR>
+        </div><BR>
+            <H2>Strain/Tissue Specific Read Counts (Sampled):</H2>
+            <div style="text-align: center;">Randomly sampled to even total counts between strains to match the lowest strain.</div>
+        <BR>
+        <div>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/brain/sampled/hub.txt" target="_blank">Whole
+                Brain Strain Specific Reads Counts (Sampled)</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/sampled/hub.txt" target="_blank">Liver
+                Strain Specific Reads Counts (Sampled)</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/sampled/hub.txt" target="_blank">Heart
+                Strain Specific Reads Counts (Sampled)</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/sampled/hub.txt" target="_blank">Kidney
+                Strain Specific Reads Counts (Sampled)</a><BR><BR>
+        </div>
+        <H2>Strain/Tissue Specific Read Counts (Total):</H2>
+            <div style="text-align: center;">Not sampled: Each strain contains the total reads from all 3 biological replicates.</div>
+        <BR>
+        <div>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/brain/total/hub.txt" target="_blank">Whole
+                Brain Strain Specific Reads Counts (Total/Not Sampled)</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/total/hub.txt" target="_blank">Liver
+                Strain Specific Reads Counts (Total/Not Sampled)</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/total/hub.txt" target="_blank">Heart
+                Strain Specific Reads Counts (Total/Not Sampled)</a><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/total/hub.txt" target="_blank">Kidney
+                Strain Specific Reads Counts (Total/Not Sampled)</a><BR><BR>
+        </div>
+            </span>
     </div>
     <div id="rest" style="<%if(!section.equals("rest")){%>display:none;<%}%>border-top:1px solid black;">
         <H1 style="background: #3c3c3c;">PhenoGen REST API</H1>

@@ -468,7 +468,7 @@
             HashMap<String, HashMap<String, HashMap<String, Double>>> tpm = new HashMap<String, HashMap<String, HashMap<String, Double>>>();
             if (geneIDList.length() > 1) {
                 if (genomeVer.equals("rn6")) {
-                    tpm = gdt.getTPM(geneIDList.substring(1), "97,98");
+                    tpm = gdt.getTPM(geneIDList.substring(1), "97,98,189");
                 } else if (genomeVer.equals("rn7")) {
                     tpm = gdt.getTPM(geneIDList.substring(1), "190,191,192,193");
                 }
@@ -846,7 +846,7 @@
             <TD><%if (kidney != null && kidney.containsKey("geneHerit") && kidney.get("geneHerit") > 0) {%><%=df2.format(kidney.get("geneHerit"))%><%}%></TD>
             <TD><%if (cisPvalK > -1) {%><%=dfe.format(cisPvalK)%><BR><%=cisLocationK%><%}%></TD>
             <TD><%if (transPvalK > -1) {%><%=dfe.format(transPvalK)%><BR><%=transLocationK%><%}%></TD>
-            
+
             <% if (genomeVer.equals("rn7")) {%>
             <TD class="leftBorder"><%if (heart != null && heart.containsKey("ensmed")) {%><%=heart.get("ensmed")%><%}%></TD>
             <TD><%if (heart != null && heart.containsKey("ensmed")) {%><%=heart.get("ensmin")%>-<%=heart.get("ensmax")%><%}%></TD>

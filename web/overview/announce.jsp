@@ -12,13 +12,22 @@
 
 <H2 style="font-size: 24px;">Announcements</H2>
 <div style="overflow:auto;height:92%;margin-left: 10px;" class="announcement">
+    <H2 style="font-weight: bold;font-size:20px;">UCSC Track Hubs HRDPv6</H2>
+    <div style="margin-left:5px;">
+        PhenoGen HRDP v6 UCSC Track Hubs are available now to access Transcriptomes and read depth tracks on UCSC Genome Browser. <a
+            href="web/sysbio/resources.jsp?section=ucsc" target="_blank"> Downloads -> UCSC</a>
+    </div>
+    <H2 style="font-weight: bold;font-size:20px;">CTC Phenogen Poster</H2>
+    <div style="margin-left:5px;">
+        PhenoGen HRDP v6 and REST API updates are highlighted on our CTC poster. <a href="downloads/CTC_2022_PhenoGen.pdf" target="_blank">Download it here.</a>
+    </div>
     <H2 style="font-weight: bold;font-size:20px;">Complex Trait Community/Rat Genomics Annual Meeting</H2>
     <div style="margin-left:5px;">
         9/29/22-9/30/22 Denver,CO / University of Colorado Anschutz Medical Campus<BR>
         <a href="https://complextrait.org/meetings/ctc-rg2022/">Learn More</a><BR>
         <a href="https://complextrait.org/meetings/ctc-rg2022/">Register</a>
         <BR><BR>
-        Come and see the PhenoGen Poster on the Rn7/HRDP v6 Dataset and the REST API.(It will be posted here by the time of the meeting.)
+        Come and see the PhenoGen Poster on the Rn7/HRDP v6 Dataset and the REST API. <a href="downloads/CTC_2022_PhenoGen.pdf" target="_blank">Download PDF</a>
     </div>
     <H2 style="font-weight: bold;font-size:20px;">Rn7 is available</H2>
     <div style="margin-left:5px;">
