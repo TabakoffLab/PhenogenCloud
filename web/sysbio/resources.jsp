@@ -174,8 +174,8 @@
                 Brain Strain Specific Reads Counts (Sampled)</a><BR><BR>
             <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/sampled/hub.txt" target="_blank">Liver
                 Strain Specific Reads Counts (Sampled)</a><BR><BR>
-            <!--<a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/sampled/hub.txt" target="_blank">-->Heart
-                Strain Specific Reads Counts (Sampled) - coming soon<!--</a>--><BR><BR>
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/sampled/hub.txt" target="_blank">Heart
+                Strain Specific Reads Counts (Sampled)</a><BR><BR>
             <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/sampled/hub.txt" target="_blank">Kidney
                 Strain Specific Reads Counts (Sampled)</a><BR><BR>
         </div>
