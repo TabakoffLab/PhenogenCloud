@@ -123,7 +123,7 @@
         $('div#indexDesc').hide();
     });
     $(document).ready(function () {
-        $(".body_wrapper_plain").style("background", "#365473");
+        $('#body_wrapper_plain').css("background", "#365473");
         //$(".search").css("top", "4px");
         $("div.clicker").click(function () {
             var thisHidden = $("span#" + $(this).attr("name")).is(":hidden");
