@@ -336,3 +336,13 @@
 #login-form a:hover {
     color: #DDDDDD;
 }
+
+#block_container
+{
+    text-align:center;
+}
+#bloc1, #bloc2
+{
+    display:inline;
+}
+
