@@ -85,8 +85,8 @@ mouseOnly.probeMouse = 1;
 
 
 var mmVer = "Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
-var rnVer = "Rat(<span id=\"verSelect\"></span>) Strain:BN";
-var siteVer = "PhenoGen v3.8.0(9/21/2022)";
+var rnVer = "Rat(<span id=\"verSelect\"></span>) HRDP version:<span id=\"hrdpSelect\"></span> Strain:BN";
+var siteVer = "PhenoGen v3.9.1(2/1/2023)";
 
 var trackBinCutoff = 10000;
 var customTrackLevel = -1;
@@ -3275,7 +3275,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
     });
     //$( "ul,li");
     var orgVer = mmVer;
-    if (organism == "Rn") {
+    if (organism === "Rn") {
         orgVer = rnVer;
     }
     var header = d3.select("div#imageHeader").html("Organism: " + orgVer + "&nbsp&nbsp&nbsp&nbsp" + siteVer);
@@ -3332,6 +3332,49 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 tmpSel.append('option')
                     .attr('value', genomeVer)
                     .html(genomeVer);
+            }
+        }
+        if ($('span#hrdpSelect').length > 0) {
+            var tmpSelh = d3.select('span#hrdpSelect').append('select');
+            tmpSelh.on("change", function () {
+                displayWorking();
+                if (isLocalStorage() === true) {
+                    localStorage.setItem(organism + "DefHRDPVer", $(this).val());
+                } else {
+                    $.cookie(organism + "DefHRDPVer", $(this).val());
+                }
+                changeHRDPVer($(this).val(), that.currentView);
+                setTimeout(function () {
+                    //console.log("submit genomeVer"+$('input#genomeVer').attr("value"));
+                    $('form#geneCentricForm').submit();
+                }, 1500);
+            });
+            if (organism === 'Rn') {
+                $('span#hrdpSelect').css("display", "inline-block");
+
+                if (genomeVer === "rn7") {
+                    var rn6Opt = tmpSelh.append('option')
+                        .attr('value', '6')
+                        .html('HRDPv6');
+                    //if (hrdpVer === '6') {
+                    rn6Opt.attr('selected', 'selected');
+                    //}
+                } else if (genomverVer === "rn6") {
+                    var rn5pt = tmpSelh.append('option')
+                        .attr('value', '5')
+                        .html('HRDPv5');
+                    //if (hrdpVer === '5') {
+                    rn5pt.attr('selected', 'selected');
+                    //}
+                    //var rn4pt = tmpSelh.append('option')
+                    //    .attr('value', '4')
+                    //    .html('HRDPv4');
+                    //if (hrdpVer === '4') {
+                    //    rn4pt.attr('selected', 'selected');
+                    //}
+                }
+            } else if (organism === 'Mm') {
+                $('span#hrdpSelect').css("display", "none");
             }
         }
     }, 500);

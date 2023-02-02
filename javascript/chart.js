@@ -1710,6 +1710,9 @@ chart = function (params) {
                 //console.log(k);
                 id = list[k].GENEID;
                 id = id.replace(/\./g, "_");
+                if (list[k].GENEFLAG) {
+                    id = id + "*";
+                }
                 tmp = {"id": id};
                 if (typeof list[k].HERIT !== 'undefined') {
                     tmp.herit = list[k].HERIT;
