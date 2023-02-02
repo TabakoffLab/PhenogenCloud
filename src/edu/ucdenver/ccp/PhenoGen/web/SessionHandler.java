@@ -121,6 +121,7 @@ public class SessionHandler {
             System.out.println("JNDI lookup exception:");
             ex.printStackTrace(System.out);
             ex.printStackTrace();
+            log.error("NameException:", ex);
         }
         //log.debug("instantiated SessionHandler with no session");
     }
@@ -138,6 +139,7 @@ public class SessionHandler {
             if (pool == null) {
                 log.error("Unknown DataSource 'jdbc/" + this.dbMain + "'", new Exception("Unknown DataSource 'jdbc/" + this.dbMain + "'"));
             }
+
             /*poolRO = (DataSource) ctx.lookup("java:comp/env/jdbc/" + this.dbMain+"RO");
             if (poolRO == null) {
                 log.error("Unknown DataSource 'jdbc/" + this.dbMain + "RO'", new Exception("Unknown DataSource 'jdbc/" + this.dbMain + "RO'"));
@@ -687,10 +689,10 @@ public class SessionHandler {
                 pstmt.close();
 
             } catch (SQLException e) {
-                log.debug("Exception:::"+e.getMessage());
-                if(e.getMessage().contains("Duplicate entry ")){
+                log.debug("Exception:::" + e.getMessage());
+                if (e.getMessage().contains("Duplicate entry ")) {
                     //Session already created no need to do anything
-                }else {
+                } else {
                     log.error("In exception of createSession", e);
                     throw e;
                 }
@@ -703,8 +705,6 @@ public class SessionHandler {
             throw new SQLException();
         }
     }
-
-
 
 
     public void logoutSession(DataSource pool) throws SQLException {
@@ -874,16 +874,16 @@ public class SessionHandler {
                                       int exp_id, int dataset_id, int version, int geneListID,
                                       String activityName, DataSource pool) throws SQLException {
 
-            SessionHandler mySessionHandler = new SessionHandler();
+        SessionHandler mySessionHandler = new SessionHandler();
 
-            mySessionHandler.setSession_id(sessionID);
-            mySessionHandler.setExp_id(exp_id);
-            mySessionHandler.setDataset_id(dataset_id);
-            mySessionHandler.setVersion(version);
-            mySessionHandler.setGene_list_id(geneListID);
-            mySessionHandler.setActivity_name(activityName);
+        mySessionHandler.setSession_id(sessionID);
+        mySessionHandler.setExp_id(exp_id);
+        mySessionHandler.setDataset_id(dataset_id);
+        mySessionHandler.setVersion(version);
+        mySessionHandler.setGene_list_id(geneListID);
+        mySessionHandler.setActivity_name(activityName);
 
-            createSessionActivity(mySessionHandler, pool);
+        createSessionActivity(mySessionHandler, pool);
 
     }
 
@@ -923,7 +923,7 @@ public class SessionHandler {
         mySessionHandler.setExp_id(expID);
         mySessionHandler.setActivity_name(activityName);
 
-        createSessionActivity(mySessionHandler,pool);
+        createSessionActivity(mySessionHandler, pool);
     }
 
 
@@ -1266,7 +1266,6 @@ public class SessionHandler {
             throw new SQLException();
         }
     }
-
 
 
     public void sendAnonSessionRecoveryEmail(ArrayList<String> idList, String email) throws MessagingException {
