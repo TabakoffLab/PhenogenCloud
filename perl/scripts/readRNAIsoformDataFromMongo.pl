@@ -194,6 +194,11 @@ sub readRNAIsoformDataFromDB {
             if (length($geneChromNumber) > 2) {
                 $geneChromNumber = addChr($geneChrom, "subtract");
             }
+            if (length($organism) > 2) {
+                if ((lc $organism) eq "rat") {
+                    $organism = "Rn";
+                }
+            }
             $chrQ = "select chromosome_id from chromosomes where name='" . uc($geneChromNumber) . "' and organism='" . $organism . "'";
             print $chrQ . "\n";
             $query_handle1 = $connect->prepare($chrQ) or die(" Probeset query prepare failed \n");
@@ -206,11 +211,11 @@ sub readRNAIsoformDataFromDB {
             my $ref = readTranscriptAnnotationDataFromDB($geneChrom, $geneStart, $geneStop, $dsid, $type, $dsn, $usr, $passwd);
             my %annotHOH = %$ref;
 
-            $query = "Select rd.tissue,rt.gene_id,rt.isoform_id,rt.source,rt.trstart,rt.trstop,rt.strand,rt.category,rt.strain,'" . $geneChromNumber . "',re.enumber,re.estart,re.estop ,rt.rna_transcript_id, rt.merge_gene_id, rt.merge_isoform_id " .
+            $query = "Select rd.tissue,rt.gene_id,rt.isoform_id,rt.source,rt.trstart,rt.trstop,rt.strand,rt.category,rt.strain,'" . $geneChromNumber . "',re.enumber,re.estart,re.estop ,rt.rna_transcript_id, rt.merge_gene_id, rt.merge_isoform_id,rt.gene_flag,rt.trx_flag " .
                 "from rna_dataset rd, rna_transcripts rt, rna_exons re " .
                 "where rt.chromosome_id = " . $chrID . " " .
                 "and re.rna_transcript_id=rt.rna_transcript_id " .
-                "and ((trstart>=$geneStart and trstart<=$geneStop) OR (trstop>=$geneStart and trstop<=$geneStop) OR (trstart<=$geneStart and trstop>=$geneStop)) ";
+                "and (($geneStart <= trstart and trstart<=$geneStop) OR ($geneStart<=trstop and trstop<=$geneStop) OR (trstart<=$geneStart and $geneStop<=trstop)) ";
             if (index($dsid, ",") > -1) {
                 $query = $query . " and rt.rna_dataset_id in (" . $dsid . ")";
             }
@@ -236,7 +241,7 @@ sub readRNAIsoformDataFromDB {
 
             # BIND TABLE COLUMNS TO VARIABLES
 
-            $query_handle->bind_columns(\$tissue, \$gene_id, \$isoform_id, \$source, \$trstart, \$trstop, \$trstrand, \$trcategory, \$trstrain, \$chr, \$enumber, \$estart, \$estop, \$trID, \$mergeGeneID, \$mergeTrxID);
+            $query_handle->bind_columns(\$tissue, \$gene_id, \$isoform_id, \$source, \$trstart, \$trstop, \$trstrand, \$trcategory, \$trstrain, \$chr, \$enumber, \$estart, \$estop, \$trID, \$mergeGeneID, \$mergeTrxID, \$geneFlag, \$trxFlag);
             # Loop through results, adding to array of hashes.
             my $continue = 1;
             my @tmpArr = ();
@@ -301,16 +306,17 @@ sub readRNAIsoformDataFromDB {
                         #print "Adding transcript $trtmp_id::$cntTranscript\n";
 
                         $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
-                            ID         => $trtmp_id,
-                            start      => $trtmp_start,
-                            stop       => $trtmp_stop,
-                            source     => $trtmp_source,
-                            strand     => $trtmp_strand,
-                            category   => $trtmp_category,
-                            strain     => $trtmp_strain,
-                            chromosome => $trtmp_chromosome,
-                            exonList   => { exon => \@$exonArray },
-                            intronList => { intron => \@$intronArray }
+                            ID             => $trtmp_id,
+                            start          => $trtmp_start,
+                            stop           => $trtmp_stop,
+                            source         => $trtmp_source,
+                            strand         => $trtmp_strand,
+                            category       => $trtmp_category,
+                            strain         => $trtmp_strain,
+                            chromosome     => $trtmp_chromosome,
+                            exonList       => { exon => \@$exonArray },
+                            intronList     => { intron => \@$intronArray },
+                            transcriptFlag => $trtmp_trxFlag
                         };
                         my $reftmp = $annotHOH{$trtmp_trid};
                         my @tmp = @$reftmp;
@@ -334,6 +340,7 @@ sub readRNAIsoformDataFromDB {
                         $trtmp_category = $trcategory;
                         $trtmp_strain = $trstrain;
                         $trtmp_trid = $trID;
+                        $trtmp_trxFlag = $trxFlag;
 
                         #set gene min max
 
@@ -367,16 +374,17 @@ sub readRNAIsoformDataFromDB {
                         $geneHOH{Gene}[$cntGene - 1]{start} = $genetmp_start;
                         $geneHOH{Gene}[$cntGene - 1]{stop} = $genetmp_stop;
                         $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
-                            ID         => $trtmp_id,
-                            start      => $trtmp_start,
-                            stop       => $trtmp_stop,
-                            source     => $trtmp_source,
-                            strand     => $trtmp_strand,
-                            category   => $trtmp_category,
-                            strain     => $trtmp_strain,
-                            chromosome => $trtmp_chromosome,
-                            exonList   => { exon => \@$exonArray },
-                            intronList => { intron => \@$intronArray }
+                            ID             => $trtmp_id,
+                            start          => $trtmp_start,
+                            stop           => $trtmp_stop,
+                            source         => $trtmp_source,
+                            strand         => $trtmp_strand,
+                            category       => $trtmp_category,
+                            strain         => $trtmp_strain,
+                            chromosome     => $trtmp_chromosome,
+                            exonList       => { exon => \@$exonArray },
+                            intronList     => { intron => \@$intronArray },
+                            transcriptFlag => $trtmp_trxFlag
                         };
                         my $reftmp = $annotHOH{$trtmp_trid};
                         my @tmp = @$reftmp;
@@ -406,7 +414,8 @@ sub readRNAIsoformDataFromDB {
                         chromosome => $chr,
                         biotype    => $bioType,
                         geneSymbol => "", ####NEED TO FILL THIS IN WITH AKA ANNOTATION
-                        source     => "RNA Seq"
+                        source     => "RNA Seq",
+                        geneFlag   => $geneFlag
                     };
                     $cntGene++;
                     #print "adding transcript $isoform_id\n";
@@ -422,6 +431,7 @@ sub readRNAIsoformDataFromDB {
                     $trtmp_category = $trcategory;
                     $trtmp_strain = $trstrain;
                     $trtmp_trid = $trID;
+                    $trtmp_trxFlag = $trxFlag;
 
                     $genetmp_start = $trtmp_start;
                     $genetmp_stop = $trtmp_stop;
@@ -457,16 +467,17 @@ sub readRNAIsoformDataFromDB {
                 $geneHOH{Gene}[$cntGene - 1]{start} = $genetmp_start;
                 $geneHOH{Gene}[$cntGene - 1]{stop} = $genetmp_stop;
                 $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
-                    ID         => $trtmp_id,
-                    start      => $trtmp_start,
-                    stop       => $trtmp_stop,
-                    source     => $trtmp_source,
-                    strand     => $trtmp_strand,
-                    category   => $trtmp_category,
-                    strain     => $trtmp_strain,
-                    chromosome => $trtmp_chromosome,
-                    exonList   => { exon => \@$exonArray },
-                    intronList => { intron => \@$intronArray }
+                    ID             => $trtmp_id,
+                    start          => $trtmp_start,
+                    stop           => $trtmp_stop,
+                    source         => $trtmp_source,
+                    strand         => $trtmp_strand,
+                    category       => $trtmp_category,
+                    strain         => $trtmp_strain,
+                    chromosome     => $trtmp_chromosome,
+                    exonList       => { exon => \@$exonArray },
+                    intronList     => { intron => \@$intronArray },
+                    transcriptFlag => $trtmp_trxFlag
                 };
                 my $reftmp = $annotHOH{$trtmp_trid};
                 my @tmp = @$reftmp;

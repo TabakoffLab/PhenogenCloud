@@ -65,7 +65,6 @@
         session.setAttribute("errorMsg", "GLT-001");
         response.sendRedirect(commonDir + "errorMsg.jsp");
     }
-
     String fullFileName = userLoggedIn.getUserGeneListsDownloadDir();
     if (userLoggedIn.getUser_name().equals("anon")) {
         fullFileName = fullFileName + anonU.getUUID();

@@ -188,7 +188,7 @@ public class ParameterValue implements Comparable {
         // get the group ID of the master parameter group
         // for this dataset
         //
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(getMasterGroupID, new Object[]{dataset_id, version}, conn);
 
             int masterGroupID = myResults.getIntValueFromFirstRow();
@@ -210,12 +210,10 @@ public class ParameterValue implements Comparable {
             log.debug("just exectued update");
 
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
-
-
 
 
         return parameter_group_id;
@@ -245,7 +243,7 @@ public class ParameterValue implements Comparable {
 
         //log.debug("query = "+query);
 
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
             //pstmt.setInt(1, newParameterGroupID);
@@ -276,8 +274,8 @@ public class ParameterValue implements Comparable {
             pstmt.executeUpdate();
 
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -312,7 +310,7 @@ public class ParameterValue implements Comparable {
                         "and parameter != 'User ID'";
 
         //log.debug("query = "+query);
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             //
             // insert a new set of parameters for this particular
             // analysis
@@ -324,13 +322,14 @@ public class ParameterValue implements Comparable {
             pstmt.executeUpdate();
 
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
 
     }
+
     /**
      * Creates a new row in the parameter_groups table.
      *
@@ -341,7 +340,7 @@ public class ParameterValue implements Comparable {
     public int createParameterGroup(DataSource pool) throws SQLException {
 
         log.info("In ParameterValue.createParameterGroup.");
-        int parameter_group_id=-99;
+        int parameter_group_id = -99;
         //parameter_group_id = myDbUtils.getUniqueID("parameter_groups_seq", pool);
 
         String query =
@@ -350,7 +349,7 @@ public class ParameterValue implements Comparable {
                         "( ?)";
 
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             pstmt.setTimestamp(1, now);
             pstmt.executeUpdate();
@@ -381,7 +380,7 @@ public class ParameterValue implements Comparable {
         log.debug("in createParameterGroup");
 
         //parameter_group_id = myDbUtils.getUniqueID("parameter_groups_seq", conn);
-        int parameter_group_id=-99;
+        int parameter_group_id = -99;
         String query =
                 "insert into parameter_groups " +
                         "( dataset_id, version, master, create_date) values " +
@@ -390,7 +389,7 @@ public class ParameterValue implements Comparable {
 
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
 
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             pstmt.setInt(1, parameter_group_id);
             pstmt.setInt(2, dataset_id);
@@ -404,11 +403,10 @@ public class ParameterValue implements Comparable {
                 parameter_group_id = rs.getInt(1);
             }
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
-
 
 
         log.info("In ParameterValue.createParameterGroup. dataset_id = " + dataset_id + ", version = " + version + ", PGID = " + parameter_group_id);
@@ -435,15 +433,15 @@ public class ParameterValue implements Comparable {
                         "and value = ?";
 
         log.info("In deletePhenotypeValues.  parameterGroupID = " + parameterGroupID);
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
             pstmt.setString(1, Integer.toString(parameterGroupID));
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -458,7 +456,7 @@ public class ParameterValue implements Comparable {
      * @param conn             the database connection
      * @throws SQLException if a database error occurs
      */
-    public void deleteParameterValues(int parameterGroupID,DataSource pool) throws SQLException {
+    public void deleteParameterValues(int parameterGroupID, DataSource pool) throws SQLException {
 
         String query =
                 "delete from parameter_values " +
@@ -468,7 +466,7 @@ public class ParameterValue implements Comparable {
                         "where parameter_group_id = ?";
 
         log.info("In deleteParameterValues.  parameterGroupID = " + parameterGroupID);
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -478,7 +476,7 @@ public class ParameterValue implements Comparable {
             pstmt.close();
 
 
-            pstmt=conn.prepareStatement(query2,
+            pstmt = conn.prepareStatement(query2,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
             pstmt.setInt(1, parameterGroupID);
@@ -486,8 +484,8 @@ public class ParameterValue implements Comparable {
             pstmt.close();
             conn.commit();
             conn.setAutoCommit(true);
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -514,7 +512,7 @@ public class ParameterValue implements Comparable {
                         "where parameter_group_id = ? " +
                         "and category like ?";
 
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -523,8 +521,8 @@ public class ParameterValue implements Comparable {
 
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -546,7 +544,7 @@ public class ParameterValue implements Comparable {
                 "delete from parameter_values " +
                         "where parameter_group_id = ? " +
                         "and category like 'Statistical Method'";
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             //log.debug("query = "+ query);
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -555,8 +553,8 @@ public class ParameterValue implements Comparable {
 
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -578,7 +576,7 @@ public class ParameterValue implements Comparable {
                         "where parameter_group_id = ? " +
                         "and category like 'Multiple Test Method%'";
         //log.debug("query = "+ query);
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -586,8 +584,8 @@ public class ParameterValue implements Comparable {
 
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -619,7 +617,7 @@ public class ParameterValue implements Comparable {
                 "delete from parameter_groups " +
                         "where dataset_id = ? " +
                         "and version = ?";
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             for (String thisQuery : queries) {
                 PreparedStatement pstmt = conn.prepareStatement(thisQuery,
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -630,8 +628,8 @@ public class ParameterValue implements Comparable {
                 pstmt.executeUpdate();
                 pstmt.close();
             }
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -649,7 +647,7 @@ public class ParameterValue implements Comparable {
     public void createParameterValue(DataSource pool) throws SQLException {
 
         //int parameter_value_id = myDbUtils.getUniqueID("parameter_values_seq", pool);
-        int parameter_value_id=-99;
+        int parameter_value_id = -99;
         String query =
                 "insert into parameter_values " +
                         "( parameter_group_id, category, parameter, value, create_date) values " +
@@ -659,7 +657,7 @@ public class ParameterValue implements Comparable {
         //		this.getParameter() +
         //		", Value = " +
         //		this.getValue());
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             pstmt.setInt(1, this.getParameter_group_id());
             pstmt.setString(2, this.getCategory());
@@ -756,7 +754,7 @@ public class ParameterValue implements Comparable {
         }
         Object[] parameters = (Object[]) parameterList.toArray(new Object[parameterList.size()]);
         List<ParameterValue> myParameterValueList = new ArrayList<ParameterValue>();
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, parameters, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -764,8 +762,8 @@ public class ParameterValue implements Comparable {
                 myParameterValueList.add(newParameterValue);
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         ParameterValue[] myParameterValueArray =
@@ -785,14 +783,14 @@ public class ParameterValue implements Comparable {
      */
     public String getNormalizationMethod(int dataset_id, int version, DataSource pool) throws SQLException {
         log.info("In getNormalizationMethod. dataset_id = " + dataset_id + ", and version = " + version);
-        String value="Unknown";
+        String value = "Unknown";
 
-            ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
-            for (ParameterValue thisParameterValue : myNormalizationParameters) {
-                if (thisParameterValue.getParameter().indexOf("Normalization Method") >= 0) {
-                    value=thisParameterValue.getValue();
-                }
+        ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
+        for (ParameterValue thisParameterValue : myNormalizationParameters) {
+            if (thisParameterValue.getParameter().indexOf("Normalization Method") >= 0) {
+                value = thisParameterValue.getValue();
             }
+        }
 
 
         return value;
@@ -809,14 +807,14 @@ public class ParameterValue implements Comparable {
      */
     public String getProbeMaskParameter(int dataset_id, int version, DataSource pool) throws SQLException {
         log.info("In getProbeMaskParameter. dataset_id = " + dataset_id + ", and version = " + version);
-        String value="F";
+        String value = "F";
 
-            ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
-            for (ParameterValue thisParameterValue : myNormalizationParameters) {
-                if (thisParameterValue.getParameter().indexOf("Probe Mask Applied") >= 0) {
-                    value=thisParameterValue.getValue();
-                }
+        ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
+        for (ParameterValue thisParameterValue : myNormalizationParameters) {
+            if (thisParameterValue.getParameter().indexOf("Probe Mask Applied") >= 0) {
+                value = thisParameterValue.getValue();
             }
+        }
 
 
         return value;
@@ -833,14 +831,14 @@ public class ParameterValue implements Comparable {
      */
     public String getAnnotationLevelParameter(int dataset_id, int version, DataSource pool) throws SQLException {
         log.info("In getProbeMaskParameter. dataset_id = " + dataset_id + ", and version = " + version);
-        String value="F";
+        String value = "F";
 
-            ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
-            for (ParameterValue thisParameterValue : myNormalizationParameters) {
-                if (thisParameterValue.getParameter().indexOf("Annotation Level") >= 0) {
-                    value=thisParameterValue.getValue();
-                }
+        ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
+        for (ParameterValue thisParameterValue : myNormalizationParameters) {
+            if (thisParameterValue.getParameter().indexOf("Annotation Level") >= 0) {
+                value = thisParameterValue.getValue();
             }
+        }
 
 
         return value;
@@ -857,11 +855,11 @@ public class ParameterValue implements Comparable {
      */
     public String getAnalysisLevelParameter(int dataset_id, int version, DataSource pool) throws SQLException {
         log.info("In getProbeMaskParameter. dataset_id = " + dataset_id + ", and version = " + version);
-        String value="F";
+        String value = "F";
         ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
         for (ParameterValue thisParameterValue : myNormalizationParameters) {
             if (thisParameterValue.getParameter().indexOf("Analysis Level") >= 0) {
-                value=thisParameterValue.getValue();
+                value = thisParameterValue.getValue();
             }
         }
         return value;
@@ -878,11 +876,11 @@ public class ParameterValue implements Comparable {
      */
     public String getCodeLinkNormalizationParameter(int dataset_id, int version, DataSource pool) throws SQLException {
         log.info("In getCodeLinkNormalizationParameter. dataset_id = " + dataset_id + ", and version = " + version);
-        String value="Unknown";
+        String value = "Unknown";
         ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
         for (ParameterValue thisParameterValue : myNormalizationParameters) {
             if (thisParameterValue.getParameter().indexOf("CodeLink Normalization Parameter 1") >= 0) {
-                value=thisParameterValue.getValue();
+                value = thisParameterValue.getValue();
             }
         }
         return value;
@@ -899,11 +897,11 @@ public class ParameterValue implements Comparable {
      */
     public String getAnnotationLevelNormalizationParameter(int dataset_id, int version, DataSource pool) throws SQLException {
         log.info("In getAnnotationLevelNormalizationParameter. dataset_id = " + dataset_id + ", and version = " + version);
-        String value="Unknown";
+        String value = "Unknown";
         ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
         for (ParameterValue thisParameterValue : myNormalizationParameters) {
             if (thisParameterValue.getParameter().indexOf("Annotation Level") >= 0) {
-                value=thisParameterValue.getValue();
+                value = thisParameterValue.getValue();
             }
         }
         return value;
@@ -920,11 +918,11 @@ public class ParameterValue implements Comparable {
      */
     public String getAnalysisLevelNormalizationParameter(int dataset_id, int version, DataSource pool) throws SQLException {
         log.info("In getAnalysisLevelNormalizationParameter. dataset_id = " + dataset_id + ", and version = " + version);
-        String value="Unknown";
+        String value = "Unknown";
         ParameterValue[] myNormalizationParameters = getNormalizationParameters(dataset_id, version, pool);
         for (ParameterValue thisParameterValue : myNormalizationParameters) {
             if (thisParameterValue.getParameter().indexOf("Analysis Level") >= 0) {
-                value=thisParameterValue.getValue();
+                value = thisParameterValue.getValue();
             }
         }
         return value;
@@ -963,7 +961,7 @@ public class ParameterValue implements Comparable {
 
         log.info("In getNormalizationParameters");
         //log.debug("query = "+ query);
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{dataset_id, version}, conn);
             String[] dataRow;
 
@@ -973,8 +971,8 @@ public class ParameterValue implements Comparable {
             }
 
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -993,7 +991,7 @@ public class ParameterValue implements Comparable {
      * @return An array of ParameterValue objects
      * @throws SQLException if a database error occurs
      */
-    public ParameterValue[] getFiltersUsed(int parameterGroupID,DataSource pool) throws SQLException {
+    public ParameterValue[] getFiltersUsed(int parameterGroupID, DataSource pool) throws SQLException {
         log.info("in getFiltersUsed");
         log.debug("parameterGroupID = " + parameterGroupID);
 
@@ -1036,7 +1034,7 @@ public class ParameterValue implements Comparable {
         List<ParameterValue> myParameterValueList = new ArrayList<ParameterValue>();
 
         //log.debug("query = "+ query);
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, parameterGroupID, conn);
             String[] dataRow;
 
@@ -1046,8 +1044,8 @@ public class ParameterValue implements Comparable {
             }
 
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -1099,7 +1097,7 @@ public class ParameterValue implements Comparable {
                         "pv.value " +
                         "from parameter_values pv, " +
                         "parameter_groups pg " +
-                        "where pv.parameter_group_id = "+parameterGroupID+" "+
+                        "where pv.parameter_group_id = " + parameterGroupID + " " +
                         "and pv.parameter_group_id = pg.parameter_group_id " +
                         "and pv.category != 'Data Normalization' " +
                         "and pv.parameter != 'User ID' " +
@@ -1119,7 +1117,7 @@ public class ParameterValue implements Comparable {
                         "parameter_groups pg " +
                         "where pv.parameter_group_id = pv2.value " +
                         "and pv.parameter_group_id = pg.parameter_group_id " +
-                        "and pv2.parameter_group_id = "+parameterGroupID+ " "+
+                        "and pv2.parameter_group_id = " + parameterGroupID + " " +
                         "and pv2.parameter = 'Parameter Group ID' " +
                         "and pv.category = 'Phenotype Data' " +
                         "and pv.parameter != 'User ID' " +
@@ -1143,7 +1141,7 @@ public class ParameterValue implements Comparable {
                         "and gl.dataset_id = dv.dataset_id " +
                         "and gl.version = dv.version " +
                         "and dv.grouping_id = grps.grouping_id " +
-                        "and pv2.parameter_group_id = " +  parameterGroupID + " "+
+                        "and pv2.parameter_group_id = " + parameterGroupID + " " +
                         "and pv.parameter = convert(grps.group_number,char) " +
                         "and pv2.category = 'Phenotype Data' " +
                         "and pv2.parameter = 'Parameter Group ID' " +
@@ -1157,7 +1155,7 @@ public class ParameterValue implements Comparable {
         List<ParameterValue> myParameterValueList = new ArrayList<ParameterValue>();
 
         //log.debug("query = "+ query);
-        try(Connection conn =pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -1194,13 +1192,13 @@ public class ParameterValue implements Comparable {
 
         log.debug("In getStatisticalMethod");
         //log.debug("query = "+ query);
-        String statMethod =null;
-        try(Connection conn=pool.getConnection()){
+        String statMethod = null;
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, parameterGroupID, conn);
             statMethod = myResults.getStringValueFromFirstRow();
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         log.debug("statMethod = " + statMethod);
@@ -1225,7 +1223,7 @@ public class ParameterValue implements Comparable {
         log.debug("In getAnovaPValue");
         //log.debug("query = "+ query);
         String pValue = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, parameterGroupID, conn);
             pValue = myResults.getStringValueFromFirstRow();
             if (pValue.equals("")) {
@@ -1234,8 +1232,8 @@ public class ParameterValue implements Comparable {
                 pValue = "Contrast";
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         log.debug("pValue = " + pValue);
@@ -1254,11 +1252,11 @@ public class ParameterValue implements Comparable {
      * @return a string containing the group number
      * @throws SQLException if a database error occurs
      */
-    public String getGroupNumber(int dataset_id, int version, String label,DataSource pool) throws SQLException {
+    public String getGroupNumber(int dataset_id, int version, String label, DataSource pool) throws SQLException {
 
         String query =
                 "select grps.group_number " +
-                        "from groups grps, dataset_versions dv " +
+                        "from inia_prod.groups grps, dataset_versions dv " +
                         "where dv.dataset_id = ? " +
                         "and dv.version = ? " +
                         "and dv.grouping_id = grps.grouping_id " +
@@ -1267,12 +1265,12 @@ public class ParameterValue implements Comparable {
         log.debug("In getGroupNumber");
         //log.debug("query = "+ query);
         String groupNumber = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{dataset_id, version, label}, conn);
             groupNumber = myResults.getStringValueFromFirstRow();
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         if (groupNumber.equals("")) {
@@ -1314,12 +1312,12 @@ public class ParameterValue implements Comparable {
                     "	where user_name = 'public')) ";
         }
         query = query + "order by pv.category, pv.parameter";
-        log.debug("test_query:\n"+query);
+        log.debug("test_query:\n" + query);
         List<ParameterValue> myParameterValueList = new ArrayList<ParameterValue>();
 
         //log.info("In getParameterValuesForAllDatasetsForUser");
         //log.debug("query for user_id = "+user_id + "  is " + query);
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = (user_id != -99 ? new Results(query, new Object[]{user_id}, conn) :
                     new Results(query, conn));
             String[] dataRow;
@@ -1330,8 +1328,8 @@ public class ParameterValue implements Comparable {
             }
 
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         ParameterValue[] myParameterValueArray = (ParameterValue[]) myObjectHandler.getAsArray(myParameterValueList, ParameterValue.class);
@@ -1369,7 +1367,7 @@ public class ParameterValue implements Comparable {
         //log.info("In getParameterValuesForDatasetVersion");
         //log.debug("query for dataset_id = "+datasetVersion.getDataset().getDataset_id() + " and vsn = "+datasetVersion.getVersion()+ " is " + query);
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{datasetVersion.getDataset().getDataset_id(), datasetVersion.getVersion()}, conn);
             String[] dataRow;
 
@@ -1420,7 +1418,7 @@ public class ParameterValue implements Comparable {
 
         //log.info("In getParameterValues");
         //log.debug("query = "+ query);
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, parameterGroupID, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -1428,15 +1426,14 @@ public class ParameterValue implements Comparable {
                 myParameterValueList.add(newParameterValue);
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         ParameterValue[] myParameterValueArray = (ParameterValue[]) myParameterValueList.toArray(new ParameterValue[myParameterValueList.size()]);
 
         return myParameterValueArray;
     }
-
 
 
     /**
@@ -1534,7 +1531,7 @@ public class ParameterValue implements Comparable {
         //log.debug("query = "+query);
         //log.debug("query2 = "+query2);
         List<Phenotype> myPhenotypeList = new ArrayList<Phenotype>();
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{ds.getDataset_id(), Integer.toString(userID)}, conn);
             Results myResults2 = new Results(query2, new Object[]{ds.getDataset_id(), Integer.toString(userID)}, conn);
 
@@ -1585,8 +1582,8 @@ public class ParameterValue implements Comparable {
 
             myResults.close();
             myResults2.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -1649,7 +1646,7 @@ public class ParameterValue implements Comparable {
         log.info("In getPhenotypeValuesForParameterGroupID. parameterGroupID = " + parameterGroupID);
 
         Phenotype thisPhenotype = new Phenotype();
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
 
             Results myResults = new Results(query, parameterGroupID, conn);
             Results myResults2 = new Results(query2, parameterGroupID, conn);
@@ -1811,15 +1808,15 @@ public class ParameterValue implements Comparable {
         //log.debug("query = "+query);
 
         boolean alreadyExists = false;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{name, thisVersion.getDataset().getDataset_id(), Integer.toString(userID)}, conn);
 
             if (myResults.getNumRows() != 0) {
                 alreadyExists = true;
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -2103,8 +2100,8 @@ public class ParameterValue implements Comparable {
          * Copy all the files to a new name so that multiple files can be downloaded and each will have a unique name
          *
          * @param fileList a list of file names
-         * @throws IOException
          * @return an array of file names
+         * @throws IOException
          */
         public String[] renamePhenotypeFiles(String[] fileList) throws IOException {
             for (int i = 0; i < fileList.length; i++) {

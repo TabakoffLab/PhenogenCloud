@@ -1377,7 +1377,7 @@ public class Dataset {
                         "where dataset_id = ?";
 
         query[1] =
-                "delete from groups " +
+                "delete from inia_prod.groups " +
                         "where grouping_id in " +
                         "(select grouping_id " +
                         "from groupings " +
@@ -2055,7 +2055,7 @@ public class Dataset {
         //int group_id = myDbUtils.getUniqueID("groups_seq", conn);
 
         String query =
-                "insert into groups " +
+                "insert into inia_prod.groups " +
                         "( grouping_id, group_number, group_name, has_expression_data, has_genotype_data, parent) " +
                         "values " +
                         "( ?, ?, ?, 'Y', 'N', '')";
@@ -2102,7 +2102,7 @@ public class Dataset {
 
         String query =
                 "select group_id " +
-                        "from groups " +
+                        "from inia_prod.groups " +
                         "where grouping_id = ? " +
                         "and group_number = ?";
         int group_id = -99;
@@ -2637,7 +2637,7 @@ public class Dataset {
                 datasetVersionDetailsGroupByClause +
                 "order by ds.create_date desc, ds.name";
 
-        log.debug("query  = " + query );
+        log.debug("query  = " + query);
 
         Dataset[] datasetArray = null;
         try (Connection conn = pool.getConnection()) {
@@ -3432,8 +3432,8 @@ public class Dataset {
                     }
 
                     new GeneList().deleteGeneListsForDatasetVersion(this, pool);
-                    new ParameterValue().deleteParameterGroupsForDatasetVersion(this,pool);
-                    new SessionHandler().deleteSessionActivitiesForDatasetVersion(this,pool);
+                    new ParameterValue().deleteParameterGroupsForDatasetVersion(this, pool);
+                    new SessionHandler().deleteSessionActivitiesForDatasetVersion(this, pool);
 
                     String query = "delete from dataset_versions " +
                             "where dataset_id = ? " +
@@ -3496,7 +3496,7 @@ public class Dataset {
          */
         public long getNumberOfExcludedArrays(int grouping_id, DataSource pool) throws SQLException {
             long NumberOfExcludedArrays = 0;
-            String query = "select count(user_chip_id) from chip_groups cg , groups g where " +
+            String query = "select count(user_chip_id) from chip_groups cg , inia_prod.groups g where " +
                     " g.group_number = 0 and " +
                     " g.group_name= 'Exclude' and " +
                     " cg.group_id = g.group_id and" +
@@ -3811,7 +3811,7 @@ public class Dataset {
 
             String query =
                     "select grps.group_number, count(*) " +
-                            "from groups grps, chip_groups cg, dataset_versions dv " +
+                            "from inia_prod.groups grps, chip_groups cg, dataset_versions dv " +
                             "where dv.grouping_id = grps.grouping_id " +
                             "and dv.dataset_id = ? " +
                             "and dv.version = ? " +
@@ -3820,9 +3820,9 @@ public class Dataset {
                             "group by grps.group_number " +
                             "order by grps.group_number";
 
-            //log.debug("query = "+query);
+            log.debug("query = " + query);
 
-            //log.debug("dataset_id = "+this.getDataset().getDataset_id() + ", version = "+ this.getVersion());
+            log.debug("dataset_id = " + this.getDataset().getDataset_id() + ", version = " + this.getVersion());
             int[] groupCount = new int[0];
             try (Connection conn = pool.getConnection()) {
                 Results myResults = new Results(query, new Object[]{this.getDataset().getDataset_id(), this.getVersion()}, conn);
@@ -3832,6 +3832,7 @@ public class Dataset {
                 myResults.close();
 
             } catch (SQLException e) {
+                log.error("SQL error:", e);
                 throw e;
             }
             return groupCount;
@@ -3857,7 +3858,7 @@ public class Dataset {
                     "grps.has_expression_data, " +
                     "grps.has_genotype_data, " +
                     "grps.parent " +
-                    "from groups grps, groupings grpings, dataset_versions dv " +
+                    "from inia_prod.groups grps, groupings grpings, dataset_versions dv " +
                     "where dv.grouping_id = grps.grouping_id " +
                     "and grpings.grouping_id = grps.grouping_id " +
                     "and grpings.dataset_id = dv.dataset_id " +
