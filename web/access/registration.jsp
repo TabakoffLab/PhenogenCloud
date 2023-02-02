@@ -495,14 +495,20 @@
             
 			<tr><td colspan="100%">&nbsp;</td></tr>
 			<tr><td>&nbsp;</td><td>&nbsp;</td><td>
-				<input type="hidden" id="action" name="action" value="">
-			<input type="reset" value="Reset"><%=tenSpaces%>
+			  <div id="block_container">
+			   <div id="bloc1">
+				   <input type="hidden" id="action" name="action" value="">
+			       <input type="reset" value="Reset"><%=tenSpaces%>
+				  </div>
+               <div id="bloc2">  
 				<button id="registerSubmitBtn"
 						class="g-recaptcha"
 						disabled="disabled"
 						data-sitekey="<%=pub%>"
 						data-callback='codeOfEthicsMsg'
 						data-action='submit'>Submit</button>
+			   </div>
+			  </div>
 			<!--<input type="submit" name="action" value="Register" onClick="return codeOfEthicsMsg()" disabled="true" id="registerSubmitBtn">-->
 
 			</td></tr>

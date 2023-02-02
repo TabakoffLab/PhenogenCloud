@@ -139,13 +139,19 @@
                 </TR>-->
                 <tr>
                     <td colspan="4" align="center">
+					  <div id="block_container">
+					   <div id="bloc1">
                         <input type="hidden" id="action" name="action" value="">
                         <input type="reset" name="reset" value="Reset"> <%=tenSpaces%>
+					   </div>
+                       <div id="bloc2">
                         <button class="g-recaptcha"
                                 data-sitekey="<%=pub%>"
                                 data-callback='onSubmit'
                                 data-action='submit'>Submit
                         </button>
+					   </div>
+					  </div>	
                     </td>
                 </tr>
                 <tr>
