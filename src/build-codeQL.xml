@@ -7,7 +7,7 @@
 
     </path>
 
-
+    <mkdir dir="./WEB-INF/lib"/>
     <path id="compile-classpath">
         <fileset dir="./WEB-INF/lib">
             <include name="*.jar"/>
