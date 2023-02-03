@@ -1,4 +1,4 @@
-<project name="PhenoGen" default="build" basedir=".">
+<project name="PhenoGen" default="build" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
     <property file="build.properties"/>
 
@@ -14,6 +14,20 @@
         </fileset>
         <path refid="jar-classpath"/>
     </path>
+
+    <available classname="org.apache.ivy.Main" property="ivy.installed"/>
+    <target name="install-ivy" description="Install ivy" unless="ivy.installed">
+        <mkdir dir="${user.home}/.ant/lib"/>
+        <get dest="${user.home}/.ant/lib/ivy.jar" src="http://search.maven.org/remotecontent?filepath=org/apache/ivy/ivy/2.3.0/ivy-2.3.0.jar"/>
+        <fail message="Ivy has been installed. Run the build again"/>
+    </target>
+    <target name="resolve" depends="install-ivy" description="Use ivy to resolve classpaths">
+        <ivy:cachepath pathid="compile.path">
+            <dependency org="org.apache.log4j" name="log4J" rev="1.2.8" conf="default">
+                <exclude org="javax.transaction"/>
+            </dependency>
+        </ivy:cachepath>
+    </target>
 
     <path id="run.classpath">
         <path refid="compile-classpath"/>
@@ -68,7 +82,7 @@
 
 
     <!-- <target name="build" depends="compile, reload-tomcat" -->
-    <target name="build" depends="compile"
+    <target name="build" depends="install-ivy,resolve,compile"
             description="Executes the targets needed to build the service.">
         <echo message="Building project...."/>
     </target>
