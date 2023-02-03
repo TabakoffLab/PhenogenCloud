@@ -53,10 +53,10 @@
         <echo message="Compiling the source code...."/>
         <property name="displayClasspath" refid="compile-classpath"/>
 
-        <echo message="src dir= ${src-dir}"/>
+        <echo message="src dir= ./src"/>
         <javac
-                srcdir="${src-dir}"
-                destdir="${dest-dir}"
+                srcdir="./src"
+                destdir="./WEB-INF/lib"
                 excludes="*.properties,*.xml"
                 deprecation="true">
             <!-- compile with warnings except disable path warnings -->
