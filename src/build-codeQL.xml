@@ -53,9 +53,9 @@
         <echo message="Compiling the source code...."/>
         <property name="displayClasspath" refid="compile-classpath"/>
 
-        <echo message="src dir= ./src"/>
+        <echo message="src dir= ./"/>
         <javac
-                srcdir="./src"
+                srcdir="./"
                 destdir="./WEB-INF/lib"
                 excludes="*.properties,*.xml"
                 deprecation="true">
