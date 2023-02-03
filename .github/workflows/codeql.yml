@@ -68,7 +68,7 @@ jobs:
 
       - run: |
           echo "Run, Build Application using ant"
-          ant -buildfile src/build-codeQL.xml
+          ant -buildfile src/build-codeQL.xml -lib /home/runner/.ant/lib
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
