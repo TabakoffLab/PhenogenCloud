@@ -337,12 +337,11 @@
     color: #DDDDDD;
 }
 
-#block_container
-{
-    text-align:center;
+#block_container {
+    text-align: center;
 }
-#bloc1, #bloc2
-{
-    display:inline;
+
+#bloc1, #bloc2 {
+    display: inline-block;
 }
 
