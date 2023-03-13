@@ -274,17 +274,17 @@
             }
         }
     } else if (type.equals("oPOSSUM")) {
-        String conservationLevel = (String) request.getParameter("conservationLevel");
-        String thresholdLevel = (String) request.getParameter("thresholdLevel");
-        String searchRegionLevel = (String) request.getParameter("searchRegionLevel");
-        String description = (String) request.getParameter("description");
+        String conservationLevel = request.getParameter("conservationLevel");
+        String thresholdLevel = request.getParameter("thresholdLevel");
+        String searchRegionLevel = request.getParameter("searchRegionLevel");
+        String description = request.getParameter("description");
 
         mySessionHandler.createGeneListActivity("Ran oPOSSUM Process ", pool);
 
         HashMap ids = new HashMap();
 
         //String targets[] = {"RefSeq RNA ID"};
-        String targets[] = {"Entrez Gene ID"};
+        String[] targets = {"Entrez Gene ID"};
         //String targets[] = {"Ensembl ID"};
         thisIDecoderClient.setNum_iterations(1);
         //Set refseqSet = thisIDecoderClient.getValues(thisIDecoderClient.getIdentifiersForTarget(iDecoderSet, targets));

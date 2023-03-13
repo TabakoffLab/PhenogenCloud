@@ -93,7 +93,7 @@ public class AsyncBrowserRegion extends Thread {
         createRegionImagesXMLFiles(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB);
         if (runAGDT) {
             AsyncGeneDataTools agdt;
-            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, "");
+            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, "", "", null);
             agdt.start();
             try {
                 agdt.join();
@@ -188,9 +188,13 @@ public class AsyncBrowserRegion extends Thread {
                 }
                 log.debug(i + " EnvVar::" + envVar[i]);
             }
+            callWriteTrackXML("ensemblcoding", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
+                    ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
             if (organism.equals("Rn")) {
-                callWriteTrackXML("probe", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                        ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
+                    callWriteTrackXML("probe", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
+                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                }
                 if (genomeVer.equals("rn5")) {
                     callWriteTrackXML("braincoding", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Brain", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
                             ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
@@ -217,8 +221,7 @@ public class AsyncBrowserRegion extends Thread {
                 callWriteTrackXML("qtl", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
                         ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
             }
-            callWriteTrackXML("ensemblcoding", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                    ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+
             //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
 
         } catch (Exception e) {

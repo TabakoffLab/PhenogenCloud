@@ -623,7 +623,7 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
 					}*/
             gtag('event', 'moduleView', {'event_category': 'WGCNA'});
         });
-        ;
+
         that.viewBar.append("text").text("Module");
         that.viewBar.append("span").attr("class", "wgcnaControltooltip").attr("title", "View transcripts within the selected module and their connectivity based on correlation of expression.<BR><BR>Have a question about this view click the <img src=\"" + contextRoot + "web/images/icons/help.png\"> above for a detailed description of each view.").style("margin-left", "5px").append("img").attr("src", "/web/images/icons/info.gif");
         that.viewBar.append("br");

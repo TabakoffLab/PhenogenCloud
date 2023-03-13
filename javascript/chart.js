@@ -516,7 +516,7 @@ chart = function (params) {
                 that.color = d3.scaleOrdinal(d3.schemeCategory20);
             } else {
                 that.color = d3.scaleOrdinal(d3.schemeCategory10);
-                ;
+
             }
             that.xAxis = d3.axisBottom(that.x);
             that.yAxis = d3.axisLeft(that.y);

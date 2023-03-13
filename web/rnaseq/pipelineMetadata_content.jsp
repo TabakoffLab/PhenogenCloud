@@ -31,11 +31,11 @@
                 RNAPipelineSteps rps=steps.get(j);
                 String programs="";
                 if(rps.getProgram()!=null){
-                    programs=programs+" Program: ";
+                    programs += " Program: ";
                     if(rps.getProgramURL()!=null){
                         programs=programs+"<a href="+rps.getProgramURL()+" target=\"_blank\" style=\"color:#658cb2;text-decoration:underline;\">"+rps.getProgram()+"</a>";
                     }else{
-                        programs=programs+rps.getProgram();
+                        programs += rps.getProgram();
                     }
                     
                 }

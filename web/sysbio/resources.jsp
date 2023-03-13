@@ -442,25 +442,25 @@
                     ArrayList<String> tmpTech = publicRNADatasets.get(i).getSeqTechFromSamples();
                     for (int j = 0; j < tmpTech.size(); j++) {
                         if (j > 0) {
-                            tech = tech + ", ";
+                            tech += ", ";
                         }
-                        tech = tech + tmpTech.get(j);
+                        tech += tmpTech.get(j);
                     }
                     String readType = "";
                     ArrayList<String> tmpType = publicRNADatasets.get(i).getReadTypeFromSamples();
                     for (int j = 0; j < tmpType.size(); j++) {
                         if (j > 0) {
-                            readType = readType + ", ";
+                            readType += ", ";
                         }
-                        readType = readType + tmpType.get(j);
+                        readType += tmpType.get(j);
                     }
                     String genomeVer = "";
                     ArrayList<String> tmpGV = publicRNADatasets.get(i).getResultGenomeVer();
                     for (int j = 0; j < tmpGV.size(); j++) {
                         if (j > 0) {
-                            genomeVer = genomeVer + ", ";
+                            genomeVer += ", ";
                         }
-                        genomeVer = genomeVer + tmpGV.get(j);
+                        genomeVer += tmpGV.get(j);
                     }
                 %>
                 <TR id="<%=publicRNADatasets.get(i).getRnaDatasetID()%>">

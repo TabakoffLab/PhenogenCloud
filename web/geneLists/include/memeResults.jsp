@@ -17,7 +17,7 @@
 	optionsList.add("geneListDetails");
 	optionsList.add("chooseNewGeneList");
 
-	int itemID = (request.getParameter("itemID") != null ? Integer.parseInt((String) request.getParameter("itemID")) : -99);
+	int itemID = (request.getParameter("itemID") != null ? Integer.parseInt(request.getParameter("itemID")) : -99);
 	
 	log.debug("in memeResults. itemID = " + itemID);
 

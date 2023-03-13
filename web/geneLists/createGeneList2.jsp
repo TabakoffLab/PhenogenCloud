@@ -37,12 +37,12 @@
     String geneListDir = userLoggedIn.getUserGeneListsUploadDir();
     if (userLoggedIn.getUser_name().equals("anon")) {
         log.debug("\nCREATE GENELIST2.jsp anon user:" + anonU.getUUID());
-        geneListDir = geneListDir + anonU.getUUID();
+        geneListDir += anonU.getUUID();
         File upDir = new File(geneListDir);
         if (!upDir.exists()) {
             upDir.mkdirs();
         }
-        geneListDir = geneListDir + "/";
+        geneListDir += "/";
     }
     log.debug("upload geneList dir = " + geneListDir);
 
