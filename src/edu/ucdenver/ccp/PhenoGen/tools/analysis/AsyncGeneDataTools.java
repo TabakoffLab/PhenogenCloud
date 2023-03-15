@@ -151,7 +151,9 @@ public class AsyncGeneDataTools extends Thread {
                 }
                 done = true;
             }
-            callWriteXML(ensemblID1, organism, genomeVer, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID);
+            if (ensemblID1 != null && !ensemblID1.equals("")) {
+                callWriteXML(ensemblID1, organism, genomeVer, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID);
+            }
             log.debug("AsyncGeneDataTools DONE");
         } catch (Exception ex) {
             done = true;
