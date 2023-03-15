@@ -377,6 +377,7 @@
                 <tr class="col_title">
                     <th>Organism</th>
                     <th>Panel</th>
+                    <th>Genome Version</th>
                     <th>Source</th>
                     <th>Markers</th>
                     <th>eQTL</th>
@@ -388,6 +389,8 @@
                     <td><%=resource.getOrganism()%>
                     </td>
                     <td><%=resource.getPanelString()%>
+                    </td>
+                    <td><%=resource.getGenome()%>
                     </td>
                     <td><%=resource.getSource()%>
                     </td>
