@@ -18,7 +18,7 @@
 	request.setAttribute( "selectedTabId", "promoter" );
 
 	userName = "";
-	int itemID = Integer.parseInt((String) request.getParameter("itemID"));
+	int itemID = Integer.parseInt(request.getParameter("itemID"));
 
         GeneListAnalysis thisGeneListAnalysis =null;
         if(userLoggedIn.getUser_name().equals("anon")){

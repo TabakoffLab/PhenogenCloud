@@ -112,6 +112,19 @@ public class GeneDataTools {
         this.pathReady = false;
     }
 
+    public String getFullPath() {
+        return fullPath;
+    }
+
+    public String getEnsemblDBPropertiesFile() {
+        return ensemblDBPropertiesFile;
+    }
+
+    public String getUCSCGeneDir() {
+        return ucscGeneDir;
+    }
+
+
     public int[] getOrganismSpecificIdentifiers(String organism, String genomeVer) {
 
         int[] ret = new int[2];
@@ -2242,7 +2255,7 @@ public class GeneDataTools {
 
     public AsyncGeneDataTools callAsyncGeneDataTools(String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, boolean isENSGene) {
         AsyncGeneDataTools agdt;
-        agdt = new AsyncGeneDataTools(session, pool, outputDir, chr, min, max, arrayTypeID, rnaDS_ID, usageID, genomeVer, isENSGene, "");
+        agdt = new AsyncGeneDataTools(session, pool, outputDir, chr, min, max, arrayTypeID, rnaDS_ID, usageID, genomeVer, isENSGene, "", "", this);
         //log.debug("Getting ready to start");
         agdt.start();
         //log.debug("Started AsyncGeneDataTools");
@@ -2637,7 +2650,7 @@ public class GeneDataTools {
         return ret;
     }
 
-    private void setError(String errorMessage) {
+    public void setError(String errorMessage) {
         String tmp = returnGenURL;
         if (tmp == null || tmp.equals("") || !tmp.startsWith("ERROR:")) {
             //session.setAttribute("genURL","ERROR: "+errorMessage);

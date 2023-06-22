@@ -25,7 +25,7 @@
         <% for(int i=0;i<samples.size();i++){
             String srcInfo="";
             if(samples.get(i).getSrcType()!=null){
-                srcInfo=srcInfo+samples.get(i).getSrcType();
+                srcInfo += samples.get(i).getSrcType();
             }
             if(samples.get(i).getSrcName()!=null){
                 srcInfo=srcInfo+" from "+samples.get(i).getSrcName();

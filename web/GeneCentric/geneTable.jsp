@@ -548,7 +548,7 @@
                                 tmpList = tmpList + tmpTrx.get(l).getIDwToolTip() + "<BR>";
                             }
                         }
-                        tmpList = tmpList + "</span>";
+                        tmpList += "</span>";
                     } else {
                         for (int l = 0; l < tmpTrx.size(); l++) {
                             if (l == 0) {
@@ -578,7 +578,7 @@
                             int ind2 = tmpList2.indexOf("<BR>", ind1 + 4);
                             String newTmp = tmpList2.substring(0, ind2);
                             tmpList2 = newTmp + "</span><BR><span id=\"rg_" + i + "\" style=\"display:none;\">" + tmpList2.substring(ind2 + 4);
-                            tmpList2 = tmpList2 + "</span>";
+                            tmpList2 += "</span>";
                         }
 
                     }
@@ -1389,7 +1389,7 @@
         //below fixes a bug in IE9 where some whitespace may cause an extra column in random rows in large tables.
         //simply remove all whitespace from html in a table and put it back.
         if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)) { //test for MSIE x.x;
-            var ieversion = new Number(RegExp.$1) // capture x.x portion and store as a number
+            var ieversion = Number(RegExp.$1) // capture x.x portion and store as a number
             if (ieversion < 10) {
                 var expr = new RegExp('>[ \t\r\n\v\f]*<', 'g');
                 var tbhtml = $('#tblGenes<%=type%>').html();

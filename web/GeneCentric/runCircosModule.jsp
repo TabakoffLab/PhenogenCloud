@@ -58,7 +58,7 @@
             
             String modPath=fullPath+"tmpData/circos/"+dataset+"/"+module+"/";
 		
-            String perlScriptDirectory = (String)session.getAttribute("perlDir")+"scripts/";
+            String perlScriptDirectory = session.getAttribute("perlDir") +"scripts/";
             String perlEnvironmentVariables = (String)session.getAttribute("perlEnvVar");
 
             String hostName=request.getServerName();

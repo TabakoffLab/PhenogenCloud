@@ -163,6 +163,18 @@ public class Resource {
         setPanelString(paneltmp);
     }
 
+    public Resource(int id, String organism, String source, Dataset dataset, MarkerDataFile[] markerFileArray, EQTLDataFile[] eQTLFileArray, String paneltmp, String genomeVer) {
+        log = Logger.getRootLogger();
+        setID(id);
+        setOrganism(organism);
+        setSource(source);
+        setDataset(dataset);
+        setMarkerDataFiles(markerFileArray);
+        setEQTLDataFiles(eQTLFileArray);
+        setPanelString(paneltmp);
+        setGenome(genomeVer);
+    }
+
     public Resource(int id, String organism, String panel) {
         log = Logger.getRootLogger();
         setID(id);
@@ -931,13 +943,24 @@ public class Resource {
         Dataset LXSRI_Dataset = myDataset.getDatasetFromMyDatasets(publicDatasets, myDataset.LXSRI_DATASET_NAME);
 
         String markerFilePath = "/downloads/Markers/";
+
         List<MarkerDataFile> markerFileList = new ArrayList<MarkerDataFile>();
-        markerFileList.add(new MarkerDataFile("HRDPv4 Markers", markerFilePath + "HRDP_v4_Markers.txt", "HRDPv4"));
+        markerFileList.add(new MarkerDataFile("HRDPv6 Marker Genotypes", markerFilePath + "HRDP.v6.rn7.genotypes.2023-01-17.txt.zip", "HRDPv6", "rn7.2", "78a858286731c2e4eb3e7888fba2980b"));
+        markerFileList.add(new MarkerDataFile("HRDPv6 Marker Positions", markerFilePath + "HRDP.v6.rn7.positions.2023-01-17.txt.zip", "HRDPv6", "rn7.2", "1c6a379fada0ecf640f88031e8cd332c"));
         MarkerDataFile[] markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
 
         EQTLDataFile[] eQTLFileArray = new EQTLDataFile[0];
 
-        resourceList.add(new Resource(13, "Rat", "<a href='http://oct2012.archive.ensembl.org/Rattus_norvegicus/Info/Content?file=star.html' target='_blank'>STAR consortium</a>", null, markerFileArray, eQTLFileArray, "HRDPv4"));
+        resourceList.add(new Resource(14, "Rat", "Strain Sequencing Variant Calls", null, markerFileArray, eQTLFileArray, "HRDPv6", "rn7.2"));
+
+
+        markerFileList = new ArrayList<MarkerDataFile>();
+        markerFileList.add(new MarkerDataFile("HRDPv4 Markers", markerFilePath + "HRDP_v4_Markers.txt", "HRDPv4", "rn6", ""));
+        markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
+
+        eQTLFileArray = new EQTLDataFile[0];
+
+        resourceList.add(new Resource(13, "Rat", "<a href='http://oct2012.archive.ensembl.org/Rattus_norvegicus/Info/Content?file=star.html' target='_blank'>STAR consortium</a>", null, markerFileArray, eQTLFileArray, "HRDPv4", "rn6"));
 
         // Setup the HXBRI stuff
         String resourcesDir = HXBRI_Dataset.getResourcesDir();
@@ -945,14 +968,14 @@ public class Resource {
 
         String datasetDir = HXBRI_Dataset.getPath();
         markerFileList = new ArrayList<MarkerDataFile>();
-        markerFileList.add(new MarkerDataFile("HXB Markers", resourcesDir + "HXB_BXH_Markers.txt.zip", "HXB/BXH"));
+        markerFileList.add(new MarkerDataFile("HXB Markers", resourcesDir + "HXB_BXH_Markers.txt.zip", "HXB/BXH", "rn5", ""));
         markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
 
         List<EQTLDataFile> eQTLFileList = new ArrayList<EQTLDataFile>();
         eQTLFileList.add(new EQTLDataFile("eQTLs using STAR Consortium Markers", resourcesDir + "HXB_BXH_eQTL_STARConsortiumMarkers_07Oct09.txt.zip"));
         eQTLFileArray = myObjectHandler.getAsArray(eQTLFileList, EQTLDataFile.class);
 
-        resourceList.add(new Resource(12, "Rat", "<a href='http://oct2012.archive.ensembl.org/Rattus_norvegicus/Info/Content?file=star.html' target='_blank'>STAR consortium</a>", HXBRI_Dataset, markerFileArray, eQTLFileArray, "HXB/BXH"));
+        resourceList.add(new Resource(12, "Rat", "<a href='http://oct2012.archive.ensembl.org/Rattus_norvegicus/Info/Content?file=star.html' target='_blank'>STAR consortium</a>", HXBRI_Dataset, markerFileArray, eQTLFileArray, "HXB/BXH", "rn5"));
 
         // Setup the BXDRI stuff
         resourcesDir = BXDRI_Dataset.getResourcesDir();
@@ -961,14 +984,14 @@ public class Resource {
         datasetDir = BXDRI_Dataset.getPath();
 
         markerFileList = new ArrayList<MarkerDataFile>();
-        markerFileList.add(new MarkerDataFile("BXD Markers", resourcesDir + "BXD_Markers.zip", "BXD"));
+        markerFileList.add(new MarkerDataFile("BXD Markers", resourcesDir + "BXD_Markers.zip", "BXD", "mm9", ""));
         markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
 
         eQTLFileList = new ArrayList<EQTLDataFile>();
         eQTLFileList.add(new EQTLDataFile("eQTLs using Wellcome Trust Markers", resourcesDir + "BXD_eQTL_WellcomeTrustMarkers_16Apr12.csv.zip"));
         eQTLFileArray = myObjectHandler.getAsArray(eQTLFileList, EQTLDataFile.class);
 
-        resourceList.add(new Resource(10, "Mouse", "<a href='http://www.well.ox.ac.uk/mouse/INBREDS' target='_blank'>Wellcome-CTC Mouse Strain SNP Genotype Set</a>", BXDRI_Dataset, markerFileArray, eQTLFileArray, "BXD"));
+        resourceList.add(new Resource(10, "Mouse", "<a href='http://www.well.ox.ac.uk/mouse/INBREDS' target='_blank'>Wellcome-CTC Mouse Strain SNP Genotype Set</a>", BXDRI_Dataset, markerFileArray, eQTLFileArray, "BXD", "mm9"));
 //Wellcome-CTC Mouse Strain SNP Genotype Set (http://www.well.ox.ac.uk/mouse/INBREDS/)
 
         // Setup the LXSRI stuff
@@ -979,14 +1002,14 @@ public class Resource {
         markerFileList = new ArrayList<MarkerDataFile>();
         markerFileList.add(new MarkerDataFile("SNP information on the LXS RI panel was collected by Dr. Gary Churchill and colleagues at the Jackson " +
                 "Laboratory using the Affymetrix Mouse Diversity Genotyping array.  This information was gathered with funding from NIH " +
-                "grants (GM0706833 and AG0038070).", resourcesDir + "LXS.markers.mm10.txt.zip", "LXS"));
+                "grants (GM0706833 and AG0038070).", resourcesDir + "LXS.markers.mm10.txt.zip", "LXS", "mm10", ""));
         markerFileArray = myObjectHandler.getAsArray(markerFileList, MarkerDataFile.class);
 
         eQTLFileList = new ArrayList<EQTLDataFile>();
         eQTLFileList.add(new EQTLDataFile("eQTLs for Core Transcripts from the Affymetrix Mouse Diversity SNP Array", resourcesDir + "LXS.eQTL.coreTrans.mm10.11Nov13.txt.zip"));
         eQTLFileArray = myObjectHandler.getAsArray(eQTLFileList, EQTLDataFile.class);
 
-        resourceList.add(new Resource(11, "Mouse", "Affymetrix Mouse Diversity SNP Array", LXSRI_Dataset, markerFileArray, eQTLFileArray, "LXS"));
+        resourceList.add(new Resource(11, "Mouse", "Affymetrix Mouse Diversity SNP Array", LXSRI_Dataset, markerFileArray, eQTLFileArray, "LXS", "mm10"));
 
 
         Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);

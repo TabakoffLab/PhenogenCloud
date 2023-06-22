@@ -509,7 +509,7 @@
             int port = request.getServerPort();
             String prefix = "http";
             if (port == 443) {
-                prefix = prefix + "s";
+                prefix += "s";
             }
             String newGenomeVer = "rn5";
     %>

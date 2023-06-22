@@ -2539,10 +2539,9 @@ public class GeneList {
             if (myGeneArray[i].getStatisticsValues() != null &&
                     myGeneArray[i].getStatisticsValues().size() > 0) {
                 for (int j = 0; j < myGeneArray[i].getStatisticsValues().size(); j++) {
-                    geneRow = geneRow +
-                            myGeneArray[i].getStatisticsValues().get(j);
+                    geneRow += myGeneArray[i].getStatisticsValues().get(j);
                     if (j < myGeneArray[i].getStatisticsValues().size() - 1) {
-                        geneRow = geneRow + "\t";
+                        geneRow += "\t";
                     }
                 }
             }
@@ -2553,11 +2552,11 @@ public class GeneList {
 
         String headerLine = "Gene Identifier\tGene Symbol\t";
         for (int i = 0; i < columnHeadings.length; i++) {
-            headerLine = headerLine + columnHeadings[i];
+            headerLine += columnHeadings[i];
             if (i < columnHeadings.length - 1) {
-                headerLine = headerLine + "\t";
+                headerLine += "\t";
             } else {
-                headerLine = headerLine + "\n";
+                headerLine += "\n";
             }
         }
         String geneString = headerLine + new ObjectHandler().getAsSeparatedString(geneSet, delimiter);

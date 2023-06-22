@@ -61,6 +61,8 @@ public class AsyncGeneDataTools extends Thread {
     private String perlDir = "";
     private String perlEnvVar = "";
     private String version = "";
+    private String organism = "";
+    private String ensemblID1 = "";
 
     private int minCoord = 0;
     private int maxCoord = 0;
@@ -71,10 +73,11 @@ public class AsyncGeneDataTools extends Thread {
     private boolean isEnsemblGene = true;
     //private String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_TOOLS=? , RESULT=? where TRANS_DETAIL_ID=?";
     private String[] tissues = new String[2];
+    private GeneDataTools gdt = null;
     private ExecHandler myExec_session = null;
 
 
-    public AsyncGeneDataTools(HttpSession inSession, DataSource pool, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, int usageID, String genomeVer, boolean isEnsemblGene, String version) {
+    public AsyncGeneDataTools(HttpSession inSession, DataSource pool, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, int usageID, String genomeVer, boolean isEnsemblGene, String version, String ensemblID1, GeneDataTools gdt) {
         this.session = inSession;
         this.outputDir = outputDir;
         log = Logger.getRootLogger();
@@ -90,6 +93,8 @@ public class AsyncGeneDataTools extends Thread {
         this.genomeVer = genomeVer;
         this.isEnsemblGene = isEnsemblGene;
         this.version = version;
+        this.ensemblID1 = ensemblID1;
+        this.gdt = gdt;
 
         log.debug("start");
 
@@ -121,59 +126,40 @@ public class AsyncGeneDataTools extends Thread {
         tissues[0] = "Brain";
         tissues[1] = "Liver";
 
+        if (genomeVer.toLowerCase().startsWith("rn")) {
+            organism = "Rn";
+        } else if (genomeVer.toLowerCase().startsWith("mm")) {
+            organism = "Mm";
+        }
+
     }
 
 
     public void run() throws RuntimeException {
         done = false;
-        Date start = new Date();
         try {
-            outputRNASeqExprFiles(outputDir, chrom, minCoord, maxCoord, genomeVer, version);
-            if (isEnsemblGene) {
-                //log.debug("Before outputProbesetID");
-                if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
-                    outputProbesetIDFiles(outputDir, chrom, minCoord, maxCoord, arrayTypeID, genomeVer);
-                }
-                //log.debug("before DEHeatMap");
-                //callDEHeatMap(outputDir,chrom, minCoord, maxCoord,arrayTypeID,rnaDatasetID,genomeVer);
-                //log.debug("before Panel HErit");
-                //callPanelHerit(outputDir,chrom, minCoord, maxCoord,arrayTypeID,rnaDatasetID,genomeVer);
-                //log.debug("After Panel Herit");
-                done = true;
-                Date end = new Date();
-
-                /*try (Connection conn=pool.getConnection()){
-                    PreparedStatement ps=conn.prepareStatement(updateSQL);
-                    long returnTimeMS=end.getTime()-start.getTime();
-                    ps.setLong(1, returnTimeMS);
-                    ps.setString(2, "AsyncGeneDataTools completed successfully");
-                    ps.setInt(3, usageID);
-                    int updated=ps.executeUpdate();
-                    log.debug("AsyncGeneDataTools: updated "+updated +"records");
-                    ps.close();
-                }catch(SQLException e){
-                    log.error("Error saving AsyncGeneDataTools Timing",e);
-                }*/
+            String tmpOutDir = "";
+            if (gdt == null) {
+                tmpOutDir = outputDir;
+            } else {
+                tmpOutDir = gdt.getFullPath() + "tmpData/browserCache/" + genomeVer + "/regionData/" + chrom + "/" + minCoord + "_" + maxCoord + "/";
             }
-
+            outputRNASeqExprFiles(tmpOutDir, chrom, minCoord, maxCoord, genomeVer, version);
+            if (isEnsemblGene) {
+                if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
+                    outputProbesetIDFiles(tmpOutDir, chrom, minCoord, maxCoord, arrayTypeID, genomeVer);
+                }
+                done = true;
+            }
+            if (ensemblID1 != null && !ensemblID1.equals("")) {
+                callWriteXML(ensemblID1, organism, genomeVer, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID);
+            }
             log.debug("AsyncGeneDataTools DONE");
         } catch (Exception ex) {
             done = true;
             log.error("Error processing initial files in AsyncGeneDataTools", ex);
             Date end = new Date();
-            /*try (Connection conn2=pool.getConnection()){
 
-                PreparedStatement ps=conn2.prepareStatement(updateSQL);
-                long returnTimeMS=end.getTime()-start.getTime();
-                ps.setLong(1, returnTimeMS);
-                ps.setString(2, "AsyncGeneDataTools had errors:"+ex.getMessage());
-                ps.setInt(3, usageID);
-                ps.executeUpdate();
-                ps.close();
-                conn2.close();
-            }catch(SQLException e){
-                log.error("Error saving AsyncGeneDataTools Timing",e);
-            }*/
             String fullerrmsg = ex.getMessage();
             StackTraceElement[] tmpEx = ex.getStackTrace();
             for (int i = 0; i < tmpEx.length; i++) {
@@ -821,11 +807,11 @@ public class AsyncGeneDataTools extends Thread {
 
         if (success) {
             log.debug("call processTotal()");
-            success = processTotal(tissuesTotal, chr, min, max);
+            success = processTotal(tissuesTotal, chr, min, max, outputDir);
         }
         log.debug("****AFTER TOTAL");
         if (success) {
-            success = processSmall(tissuesSmall, chr, min, max);
+            success = processSmall(tissuesSmall, chr, min, max, outputDir);
         } else {
             log.error("SMALLRNA not run as total ended unsuccessfully.");
         }
@@ -837,7 +823,7 @@ public class AsyncGeneDataTools extends Thread {
         return done;
     }
 
-    private boolean processTotal(HashMap<String, Tissues> tissuesTotal, String chr, int min, int max) {
+    private boolean processTotal(HashMap<String, Tissues> tissuesTotal, String chr, int min, int max, String outputDir) {
         boolean success = true;
         Iterator itr = tissuesTotal.keySet().iterator();
         while (itr.hasNext()) {
@@ -1015,7 +1001,7 @@ public class AsyncGeneDataTools extends Thread {
         return success;
     }
 
-    private boolean processSmall(HashMap<String, Tissues> tissuesSmall, String chr, int min, int max) {
+    private boolean processSmall(HashMap<String, Tissues> tissuesSmall, String chr, int min, int max, String outputDir) {
         boolean success = true;
         log.debug("processSmall");
         Iterator itr = tissuesSmall.keySet().iterator();
@@ -1182,6 +1168,187 @@ public class AsyncGeneDataTools extends Thread {
         }
         return success;
     }
+
+    private boolean callWriteXML(String id, String organism, String genomeVer, String chr, int min, int max, int arrayTypeID, int rnaDS_ID) {
+        boolean completedSuccessfully = false;
+        log.debug("callWriteXML()" + id + "," + organism + "," + genomeVer + "," + arrayTypeID + "," + rnaDS_ID);
+        try {
+            //Connection tmpConn=pool.getConnection();
+            int publicUserID = new User().getUser_id("public", pool);
+            //tmpConn.close();
+            String tmpoutputDir = gdt.getFullPath() + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/";
+            HashMap<String, String> source = this.gdt.getGenomeVersionSource(genomeVer);
+            String ensemblPath = source.get("ensembl");
+            File test = new File(tmpoutputDir + "Region.xml");
+            long testLM = test.lastModified();
+            testLM = (new Date().getTime()) - testLM;
+            long fifteenMin = 15 * 60 * 1000;
+            if (!test.exists() || (test.length() == 0 && testLM > fifteenMin)) {
+                log.debug("createXML outputDir:" + tmpoutputDir);
+                File outDir = new File(tmpoutputDir);
+                if (outDir.exists()) {
+                    outDir.mkdirs();
+                }
+                Properties myProperties = new Properties();
+                File myPropertiesFile = new File(dbPropertiesFile);
+                myProperties.load(new FileInputStream(myPropertiesFile));
+                String port = myProperties.getProperty("PORT");
+                String dsn = "dbi:mysql:database=" + myProperties.getProperty("DATABASE") + ";host=" + myProperties.getProperty("HOST") + ";port=" + port;
+                String dbUser = myProperties.getProperty("USER");
+                String dbPassword = myProperties.getProperty("PASSWORD");
+
+                File ensPropertiesFile = new File(gdt.getEnsemblDBPropertiesFile());
+                Properties myENSProperties = new Properties();
+                myENSProperties.load(new FileInputStream(ensPropertiesFile));
+                String ensHost = myENSProperties.getProperty("HOST");
+                String ensPort = myENSProperties.getProperty("PORT");
+                String ensUser = myENSProperties.getProperty("USER");
+                String ensPassword = myENSProperties.getProperty("PASSWORD");
+
+                File mongoPropertiesFile = new File(mongoDBPropertiesFile);
+                Properties myMongoProperties = new Properties();
+                myMongoProperties.load(new FileInputStream(mongoPropertiesFile));
+                String mongoHost = myMongoProperties.getProperty("HOST");
+                String mongoUser = myMongoProperties.getProperty("USER");
+                String mongoPassword = myMongoProperties.getProperty("PASSWORD");
+                log.debug("loaded properties");
+
+                //construct perl Args
+                String[] perlArgs = new String[21];
+                perlArgs[0] = "perl";
+                perlArgs[1] = perlDir + "writeXML_RNA.pl";
+                perlArgs[2] = tmpoutputDir;
+                if (organism.equals("Rn")) {
+                    perlArgs[3] = "Rat";
+                } else if (organism.equals("Mm")) {
+                    perlArgs[3] = "Mouse";
+                }
+                perlArgs[4] = "Core";
+                perlArgs[5] = id;
+                perlArgs[6] = ucscDir + gdt.getUCSCGeneDir();
+                perlArgs[7] = Integer.toString(arrayTypeID);
+                perlArgs[8] = Integer.toString(rnaDS_ID);
+                perlArgs[9] = Integer.toString(publicUserID);
+                perlArgs[10] = genomeVer;
+                perlArgs[11] = dsn;
+                perlArgs[12] = dbUser;
+                perlArgs[13] = dbPassword;
+                perlArgs[14] = ensHost;
+                perlArgs[15] = ensPort;
+                perlArgs[16] = ensUser;
+                perlArgs[17] = ensPassword;
+                perlArgs[18] = mongoHost;
+                perlArgs[19] = mongoUser;
+                perlArgs[20] = mongoPassword;
+
+
+                log.debug("setup params");
+                //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list
+                String[] envVar = perlEnvVar.split(",");
+
+                for (int i = 0; i < envVar.length; i++) {
+                    if (envVar[i].contains("/ensembl")) {
+                        envVar[i] = envVar[i].replaceFirst("/ensembl", "/" + ensemblPath);
+                    }
+                    log.debug(i + " EnvVar::" + envVar[i]);
+                }
+                log.debug("setup envVar");
+                //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
+                myExec_session = new ExecHandler(perlDir, perlArgs, envVar, gdt.getFullPath() + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/");
+                boolean exception = false;
+                try {
+                    myExec_session.runExec();
+                } catch (ExecException e) {
+                    exception = true;
+                    completedSuccessfully = false;
+                    e.printStackTrace(System.err);
+                    log.error("In Exception of run callWriteXML:writeXML_RNA.pl Exec_session", e);
+
+                    String errorList = myExec_session.getErrors();
+                    boolean missingDB = false;
+                    String apiVer = "";
+
+                    if (errorList.contains("does not exist in DB.")) {
+                        missingDB = true;
+                    }
+                    if (errorList.contains("Ensembl API version =")) {
+                        int apiStart = errorList.indexOf("Ensembl API version =") + 22;
+                        apiVer = errorList.substring(apiStart, apiStart + 3);
+                    }
+                    Email myAdminEmail = new Email();
+                    if (!missingDB) {
+                        myAdminEmail.setSubject("Exception thrown in Exec_session");
+                        gdt.setError("Running Perl Script to get Gene and Transcript details/images. Ensembl Assembly v" + apiVer);
+                    } else {
+                        myAdminEmail.setSubject("Missing Ensembl ID in DB");
+                        gdt.setError("The current Ensembl database does not have an entry for this gene ID." +
+                                " As Ensembl IDs are added/removed from new versions it is likely this ID has been removed." +
+                                " If you used a Gene Symbol and reached this the administrator will investigate. " +
+                                "If you entered this Ensembl ID please try to use a synonym or visit Ensembl to investigate the status of this ID. " +
+                                "Ensembl Assembly v" + apiVer);
+
+                    }
+
+                    myAdminEmail.setContent("There was an error while running "
+                            + perlArgs[1] + " (" + perlArgs[2] + " , " + perlArgs[3] + " , " + perlArgs[4] + " , " + perlArgs[5] + " , " + perlArgs[6] + "," + perlArgs[7] +
+                            ")\n\n" + myExec_session.getErrors());
+                    try {
+                        myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+                    } catch (Exception mailException) {
+                        log.error("error sending message", mailException);
+                        try {
+                            myAdminEmail.sendEmailToAdministrator("");
+                        } catch (Exception mailException1) {
+                            //throw new RuntimeException();
+                        }
+                    }
+                }
+
+                String errors = myExec_session.getErrors();
+                if (!exception && errors != null && !(errors.equals(""))) {
+                    completedSuccessfully = false;
+                    Email myAdminEmail = new Email();
+                    myAdminEmail.setSubject("Exception thrown in Exec_session");
+                    myAdminEmail.setContent("There was an error while running "
+                            + perlArgs[1] + " (" + perlArgs[2] + " , " + perlArgs[3] + " , " + perlArgs[4] + " , " + perlArgs[5] + " , " + perlArgs[6] +
+                            ")\n\n" + errors);
+                    try {
+                        myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+                    } catch (Exception mailException) {
+                        log.error("error sending message", mailException);
+                        try {
+                            myAdminEmail.sendEmailToAdministrator("");
+                        } catch (Exception mailException1) {
+                            //throw new RuntimeException();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            completedSuccessfully = false;
+            log.error("Error getting DB properties or Public User ID.", e);
+            String fullerrmsg = e.getMessage();
+            StackTraceElement[] tmpEx = e.getStackTrace();
+            for (int i = 0; i < tmpEx.length; i++) {
+                fullerrmsg = fullerrmsg + "\n" + tmpEx[i];
+            }
+            Email myAdminEmail = new Email();
+            myAdminEmail.setSubject("Exception thrown in GeneDataTools.java");
+            myAdminEmail.setContent("There was an error setting up to run writeXML_RNA.pl\n\nFull Stacktrace:\n" + fullerrmsg);
+            try {
+                myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+            } catch (Exception mailException) {
+                log.error("error sending message", mailException);
+                try {
+                    myAdminEmail.sendEmailToAdministrator("");
+                } catch (Exception mailException1) {
+                    //throw new RuntimeException();
+                }
+            }
+        }
+        return completedSuccessfully;
+    }
+
 }
 
 class Tissues {
