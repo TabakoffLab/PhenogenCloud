@@ -17,7 +17,7 @@
 		log.debug("\nCREATE GENELIST.jsp anon user:" + anonU.getUUID());
 	}
 
-	boolean fromMain = (request.getParameter("fromMain") != null ? true : false);
+	boolean fromMain = (request.getParameter("fromMain") != null);
 	extrasList.add("createGeneList.js");
         
 	GeneList[] myGeneLists = new GeneList[0];
