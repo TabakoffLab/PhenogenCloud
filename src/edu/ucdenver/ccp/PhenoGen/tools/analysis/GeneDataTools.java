@@ -3448,7 +3448,7 @@ public class GeneDataTools {
 
             if (genomeVer.equals("rn6")) {
                 snpQ = snpQ + " and s.RNA_DATASET_ID in (97,98)";
-            }else{
+            } else {
                 snpQ = snpQ + " and s.RNA_DATASET_ID in (190,191,193)";
             }
 
@@ -3480,11 +3480,11 @@ public class GeneDataTools {
             } else if (cisTrans.equals("cis")) {
                 isCis = 1;
             }
-            String ratDBName="";
-            if(genomeVer.equals("rn6")){
-                ratDBName="rattus_norvegicus_core_98_6";
-            }else{
-                ratDBName="rattus_norvegicus_core_104_72";
+            String ratDBName = "";
+            if (genomeVer.equals("rn6")) {
+                ratDBName = "rattus_norvegicus_core_98_6";
+            } else {
+                ratDBName = "rattus_norvegicus_core_104_72";
             }
 
             String qtlQuery = "select rt.rna_dataset_id,rt.merge_gene_id,c.name,rt.trstart,rt.trstop,rt.strand,rta.annotation,rncg.stable_id,rncsr.name,rncg.seq_region_start,rncg.seq_region_end,lse.probe_id,lse.snp_id, lse.pvalue,lse.is_cis " +
@@ -3492,8 +3492,8 @@ public class GeneDataTools {
                     "left outer join RNA_TRANSCRIPTS rt on rt.MERGE_GENE_ID=lse.probe_id and rt.RNA_DATASET_ID in (97,98) " +
                     "left outer join rna_transcripts_annot rta on rta.rna_transcript_id=rt.rna_transcript_id " +
                     "left outer join chromosomes c on c.chromosome_id=rt.chromosome_id " +
-                    "left outer join "+ratDBName+".gene rncg on rncg.stable_id=lse.probe_id " +
-                    "left outer join "+ratDBName+".seq_region rncsr on rncsr.seq_region_id=rncg.seq_region_id and rncsr.coord_system_id=3 " +
+                    "left outer join " + ratDBName + ".gene rncg on rncg.stable_id=lse.probe_id " +
+                    "left outer join " + ratDBName + ".seq_region rncsr on rncsr.seq_region_id=rncg.seq_region_id and rncsr.coord_system_id=3 " +
                     "where lse.pvalue<=0.000001 " +
                     "and lse.snp_id in ( " + sb.toString() + ") ";
             if (cisTrans.equals("cis")) {
@@ -3957,7 +3957,12 @@ public class GeneDataTools {
 
         int chrID = -99;
         try (Connection conn = pool.getConnection()) {
-
+            String datasetList = "";
+            if (genomeVer.equals("rn6")) {
+                datasetList = "(97,98)";
+            } else {
+                datasetList = "(190,191,193)";
+            }
             PreparedStatement psC = conn.prepareStatement(chrQ);
             ResultSet rsC = psC.executeQuery();
             while (rsC.next()) {
@@ -3977,10 +3982,8 @@ public class GeneDataTools {
                     "and s.chromosome_id = " + chrID + " " +
                     "and (((s.snp_start>=" + min + " and s.snp_start<=" + max + ") or (s.snp_end>=" + min + " and s.snp_end<=" + max + ") or (s.snp_start<=" + min + " and s.snp_end>=" + min + ")) " +
                     " or (s.snp_start=s.snp_end and ((s.snp_start>=" + (min - 500000) + " and s.snp_start<=" + (max + 500000) + ") or (s.snp_end>=" + (min - 500000) + " and s.snp_end<=" + (max + 500000) + ") or (s.snp_start<=" + (min - 500000) + " and s.snp_end>=" + (max + 500000) + ")))) ";
+            snpQ = snpQ + " and s.RNA_DATASET_ID in " + datasetList;
 
-            if (dataSource.equals("seq")) {
-                snpQ = snpQ + " and s.RNA_DATASET_ID in (97,98)";
-            }
 
             HashMap<String, HashMap<String, String>> snpsHM = new HashMap<>();
             StringBuffer sb = new StringBuffer();
@@ -4035,7 +4038,7 @@ public class GeneDataTools {
                 qtlQuery = "select rt.MERGE_GENE_ID,rt.chromosome_id,rt.strand,rt.trstart,rt.trstop,'',lse.snp_id, lse.pvalue " +
                         "from RNA_TRANSCRIPTS rt " +
                         "inner join location_specific_eqtl2 lse on lse.probe_id=rt.MERGE_GENE_ID " +
-                        "where  rt.RNA_DATASET_ID in (97,98) " +
+                        "where  rt.RNA_DATASET_ID in " + datasetList + " " +
                         "and lse.pvalue>=2 " +
                         "and lse.snp_id in ( " + sb.toString() + ")";
             }
