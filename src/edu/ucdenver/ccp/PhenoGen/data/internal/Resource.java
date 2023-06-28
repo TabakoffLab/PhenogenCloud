@@ -468,6 +468,7 @@ public class Resource {
         List<Resource> pubResources10 = Arrays.asList(getPublicationResources10());
         List<Resource> pubResources11 = Arrays.asList(getPublicationResources11());
         List<Resource> pubResources12 = Arrays.asList(getPublicationResources12());
+        List<Resource> pubResources13 = Arrays.asList(getPublicationResources13());
         List<Resource> gtfResources = Arrays.asList(getGTFResources());
         List<Resource> rsemResources = Arrays.asList(getRNASeqExpressionResources());
         List<Resource> allResources = new ArrayList<Resource>(expressionResources);
@@ -487,6 +488,7 @@ public class Resource {
         allResources.addAll(pubResources10);
         allResources.addAll(pubResources11);
         allResources.addAll(pubResources12);
+        allResources.addAll(pubResources13);
         allResources.addAll(gtfResources);
         allResources.addAll(rsemResources);
         Resource[] allResourcesArray = myObjectHandler.getAsArray(allResources, Resource.class);
@@ -1888,8 +1890,34 @@ public class Resource {
         return resourceArray;
     }
 
+    public Resource[] getPublicationResources13() {
+        log.debug("in getPublicationResources13");
+        String pubFilePath = "/downloads/Publication/wood_23_kidney/";
+        String title = "A Genetically Based Gene Expression Network for Responding to Salt by Hypertensive and Normotensive Animals.";
+        String downloadHeader = "\"" + title + "\" by C. Wood et. al. ";
+        List<Resource> resourceList = new ArrayList<Resource>();
+        resourceList.add(new Resource(title, "(C. Wood et. al. - submitted)", "", "wood_23_kidney"));
+        //geno type
+        PublicationFile[] fileList = new PublicationFile[1];
+        fileList[0] = new PublicationFile("Gene Level Normalized Expression Values", pubFilePath + "geneCounts_ratLevel_batchCorrected_rlog.txt.gz", "3c7b1c3238a4178e2443d98c52c87f4d");
+        resourceList.add(new Resource(260, "Rat", "", "Gene Expression Values", fileList, downloadHeader));
+
+        fileList = new PublicationFile[1];
+        fileList[0] = new PublicationFile("Systolic Blood Pressure Phenotypes", pubFilePath + "SBP_phenotypes_ratLevel.txt.gz", "dcecb66e4692e5bacee026722c2f0464");
+        resourceList.add(new Resource(261, "Rat", "", "SBP Phenotype", fileList, downloadHeader));
+
+        fileList = new PublicationFile[1];
+        fileList[0] = new PublicationFile("SNPs used for mapping", pubFilePath + "snpsForMapping.txt.gz", "ad4a63408dfb3877dfda786c270f53e5");
+        resourceList.add(new Resource(262, "Rat", "", "SNPs Mapping", fileList, downloadHeader));
+
+
+        Resource[] resourceArray = myObjectHandler.getAsArray(resourceList, Resource.class);
+        return resourceArray;
+    }
+
     public ArrayList<Resource[]> getPublications() {
         ArrayList<Resource[]> pubList = new ArrayList<>();
+        pubList.add(this.getPublicationResources13());
         pubList.add(this.getPublicationResources12());
         pubList.add(this.getPublicationResources11());
         //pubList.add(this.getPublicationResources10());
@@ -1907,7 +1935,9 @@ public class Resource {
 
     public HashMap<String, Resource[]> getPublicationHash() {
         HashMap<String, Resource[]> hm = new HashMap<>();
-        Resource[] res = this.getPublicationResources12();
+        Resource[] res = this.getPublicationResources13();
+        hm.put(res[0].getHashText(), res);
+        res = this.getPublicationResources12();
         hm.put(res[0].getHashText(), res);
         res = this.getPublicationResources11();
         hm.put(res[0].getHashText(), res);

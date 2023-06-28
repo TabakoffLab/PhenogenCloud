@@ -3446,9 +3446,11 @@ public class GeneDataTools {
                     "and s.chromosome_id = " + chrID + " " +
                     "and ( s.coord>=" + (min - 1000000) + " and s.coord<=" + (max + 1000000) + ") ";
 
-            //if (dataSource.equals("seq")) {
-            snpQ = snpQ + " and s.RNA_DATASET_ID in (97,98)";
-            //}
+            if (genomeVer.equals("rn6")) {
+                snpQ = snpQ + " and s.RNA_DATASET_ID in (97,98)";
+            }else{
+                snpQ = snpQ + " and s.RNA_DATASET_ID in (190,191,193)";
+            }
 
             HashMap<String, HashMap<String, String>> snpsHM = new HashMap<>();
             StringBuffer sb = new StringBuffer();
@@ -3478,13 +3480,20 @@ public class GeneDataTools {
             } else if (cisTrans.equals("cis")) {
                 isCis = 1;
             }
+            String ratDBName="";
+            if(genomeVer.equals("rn6")){
+                ratDBName="rattus_norvegicus_core_98_6";
+            }else{
+                ratDBName="rattus_norvegicus_core_104_72";
+            }
+
             String qtlQuery = "select rt.rna_dataset_id,rt.merge_gene_id,c.name,rt.trstart,rt.trstop,rt.strand,rta.annotation,rncg.stable_id,rncsr.name,rncg.seq_region_start,rncg.seq_region_end,lse.probe_id,lse.snp_id, lse.pvalue,lse.is_cis " +
                     "from  location_specific_eqtl_hrdp lse " +
                     "left outer join RNA_TRANSCRIPTS rt on rt.MERGE_GENE_ID=lse.probe_id and rt.RNA_DATASET_ID in (97,98) " +
                     "left outer join rna_transcripts_annot rta on rta.rna_transcript_id=rt.rna_transcript_id " +
                     "left outer join chromosomes c on c.chromosome_id=rt.chromosome_id " +
-                    "left outer join rattus_norvegicus_core_98_6.gene rncg on rncg.stable_id=lse.probe_id " +
-                    "left outer join rattus_norvegicus_core_98_6.seq_region rncsr on rncsr.seq_region_id=rncg.seq_region_id and rncsr.coord_system_id=3 " +
+                    "left outer join "+ratDBName+".gene rncg on rncg.stable_id=lse.probe_id " +
+                    "left outer join "+ratDBName+".seq_region rncsr on rncsr.seq_region_id=rncg.seq_region_id and rncsr.coord_system_id=3 " +
                     "where lse.pvalue<=0.000001 " +
                     "and lse.snp_id in ( " + sb.toString() + ") ";
             if (cisTrans.equals("cis")) {

@@ -506,7 +506,7 @@
             </table>
         </form>
 
-        <BR><BR><BR>
+        <!--<BR><BR><BR>
         <form method="post"
               action="resources.jsp"
               enctype="application/x-www-form-urlencoded"
@@ -619,7 +619,7 @@
                 </tbody>
             </table>
 
-        </form>
+        </form>-->
 
 
     </div>

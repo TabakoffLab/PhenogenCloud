@@ -13,7 +13,7 @@
     String chromosome = "";
     String folderName = "";
     String type = "";
-    String genomeVer = "";
+    String genomeVer = "rn7";
     String dataSource="seq";
     String transcriptome = "ensembl";
     String cisOnly="all";
@@ -33,16 +33,39 @@
             fullOrg = "Mus_musculus";
         }
     }
+    if (request.getParameter("type") != null) {
+        type = request.getParameter("type");
+    }
+    if (request.getParameter("folderName") != null) {
+        folderName = request.getParameter("folderName");
+    }
+    if (request.getParameter("genomeVer") != null) {
+        genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
+    }
+    if (request.getParameter("dataSource") != null) {
+        dataSource = request.getParameter("dataSource");
+    }
     String[] tissuesList1 = new String[1];
     String[] tissuesList2 = new String[1];
     if (myOrganism.equals("Rn")) {
         if(dataSource.equals("seq")){
-            tissuesList1 = new String[2];
-            tissuesList2 = new String[2];
-            tissuesList1[0] = "Brain";
-            tissuesList2[0] = "Whole Brain";
-            tissuesList1[1] = "Liver";
-            tissuesList2[1] = "Liver";
+            if(genomeVer.equals("rn6") || genomeVer.equals("rn5") ) {
+                tissuesList1 = new String[2];
+                tissuesList2 = new String[2];
+                tissuesList1[0] = "Brain";
+                tissuesList2[0] = "Whole Brain";
+                tissuesList1[1] = "Liver";
+                tissuesList2[1] = "Liver";
+            }else{
+                tissuesList1 = new String[3];
+                tissuesList2 = new String[3];
+                tissuesList1[0] = "Brain";
+                tissuesList2[0] = "Whole Brain";
+                tissuesList1[1] = "Liver";
+                tissuesList2[1] = "Liver";
+                tissuesList1[2] = "Kidney";
+                tissuesList2[2] = "Kidney";
+            }
         }else {
             tissuesList1 = new String[4];
             tissuesList2 = new String[4];
@@ -78,18 +101,7 @@
     if (request.getParameter("maxCoord") != null) {
         max = Integer.parseInt(request.getParameter("maxCoord"));
     }
-    if (request.getParameter("type") != null) {
-        type = request.getParameter("type");
-    }
-    if (request.getParameter("folderName") != null) {
-        folderName = request.getParameter("folderName");
-    }
-    if (request.getParameter("genomeVer") != null) {
-        genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
-    }
-    if (request.getParameter("dataSource") != null) {
-        dataSource = request.getParameter("dataSource");
-    }
+
     if (request.getParameter("transcriptome") != null) {
         transcriptome = request.getParameter("transcriptome");
     }
@@ -156,11 +168,18 @@
         tissueNameArray[0] = "Brain";
     } else {
         if(dataSource.equals("seq")){
-            tissueNameArray = new String[2];
-            numberOfTissues = 2;
+            if(genomeVer.equals("rn7")){
+                numberOfTissues=3;
+            }else{
+                numberOfTissues=2;
+            }
+            tissueNameArray = new String[numberOfTissues];
             // assume if not mouse that it's rat
             tissueNameArray[0] = "Brain";
             tissueNameArray[1] = "Liver";
+            if(numberOfTissues>2){
+                tissueNameArray[2]="Kidney";
+            }
         }else {
             numberOfTissues = 4;
             // assume if not mouse that it's rat
