@@ -1904,7 +1904,7 @@ public class Resource {
 
         fileList = new PublicationFile[1];
         fileList[0] = new PublicationFile("Systolic Blood Pressure Phenotypes", pubFilePath + "SBP_phenotypes_ratLevel.txt.gz", "dcecb66e4692e5bacee026722c2f0464");
-        resourceList.add(new Resource(261, "Rat", "", "SBP Phenotype", fileList, downloadHeader));
+        resourceList.add(new Resource(264, "Rat", "", "SBP Phenotype", fileList, downloadHeader));
 
         fileList = new PublicationFile[1];
         fileList[0] = new PublicationFile("SNPs used for mapping", pubFilePath + "snpsForMapping.txt.gz", "ad4a63408dfb3877dfda786c270f53e5");
