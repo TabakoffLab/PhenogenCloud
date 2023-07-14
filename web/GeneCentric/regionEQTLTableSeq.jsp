@@ -17,6 +17,7 @@
     String dataSource = "seq";
     String transcriptome = "ensembl";
     String cisOnly = "all";
+    String hrdpVer = "v6";
     LinkGenerator lg = new LinkGenerator(session);
     double pValueCutoff = 0.01;
     int rnaDatasetID = 0;
@@ -56,6 +57,10 @@
                 tissuesList2[0] = "Whole Brain";
                 tissuesList1[1] = "Liver";
                 tissuesList2[1] = "Liver";
+                hrdpVer = "v5";
+                if (genomeVer.equals("rn5")) {
+                    hrdpVer = "v4";
+                }
             } else {
                 tissuesList1 = new String[3];
                 tissuesList2 = new String[3];
@@ -65,6 +70,7 @@
                 tissuesList2[1] = "Liver";
                 tissuesList1[2] = "Kidney";
                 tissuesList2[2] = "Kidney";
+                hrdpVer = "v6";
             }
         } else {
             tissuesList1 = new String[4];
@@ -583,7 +589,8 @@
 
     <div id="circosDiv">
         <div class="regionSubHeader" style="font-size:18px; font-weight:bold; text-align:center; width:100%;">
-            Genes with an eQTL overlaping this region(HRDP v5 RNA-Seq <%=transcriptome%>
+
+            Genes with an eQTL overlaping this region(HRDP <%=hrdpVer%> RNA-Seq <%=transcriptome%>
             Data(<%if (cisOnly.equals("cis")) {%>Cis eQTLs<%} else {%>Cis and Trans eQTLS<%}%>))
             <div class="inpageHelp" style="display:inline-block;"><img id="HelpRevCircos" class="helpImage"
                                                                        src="../web/images/icons/help.png"/></div>
@@ -692,8 +699,8 @@
             IDecoderClient myIDecoderClient = new IDecoderClient();
             myIDecoderClient.setNum_iterations(0);
             String[] targets = new String[]{"Gene Symbol", "Ensembl ID", "PhenoGen ID"};
-            log.debug("test:\n" + idc.substring(1));
-            Set<Identifier> ids = new Set<Identifier>();
+            //log.debug("test:\n" + idc.substring(1));
+            Set<Identifier> ids = Collections.<Identifier>emptySet();
             if (idc.length() > 1) {
                 ids = myIDecoderClient.getIdentifiersByInputIDAndTarget(idc.substring(1), myOrganism, targets, pool);
             }
@@ -747,7 +754,7 @@
                 <%} else {%>
                 <th colspan="<%=tissuesList2.length*tissueColumnCount+4%>" class="center noSort topLine"
                     title="">
-                    HRDP v5 Ribosome Depleted TotalRNA Sequencing Dataset
+                    HRDP <%=hrdpVer%> Ribosome Depleted TotalRNA Sequencing Dataset
                     <div class="inpageHelp" style="display:inline-block;"><img id="HelpeQTLRNA" class="helpImage"
                                                                                src="../web/images/icons/help.png"/>
                     </div>
