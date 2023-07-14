@@ -171,58 +171,62 @@
         fileError = true;
     }
     String[] columns;
-    log.debug("transcriptClusterArray length = " + transcriptClusterArray.length);
+    //log.debug("transcriptClusterArray length = " + transcriptClusterArray.length);
     // If the length of the transcript Cluster Array is 0, return an error.
-    if (transcriptClusterArray == null || transcriptClusterArray.length == 0) {
-        log.debug(" the transcript cluster file is empty ");
-        transcriptClusterArray = new String[1];
-        transcriptClusterArray[0] = "No Available	xx	xxxxxxxx	xxxxxxxx	Transcripts";
-        log.debug(transcriptClusterArray[0]);
-        transcriptError = true;
+    if (source.equals("seq")) {
+
     } else {
-        transcriptError = false;
-        // Need to change the transcript Cluster Array
-        // Only include ambiguous if there are no other transcript clusters
-        // Order the transcript cluster array so core is first, full is next, then extended, then ambiguous
-        transcriptClusterArrayOrder = new int[transcriptClusterArray.length];
-        for (int i = 0; i < transcriptClusterArray.length; i++) {
-            transcriptClusterArrayOrder[i] = -1;
-        }
-        int numberOfTranscriptClusters = 0;
-        for (int i = 0; i < transcriptClusterArray.length; i++) {
-            columns = transcriptClusterArray[i].split("\t");
-            if (columns[4].equals("core")) {
-                transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
-                numberOfTranscriptClusters++;
+        if (transcriptClusterArray == null || transcriptClusterArray.length == 0) {
+            log.debug(" the transcript cluster file is empty ");
+            transcriptClusterArray = new String[1];
+            transcriptClusterArray[0] = "No Available	xx	xxxxxxxx	xxxxxxxx	Transcripts";
+            log.debug(transcriptClusterArray[0]);
+            //transcriptError = true;
+        } else {
+            transcriptError = false;
+            // Need to change the transcript Cluster Array
+            // Only include ambiguous if there are no other transcript clusters
+            // Order the transcript cluster array so core is first, full is next, then extended, then ambiguous
+            transcriptClusterArrayOrder = new int[transcriptClusterArray.length];
+            for (int i = 0; i < transcriptClusterArray.length; i++) {
+                transcriptClusterArrayOrder[i] = -1;
             }
-        }
-        for (int i = 0; i < transcriptClusterArray.length; i++) {
-            columns = transcriptClusterArray[i].split("\t");
-            if (columns[4].equals("extended")) {
-                transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
-                numberOfTranscriptClusters++;
-            }
-        }
-        for (int i = 0; i < transcriptClusterArray.length; i++) {
-            columns = transcriptClusterArray[i].split("\t");
-            if (columns[4].equals("full")) {
-                transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
-                numberOfTranscriptClusters++;
-            }
-        }
-        if (numberOfTranscriptClusters < 1) {
+            int numberOfTranscriptClusters = 0;
             for (int i = 0; i < transcriptClusterArray.length; i++) {
                 columns = transcriptClusterArray[i].split("\t");
-                if (columns[4].equals("ambiguous")) {
+                if (columns[4].equals("core")) {
                     transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
                     numberOfTranscriptClusters++;
                 }
             }
             for (int i = 0; i < transcriptClusterArray.length; i++) {
                 columns = transcriptClusterArray[i].split("\t");
-                if (columns[4].equals("free")) {
+                if (columns[4].equals("extended")) {
                     transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
                     numberOfTranscriptClusters++;
+                }
+            }
+            for (int i = 0; i < transcriptClusterArray.length; i++) {
+                columns = transcriptClusterArray[i].split("\t");
+                if (columns[4].equals("full")) {
+                    transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
+                    numberOfTranscriptClusters++;
+                }
+            }
+            if (numberOfTranscriptClusters < 1) {
+                for (int i = 0; i < transcriptClusterArray.length; i++) {
+                    columns = transcriptClusterArray[i].split("\t");
+                    if (columns[4].equals("ambiguous")) {
+                        transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
+                        numberOfTranscriptClusters++;
+                    }
+                }
+                for (int i = 0; i < transcriptClusterArray.length; i++) {
+                    columns = transcriptClusterArray[i].split("\t");
+                    if (columns[4].equals("free")) {
+                        transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
+                        numberOfTranscriptClusters++;
+                    }
                 }
             }
         }
@@ -230,8 +234,8 @@
     // Populate the variable geneChromosome with the chromosome in the first line
     // The chromosome should always be the same for every line in this file
     String geneChromosome = "Y";
-    columns = transcriptClusterArray[0].split("\t");
-    geneChromosome = columns[1];
+    //columns = transcriptClusterArray[0].split("\t");
+    geneChromosome = chromosome;
     if (geneChromosome.toLowerCase().startsWith("chr")) {
         geneChromosome.substring(3);
     }
@@ -310,19 +314,13 @@
         }
     }
 
-
+    log.debug("END Initialization: geneEQTLPart.jsp");
 %>
 
 
 <div style="text-align:center;">
-    <%if (fileError) {%>
 
-    </tbody>
-    </table>
-    <div style="display:block; color:#FF0000;">There was an error retrieving transcripts for <%=geneSymbolinternal%>. Try refreshing the page. The website
-        administrator has been informed of the error.
-    </div>
-    <%} else if (transcriptError == null) { // check before adding the transcript cluster id to the form.  If there is an error, end the form here.%>
+    <%if (transcriptError == null) { // check before adding the transcript cluster id to the form.  If there is an error, end the form here.%>
     </tbody>
     </table>
     <div style="display:block; color:#FF0000;">There was an error retrieving transcripts for <%=geneSymbolinternal%>. The website administrator has been
@@ -374,26 +372,30 @@
                             style = "";
                             optionHash = new LinkedHashMap();
                             //optionHash.put("1", "HRDP v3");
-                            //optionHash.put("3", "HRDP v4");
-                            optionHash.put("5", "HRDP v5");
+                            if (genomeVer.equals("rn6")) {
+                                //optionHash.put("3", "HRDP v4");
+                                optionHash.put("5", "HRDP v5");
+                            } else if (genomeVer.equals("rn7")) {
+                                optionHash.put("6", "HRDP v6");
+                            }
                         %><%@ include file="/web/common/selectBox.jsp" %>
 
-                    <!--	<BR><strong>Gene/Transcript:</strong>
+                    	<BR><strong>Gene/Transcript:</strong>
 						<span class="eQTLtooltip" title="Select Gene level or individual transcripts."><img src="<%=imagesDir%>icons/info.gif"></span>
 						<%
-							selectName = "trxCB";
-							if(trxID.equals("")){
-								selectedOption ="gene";
-							}else{
-								selectedOption =trxID;
-							}
-							style = "";
-							optionHash = new LinkedHashMap();
-							optionHash.put("gene", geneSymbol+" - Gene level");
-							for(int i=0;i<trxList.size();i++){
-								optionHash.put(trxList.get(i), trxList.get(i));
-							}
-						%><%@ include file="/web/common/selectBox.jsp" %>-->
+                            selectName = "trxCB";
+                            if (trxID.equals("")) {
+                                selectedOption = "gene";
+                            } else {
+                                selectedOption = trxID;
+                            }
+                            style = "";
+                            optionHash = new LinkedHashMap();
+                            optionHash.put("gene", geneSymbol + " - Gene level");
+                            for (int i = 0; i < trxList.size(); i++) {
+                                optionHash.put(trxList.get(i), trxList.get(i));
+                            }
+                        %><%@ include file="/web/common/selectBox.jsp" %>
 						</span>
                 <BR>
                 <strong>Transcriptome Data:</strong>

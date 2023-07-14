@@ -81,14 +81,34 @@
     if (myOrganism.equals("Rn")) {
         tissuesList1 = new String[4];
         tissuesList2 = new String[4];
-        tissuesList1[0] = "Brain";
-        tissuesList2[0] = "Whole Brain";
-        tissuesList1[1] = "Heart";
-        tissuesList2[1] = "Heart";
-        tissuesList1[2] = "Liver";
-        tissuesList2[2] = "Liver";
-        tissuesList1[3] = "Brown Adipose";
-        tissuesList2[3] = "Brown Adipose";
+        if (genomeVer.equals("rn7")) {
+            tissuesList1 = new String[3];
+            tissuesList2 = new String[3];
+            tissuesList1[0] = "Brain";
+            tissuesList2[0] = "Whole Brain";
+            tissuesList1[1] = "Liver";
+            tissuesList2[1] = "Liver";
+            tissuesList1[1] = "Kidney";
+            tissuesList2[1] = "Kidney";
+        } else if (genomeVer.equals("rn6")) {
+            tissuesList1 = new String[2];
+            tissuesList2 = new String[2];
+            tissuesList1[0] = "Brain";
+            tissuesList2[0] = "Whole Brain";
+            tissuesList1[1] = "Liver";
+            tissuesList2[1] = "Liver";
+        } else {
+            tissuesList1[0] = "Brain";
+            tissuesList2[0] = "Whole Brain";
+            tissuesList1[1] = "Heart";
+            tissuesList2[1] = "Heart";
+            tissuesList1[2] = "Liver";
+            tissuesList2[2] = "Liver";
+            tissuesList1[3] = "Brown Adipose";
+            tissuesList2[3] = "Brown Adipose";
+        }
+
+
     } else {
         tissuesList1[0] = "Brain";
         tissuesList2[0] = "Whole Brain";
@@ -99,6 +119,7 @@
     int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer);
     if (tmp != null && tmp.length == 2) {
         rnaDatasetID = tmp[1];
+        log.debug("REPORT DSID:" + rnaDatasetID);
         arrayTypeID = tmp[0];
     }
     String genURL = "";
@@ -198,11 +219,11 @@ $(this).removeClass("less");
                                                                                                                              class="helpGeneRpt"
                                                                                                                              src="/web/images/icons/help.png"/></div></span>
     <%}%>
-    <%if (!isSmall && !genomeVer.equals("rn7")) {%>
+    <%if (!isSmall && (genomeVer.equals("rn7") || genomeVer.equals("rn6"))) {%>
     <span class="selectdetailMenu" name="geneEQTL">Gene eQTLs<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneEqtlTab"
                                                                                                                          class="helpGeneRpt"
                                                                                                                          src="/web/images/icons/help.png"/></div></span>
-
+    <%} else if (!isSmall && !genomeVer.equals("rn7")) {%>
     <span class="selectdetailMenu" name="geneMIrna">miRNA Targeting Gene(multiMiR)<div class="inpageHelp" style="display:inline-block; "><img
             id="HelpMirTargetTab" class="helpGeneRpt" src="/web/images/icons/help.png"/></div></span>
     <!--<span class="selectdetailMenu" name="geneGO">GO<div class="inpageHelp" style="display:inline-block; "><img id="HelpUCSCImage" class="helpImage" src="/web/images/icons/help.png" /></div></span>-->
@@ -774,6 +795,7 @@ $(this).removeClass("less");
 <script type="text/javascript">
     var idStr = "<%=id%>";
     var geneSymStr = "<%=curGene.getGeneSymbol()%>";
+    var version = <%if(genomeVer.equals("rn7")){%>6<%}else{%>5<%}%>;
 
     var rows = $("table#tblGeneDabg tr");
     stripeTable(rows);
@@ -829,7 +851,8 @@ $(this).removeClass("less");
                 geneSymbol: selectedGeneSymbol,
                 chromosome: chr,
                 id: selectedID,
-                genomeVer: genomeVer
+                genomeVer: genomeVer,
+                version: version
             };
             loadDivWithPage("div#geneEQTL", jspPage, scrollToDiv, params,
                 "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");

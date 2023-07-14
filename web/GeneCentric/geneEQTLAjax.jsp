@@ -6,7 +6,7 @@
 <%
 
     String myOrganism = "Rn";
-    String defaultGenomeVer = "rn6";
+    String defaultGenomeVer = "rn7";
     String id = "";
     String chromosome = "";
     String genomeVer = "";
@@ -48,7 +48,7 @@
         if (myOrganism.equals("Rn")) {
             panel = "BNLX/SHRH";
             fullOrg = "Rattus_norvegicus";
-            defaultGenomeVer = "rn6";
+            defaultGenomeVer = "rn7";
         } else {
             defaultGenomeVer = "mm10";
             panel = "ILS/ISS";
@@ -95,6 +95,11 @@
 
     if (source.equals("seq")) {
         trxList = gdt.getTranscriptList(id, myOrganism, "Merged", genomeVer, version);
+    } else {
+        if (genomeVer.equals("rn7")) {
+            source = "seq";
+            trxList = gdt.getTranscriptList(id, myOrganism, "Merged", genomeVer, version);
+        }
     }
 
     gcPath = applicationRoot + contextRoot + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/";
