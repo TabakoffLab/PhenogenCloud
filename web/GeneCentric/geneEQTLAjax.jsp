@@ -86,7 +86,7 @@
     if (request.getParameter("trxCB") != null) {
         trxID = FilterInput.getFilteredInput(request.getParameter("trxCB"));
     }
-    if (request.getParameter("transcriptome") != null) {
+    if (request.getParameter("transcriptome") != null && !request.getParameter("transcriptome").equals("")) {
         transcriptome = FilterInput.getFilteredInput(request.getParameter("transcriptome"));
     }
     if (request.getParameter("cisOnly") != null) {
