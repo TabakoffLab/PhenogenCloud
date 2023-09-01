@@ -57,11 +57,11 @@ public class WGCNATools {
         this.fullPath = appRoot + contextRoot;
     }
 
-    public ArrayList<String> getWGCNAModulesForGene(GeneDataTools gdt, String id, String panel, String tissue, String org, String genomeVer, String source, String version) {
+    public ArrayList<String> getWGCNAModulesForGene(GeneDataTools gdt, String id, String panel, String tissue, String org, String genomeVer, String source, String version, String level) {
         ArrayList<String> ret = new ArrayList<String>();
         int rnaDSID = -1;
         int dsid = -1;
-        int[] tmpIDs = this.getWGCNADataset(panel, tissue, org, genomeVer, source, version, "");
+        int[] tmpIDs = this.getWGCNADataset(panel, tissue, org, genomeVer, source, version, level);
         if (tmpIDs != null && tmpIDs.length > 1) {
             dsid = tmpIDs[0];
             rnaDSID = tmpIDs[1];
@@ -260,12 +260,12 @@ public class WGCNATools {
         return ret;
     }
 
-    public ArrayList<String> getWGCNAModulesForQTLRegion(GeneDataTools gdt, String region, String panel, String tissue, String org, String genomeVer, String source, String version, double cutoff) {
+    public ArrayList<String> getWGCNAModulesForQTLRegion(GeneDataTools gdt, String region, String panel, String tissue, String org, String genomeVer, String source, String version, double cutoff, String level) {
         ArrayList<String> ret = new ArrayList<String>();
         HashMap<String, String> geneCount = new HashMap<String, String>();
         int rnaDSID = -1;
         int dsid = -1;
-        int[] tmpIDs = this.getWGCNADataset(panel, tissue, org, genomeVer, source, version, "");
+        int[] tmpIDs = this.getWGCNADataset(panel, tissue, org, genomeVer, source, version, level);
         if (tmpIDs != null && tmpIDs.length > 1) {
             dsid = tmpIDs[0];
             rnaDSID = tmpIDs[1];
@@ -370,7 +370,7 @@ public class WGCNATools {
         return ret;
     }
 
-    public ArrayList<String> getWGCNAModulesForGeneList(GeneDataTools gdt, int glID, String panel, String tissue, String genomeVer, String source, String version) {
+    public ArrayList<String> getWGCNAModulesForGeneList(GeneDataTools gdt, int glID, String panel, String tissue, String genomeVer, String source, String version, String level) {
         ArrayList<String> ret = new ArrayList<String>();
         HashMap<String, String> geneCount = new HashMap<String, String>();
         String ensemblStart = "ENSMUSG";
@@ -407,7 +407,7 @@ public class WGCNATools {
 
             int rnaDSID = -1;
             int dsid = -1;
-            int[] tmpIDs = this.getWGCNADataset(panel, tissue, org, genomeVer, source, version, "");
+            int[] tmpIDs = this.getWGCNADataset(panel, tissue, org, genomeVer, source, version, level);
             if (tmpIDs != null && tmpIDs.length > 1) {
                 dsid = tmpIDs[0];
                 rnaDSID = tmpIDs[1];
@@ -468,11 +468,11 @@ public class WGCNATools {
         return ret;
     }
 
-    public ArrayList<WGCNAMetaModule> getWGCNAMetaModulesForModule(String modName, String panel, String tissue, String org, String genomeVer, String source, String version) {
+    public ArrayList<WGCNAMetaModule> getWGCNAMetaModulesForModule(String modName, String panel, String tissue, String org, String genomeVer, String source, String version, String level) {
         ArrayList<WGCNAMetaModule> ret = new ArrayList<WGCNAMetaModule>();
         int rnaDSID = -1;
         int dsid = -1;
-        int[] tmpIDs = this.getWGCNADataset(panel, tissue, org, genomeVer, source, version, "");
+        int[] tmpIDs = this.getWGCNADataset(panel, tissue, org, genomeVer, source, version, level);
         if (tmpIDs != null && tmpIDs.length > 1) {
             dsid = tmpIDs[0];
             rnaDSID = tmpIDs[1];
@@ -585,9 +585,9 @@ public class WGCNATools {
         return ret;
     }
 
-    private int[] getWGCNADataset(String panel, String tissue, String org, String genomeVer, String source) {
+    /*private int[] getWGCNADataset(String panel, String tissue, String org, String genomeVer, String source) {
         return getWGCNADataset(panel, tissue, org, genomeVer, source, "", "");
-    }
+    }*/
 
     private ArrayList<WGCNAMetaModLink> getWGCNAMetaLinks() {
         ArrayList<WGCNAMetaModLink> ret = new ArrayList<WGCNAMetaModLink>();

@@ -21,7 +21,7 @@ sub readLocusSpecificPvaluesModule{
 	#INPUT VARIABLES: $probeID, $organism
 
 	# Read inputs
-	my($module,$organism,$tissue,$chromosomeListRef,$genomeVer,$rnaDSID,$dsn,$usr,$passwd,$type)=@_;
+	my($module,$organism,$tissue,$chromosomeListRef,$genomeVer,$rnaDSID,$level,$dsn,$usr,$passwd,$type)=@_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# $hostname is used to determine the connection to the database.
@@ -42,30 +42,51 @@ sub readLocusSpecificPvaluesModule{
 	# PERL DBI CONNECT
 	my $connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	#print "readModuleData.pl:type:$type\n";
+	my $wdsidlist="";
+	my $wdsidQ="Select wd.wdsid from wgcna_dataset wd where wd.organism='$organism' and wd.tissue='$tissue' and wd.genome_id='$genomeVer' and wd.visible=1";
+	if($type eq 'seq') {
+    		$wdsidQ = $wdsidQ . " and wd.rna_dataset_id=" . $rnaDSID;
+    		if($genomeVer  eq 'rn7'){
+    		    $wdsidQ = $wdsidQ . " and wd.level='" . $level."'";
+    		}
+    	}
+
+    my $wdQH = $connect->prepare($wdsidQ) or die (" Location Specific EQTL query prepare failed $!");
+
+    # EXECUTE THE QUERY
+    $wdQH->execute() or die ( "WGCNA id  query execute failed $!");
+
+    # BIND TABLE COLUMNS TO VARIABLES
+    my ($wdsidVal);
+  	$wdQH->bind_columns(\$wdsidVal);
+  	my $wdCount=0;
+    while($wdQH->fetch()) {
+        if($wdCount==0){
+            $wdsidlist="$wdsidVal";
+        }else{
+            $wdsidlist=$wdsidlist.",$wdsidlist";
+        }
+        $wdCount=$wdCount+1;
+    }
+    $wdQH->finish();
+
+
 	# PREPARE THE QUERY for pvalues
-    my $query = "select  s.SNP_NAME, c.name,  s.SNP_START, e.PVALUE
-                        from wgcna_location_eqtl e, snps s, chromosomes c
-                        where s.organism='$organism'
-                        and s.tissue='$tissue'
-                        and s.snp_id=e.snp_id
-                        and s.genome_id='".$genomeVer."'
+    my $query = "select  s.SNP_NAME, c.name,  s.COORD, e.PVALUE
+                        from wgcna_location_eqtl e
+                        left outer join snps_hrdp s on s.snp_id=e.snp_id
+                        left outer join chromosomes c on c.chromosome_id=s.chromosome_id
+                        where s.genome_id='".$genomeVer."'
                         and s.type='$type'";
 	if($type eq 'seq') {
 		$query = $query . " and s.rna_dataset_id=" . $rnaDSID;
+	}else{
+	    $query = $query . " and s.organism='$organism'
+                           and s.tissue='$tissue'";
 	}
-	$query=$query." and c.chromosome_id=s.chromosome_id
-                        and e.pvalue>=1
-                        and e.wdsid in (Select wd.wdsid from wgcna_dataset wd where wd.organism='$organism' and wd.tissue='$tissue' and wd.genome_id='$genomeVer' and wd.visible=1";
-	if($type eq 'seq') {
-		$query = $query . " and wd.rna_dataset_id=" . $rnaDSID;
-	}
-	$query=$query.") and e.module_id in (Select wi.module_id from wgcna_module_info wi where
-                                wi.wdsid in (Select wd.wdsid from wgcna_dataset wd where wd.organism='$organism' and wd.tissue='$tissue' and wd.genome_id='$genomeVer' and wd.visible=1 ";
-	if($type eq 'seq') {
-		$query = $query . " and wd.rna_dataset_id=" . $rnaDSID;
-	}
-	$query=$query.") and wi.module='$module')
-                        order by e.pvalue";
+	$query=$query." and c.chromosome_id=s.chromosome_id and e.pvalue>=1 and e.wdsid in (".$wdsidlist.")";
+	$query=$query." and e.module_id in (Select wi.module_id from wgcna_module_info wi where wi.wdsid in (".$wdsidlist.") ";
+	$query=$query." and wi.module='$module' ) order by e.pvalue";
     #print "$query\n";
                       
 	my $query_handle = $connect->prepare($query) or die (" Location Specific EQTL query prepare failed $!");
