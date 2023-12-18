@@ -146,9 +146,9 @@ public class AsyncGeneDataTools extends Thread {
             }
             outputRNASeqExprFiles(tmpOutDir, chrom, minCoord, maxCoord, genomeVer, version);
             if (isEnsemblGene) {
-                if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
-                    outputProbesetIDFiles(tmpOutDir, chrom, minCoord, maxCoord, arrayTypeID, genomeVer);
-                }
+                //if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
+                outputProbesetIDFiles(tmpOutDir, chrom, minCoord, maxCoord, arrayTypeID, genomeVer);
+                //}
                 done = true;
             }
             if (ensemblID1 != null && !ensemblID1.equals("")) {
@@ -1305,7 +1305,7 @@ public class AsyncGeneDataTools extends Thread {
                 }
 
                 String errors = myExec_session.getErrors();
-                if (!exception && errors != null && !(errors.equals(""))) {
+                if (myExec_session.isError() && !exception && errors != null && !(errors.equals(""))) {
                     completedSuccessfully = false;
                     Email myAdminEmail = new Email();
                     myAdminEmail.setSubject("Exception thrown in Exec_session");

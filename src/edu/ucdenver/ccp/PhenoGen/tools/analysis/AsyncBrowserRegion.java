@@ -358,13 +358,15 @@ public class AsyncBrowserRegion extends Thread {
                 myAdminEmail.setContent("There was an error while running "
                         + perlArgs[1] + " (" + perlArgs[2] + " , " + perlArgs[3] + " , " + perlArgs[4] + " , " + perlArgs[5] + " , " + perlArgs[6] + "," + perlArgs[7] + "," + perlArgs[8] + "," + perlArgs[9] + "," + perlArgs[10] + "," + perlArgs[11] +
                         ")\n\n" + myExec_session.getErrors());
-                try {
-                    myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
-                } catch (Exception mailException) {
-                    log.error("error sending message", mailException);
+                if (myExec_session.isError()) {
                     try {
-                        myAdminEmail.sendEmailToAdministrator("");
-                    } catch (Exception mailException1) {
+                        myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+                    } catch (Exception mailException) {
+                        log.error("error sending message", mailException);
+                        try {
+                            myAdminEmail.sendEmailToAdministrator("");
+                        } catch (Exception mailException1) {
+                        }
                     }
                 }
             }
@@ -461,21 +463,23 @@ public class AsyncBrowserRegion extends Thread {
             myAdminEmail.setContent("There was an error while running "
                     + perlArgs[1] + " (" + perlArgs[2] + " , " + perlArgs[3] + " , " + perlArgs[4] + " , " + perlArgs[5] + " , " + perlArgs[6] + "," + perlArgs[7] + "," + perlArgs[8] + "," + perlArgs[9] + "," + perlArgs[10] + "," + perlArgs[11] +
                     ")\n\n" + myExec_session.getErrors());
-            try {
-                myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
-            } catch (Exception mailException) {
-                log.error("error sending message", mailException);
+            if (myExec_session.isError()) {
                 try {
-                    myAdminEmail.sendEmailToAdministrator("");
-                } catch (Exception mailException1) {
-                    //throw new RuntimeException();
+                    myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+                } catch (Exception mailException) {
+                    log.error("error sending message", mailException);
+                    try {
+                        myAdminEmail.sendEmailToAdministrator("");
+                    } catch (Exception mailException1) {
+                        //throw new RuntimeException();
+                    }
                 }
             }
         }
 
         String errors = myExec_session.getErrors();
         log.debug("ERRORS:\n:" + errors + ":");
-        if (!exception && errors != null && !(errors.equals(""))) {
+        if (myExec_session.isError() && !exception && errors != null && !(errors.equals(""))) {
             Email myAdminEmail = new Email();
             myAdminEmail.setSubject("Exception thrown in Exec_session");
             myAdminEmail.setContent("There was an error while running "

@@ -101,7 +101,8 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
                 that.panel = "BNLx/SHR";
                 that.chrLen = 20;
                 if (that.selSource === "seq") {
-                    if (that.version === "6") {
+                    console.log("ver:" + that.version);
+                    if (that.version == "6") {
                         if (that.tissue === "Whole Brain") {
                             if (that.selLevel === "gene") {
                                 that.wDSID = 14;
@@ -127,6 +128,8 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
                                 that.wDSID = 21;
                             }
                         }
+                    } else {
+                        console.error("ERROR: SETTING WDSID");
                     }
                 }
             }
@@ -208,7 +211,9 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
                 geneList: that.geneList,
                 genomeVer: genomeVer,
                 version: that.version,
+                level: that.selLevel,
                 modSelection: tmpModSelect
+
             },
             dataType: 'json',
             beforeSend: function () {
@@ -217,10 +222,10 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
                     that.moduleRequestList[i].abort();
                 }
                 that.moduleRequestList = [];
-                console.log(that.modSelect + ":" + that.modSelectCutoff);
-                console.log(tmpModSelect);
+                //console.log(that.modSelect + ":" + that.modSelectCutoff);
+                //console.log(tmpModSelect);
 
-                console.log("request mod list:" + that.wDSID + ":" + that.selSource);
+                //console.log("request mod list:" + that.wDSID + ":" + that.selSource);
             },
             success: function (data2) {
                 $('#wgcnaGeneImage #message').hide();
@@ -291,10 +296,10 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
             data: {},
             dataType: 'json',
             success: function (data2) {
-                console.log("success:" + contextRoot + "tmpData/browserCache/" + genomeVer + "/modules/ds" + that.wDSID + "/" + file + ".json");
+                //console.log("success:" + contextRoot + "tmpData/browserCache/" + genomeVer + "/modules/ds" + that.wDSID + "/" + file + ".json");
                 setTimeout(function () {
-                    console.log("countingGeneInstances")
-                    console.log(file);
+                    //console.log("countingGeneInstances")
+                    //console.log(file);
                     if (that.singleID.length > 0) {
                         that.countGeneInstance(that.singleID, data2);
                     } else {
@@ -627,13 +632,7 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
         that.viewBar.append("text").text("Module");
         that.viewBar.append("span").attr("class", "wgcnaControltooltip").attr("title", "View transcripts within the selected module and their connectivity based on correlation of expression.<BR><BR>Have a question about this view click the <img src=\"" + contextRoot + "web/images/icons/help.png\"> above for a detailed description of each view.").style("margin-left", "5px").append("img").attr("src", "/web/images/icons/info.gif");
         that.viewBar.append("br");
-        that.viewBar.append("input").attr("type", "radio").attr("id", "wgcnaEQTLViewRB").attr("name", "wgcnaViewRB").attr("value", "eqtl").style("margin-left", "7px").style("margin-right", "3px").attr('disabled', function () {
-            if (genomeVer === "rn7") {
-                return true;
-            } else {
-                return false;
-            }
-        }).on("click", function () {
+        that.viewBar.append("input").attr("type", "radio").attr("id", "wgcnaEQTLViewRB").attr("name", "wgcnaViewRB").attr("value", "eqtl").style("margin-left", "7px").style("margin-right", "3px").on("click", function () {
             that.viewType = "eqtl";
             that.createSingleWGCNAImage();
             /*if(ga){
@@ -4856,13 +4855,18 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
             dataType: 'json',
             beforeSend: function () {
                 $('div#waitEqtlTable').show();
+                setTimeout(function () {
+                    if ($.fn.DataTable.isDataTable('table#eqtlTable')) {
+                        $('table#eqtlTable').DataTable().destroy();
+                    }
+                }, 10);
             },
             success: function (data2) {
                 setTimeout(function () {
                     //$('table#trkSelList'+that.level).dataTable().destroy();
-                    if ($.fn.DataTable.isDataTable('table#eqtlTable')) {
+                    /*if ($.fn.DataTable.isDataTable('table#eqtlTable')) {
                         $('table#eqtlTable').DataTable().destroy();
-                    }
+                    }*/
 
 
                     //filter data2
@@ -4880,8 +4884,15 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
                         }
                     }
 
+                    d3.select('#eqtlTable').select('thead').selectAll('tr').remove();
                     d3.select('#eqtlTable').select('tbody').selectAll('tr').remove();
 
+
+                    headerRow = d3.select("#eqtlTable").select("thead").append("tr");
+                    headerRow.append("th").html("Chromosome");
+                    headerRow.append("th").html("Position(Mbp)");
+                    headerRow.append("th").html("SNP ID");
+                    headerRow.append("th").html("-log (P-Value)");
                     //setup table data2
                     var tracktbl = d3.select("#eqtlTable").select("tbody").selectAll('tr')
                         .data(fData, that.eQTLKey)
@@ -4904,24 +4915,23 @@ function WGCNABrowser(id, region, geneList, disptype, viewtype, tissue) {
                         d3.select(this).append("td").html(d.Pval.toFixed(2));
                     });
 
-
-                    $('#eqtlTable').DataTable({
-                        bPaginate: false,
-                        /*"bProcessing": true,
-                                                    "bStateSave": false,
-                                                    "bAutoWidth": true,
-                                                    "bDeferRender": true,*/
-                        aaSorting: [[3, "desc"]],
-                        sDom: 'fiB<t>',
-                        buttons: ['copy', 'excel', 'pdf']
-                    });
+                    if (!$.fn.DataTable.isDataTable('table#eqtlTable')) {
+                        $('#eqtlTable').DataTable({
+                            bPaginate: false,
+                            aaSorting: [[3, "desc"]],
+                            sDom: 'fiB<t>',
+                            buttons: ['copy', 'excel', 'pdf']
+                        });
+                    }
                     //trackDataTable.draw();
                     $('div#waitEqtlTable').hide();
 
                     d3.select("#circosModule").select("g#Link_" + maxSnp).select("path").style("stroke", "#FFF450");
-                }, 20);
+                    $('table#eqtlTable').DataTable().draw();
+                }, 50);
             },
             error: function (xhr, status, error) {
+                
             }
         });
     };
