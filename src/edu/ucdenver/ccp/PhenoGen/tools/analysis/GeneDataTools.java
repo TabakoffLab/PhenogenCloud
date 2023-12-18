@@ -1369,7 +1369,7 @@ public class GeneDataTools {
                 circosErrorMessage = circosErrorMessage + " " + perlScriptArguments[i];
             }
             circosErrorMessage = circosErrorMessage + ")\n\n" + myExec_session.getErrors();
-            if (!circosErrorMessage.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:") && !circosErrorMessage.contains("Circos::Error::GROUPERROR")) {
+            if (myExec_session.isError() && !circosErrorMessage.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:") && !circosErrorMessage.contains("Circos::Error::GROUPERROR")) {
                 myAdminEmail.setContent(circosErrorMessage);
                 try {
                     myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
@@ -1385,7 +1385,7 @@ public class GeneDataTools {
         }
 
         String errors = myExec_session.getErrors();
-        if (!exception && errors != null && !(errors.equals(""))) {
+        if (myExec_session.isError() && !exception && errors != null && !(errors.equals(""))) {
             if (!errors.contains("WARNING **: Unimplemented style property SP_PROP_POINTER_EVENTS:") && !errors.contains("Circos::Error::GROUPERROR")) {
                 Email myAdminEmail = new Email();
                 myAdminEmail.setSubject("Exception thrown in Exec_session");
@@ -1504,10 +1504,10 @@ public class GeneDataTools {
                         apiVer = errorList.substring(apiStart, apiStart + 3);
                     }
                     Email myAdminEmail = new Email();
-                    if (!missingDB) {
+                    if (!missingDB && myExec_session.isError()) {
                         myAdminEmail.setSubject("Exception thrown in Exec_session");
                         setError("Running Perl Script to get Gene and Transcript details/images. Ensembl Assembly v" + apiVer);
-                    } else {
+                    } else if (myExec_session.isError()) {
                         myAdminEmail.setSubject("Missing Ensembl ID in DB");
                         setError("The current Ensembl database does not have an entry for this gene ID." +
                                 " As Ensembl IDs are added/removed from new versions it is likely this ID has been removed." +
@@ -1522,23 +1522,25 @@ public class GeneDataTools {
                     myAdminEmail.setContent("There was an error while running "
                             + perlArgs[1] + " (" + perlArgs[2] + " , " + perlArgs[3] + " , " + perlArgs[4] + " , " + perlArgs[5] + " , " + perlArgs[6] +
                             ")\ngenomeVer:" + genomeVer + "\n" + errors);
-                    try {
-                        if (!missingDB && errors != null && errors.length() > 0) {
-                            myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
-                        }
-                    } catch (Exception mailException) {
-                        log.error("error sending message", mailException);
+                    if (myExec_session.isError()) {
                         try {
-                            myAdminEmail.sendEmailToAdministrator("");
-                        } catch (Exception mailException1) {
-                            //throw new RuntimeException();
+                            if (!missingDB && errors != null && errors.length() > 0) {
+                                myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+                            }
+                        } catch (Exception mailException) {
+                            log.error("error sending message", mailException);
+                            try {
+                                myAdminEmail.sendEmailToAdministrator("");
+                            } catch (Exception mailException1) {
+                                //throw new RuntimeException();
+                            }
                         }
                     }
                 }
 
                 String errors = myExec_session.getErrors();
                 log.debug("after read Exec Errors");
-                if (!missingDB && errors != null && !(errors.equals(""))) {
+                if (!missingDB && errors != null && !(errors.equals("")) && myExec_session.isError()) {
                     completedSuccessfully = false;
                     Email myAdminEmail = new Email();
                     myAdminEmail.setSubject("Exception thrown in Exec_session");
@@ -1720,7 +1722,7 @@ public class GeneDataTools {
                 status = "Error generating track";
                 log.error("In Exception of run writeXML_Track.pl Exec_session", e);
                 String errors = myExec_session.getErrors();
-                if (errors != null && errors.length() > 0) {
+                if (myExec_session.isError() && errors != null && errors.length() > 0) {
                     setError("Running Perl Script to get Gene and Transcript details/images.");
                     Email myAdminEmail = new Email();
                     myAdminEmail.setSubject("Exception thrown in Exec_session");
@@ -1742,7 +1744,7 @@ public class GeneDataTools {
 
             String errors = myExec_session.getErrors();
             //log.debug("Error String:"+errors);
-            if (!exception && errors != null && !(errors.equals(""))) {
+            if (myExec_session.isError() && !exception && errors != null && !(errors.equals(""))) {
                 status = "Error generating track";
                 Email myAdminEmail = new Email();
                 myAdminEmail.setSubject("Error is not null in Exec_session");
@@ -2370,7 +2372,7 @@ public class GeneDataTools {
                         apiVer = errorList.substring(apiStart, apiStart + 3);
                     }
                     Email myAdminEmail = new Email();
-                    if (!missingDB) {
+                    if (!missingDB && myExec_session.isError()) {
                         myAdminEmail.setSubject("Exception thrown in Exec_session");
                         setError("Running Perl Script to get Gene and Transcript details/images. Ensembl Assembly v" + apiVer);
                     } else {
@@ -2382,24 +2384,25 @@ public class GeneDataTools {
                                 "Ensembl Assembly v" + apiVer);
 
                     }
-
-                    myAdminEmail.setContent("There was an error while running "
-                            + perlArgs[1] + " (" + perlArgs[2] + " , " + perlArgs[3] + " , " + perlArgs[4] + " , " + perlArgs[5] + " , " + perlArgs[6] + "," + perlArgs[7] +
-                            ")\n\n" + myExec_session.getErrors());
-                    try {
-                        myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
-                    } catch (Exception mailException) {
-                        log.error("error sending message", mailException);
+                    if (myExec_session.isError()) {
+                        myAdminEmail.setContent("There was an error while running "
+                                + perlArgs[1] + " (" + perlArgs[2] + " , " + perlArgs[3] + " , " + perlArgs[4] + " , " + perlArgs[5] + " , " + perlArgs[6] + "," + perlArgs[7] +
+                                ")\n\n" + myExec_session.getErrors());
                         try {
-                            myAdminEmail.sendEmailToAdministrator("");
-                        } catch (Exception mailException1) {
-                            //throw new RuntimeException();
+                            myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+                        } catch (Exception mailException) {
+                            log.error("error sending message", mailException);
+                            try {
+                                myAdminEmail.sendEmailToAdministrator("");
+                            } catch (Exception mailException1) {
+                                //throw new RuntimeException();
+                            }
                         }
                     }
                 }
 
                 String errors = myExec_session.getErrors();
-                if (!exception && errors != null && !(errors.equals(""))) {
+                if (!exception && errors != null && !(errors.equals("")) && myExec_session.isError()) {
                     completedSuccessfully = false;
                     Email myAdminEmail = new Email();
                     myAdminEmail.setSubject("Exception thrown in Exec_session");
@@ -4298,14 +4301,16 @@ public class GeneDataTools {
                 myAdminEmail.setContent("There was an error while running "
                         + perlArgs[1] + " (" + perlArgs[2] + " , " + perlArgs[3] + " , " + perlArgs[4] +
                         ")\n\n" + errors);
-                try {
-                    myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
-                } catch (Exception mailException) {
-                    log.error("error sending message", mailException);
+                if (myExec_session.isError()) {
                     try {
-                        myAdminEmail.sendEmailToAdministrator("");
-                    } catch (Exception mailException1) {
-                        //throw new RuntimeException();
+                        myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+                    } catch (Exception mailException) {
+                        log.error("error sending message", mailException);
+                        try {
+                            myAdminEmail.sendEmailToAdministrator("");
+                        } catch (Exception mailException1) {
+                            //throw new RuntimeException();
+                        }
                     }
                 }
             }

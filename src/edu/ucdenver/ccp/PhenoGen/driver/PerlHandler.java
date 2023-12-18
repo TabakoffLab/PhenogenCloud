@@ -18,6 +18,7 @@ public class PerlHandler {
     private String[] functionArgs = null;
     private String filePrefix = null;
     private String perlErrors = null;
+    private boolean isError = false;
 
     public PerlHandler(String perlFunctionPath,
                        String[] functionArgs,
@@ -38,8 +39,12 @@ public class PerlHandler {
         return perlErrors;
     }
 
-    public void runPerl() throws PerlException {
+    public boolean isError() {
+        return isError;
+    }
 
+    public void runPerl() throws PerlException {
+        isError = false;
         log.debug("Starting run method of PerlHandler. filePrefix = " + filePrefix + ", functionArgs[0] = " + functionArgs[0]);
         new Debugger().print(System.getenv());
 

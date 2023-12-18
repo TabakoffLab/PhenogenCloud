@@ -85,7 +85,7 @@ sub readLocusSpecificPvaluesModule{
                            and s.tissue='$tissue'";
 	}
 	$query=$query." and c.chromosome_id=s.chromosome_id and e.pvalue>=1 and e.wdsid in (".$wdsidlist.")";
-	$query=$query." and e.module_id in (Select wi.module_id from wgcna_module_info wi where wi.wdsid in (".$wdsidlist.") ";
+	$query=$query." and e.module_id in (Select distinct wi.module_id from wgcna_module_info wi where wi.wdsid in (".$wdsidlist.") ";
 	$query=$query." and wi.module='$module' ) order by e.pvalue";
     #print "$query\n";
                       

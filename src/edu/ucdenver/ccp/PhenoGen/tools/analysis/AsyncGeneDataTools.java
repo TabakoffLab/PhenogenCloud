@@ -1305,7 +1305,7 @@ public class AsyncGeneDataTools extends Thread {
                 }
 
                 String errors = myExec_session.getErrors();
-                if (!exception && errors != null && !(errors.equals(""))) {
+                if (myExec_session.isError() && !exception && errors != null && !(errors.equals(""))) {
                     completedSuccessfully = false;
                     Email myAdminEmail = new Email();
                     myAdminEmail.setSubject("Exception thrown in Exec_session");

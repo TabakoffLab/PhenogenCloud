@@ -122,16 +122,21 @@
     $("#wait1").hide();
 </script>
 <div id="public" style='min-height:1030px;'>
-    <h2>Select the download icon(<img src="<%=imagesDir%>icons/download_g.png"/>) to download data from any of the datasets below. For some data types multiple
+    <h2>Select the download icon(<img src="<%=imagesDir%>icons/download_g.png"/>) to download data from any of the
+        datasets below. For some data types multiple
         options may be available. For these types, a window displays that allows you to choose specific files.</h2>
     <div style="width:100%;">
         <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
-            <span id="d8" class="detailMenu <%if(section.equals("ucsc")){%>selected<%}%>" name="ucsc">UCSC Track Hubs</span>
-            <span id="d7" class="detailMenu <%if(section.equals("rest")){%>selected<%}%>" name="rest">REST API / R</span>
+            <span id="d8" class="detailMenu <%if(section.equals("ucsc")){%>selected<%}%>"
+                  name="ucsc">UCSC Track Hubs</span>
+            <span id="d7" class="detailMenu <%if(section.equals("rest")){%>selected<%}%>"
+                  name="rest">REST API / R</span>
             <span id="d2" class="detailMenu <%if(section.equals("rnaseq")){%>selected<%}%>" name="rnaseq">RNA-Seq</span>
             <span id="d6" class="detailMenu <%if(section.equals("dnaseq")){%>selected<%}%>" name="dnaseq">DNA-Seq</span>
-            <span id="d1" class="detailMenu <%if(section.equals("array")){%>selected<%}%>" name="array">Microarray</span>
-            <span id="d3" class="detailMenu <%if(section.equals("marker")){%>selected<%}%>" name="marker">Genomic Marker</span>
+            <span id="d1" class="detailMenu <%if(section.equals("array")){%>selected<%}%>"
+                  name="array">Microarray</span>
+            <span id="d3" class="detailMenu <%if(section.equals("marker")){%>selected<%}%>"
+                  name="marker">Genomic Marker</span>
             <span id="d4" class="detailMenu <%if(section.equals("pub")){%>selected<%}%>" name="pub">Publications</span>
 
         </div>
@@ -140,13 +145,16 @@
         <H1 style="background: #3c3c3c;">PhenoGen UCSC Genome Browser Track Hubs</H1>
         <BR>
         <div>
-            In addition to making the tracks available in our browser most tracks are available in a format to use with the <a href="https://genome.ucsc.edu/"
-                                                                                                                               target="_blank">UCSC Genome
+            In addition to making the tracks available in our browser most tracks are available in a format to use with
+            the <a href="https://genome.ucsc.edu/"
+                   target="_blank">UCSC Genome
             Browser</a>. Please click on
-            any link below to visit the UCSC Genome Browser with PhenoGen tracks. Tracks below are added as a track hub with multiple tracks you
+            any link below to visit the UCSC Genome Browser with PhenoGen tracks. Tracks below are added as a track hub
+            with multiple tracks you
             can adjust through the genome browser.
             Track hubs should remain linked to your UCSC rn7 genome view until you disconnect the track hub.<BR>
-            Note: Many tracks may not be displayed by default as strain specific read counts in a tissue may have more than 100 tracks. If you are unfamiliar
+            Note: Many tracks may not be displayed by default as strain specific read counts in a tissue may have more
+            than 100 tracks. If you are unfamiliar
             with the UCSC Genome browser you can select tracks to display below the image.
         </div>
         <BR><BR>
@@ -155,41 +163,54 @@
         <H2>Transcriptomes with Merged Tissue Specific Read Counts:</H2>
         <BR>
         <div>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/hub.txt" target="_blank">MultiTissue
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/hub.txt"
+               target="_blank">MultiTissue
                 Transcriptome</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/brain/hub.txt" target="_blank">Whole Brain
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/brain/hub.txt"
+               target="_blank">Whole Brain
                 Transcriptome</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/hub.txt" target="_blank">Liver
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/hub.txt"
+               target="_blank">Liver
                 Transcriptome</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/hub.txt" target="_blank">Kidney
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/hub.txt"
+               target="_blank">Kidney
                 Transcriptome</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/hub.txt" target="_blank">Heart
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/hub.txt"
+               target="_blank">Heart
                 Transcriptome</a><BR><BR>
         </div><BR>
             <H2>Strain/Tissue Specific Read Counts (Sampled):</H2>
             <div style="text-align: center;">Randomly sampled to even total counts between strains to match the lowest strain.</div>
         <BR>
         <div>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/brain/sampled/hub.txt" target="_blank">Whole
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/brain/sampled/hub.txt"
+               target="_blank">Whole
                 Brain Strain Specific Reads Counts (Sampled)</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/sampled/hub.txt" target="_blank">Liver
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/sampled/hub.txt"
+               target="_blank">Liver
                 Strain Specific Reads Counts (Sampled)</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/sampled/hub.txt" target="_blank">Heart
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/sampled/hub.txt"
+               target="_blank">Heart
                 Strain Specific Reads Counts (Sampled)</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/sampled/hub.txt" target="_blank">Kidney
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/sampled/hub.txt"
+               target="_blank">Kidney
                 Strain Specific Reads Counts (Sampled)</a><BR><BR>
         </div>
         <H2>Strain/Tissue Specific Read Counts (Total):</H2>
             <div style="text-align: center;">Not sampled: Each strain contains the total reads from all 3 biological replicates.</div>
         <BR>
         <div>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/brain/total/hub.txt" target="_blank">Whole
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/brain/total/hub.txt"
+               target="_blank">Whole
                 Brain Strain Specific Reads Counts (Total/Not Sampled)</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/total/hub.txt" target="_blank">Liver
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/liver/total/hub.txt"
+               target="_blank">Liver
                 Strain Specific Reads Counts (Total/Not Sampled)</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/total/hub.txt" target="_blank">Heart
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/heart/total/hub.txt"
+               target="_blank">Heart
                 Strain Specific Reads Counts (Total/Not Sampled)</a><BR><BR>
-            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/total/hub.txt" target="_blank">Kidney
+            <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hubUrl=https://phenogen.org/public_ucsc/rn7/v6/kidney/total/hub.txt"
+               target="_blank">Kidney
                 Strain Specific Reads Counts (Total/Not Sampled)</a><BR><BR>
         </div>
             </span>
@@ -224,55 +245,9 @@
         <BR>
         <BR>
         <H1 style="background: #3c3c3c;">PhenoGenRESTR</H1><BR>
-        <div>We are developing methods to call the REST API from R and to retrieve the data directly from PhenoGen into
-            R. For now this is limited to the datasets at https://phenogen.org/web/sysbio/resources.jsp -> New RNA
-            Sequencing Datasets Experimental Details/Downloads
-        </div>
+        An R package that we're maintaining as new REST API Functions are developed to download data directly into R.
         <BR>
-        <div>We will turn this into an R package and release it. Check for updates frequently we will try to update along with new REST API
-            functions.
-        </div>
-        <BR>
-        <div>As downloaded this will call the production REST API version (https://rest.phenogen.org).
-            Please use this for all analysis. You are welcome to use the development and test
-            version, by changing the phenogenURL variable to (https://rest-test.phenogen.org), but
-            please only use this for testing and please be aware the rate of calls allows is more limited.
-            <BR><BR>
-            New functions that haven't been deployed to production will appear in testing first and will
-            be implemented in development branch first.
-        </div>
-        <BR>
-        <H2>Currently supported functions:</H2><BR>
-        <BR>
-        <H3> getDatasets()</H3>
-        <div>getDatasets(genomeVer,organism,panel,type,tissue,help) - returns a
-            dataframe containing a list of datasets available. If you specify any parameters
-            it will filter the list based on the parameters. (type must be either "totalRNA"
-            or "smallRNA")
-        </div>
-        <BR><BR>
-        <H3>getDatasetResults()</H3>
-        <div>
-            getDatasetResults(datasetID,help) - returns a list of results for the dataset.
-            Results reflect different types of data, transcriptome reconstruction, RSEM
-            results on a specific version of the transcriptome. From the results you can
-            request a list of files( getDatasetResultFiles() ).
-        </div>
-        <BR><BR>
-        <H3>getDatasetResultFiles()</H3>
-        <div>
-            getDatasetResultFiles(datasetID,resultID,help) - returns a list of files for the
-            dataset/result specified. The results include the URL to download the file and
-            can be given to getDatasetResultFile() to load the file into R.
-        </div>
-        <BR><BR>
-        <H3>getDatasetResultFile()</H3>
-        <div>
-            getDatasetResultFile(URL) - tries to read a table from the given file and return
-            the dataframe. It does support gzipped files and unzipped files. Currently it
-            assumes tab delimited for anything other than .csv. It will change the delimiter
-            if the file ends in .csv.
-        </div>
+        <a href="r_readme.html" target="_blank">R Package Documentation</a>
 
 
     </div>
@@ -285,7 +260,8 @@
             <div class="brClear"></div>
 
             <div class="title"> Expression Data Files</div>
-            <table id="expressionFiles" name="items" class="list_base tablesorter" cellpadding="0" cellspacing="3" width="98%">
+            <table id="expressionFiles" name="items" class="list_base tablesorter" cellpadding="0" cellspacing="3"
+                   width="98%">
                 <thead>
                 <tr class="col_title">
                     <TH>Experiment Accession ID</TH>
@@ -707,9 +683,12 @@
                 </tbody>
             </table>
             <div style="text-align:center; padding-top:5px;">
-                Links to Reference Rat Genome(Strain BN): <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/R_norvegicus/" target="_blank">FTP NCBI-Rn6</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="ftp://ftp.ensembl.org/pub/release-71/fasta/rattus_norvegicus/dna/" target="_blank">FTP Ensembl-Rn5</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <a href="ftp://ftp.ensembl.org/pub/release-84/fasta/rattus_norvegicus/dna/" target="_blank">FTP Ensembl-Rn6</a>
+                Links to Reference Rat Genome(Strain BN): <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/R_norvegicus/"
+                                                             target="_blank">FTP NCBI-Rn6</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="ftp://ftp.ensembl.org/pub/release-71/fasta/rattus_norvegicus/dna/" target="_blank">FTP
+                    Ensembl-Rn5</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="ftp://ftp.ensembl.org/pub/release-84/fasta/rattus_norvegicus/dna/" target="_blank">FTP
+                    Ensembl-Rn6</a>
             </div>
             <!--<BR><BR>
         <div class="title"> RNA-Seq Transcriptome Reconstruction<span class="toolTip" title="Reconstructed Transcriptome with high confidence transcripts from Cufflinks."><img src="<%=imagesDir%>icons/info.gif"></span></div>
@@ -754,7 +733,8 @@
                     <%if(!title.getAbstractURL().equals("")){%>
                 <a href="<%=title.getAbstractURL()%>">Abstract</a>
                     <%}%>
-                <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3" width="85%">
+                <table id="pubFiles" class="list_base tablesorter" name="items" cellpadding="0" cellspacing="3"
+                       width="85%">
                     <thead>
                     <tr class="col_title">
                         <%if (resources[1].getPanel() != null && !resources[1].getPanel().equals("N/A") && !resources[1].getPanel().equals("")) {%>
@@ -783,7 +763,8 @@
                     </tr>
                     <% } else if (resource.getAbstractURL() != null) {%>
                     <tr>
-                        <td colspan="3"><a href="<%=resource.getAbstractURL()%>" target="_blank"><%=resource.getTitle()%>
+                        <td colspan="3"><a href="<%=resource.getAbstractURL()%>"
+                                           target="_blank"><%=resource.getTitle()%>
                         </a></td>
                     </tr>
 
@@ -808,7 +789,8 @@
 <div id="members" style="display:none;min-height: 780px;">
     <H2>My Files</h2>
     <div style="text-align: center;height: 350px;overflow:auto;">
-        <table id="myFiles" name="items" style="width:100%;text-align: center;" class="list_base" cellpadding="0" cellspacing="0">
+        <table id="myFiles" name="items" style="width:100%;text-align: center;" class="list_base" cellpadding="0"
+               cellspacing="0">
             <thead>
             <TR class="col_title">
                 <TH>File Name(click to download)</TH>
@@ -830,7 +812,8 @@
     <BR><BR>
     <H2>Files Shared with Me</h2>
     <div style="text-align: center;height: 350px;overflow:auto;">
-        <table id="sharedFiles" name="items" style="width:100%;text-align: center;" class="list_base" cellpadding="0" cellspacing="0">
+        <table id="sharedFiles" name="items" style="width:100%;text-align: center;" class="list_base" cellpadding="0"
+               cellspacing="0">
             <thead>
             <TR class="col_title">
                 <TH>File Owner</TH>
@@ -854,7 +837,8 @@
 <div class="metaData"></div>
 <div class="pipelineData"></div>
 
-<div style="width:500px;height:450px;position:absolute;display:none;top:100px;left:400px;background-color: #FFFFFF;border: #000000 1px solid;" id="userList">
+<div style="width:500px;height:450px;position:absolute;display:none;top:100px;left:400px;background-color: #FFFFFF;border: #000000 1px solid;"
+     id="userList">
     <div style="background-color: #CECECE;width:100%;height:18px;">Select Users to share file <span id="closeuserList"
                                                                                                     style="float:right; magin-top:2px;margin-right: 5px;"><img
             src="<%=imagesDir%>/icons/close.png"></span></div>
@@ -874,7 +858,9 @@
             </tbody>
         </table>
         <BR>
-        <div><input type="button" value="Apply" onclick="updateSharedList()"><input type="hidden" value="-99" id="fileID"><span id="status"></span></div>
+        <div><input type="button" value="Apply" onclick="updateSharedList()"><input type="hidden" value="-99"
+                                                                                    id="fileID"><span
+                id="status"></span></div>
     </div>
 </div>
 
@@ -918,7 +904,12 @@
         setTimeout(function () {
             var tmpH = $(window).height() * .85;
             var tmpW = $(window).width() * .85;
-            metaModal = createDialog(".metaData", {height: tmpH, width: tmpW, position: {my: "center", at: "center", of: window}, title: "Experiment Details"});
+            metaModal = createDialog(".metaData", {
+                height: tmpH,
+                width: tmpW,
+                position: {my: "center", at: "center", of: window},
+                title: "Experiment Details"
+            });
             pipelineModal = createDialog(".pipelineData", {
                 height: tmpH,
                 width: tmpW,
