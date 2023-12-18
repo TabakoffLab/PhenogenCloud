@@ -14,7 +14,7 @@ sub replaceDot{
 sub prepCircosMod
 {
 	# this routine creates configuration and data files for circos
-	my($module,$cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$dsn,$usr,$passwd,$type,$rnaDSID)=@_;	
+	my($module,$cutoff,$organism,$confDirectory,$dataDirectory,$chromosomeListRef,$tissueString,$genomeVer,$hostname,$dsn,$usr,$passwd,$type,$rnaDSID,$level)=@_;
 	my @chromosomeList = @{$chromosomeListRef};
 	my $numberOfChromosomes = scalar @chromosomeList;
 	# if probeChromosome is not in chromosomeList then we don't want to create a links file
@@ -44,7 +44,7 @@ sub prepCircosMod
 	createCircosModGenesTextConfFile($dataDirectory,$confDirectory);
 	createCircosModGenesTextDataFile($module,$tissueString,$dataDirectory,$organism,$genomeVer,$dsn,$usr,$passwd);
 	createCircosPvaluesConfFile($confDirectory,$dataDirectory,$cutoff,$organism,$tissueString);
-	my $eqtlAOHRef = readLocusSpecificPvaluesModule($module,$organism,$tissueString,$chromosomeListRef,$genomeVer,$rnaDSID,$dsn,$usr,$passwd,$type);
+	my $eqtlAOHRef = readLocusSpecificPvaluesModule($module,$organism,$tissueString,$chromosomeListRef,$genomeVer,$rnaDSID,$level,$dsn,$usr,$passwd,$type);
 	createCircosPvaluesDataFiles($dataDirectory,$module,$organism,$eqtlAOHRef,$chromosomeListRef,$tissueString);
 	if($oneToCreateLinks == 1){
 		createCircosLinksConfAndData($dataDirectory,$organism,$confDirectory,$eqtlAOHRef,$cutoff,$tissueString,$chromosomeList[0]);	
@@ -72,7 +72,9 @@ sub createCircosConfFile{
 		print CONFFILE 'karyotype   = '.$karyotypeLocation.'karyotype.rat.rn5.txt'."\n";
 	}elsif( $genomeVer eq 'rn6'){
 		print CONFFILE 'karyotype   = '.$karyotypeLocation.'karyotype.rat.rn6.txt'."\n";
-	} elsif($organism eq 'Mm'){
+	}elsif( $genomeVer eq 'rn7'){
+     		print CONFFILE 'karyotype   = '.$karyotypeLocation.'karyotype.rat.rn7.txt'."\n";
+    }elsif($organism eq 'Mm'){
 		 print CONFFILE 'karyotype   = '.$karyotypeLocation.'karyotype.mouse.mm10.txt'."\n";
 	}
 	else{

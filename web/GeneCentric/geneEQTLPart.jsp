@@ -31,6 +31,10 @@
 <script type="text/javascript">
     var source = "<%=source%>";
     var version = "<%=version%>";
+    var geneSymbolTmp = "<%=geneSymbol.get(0)%>";
+    var idTmp = "<%=id%>";
+    var tcID = idTmp;
+    var path = "<%=gcPath%>";
 
     function displayWorkingCircos() {
         document.getElementById("wait2").style.display = 'block';
@@ -56,17 +60,20 @@
         });
 
         var pval = $('#cutoffValue').val();
-        var tcID = $('#transcriptClusterID').val();
-        if (source === "seq") {
-            tcID = idStr;
+        if ($('#transcriptClusterID').val()) {
+            tcID = $('#transcriptClusterID').val();
         }
-        var path = $("#hiddenGeneCentricPath").val();
+        if ($("#hiddenGeneCentricPath").val()) {
+            path = $("#hiddenGeneCentricPath").val();
+        }
         var version = $('#version').val();
-        var geneSymboltmp = $("#hiddenGeneSymbol").val();
+        if ($("#hiddenGeneSymbol").val()) {
+            geneSymbolTmp = $("#hiddenGeneSymbol").val();
+        }
         var transcriptome = $('#transriptome').val();
         var cisOnly = $('#cisTrans').val();
 
-        if ($('#trxCB').val() !== "gene") {
+        if ($('#trxCB').val() && $('#trxCB').val() !== "gene") {
             geneSymbol = $('#trxCB').val();
             tcID = $('#trxCB').val();
         }
@@ -76,7 +83,7 @@
             cache: false,
             data: {
                 cutoffValue: pval,
-                geneSymbol: geneSymboltmp,
+                geneSymbol: geneSymbolTmp,
                 transcriptClusterID: tcID,
                 tissues: tisList,
                 chromosomes: chrList,
@@ -143,7 +150,7 @@
     String tissueString = null;
     String[] transcriptClusterArray = null;
     int[] transcriptClusterArrayOrder = null;
-    Boolean transcriptError = null;
+    Boolean transcriptError = false;
     String species = myOrganism;
     String selectedTranscriptValue = null;
     Boolean selectedChromosomeError = null;
@@ -171,58 +178,62 @@
         fileError = true;
     }
     String[] columns;
-    log.debug("transcriptClusterArray length = " + transcriptClusterArray.length);
+    //log.debug("transcriptClusterArray length = " + transcriptClusterArray.length);
     // If the length of the transcript Cluster Array is 0, return an error.
-    if (transcriptClusterArray == null || transcriptClusterArray.length == 0) {
-        log.debug(" the transcript cluster file is empty ");
-        transcriptClusterArray = new String[1];
-        transcriptClusterArray[0] = "No Available	xx	xxxxxxxx	xxxxxxxx	Transcripts";
-        log.debug(transcriptClusterArray[0]);
-        transcriptError = true;
+    if (source.equals("seq")) {
+
     } else {
-        transcriptError = false;
-        // Need to change the transcript Cluster Array
-        // Only include ambiguous if there are no other transcript clusters
-        // Order the transcript cluster array so core is first, full is next, then extended, then ambiguous
-        transcriptClusterArrayOrder = new int[transcriptClusterArray.length];
-        for (int i = 0; i < transcriptClusterArray.length; i++) {
-            transcriptClusterArrayOrder[i] = -1;
-        }
-        int numberOfTranscriptClusters = 0;
-        for (int i = 0; i < transcriptClusterArray.length; i++) {
-            columns = transcriptClusterArray[i].split("\t");
-            if (columns[4].equals("core")) {
-                transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
-                numberOfTranscriptClusters++;
+        if (transcriptClusterArray == null || transcriptClusterArray.length == 0) {
+            log.debug(" the transcript cluster file is empty ");
+            transcriptClusterArray = new String[1];
+            transcriptClusterArray[0] = "No Available	xx	xxxxxxxx	xxxxxxxx	Transcripts";
+            log.debug(transcriptClusterArray[0]);
+            transcriptError = null;
+        } else {
+            transcriptError = false;
+            // Need to change the transcript Cluster Array
+            // Only include ambiguous if there are no other transcript clusters
+            // Order the transcript cluster array so core is first, full is next, then extended, then ambiguous
+            transcriptClusterArrayOrder = new int[transcriptClusterArray.length];
+            for (int i = 0; i < transcriptClusterArray.length; i++) {
+                transcriptClusterArrayOrder[i] = -1;
             }
-        }
-        for (int i = 0; i < transcriptClusterArray.length; i++) {
-            columns = transcriptClusterArray[i].split("\t");
-            if (columns[4].equals("extended")) {
-                transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
-                numberOfTranscriptClusters++;
-            }
-        }
-        for (int i = 0; i < transcriptClusterArray.length; i++) {
-            columns = transcriptClusterArray[i].split("\t");
-            if (columns[4].equals("full")) {
-                transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
-                numberOfTranscriptClusters++;
-            }
-        }
-        if (numberOfTranscriptClusters < 1) {
+            int numberOfTranscriptClusters = 0;
             for (int i = 0; i < transcriptClusterArray.length; i++) {
                 columns = transcriptClusterArray[i].split("\t");
-                if (columns[4].equals("ambiguous")) {
+                if (columns[4].equals("core")) {
                     transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
                     numberOfTranscriptClusters++;
                 }
             }
             for (int i = 0; i < transcriptClusterArray.length; i++) {
                 columns = transcriptClusterArray[i].split("\t");
-                if (columns[4].equals("free")) {
+                if (columns[4].equals("extended")) {
                     transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
                     numberOfTranscriptClusters++;
+                }
+            }
+            for (int i = 0; i < transcriptClusterArray.length; i++) {
+                columns = transcriptClusterArray[i].split("\t");
+                if (columns[4].equals("full")) {
+                    transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
+                    numberOfTranscriptClusters++;
+                }
+            }
+            if (numberOfTranscriptClusters < 1) {
+                for (int i = 0; i < transcriptClusterArray.length; i++) {
+                    columns = transcriptClusterArray[i].split("\t");
+                    if (columns[4].equals("ambiguous")) {
+                        transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
+                        numberOfTranscriptClusters++;
+                    }
+                }
+                for (int i = 0; i < transcriptClusterArray.length; i++) {
+                    columns = transcriptClusterArray[i].split("\t");
+                    if (columns[4].equals("free")) {
+                        transcriptClusterArrayOrder[numberOfTranscriptClusters] = i;
+                        numberOfTranscriptClusters++;
+                    }
                 }
             }
         }
@@ -230,8 +241,8 @@
     // Populate the variable geneChromosome with the chromosome in the first line
     // The chromosome should always be the same for every line in this file
     String geneChromosome = "Y";
-    columns = transcriptClusterArray[0].split("\t");
-    geneChromosome = columns[1];
+    //columns = transcriptClusterArray[0].split("\t");
+    geneChromosome = chromosome;
     if (geneChromosome.toLowerCase().startsWith("chr")) {
         geneChromosome.substring(3);
     }
@@ -310,19 +321,13 @@
         }
     }
 
-
+    log.debug("END Initialization: geneEQTLPart.jsp");
 %>
 
 
 <div style="text-align:center;">
-    <%if (fileError) {%>
 
-    </tbody>
-    </table>
-    <div style="display:block; color:#FF0000;">There was an error retrieving transcripts for <%=geneSymbolinternal%>. Try refreshing the page. The website
-        administrator has been informed of the error.
-    </div>
-    <%} else if (transcriptError == null) { // check before adding the transcript cluster id to the form.  If there is an error, end the form here.%>
+    <%if (transcriptError == null) { // check before adding the transcript cluster id to the form.  If there is an error, end the form here.%>
     </tbody>
     </table>
     <div style="display:block; color:#FF0000;">There was an error retrieving transcripts for <%=geneSymbolinternal%>. The website administrator has been
@@ -367,33 +372,41 @@
 						<%
                             selectName = "version";
                             if (version.equals("")) {
-                                selectedOption = "5";
+                                if (genomeVer.equals("rn7")) {
+                                    selectedOption = "6";
+                                } else {
+                                    selectedOption = "5";
+                                }
                             } else {
                                 selectedOption = version;
                             }
                             style = "";
                             optionHash = new LinkedHashMap();
                             //optionHash.put("1", "HRDP v3");
-                            //optionHash.put("3", "HRDP v4");
-                            optionHash.put("5", "HRDP v5");
+                            if (genomeVer.equals("rn6")) {
+                                //optionHash.put("3", "HRDP v4");
+                                optionHash.put("5", "HRDP v5");
+                            } else if (genomeVer.equals("rn7")) {
+                                optionHash.put("6", "HRDP v6");
+                            }
                         %><%@ include file="/web/common/selectBox.jsp" %>
 
-                    <!--	<BR><strong>Gene/Transcript:</strong>
+                    	<BR><strong>Gene/Transcript:</strong>
 						<span class="eQTLtooltip" title="Select Gene level or individual transcripts."><img src="<%=imagesDir%>icons/info.gif"></span>
 						<%
-							selectName = "trxCB";
-							if(trxID.equals("")){
-								selectedOption ="gene";
-							}else{
-								selectedOption =trxID;
-							}
-							style = "";
-							optionHash = new LinkedHashMap();
-							optionHash.put("gene", geneSymbol+" - Gene level");
-							for(int i=0;i<trxList.size();i++){
-								optionHash.put(trxList.get(i), trxList.get(i));
-							}
-						%><%@ include file="/web/common/selectBox.jsp" %>-->
+                            selectName = "trxCB";
+                            if (trxID.equals("")) {
+                                selectedOption = "gene";
+                            } else {
+                                selectedOption = trxID;
+                            }
+                            style = "";
+                            optionHash = new LinkedHashMap();
+                            optionHash.put("gene", geneSymbol + " - Gene level");
+                            for (int i = 0; i < trxList.size(); i++) {
+                                optionHash.put(trxList.get(i), trxList.get(i));
+                            }
+                        %><%@ include file="/web/common/selectBox.jsp" %>
 						</span>
                 <BR>
                 <strong>Transcriptome Data:</strong>
@@ -428,6 +441,7 @@
                     optionHash.put("0.0000000001", "0.0000000001");
                 %>
                 <%@ include file="/web/common/selectBox.jsp" %>
+                <%log.debug("after pval select");%>
                 <BR>
                 <BR>
                 <strong>Genome Wide eQTLs:</strong>
@@ -438,6 +452,7 @@
                 <span class="eQTLListToolTip"
                       title="Display cis eQTLs only or genome wide eQTLs."><img
                         src="<%=imagesDir%>icons/info.gif"></span>
+                <%log.debug("after cis select");%>
             </td>
 
 
@@ -456,7 +471,7 @@
                 <%
                     // Set up the select box:
                     selectName = "transcriptClusterID";
-                    if (selectedTranscriptValue != null) {
+                    if (selectedTranscriptValue != null && !selectedTranscriptValue.equals("")) {
                         log.debug(" selected Transcript Value " + selectedTranscriptValue);
                         selectedOption = selectedTranscriptValue;
                     }
@@ -464,18 +479,20 @@
                     style = "";
                     optionHash = new LinkedHashMap();
                     String transcriptClusterString = null;
-                    for (int i = 0; i < transcriptClusterArray.length; i++) {
+                    if (transcriptClusterArray != null) {
+                        for (int i = 0; i < transcriptClusterArray.length; i++) {
 
-                        if (transcriptClusterArrayOrder[i] > -1) {
+                            if (transcriptClusterArrayOrder[i] > -1) {
 
 
-                            columns = transcriptClusterArray[transcriptClusterArrayOrder[i]].split("\t");
-                            transcriptClusterString = transcriptClusterArray[transcriptClusterArrayOrder[i]];
-                            String tmpGeneSym = "";
-                            if (columns.length > 5) {
-                                tmpGeneSym = " (" + columns[5] + ")";
+                                columns = transcriptClusterArray[transcriptClusterArrayOrder[i]].split("\t");
+                                transcriptClusterString = transcriptClusterArray[transcriptClusterArrayOrder[i]];
+                                String tmpGeneSym = "";
+                                if (columns.length > 5) {
+                                    tmpGeneSym = " (" + columns[5] + ")";
+                                }
+                                optionHash.put(transcriptClusterString, columns[0] + " " + columns[4] + tmpGeneSym);
                             }
-                            optionHash.put(transcriptClusterString, columns[0] + " " + columns[4] + tmpGeneSym);
                         }
                     }
                     //log.debug(" optionHash for Transcript Cluster ID: "+optionHash);
@@ -485,11 +502,11 @@
             </td>
 
         </tr>
-
+        <%log.debug("after trx select");%>
         <input type="hidden" id="hiddenGeneCentricPath" name="hiddenGeneCentricPath" value="<%=geneCentricPath%>"/>
         <input type="hidden" id="hiddenGeneSymbol" name="hiddenGeneSymbol" value="<%=geneSymbolinternal%>"/>
 
-
+        <%log.debug("before chr select");%>
         <TR class="allowChromSelection">
             <%if (myOrganism.equals("Rn")) {%>
             <TD colspan="2" style="text-align:left; width:50%;">
@@ -601,6 +618,7 @@ The chromosome where the gene is physically located MUST be included in the Circ
                 </table>
             </TD>
         </TR>
+        <%log.debug("after chr select");%>
         <tr>
 
             <td colspan="3" style="text-align:center;">
@@ -664,16 +682,19 @@ The chromosome where the gene is physically located MUST be included in the Circ
             interactive: true,
             interactiveTolerance: 350
         });
-
-        if ($('#transcriptClusterID').length === 1) {
-            runCircos();
-        } else if (source === "seq") {
-            runCircos();
-        }
-        $('#circosIFrame').attr('width', $(window).width() - 50);
-        $(window).resize(function () {
+        setTimeout(function () {
+            if ($('#transcriptClusterID').length === 1) {
+                runCircos();
+            } else if (source === "seq") {
+                runCircos();
+            }
             $('#circosIFrame').attr('width', $(window).width() - 50);
-        });
+            $(window).resize(function () {
+                $('#circosIFrame').attr('width', $(window).width() - 50);
+            });
+        }, 1500);
+
+
     });
 
 </script>

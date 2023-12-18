@@ -59,6 +59,7 @@
     }
     if (request.getParameter("modSelection") != null) {
         getModulesBy = request.getParameter("modSelection");
+
     }
     if (request.getParameter("level") != null) {
         level = request.getParameter("level");
@@ -68,17 +69,16 @@
     gdt.setSession(session);
     ArrayList<String> modules = null;
     if (!id.equals("")) {
-        modules = wgt.getWGCNAModulesForGene(gdt, id, panel, tissue, org, genomeVer, source, version);
+        modules = wgt.getWGCNAModulesForGene(gdt, id, panel, tissue, org, genomeVer, source, version, level);
     } else if (!region.equals("")) {
         if (getModulesBy.equals("gene") || getModulesBy.equals("")) {
             modules = wgt.getWGCNAModulesForRegion(gdt, region, panel, tissue, org, genomeVer, source, version, level);
         } else if (getModulesBy.startsWith("eQTL")) {
             double cutoff = Double.parseDouble(getModulesBy.substring(getModulesBy.indexOf(":") + 1));
-            modules = wgt.getWGCNAModulesForQTLRegion(gdt, region, panel, tissue, org, genomeVer, source, version, cutoff);
-
+            modules = wgt.getWGCNAModulesForQTLRegion(gdt, region, panel, tissue, org, genomeVer, source, version, cutoff, level);
         }
     } else if (geneList > 0) {
-        modules = wgt.getWGCNAModulesForGeneList(gdt, geneList, panel, tissue, genomeVer, source, version);
+        modules = wgt.getWGCNAModulesForGeneList(gdt, geneList, panel, tissue, genomeVer, source, version, level);
     }
     response.setContentType("application/json");
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");

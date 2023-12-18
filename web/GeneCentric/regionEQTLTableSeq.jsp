@@ -13,10 +13,11 @@
     String chromosome = "";
     String folderName = "";
     String type = "";
-    String genomeVer = "";
-    String dataSource="seq";
+    String genomeVer = "rn7";
+    String dataSource = "seq";
     String transcriptome = "ensembl";
-    String cisOnly="all";
+    String cisOnly = "all";
+    String hrdpVer = "v6";
     LinkGenerator lg = new LinkGenerator(session);
     double pValueCutoff = 0.01;
     int rnaDatasetID = 0;
@@ -33,17 +34,45 @@
             fullOrg = "Mus_musculus";
         }
     }
+    if (request.getParameter("type") != null) {
+        type = request.getParameter("type");
+    }
+    if (request.getParameter("folderName") != null) {
+        folderName = request.getParameter("folderName");
+    }
+    if (request.getParameter("genomeVer") != null) {
+        genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
+    }
+    if (request.getParameter("dataSource") != null) {
+        dataSource = request.getParameter("dataSource");
+    }
     String[] tissuesList1 = new String[1];
     String[] tissuesList2 = new String[1];
     if (myOrganism.equals("Rn")) {
-        if(dataSource.equals("seq")){
-            tissuesList1 = new String[2];
-            tissuesList2 = new String[2];
-            tissuesList1[0] = "Brain";
-            tissuesList2[0] = "Whole Brain";
-            tissuesList1[1] = "Liver";
-            tissuesList2[1] = "Liver";
-        }else {
+        if (dataSource.equals("seq")) {
+            if (genomeVer.equals("rn6") || genomeVer.equals("rn5")) {
+                tissuesList1 = new String[2];
+                tissuesList2 = new String[2];
+                tissuesList1[0] = "Brain";
+                tissuesList2[0] = "Whole Brain";
+                tissuesList1[1] = "Liver";
+                tissuesList2[1] = "Liver";
+                hrdpVer = "v5";
+                if (genomeVer.equals("rn5")) {
+                    hrdpVer = "v4";
+                }
+            } else {
+                tissuesList1 = new String[3];
+                tissuesList2 = new String[3];
+                tissuesList1[0] = "Brain";
+                tissuesList2[0] = "Whole Brain";
+                tissuesList1[1] = "Liver";
+                tissuesList2[1] = "Liver";
+                tissuesList1[2] = "Kidney";
+                tissuesList2[2] = "Kidney";
+                hrdpVer = "v6";
+            }
+        } else {
             tissuesList1 = new String[4];
             tissuesList2 = new String[4];
             tissuesList1[0] = "Brain";
@@ -78,18 +107,7 @@
     if (request.getParameter("maxCoord") != null) {
         max = Integer.parseInt(request.getParameter("maxCoord"));
     }
-    if (request.getParameter("type") != null) {
-        type = request.getParameter("type");
-    }
-    if (request.getParameter("folderName") != null) {
-        folderName = request.getParameter("folderName");
-    }
-    if (request.getParameter("genomeVer") != null) {
-        genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
-    }
-    if (request.getParameter("dataSource") != null) {
-        dataSource = request.getParameter("dataSource");
-    }
+
     if (request.getParameter("transcriptome") != null) {
         transcriptome = request.getParameter("transcriptome");
     }
@@ -105,9 +123,6 @@
     Boolean selectedChromosomeError = null;
     Boolean selectedTissueError = null;
     String levelString = "core;extended;full";
-
-
-
 
 
     //
@@ -155,13 +170,20 @@
         numberOfTissues = 1;
         tissueNameArray[0] = "Brain";
     } else {
-        if(dataSource.equals("seq")){
-            tissueNameArray = new String[2];
-            numberOfTissues = 2;
+        if (dataSource.equals("seq")) {
+            if (genomeVer.equals("rn7")) {
+                numberOfTissues = 3;
+            } else {
+                numberOfTissues = 2;
+            }
+            tissueNameArray = new String[numberOfTissues];
             // assume if not mouse that it's rat
             tissueNameArray[0] = "Brain";
             tissueNameArray[1] = "Liver";
-        }else {
+            if (numberOfTissues > 2) {
+                tissueNameArray[2] = "Kidney";
+            }
+        } else {
             numberOfTissues = 4;
             // assume if not mouse that it's rat
             tissueNameArray[0] = "Brain";
@@ -249,15 +271,15 @@
         }
     }
     java.util.Date time = new java.util.Date();
-    if(cisOnly.equals("cis")){
-        String cisChr=chromosome;
-        if(cisChr.startsWith("chr")){
-            cisChr=cisChr.substring(3);
+    if (cisOnly.equals("cis")) {
+        String cisChr = chromosome;
+        if (cisChr.startsWith("chr")) {
+            cisChr = cisChr.substring(3);
         }
-        cisChr="rn"+cisChr;
-        chromosomeString=cisChr+";";
-        selectedChromosomes=new String[1];
-        selectedChromosomes[0]=cisChr;
+        cisChr = "rn" + cisChr;
+        chromosomeString = cisChr + ";";
+        selectedChromosomes = new String[1];
+        selectedChromosomes[0] = cisChr;
     }
 
     //String tmpOutput=gdt.getImageRegionData(chromosome,min,max,panel,myOrganism,rnaDatasetID,arrayTypeID,0.01,false);
@@ -313,6 +335,7 @@
         margin-right: 5%;
         width: 51%;
     }
+
     @media screen and (max-width: 1600px) {
         #circosDiv {
             display: inline-block;
@@ -343,7 +366,7 @@
         <table style="width:100%;">
             <tbody>
             <TR>
-                <TD  style="text-align:center;">
+                <TD style="text-align:center;">
                     Data Source:
                     <select name="dataSource" id="dataSource">
                         <!--<option value="array" <%if(dataSource.equals("array")){%>selected<%}%>>Microarray</option>-->
@@ -356,7 +379,8 @@
                     Transcriptome Data:
                     <select name="transcriptome" id="transriptome">
                         <option value="ensembl" <%if(transcriptome.equals("ensembl")){%>selected<%}%>>Ensembl</option>
-                        <option value="reconst" <%if(transcriptome.equals("reconst")){%>selected<%}%>>Reconstruction</option>
+                        <option value="reconst" <%if(transcriptome.equals("reconst")){%>selected<%}%>>Reconstruction
+                        </option>
                     </select>
                     <span class="eQTLListToolTip"
                           title="Select the transriptome used for quantification."><img
@@ -510,23 +534,23 @@
     </div>
 
 
-    <%  session.removeAttribute("getTransControllingEQTL");
+    <% session.removeAttribute("getTransControllingEQTL");
         session.removeAttribute("getTransControllingEQTLCircos");
         log.debug("before eQTL table constr");
         log.debug("loc:" + chromosome + ":" + min + "-" + max + "::" + folderName);
         log.debug("get EQTLs");
         java.util.Date tmpStart = new java.util.Date();
-        HashMap<String, TranscriptomeQTL> transOutQTLs = gdt.getRegionEQTLs(min, max, chromosome, arrayTypeID, rnaDatasetID, pValueCutoff, myOrganism, genomeVer, tissueString, chromosomeString,transcriptome,cisOnly);//this region controls what genes
-        String errorMessage=gdt.getRegionEQTLMessage();
+        HashMap<String, TranscriptomeQTL> transOutQTLs = gdt.getRegionEQTLs(min, max, chromosome, arrayTypeID, rnaDatasetID, pValueCutoff, myOrganism, genomeVer, tissueString, chromosomeString, transcriptome, cisOnly);//this region controls what genes
+        String errorMessage = gdt.getRegionEQTLMessage();
         time = new java.util.Date();
         log.debug("Setup after getcontrolling eqtls:\n" + (time.getTime() - tmpStart.getTime()));
         tmpStart = new java.util.Date();
 
-        log.debug("*********\n:"+session.getAttribute("getTransControllingEQTL")+"*::");
-        if (errorMessage.equals("") && (session.getAttribute("getTransControllingEQTL") == null || ((String)session.getAttribute("getTransControllingEQTL")).equals("") ) ) {
-            //log.debug("after check session var");
+        log.debug("*********\n:" + session.getAttribute("getTransControllingEQTL") + "*::");
+        if (errorMessage.equals("") && (session.getAttribute("getTransControllingEQTL") == null || ((String) session.getAttribute("getTransControllingEQTL")).equals(""))) {
+            log.debug("after check session var");
             if (transOutQTLs != null && transOutQTLs.size() > 0) {
-                //log.debug("after check transOutQTLs");
+                log.debug("after check transOutQTLs");
 
                 String shortRegionCentricPath;
                 String cutoffTimesTen;
@@ -547,25 +571,27 @@
                 }
 
 
-                String tmpFolder = chromosome+"/"+ gdt.getFolder(min, max, chromosome, myOrganism, genomeVer);
-                log.debug("tmpFolder:"+tmpFolder);
+                String tmpFolder = chromosome + "/" + gdt.getFolder(min, max, chromosome, myOrganism, genomeVer);
+                log.debug("tmpFolder:" + tmpFolder);
                 String regionCentricPath = applicationRoot + contextRoot + "tmpData/browserCache/" + genomeVer + "/regionData/" + tmpFolder;
                 shortRegionCentricPath = regionCentricPath.substring(regionCentricPath.indexOf("/tmpData/"));
 
                 String iframeURL = shortRegionCentricPath + "/circos" + cutoffTimesTen + "/svg/circos_new.svg";
                 String svgPdfFile = shortRegionCentricPath + "/circos" + cutoffTimesTen + "/svg/circos.png";
                 //log.debug("MADE IT TO:path");
-                log.debug("iframe:\n"+iframeURL);
-                int tissueColumnCount=1;
-                if(dataSource.equals("array")){
-                    tissueColumnCount=2;
+                log.debug("iframe:\n" + iframeURL);
+                int tissueColumnCount = 1;
+                if (dataSource.equals("array")) {
+                    tissueColumnCount = 2;
                 }
     %>
 
 
     <div id="circosDiv">
         <div class="regionSubHeader" style="font-size:18px; font-weight:bold; text-align:center; width:100%;">
-            Genes with an eQTL overlaping this region(HRDP v5 RNA-Seq <%=transcriptome%> Data(<%if(cisOnly.equals("cis")){%>Cis eQTLs<%}else{%>Cis and Trans eQTLS<%}%>))
+
+            Genes with an eQTL overlaping this region(HRDP <%=hrdpVer%> RNA-Seq <%=transcriptome%>
+            Data(<%if (cisOnly.equals("cis")) {%>Cis eQTLs<%} else {%>Cis and Trans eQTLS<%}%>))
             <div class="inpageHelp" style="display:inline-block;"><img id="HelpRevCircos" class="helpImage"
                                                                        src="../web/images/icons/help.png"/></div>
             <!--<span style="font-size:12px; font-weight:normal;">
@@ -581,34 +607,38 @@
 
         </div>
 
-                <%  //log.debug("getTranscontrollingEQTLCircos\n"+session.getAttribute("getTransControllingEQTLCircos"));
-                    if (session.getAttribute("getTransControllingEQTLCircos") == null  ) {%>
-                        <div id="circosPlot" style="text-align:center;">
-                            <div style="display:inline-block;text-align:center; width:100%;">
-                                <!--<span id="circosMinMax" style="cursor:pointer;"><img src="web/images/icons/circos_min.jpg"></span>-->
-                                <a href="<%=svgPdfFile%>" target="_blank">
-                                    <img src="/web/images/icons/download_g.png" title:"Download Circos Image">
-                                </a>
-                                Inside of border below, the mouse wheel zooms. Outside of the border, the mouse wheel scrolls.
-                                <span id="filterBtn1" class="filter button">Filter eQTLs</span>
-                            </div>
+        <% log.debug("getTranscontrollingEQTLCircos\n" + session.getAttribute("getTransControllingEQTLCircos"));
+            if (session.getAttribute("getTransControllingEQTLCircos") == null) {%>
+        <div id="circosPlot" style="text-align:center;">
+            <div style="display:inline-block;text-align:center; width:100%;">
+                <!--<span id="circosMinMax" style="cursor:pointer;"><img src="web/images/icons/circos_min.jpg"></span>-->
+                <a href="<%=svgPdfFile%>" target="_blank">
+                    <img src="/web/images/icons/download_g.png" title:"Download Circos Image">
+                </a>
+                Inside of border below, the mouse wheel zooms. Outside of the border, the mouse wheel scrolls.
+                <span id="filterBtn1" class="filter button">Filter eQTLs</span>
+            </div>
 
 
-                            <div id="iframe_parent" align="center" style="width:100%; scroll-behavior: unset;overscroll-behavior: none;">
-                                <iframe id="circosIFrame" src="<%=iframeURL%>" height="950px" width="98%" position="absolute" scrolling="no"
-                                        style="border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px">
-                                </iframe>
-                            </div>
-                            <a href="http://genome.cshlp.org/content/early/2009/06/15/gr.092759.109.abstract" target="_blank"
-                               style="text-decoration: none">Circos: an Information Aesthetic for Comparative Genomics.</a>
-                        </div><!-- end CircosPlot -->
-                    <%} else {%>
-                        <div id="circosPlot" style="text-align:center;">
-                            <strong><%=session.getAttribute("getTransControllingEQTLCircos")%>
-                            </strong><BR/><BR/><BR/>
-                        </div><!-- end CircosPlot -->
-                    <%}
-                    //log.debug("After iFrame");%>
+            <div id="iframe_parent" align="center"
+                 style="width:100%; scroll-behavior: unset;overscroll-behavior: none;">
+                <iframe id="circosIFrame" src="<%=iframeURL%>" height="950px" width="98%" position="absolute"
+                        scrolling="no"
+                        style="border-style:solid; border-color:rgb(139,137,137); border-radius:15px; -moz-border-radius: 15px; border-width:1px">
+                </iframe>
+            </div>
+            <a href="http://genome.cshlp.org/content/early/2009/06/15/gr.092759.109.abstract" target="_blank"
+               style="text-decoration: none">Circos: an Information Aesthetic for Comparative Genomics.</a>
+        </div><!-- end CircosPlot -->
+        <%} else {%>
+        <div id="circosPlot" style="text-align:center;">
+            <strong><%=session.getAttribute("getTransControllingEQTLCircos")%>
+            </strong><BR/><BR/><BR/>
+        </div><!-- end CircosPlot -->
+        <%
+            }
+            log.debug("After iFrame");
+        %>
     </div>
     <div id="qtlTableDiv" style="display:inline-block;">
         <div class="regionSubHeader" style="font-size:18px; font-weight:bold; text-align:center; width:100%;">
@@ -617,17 +647,18 @@
         </div>
         <%
             //StringBuilder idList = new StringBuilder();
-            StringBuilder idc=new StringBuilder();
-            HashMap<String,String> probeToGS=new HashMap<String,String>();
+            StringBuilder idc = new StringBuilder();
+            HashMap<String, String> probeToGS = new HashMap<String, String>();
             int idListCount = 0;
-            //log.debug("before outer");
+            log.debug("before outer");
             //Set<String> qtlSet
-            String[] list= transOutQTLs.keySet().toArray(new String[transOutQTLs.size()]);
+            String[] list = transOutQTLs.keySet().toArray(new String[transOutQTLs.size()]);
+            log.debug("after list");
             //String[] list= (String[]) qtlSet.toArray();
             for (int i = 0; i < list.length; i++) {
                 TranscriptomeQTL tQ = transOutQTLs.get(list[i]);
                 String tcChr = myOrganism.toLowerCase() + tQ.getChromosome();
-                //log.debug("after chr outer");
+                log.debug("after chr outer: " + list[i]);
                 boolean include = false;
                 boolean tissueInclude = false;
                 for (int z = 0; z < selectedChromosomes.length && !include; z++) {
@@ -646,7 +677,7 @@
                         }
                     }
                     if (isTissueSelected) {
-                        ArrayList<TrxQTL> regionQTL = tQ.getQTLList(tissuesList2[j],transcriptome);
+                        ArrayList<TrxQTL> regionQTL = tQ.getQTLList(tissuesList2[j], transcriptome);
                         if (regionQTL != null) {
                             TrxQTL regQTL = regionQTL.get(0);
                             if (regQTL.getPValue() <= pValueCutoff) {
@@ -655,19 +686,26 @@
                         }
                     }
                 }
-                //log.debug("after tissue loop");
+                log.debug("after tissue loop");
                 if (include && tissueInclude) {
+                    log.debug("before id");
+                    log.debug("prID:" + tQ.getProbeID());
                     //idList.append(","+tQ.getProbeID());
-                    idc.append(",'"+tQ.getProbeID()+"'");
+                    idc.append(",'" + tQ.getProbeID() + "'");
                     idListCount++;
                 }
             }
+            log.debug("done for");
             IDecoderClient myIDecoderClient = new IDecoderClient();
             myIDecoderClient.setNum_iterations(0);
-            String[] targets = new String[]{"Gene Symbol",  "Ensembl ID", "PhenoGen ID"};
-            log.debug("test:\n"+idc.substring(1));
-            Set<Identifier> ids=myIDecoderClient.getIdentifiersByInputIDAndTarget(idc.substring(1),myOrganism,targets,pool);
+            String[] targets = new String[]{"Gene Symbol", "Ensembl ID", "PhenoGen ID"};
+            //log.debug("test:\n" + idc.substring(1));
+            Set<Identifier> ids = Collections.<Identifier>emptySet();
+            if (idc.length() > 1) {
+                ids = myIDecoderClient.getIdentifiersByInputIDAndTarget(idc.substring(1), myOrganism, targets, pool);
+            }
             if (ids.size() > 0) {
+
                 Iterator itr = ids.iterator();
                 while (((Iterator) itr).hasNext()) {
                     Identifier thisIdentifier = (Identifier) itr.next();
@@ -675,9 +713,9 @@
                     if (targetHM.containsKey("Gene Symbol")) {
                         Set<Identifier> gs = targetHM.get("Gene Symbol");
                         Iterator gsItr = gs.iterator();
-                        if(gsItr.hasNext()) {
+                        if (gsItr.hasNext()) {
                             Identifier gsID = (Identifier) gsItr.next();
-                            probeToGS.put(thisIdentifier.getIdentifier(),gsID.getIdentifier());
+                            probeToGS.put(thisIdentifier.getIdentifier(), gsID.getIdentifier());
                         }
                     }
                 }
@@ -699,7 +737,7 @@
             <THEAD>
             <tr>
                 <th colspan="3" class="topLine noSort noBox"></th>
-                <%if(dataSource.equals("array")){%>
+                <%if (dataSource.equals("array")) {%>
                 <th colspan="<%=tissuesList2.length*tissueColumnCount+2%>" class="center noSort topLine"
                     title="Dataset is available by going to Microarray Analysis Tools -> Analyze Precompiled Dataset or Downloads.">
                     Affy Exon 1.0 ST PhenoGen Public Dataset(
@@ -713,10 +751,10 @@
                                                                                src="../web/images/icons/help.png"/>
                     </div>
                 </th>
-                <%}else{%>
+                <%} else {%>
                 <th colspan="<%=tissuesList2.length*tissueColumnCount+4%>" class="center noSort topLine"
                     title="">
-                    HRDP v5 Ribosome Depleted TotalRNA Sequencing Dataset
+                    HRDP <%=hrdpVer%> Ribosome Depleted TotalRNA Sequencing Dataset
                     <div class="inpageHelp" style="display:inline-block;"><img id="HelpeQTLRNA" class="helpImage"
                                                                                src="../web/images/icons/help.png"/>
                     </div>
@@ -758,11 +796,11 @@
             </thead>
             <tbody style="text-align:center;">
             <%
-               // log.debug("EQTL TABLE\n\n");
+                // log.debug("EQTL TABLE\n\n");
                 DecimalFormat df4 = new DecimalFormat("0.##E0");
                 for (int i = 0; i < transOutQTLs.size(); i++) {
                     TranscriptomeQTL tQ = transOutQTLs.get(list[i]);
-                    if(tQ!=null){
+                    if (tQ != null) {
                         //log.debug("got tQ"+tQ);
                         String tcChr = myOrganism.toLowerCase() + tQ.getChromosome();
                         boolean include = false;
@@ -782,8 +820,8 @@
                                 }
                             }
                             if (isTissueSelected) {
-                                ArrayList<TrxQTL> regionQTL = tQ.getQTLList(tissuesList2[j],transcriptome);
-                                if (regionQTL != null && regionQTL.size()>0) {
+                                ArrayList<TrxQTL> regionQTL = tQ.getQTLList(tissuesList2[j], transcriptome);
+                                if (regionQTL != null && regionQTL.size() > 0) {
                                     TrxQTL regQTL = regionQTL.get(0);
                                     if (regQTL.getPValue() <= pValueCutoff) {
                                         tissueInclude = true;
@@ -807,37 +845,40 @@
                             }
 
                             //log.debug("data row");
-                            if((transcriptome.equals("ensembl")&& tQ.getProbeID().startsWith("ENS")) || (transcriptome.equals("reconst")&& tQ.getProbeID().startsWith("PRN")) ){
+                            if ((transcriptome.equals("ensembl") && tQ.getProbeID().startsWith("ENS")) || (transcriptome.equals("reconst") && tQ.getProbeID().startsWith("PRN"))) {
             %>
 
-                <TR>
-                    <TD>
-                        <%if (!tQ.getProbeID().equals("")) {%>
-                        <a href="<%=lg.getGeneLink(tQ.getEnsemblID(),myOrganism,true,true,false)%>" target="_blank"
-                           title="View Detailed Transcription Information for gene.">
+            <TR>
+                <TD>
+                    <%if (!tQ.getProbeID().equals("")) {%>
+                    <a href="<%=lg.getGeneLink(tQ.getEnsemblID(),myOrganism,true,true,false)%>" target="_blank"
+                       title="View Detailed Transcription Information for gene.">
 
-                            <%if (tQ.getGeneSymbol().equals("")) {
-                                if(probeToGS.containsKey(tQ.getProbeID())){
-                            %>
-                                    <%=probeToGS.get(tQ.getProbeID())%>
-                                <%}else{%>
-                                    No Gene Symbol
-                                <%}
-                            } else {%>
-                            <%=tQ.getGeneSymbol()%>
-                            <%}%>
-                        </a>
+                        <%
+                            if (tQ.getGeneSymbol().equals("")) {
+                                if (probeToGS.containsKey(tQ.getProbeID())) {
+                        %>
+                        <%=probeToGS.get(tQ.getProbeID())%>
                         <%} else {%>
                         No Gene Symbol
+                        <%
+                            }
+                        } else {
+                        %>
+                        <%=tQ.getGeneSymbol()%>
                         <%}%>
-                    </TD>
+                    </a>
+                    <%} else {%>
+                    No Gene Symbol
+                    <%}%>
+                </TD>
 
-                    <TD>
-                        <%if (!tQ.getEnsemblID().equals("")) {%>
-                        <a href="<%=LinkGenerator.getEnsemblLinkEnsemblID(tQ.getEnsemblID(),fullOrg)%>" target="_blank"
-                           title="View Ensembl Gene Details"><%=tQ.getEnsemblID()%>
-                        </a><BR/>
-                        <span style="font-size:10px;">
+                <TD>
+                    <%if (!tQ.getEnsemblID().equals("")) {%>
+                    <a href="<%=LinkGenerator.getEnsemblLinkEnsemblID(tQ.getEnsemblID(),fullOrg)%>" target="_blank"
+                       title="View Ensembl Gene Details"><%=tQ.getEnsemblID()%>
+                    </a><BR/>
+                    <span style="font-size:10px;">
                                     <%
                                         String tmpGS = tQ.getEnsemblID();
                                         String shortOrg = "Mouse";
@@ -859,74 +900,76 @@
                                            target="_blank">UniProt</a> <BR/>
                                        <%=shortOrg%>: <a href="<%=LinkGenerator.getNCBILink(tmpGS,myOrganism)%>"
                                                          target="_blank">NCBI</a> | <a
-                                href="<%=LinkGenerator.getUniProtLinkGene(tmpGS,myOrganism)%>" target="_blank">UniProt</a> |
+                            href="<%=LinkGenerator.getUniProtLinkGene(tmpGS,myOrganism)%>" target="_blank">UniProt</a> |
                                         <%if (myOrganism.equals("Mm")) {%>
                                             <a href="<%=LinkGenerator.getMGILink(tmpGS)%>" target="_blank">MGI</a>
                                             <%if (!allenID.equals("")) {%>
-                                                | <a href="<%=LinkGenerator.getBrainAtlasLink(allenID)%>" target="_blank">Allen Brain Atlas</a>
+                                                | <a href="<%=LinkGenerator.getBrainAtlasLink(allenID)%>"
+                                                     target="_blank">Allen Brain Atlas</a>
                                             <%}%>
                                         <%} else {%>
                                             <a href="<%=LinkGenerator.getRGDLink(tmpGS,myOrganism)%>"
                                                target="_blank">RGD</a>
                                         <%}%>
                                      </span>
-                        <%}else{%>
-                        <%=tQ.getPhenogenID()%>
-                        <%}%>
-                    </TD>
+                    <%} else {%>
+                    <%=tQ.getPhenogenID()%>
+                    <%}%>
+                </TD>
 
 
-                    <TD title="<%=remain%>"><%=shortDesc%>
-                    </TD>
+                <TD title="<%=remain%>"><%=shortDesc%>
+                </TD>
 
 
-
-                    <TD>chr<%=tQ.getChromosome() + ":" + dfC.format(tQ.getStart()) + "-" + dfC.format(tQ.getEnd())%>
-                    </TD>
-                    <TD>
-                        <a href="web/GeneCentric/setupLocusSpecificEQTL.jsp?geneSym=<%=tQ.getGeneSymbol()%>&ensID=<%=tQ.getEnsemblID()%>&chr=<%=tQ.getChromosome()%>&start=<%=tQ.getStart()%>&stop=<%=tQ.getEnd()%>&curDir=<%=folderName%>"
-                           target="_blank" title="View the circos plot for transcript cluster eQTLs">View Location Plot</a>
-                    </TD>
-                    <%
-                        //String[] curTissues=tc.getTissueList();
-                        for (int j = 0; j < tissuesList2.length; j++) {
-                            //log.debug("TABLE2:"+tissuesList2[j]);
-                            ArrayList<TrxQTL> regionQTL = tQ.getQTLList(tissuesList2[j],transcriptome);
-                            TrxQTL regEQTL = null;
-                            if (regionQTL != null && regionQTL.size() > 0) {
-                                regEQTL = regionQTL.get(0);
-                            }
-                        %>
-
-                        <%
-                            if (regEQTL == null) {
-                                if (myOrganism.equals("Mm")) {
-                        %>
-                        <TD class="leftBorder">-</TD>
-                                <%} else {%>
-                        <TD class="leftBorder">-</TD>
-                                <%}%>
-                            <%} else{%>
-                        <TD class="leftBorder"
-                                <%if (regEQTL.getPValue() <= pValueCutoff) {%>
-                            style="background-color:#6e99bc; color:#FFFFFF;"
-                                <%}%>
-                        >
-                            <%=df4.format(regEQTL.getPValue())%>
-                            <%}%>
-                            </TD>
-                            <%if(dataSource.equals("array")){%>
-                            <TD title="Click on View Location Plot to see all locations below the cutoff.">
-
-                            </TD>
-                            <%}
-                        }%>
-
-                </TR>
-            <%          }
+                <TD>chr<%=tQ.getChromosome() + ":" + dfC.format(tQ.getStart()) + "-" + dfC.format(tQ.getEnd())%>
+                </TD>
+                <TD>
+                    <a href="web/GeneCentric/setupLocusSpecificEQTL.jsp?geneSym=<%=tQ.getGeneSymbol()%>&ensID=<%=tQ.getEnsemblID()%>&chr=<%=tQ.getChromosome()%>&start=<%=tQ.getStart()%>&stop=<%=tQ.getEnd()%>&curDir=<%=folderName%>"
+                       target="_blank" title="View the circos plot for transcript cluster eQTLs">View Location Plot</a>
+                </TD>
+                <%
+                    //String[] curTissues=tc.getTissueList();
+                    for (int j = 0; j < tissuesList2.length; j++) {
+                        //log.debug("TABLE2:"+tissuesList2[j]);
+                        ArrayList<TrxQTL> regionQTL = tQ.getQTLList(tissuesList2[j], transcriptome);
+                        TrxQTL regEQTL = null;
+                        if (regionQTL != null && regionQTL.size() > 0) {
+                            regEQTL = regionQTL.get(0);
                         }
-                    } //end if
-                }//end for tcOutQTLs
+                %>
+
+                <%
+                    if (regEQTL == null) {
+                        if (myOrganism.equals("Mm")) {
+                %>
+                <TD class="leftBorder">-</TD>
+                <%} else {%>
+                <TD class="leftBorder">-</TD>
+                <%}%>
+                <%} else {%>
+                <TD class="leftBorder"
+                        <%if (regEQTL.getPValue() <= pValueCutoff) {%>
+                    style="background-color:#6e99bc; color:#FFFFFF;"
+                        <%}%>
+                >
+                    <%=df4.format(regEQTL.getPValue())%>
+                    <%}%>
+                </TD>
+                <%if (dataSource.equals("array")) {%>
+                <TD title="Click on View Location Plot to see all locations below the cutoff.">
+
+                </TD>
+                <%
+                        }
+                    }
+                %>
+
+            </TR>
+            <% }
+            }
+            } //end if
+            }//end for tcOutQTLs
                 time = new java.util.Date();
                 log.debug("Total time:" + (time.getTime() - startDate.getTime()));
             %>
@@ -941,20 +984,20 @@
         var buttonCommon = {
             exportOptions: {
                 format: {
-                    body: function ( data, row, column, node ) {
-                        data=data.replace(/(<.*?>)*/g,'');
-                        if(data.indexOf("ENS")===0 && data.indexOf("All Organisms:")>0){
+                    body: function (data, row, column, node) {
+                        data = data.replace(/(<.*?>)*/g, '');
+                        if (data.indexOf("ENS") === 0 && data.indexOf("All Organisms:") > 0) {
                             data = data.replace(/\s*/g, '');
-                            data=data.substring(0,data.indexOf("AllOrganisms:"));
+                            data = data.substring(0, data.indexOf("AllOrganisms:"));
                         }
-                        if(column===5||column===6){
-                            data='\u200C' +data;
+                        if (column === 5 || column === 6) {
+                            data = '\u200C' + data;
 
                         }
                         return data;
                     }
                 },
-                columns:[0,1,3,5,6]
+                columns: [0, 1, 3, 5, 6]
             }
         };
         var tblFrom = $('#tblFrom').DataTable({
@@ -966,15 +1009,15 @@
             bDeferRender: false,
             sDom: '<"leftSearch"fr><"rightSearch"i><t>',
             buttons: [
-                $.extend( true, {}, buttonCommon, {
+                $.extend(true, {}, buttonCommon, {
                     extend: 'copyHtml5'
-                } ),
-                $.extend( true, {}, buttonCommon, {
+                }),
+                $.extend(true, {}, buttonCommon, {
                     extend: 'csvHtml5'
-                } ),
-                $.extend( true, {}, buttonCommon, {
+                }),
+                $.extend(true, {}, buttonCommon, {
                     extend: 'excelHtml5'
-                } )
+                })
             ]
         });
         $('#geneIDFCBX').click(function () {
@@ -1054,15 +1097,16 @@
 
     </script>
     <%} else {%>
-        No genes to display. Try changing the filtering parameters.
+    No genes to display. Try changing the filtering parameters.
     <%}%>
     <%} else {%>
-        <div id="circosDiv">
-            <div class="regionSubHeader" style="font-size:18px; font-weight:bold; text-align:center; width:100%;">
-                Genes with an eQTL overlaping this region(HRDP v5 RNA-Seq <%=transcriptome%> Data(<%if(cisOnly.equals("cis")){%>Cis eQTLs<%}else{%>Cis and Trans eQTLS<%}%>))
-                <div class="inpageHelp" style="display:inline-block;"><img id="HelpRevCircos" class="helpImage"
-                                                                           src="../web/images/icons/help.png"/></div>
-                <!--<span style="font-size:12px; font-weight:normal;">
+    <div id="circosDiv">
+        <div class="regionSubHeader" style="font-size:18px; font-weight:bold; text-align:center; width:100%;">
+            Genes with an eQTL overlaping this region(HRDP v5 RNA-Seq <%=transcriptome%>
+            Data(<%if (cisOnly.equals("cis")) {%>Cis eQTLs<%} else {%>Cis and Trans eQTLS<%}%>))
+            <div class="inpageHelp" style="display:inline-block;"><img id="HelpRevCircos" class="helpImage"
+                                                                       src="../web/images/icons/help.png"/></div>
+            <!--<span style="font-size:12px; font-weight:normal;">
                 Adjust Vertical Viewable Size:
                 <select name="circosSizeSelect" id="circosSizeSelect">
                         <option value="200" >Smallest</option>
@@ -1073,17 +1117,17 @@
                 </span>
                 <span class="eQTLListToolTip" title="To control the viewable area of the Circos Plot below simply select your prefered size."><img src="<%=imagesDir%>icons/info.gif"></span>-->
 
-            </div><BR>
-            <span id="filterBtn1" class="filter button">Filter eQTLs</span>
-            <BR>
-            <span style="color:#FF0000;"></span><strong><%=errorMessage%></strong></span>
         </div>
+        <BR>
+        <span id="filterBtn1" class="filter button">Filter eQTLs</span>
+        <BR>
+        <span style="color:#FF0000;"></span><strong><%=errorMessage%>
+    </strong></span>
+    </div>
     <%}%>
 
 </div>
 <!-- end eQTL List-->
-
-
 
 
 <div id="viewEQTL" class="viewEQTL"
@@ -1158,10 +1202,10 @@
     $(window).resize(function () {
         var pW = $('#iframe_parent').width();
         $('#circosIFrame').attr('width', pW - 25);
-       /* if (typeof tblFrom != 'undefined') {
-            tblFrom.fnAdjustColumnSizing();
-            tblFrom.fnDraw();
-        }*/
+        /* if (typeof tblFrom != 'undefined') {
+             tblFrom.fnAdjustColumnSizing();
+             tblFrom.fnDraw();
+         }*/
     });
 
     $(document).on("click", "span.filter", function () {
@@ -1171,7 +1215,7 @@
             //var left = p.left;
             //if (left > $(window).width() / 2) {
             //    left = left - $("#filterdivEQTL").width() + 130;
-           // }
+            // }
             //console.log("top:" + top + " left:" + left);
             //$("#filterdivEQTL").css("display", "inline-block");
             $("#filterdivEQTL").css("top", p.top).css("left", "50px");

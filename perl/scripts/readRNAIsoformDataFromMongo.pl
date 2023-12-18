@@ -948,12 +948,18 @@ sub readRNACountsDataFromMongo {
 
     $geneChrom = uc($geneChrom);
     my $tmpType = $type;
+    print $tmpType.":".index($tmpType, "Plus").":".index($tmpType, "Minus")."\n";
     if (index($tmpType, "Plus") > -1) {
-        $tmpType =~ s/Plus//;
+        $tmpType =~ s/Plus//g;
     }
     elsif (index($tmpType, "Minus") > -1) {
-        $tmpType =~ s/Minus//;
+        $tmpType =~ s/Minus//g;
     }
+    print $tmpType . "\n";
+    if(index($tmpType,"illumina")>-1){
+        $tmpType =~ s/illumina/Illumina/g;
+    }
+    print $tmpType . "\n";
     $query = "Select rd.shared_id,rd.total_plus,rd.total_minus,rd.norm_plus,rd.norm_minus from rna_dataset rd
 			where rd.organism = '" . $org . "' " . "
 			and rd.genome_id='" . $genomeVer . "'
@@ -1086,6 +1092,16 @@ sub readBinnedRNACountsDataFromMongoUpdated {
         $tmpType = substr($tmpType, 0, index($tmpType, "-"));
         $strain = substr($tmpType, index($tmpType, "-") + 1, index($tmpType, "Minus"));
     }
+    if (index($tmpType, "Plus") > -1) {
+        $tmpType =~ s/Plus//g;
+    }
+    elsif (index($tmpType, "Minus") > -1) {
+        $tmpType =~ s/Minus//g;
+    }
+    print $tmpType . "\n";
+    if(index($tmpType,"illumina")>-1){
+        $tmpType =~ s/illumina/Illumina/g;
+    }
     $query = "Select rd.shared_id,rd.total_plus,rd.total_minus,rd.norm_plus,rd.norm_minus from rna_dataset rd where rd.organism = '" . $org . "'
     		    and rd.genome_id='" . $genomeVer . "'
     			and rd.user_id= $publicUserID
@@ -1199,7 +1215,7 @@ sub readBinnedRNACountsDataFromMongoUpdated {
                 my $bp = 0;
                 my $skipCur = 0;
                 #find scenario and fill in count
-                if ($segStart == $curPos) {
+                if ($segStart == $curPos || $seqStart==($curPos-1)) {
                     #Fill in count with value
                     if ($segStop <= $curStop) {
                         $bp = $segStop - $segStart + 1;
@@ -1329,6 +1345,16 @@ sub readBinnedRNACountsDataFromMongo {
         elsif (index($tmpType, "Minus") > -1) {
             $tmpType =~ s/Minus//;
         }
+    }
+    if (index($tmpType, "Plus") > -1) {
+        $tmpType =~ s/Plus//g;
+    }
+    elsif (index($tmpType, "Minus") > -1) {
+        $tmpType =~ s/Minus//g;
+    }
+    print $tmpType . "\n";
+    if(index($tmpType,"illumina")>-1){
+        $tmpType =~ s/illumina/Illumina/g;
     }
     $query = "Select rd.shared_id,rd.total_plus,rd.total_minus,rd.norm_plus,rd.norm_minus from rna_dataset rd
     			where rd.organism = '" . $org . "' " . "

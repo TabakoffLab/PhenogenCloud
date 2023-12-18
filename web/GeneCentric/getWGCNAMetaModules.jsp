@@ -9,73 +9,83 @@
 --%>
 
 <%@ page language="java"
-import="org.json.*" %>
+         import="org.json.*" %>
 
-<%@ include file="/web/common/anon_session_vars.jsp"  %>
+<%@ include file="/web/common/anon_session_vars.jsp" %>
 
-<jsp:useBean id="wgt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.WGCNATools" scope="session"> </jsp:useBean>
-<jsp:useBean id="gdt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.GeneDataTools" scope="session"> </jsp:useBean>
+<jsp:useBean id="wgt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.WGCNATools" scope="session"></jsp:useBean>
+<jsp:useBean id="gdt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.GeneDataTools" scope="session"></jsp:useBean>
 
 <%
-String modid="";
-String org="";
-String tissue="";
-String panel="";
-String region="";
-String genomeVer="";
-String source="";
-int geneList=0;
+    String modid = "";
+    String org = "";
+    String tissue = "";
+    String panel = "";
+    String region = "";
+    String genomeVer = "";
+    String source = "";
+    String level = "";
+    int geneList = 0;
 
-if(request.getParameter("id")!=null){
-	modid=request.getParameter("id");
-}
-if(request.getParameter("organism")!=null){
-	org=request.getParameter("organism");
-}
-if(request.getParameter("panel")!=null){
-	panel=request.getParameter("panel");
-}
-if(request.getParameter("tissue")!=null){
-	tissue=request.getParameter("tissue");
-}
-if(request.getParameter("region")!=null){
-	region=request.getParameter("region");
-}
-if(request.getParameter("genomeVer")!=null){
-        genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
-}
-if(request.getParameter("source")!=null){
-        source=request.getParameter("source");
-}
+    if (request.getParameter("id") != null) {
+        modid = request.getParameter("id");
+    }
+    if (request.getParameter("organism") != null) {
+        org = request.getParameter("organism");
+    }
+    if (request.getParameter("panel") != null) {
+        panel = request.getParameter("panel");
+    }
+    if (request.getParameter("tissue") != null) {
+        tissue = request.getParameter("tissue");
+    }
+    if (request.getParameter("region") != null) {
+        region = request.getParameter("region");
+    }
+    if (request.getParameter("genomeVer") != null) {
+        genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
+    }
+    if (request.getParameter("source") != null) {
+        source = request.getParameter("source");
+    }
+    if (request.getParameter("level") != null) {
+        level = request.getParameter("level");
+    }
 
-wgt.setSession(session);
-gdt.setSession(session);
-ArrayList<WGCNAMetaModule> modules=null;
+    wgt.setSession(session);
+    gdt.setSession(session);
+    ArrayList<WGCNAMetaModule> modules = null;
 
-modules=wgt.getWGCNAMetaModulesForModule(modid,panel,tissue,org,genomeVer,source);
+    modules = wgt.getWGCNAMetaModulesForModule(modid, panel, tissue, org, genomeVer, source, level);
 
-response.setContentType("application/json");
-response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-response.setDateHeader("Expires", 0);
+    response.setContentType("application/json");
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setDateHeader("Expires", 0);
 %>
 [
-<%for(int i=0;i<modules.size();i++){
-    WGCNAMetaModule curMod=modules.get(i);
-    ArrayList<String> mods=curMod.getModNames();
-    ArrayList<String> modCol=curMod.getModColors();
-    ArrayList<WGCNAMetaModLink> links=curMod.getLinks();
-    
-    if(i>0){%>,<%}%>
-    {"MMID":"<%=curMod.getMMID()%>","MODULES":[
-        <%for(int j=0;j<mods.size();j++){
-            if(j>0){%>,<%}%>{"MODULE":"<%=mods.get(j)%>" , "COLOR":"<%=modCol.get(j)%>"}
-        <%}%>
-    ],"LINKS":[
-        <%for(int j=0;j<links.size();j++){
-            if(j>0){%>,<%}%>{"MOD1":"<%=links.get(j).getModuleName1()%>","MOD2":"<%=links.get(j).getModuleName2()%>","COR":<%=links.get(j).getCorrelation()%>}
-        <%}%>
-    ]
-    }
+<%
+    for (int i = 0; i < modules.size(); i++) {
+        WGCNAMetaModule curMod = modules.get(i);
+        ArrayList<String> mods = curMod.getModNames();
+        ArrayList<String> modCol = curMod.getModColors();
+        ArrayList<WGCNAMetaModLink> links = curMod.getLinks();
+
+        if (i > 0) {
+%>,<%}%>
+{"MMID":"<%=curMod.getMMID()%>","MODULES":[
+<%
+    for (int j = 0; j < mods.size(); j++) {
+        if (j > 0) {
+%>,<%}%>{"MODULE":"<%=mods.get(j)%>" , "COLOR":"<%=modCol.get(j)%>"}
+<%}%>
+],"LINKS":[
+<%
+    for (int j = 0; j < links.size(); j++) {
+        if (j > 0) {
+%>,<%}%>{"MOD1":"<%=links.get(j).getModuleName1()%>","MOD2":"<%=links.get(j).getModuleName2()%>","COR":<%=links.get(j).getCorrelation()%>}
+<%}%>
+]
+}
 <%}%>
 ]
 

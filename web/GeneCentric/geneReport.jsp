@@ -81,14 +81,34 @@
     if (myOrganism.equals("Rn")) {
         tissuesList1 = new String[4];
         tissuesList2 = new String[4];
-        tissuesList1[0] = "Brain";
-        tissuesList2[0] = "Whole Brain";
-        tissuesList1[1] = "Heart";
-        tissuesList2[1] = "Heart";
-        tissuesList1[2] = "Liver";
-        tissuesList2[2] = "Liver";
-        tissuesList1[3] = "Brown Adipose";
-        tissuesList2[3] = "Brown Adipose";
+        if (genomeVer.equals("rn7")) {
+            tissuesList1 = new String[3];
+            tissuesList2 = new String[3];
+            tissuesList1[0] = "Brain";
+            tissuesList2[0] = "Whole Brain";
+            tissuesList1[1] = "Liver";
+            tissuesList2[1] = "Liver";
+            tissuesList1[1] = "Kidney";
+            tissuesList2[1] = "Kidney";
+        } else if (genomeVer.equals("rn6")) {
+            tissuesList1 = new String[2];
+            tissuesList2 = new String[2];
+            tissuesList1[0] = "Brain";
+            tissuesList2[0] = "Whole Brain";
+            tissuesList1[1] = "Liver";
+            tissuesList2[1] = "Liver";
+        } else {
+            tissuesList1[0] = "Brain";
+            tissuesList2[0] = "Whole Brain";
+            tissuesList1[1] = "Heart";
+            tissuesList2[1] = "Heart";
+            tissuesList1[2] = "Liver";
+            tissuesList2[2] = "Liver";
+            tissuesList1[3] = "Brown Adipose";
+            tissuesList2[3] = "Brown Adipose";
+        }
+
+
     } else {
         tissuesList1[0] = "Brain";
         tissuesList2[0] = "Whole Brain";
@@ -99,6 +119,7 @@
     int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer);
     if (tmp != null && tmp.length == 2) {
         rnaDatasetID = tmp[1];
+        log.debug("REPORT DSID:" + rnaDatasetID);
         arrayTypeID = tmp[0];
     }
     String genURL = "";
@@ -190,44 +211,49 @@ $(this).removeClass("less");
 </script>-->
 
 <div style="font-size:18px; font-weight:bold; background-color:#FFFFFF; color:#000000; text-align:center; width:100%; padding-top:3px;">
-    <span class="selectdetailMenu selected" name="geneDetail">Gene Details<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneDetailTab"
-                                                                                                                                      class="helpGeneRpt"
-                                                                                                                                      src="/web/images/icons/help.png"/></div></span>
-    <%if (myOrganism.equals("Rn") && (genomeVer.equals("rn6") || genomeVer.equals("rn7"))) {%>
-    <span class="selectdetailMenu" name="geneApp">Expression Data<div class="inpageHelp" style="display:inline-block; "><img id="HelpGenePSTab"
-                                                                                                                             class="helpGeneRpt"
-                                                                                                                             src="/web/images/icons/help.png"/></div></span>
-    <%}%>
-    <%if (!isSmall && !genomeVer.equals("rn7")) {%>
-    <span class="selectdetailMenu" name="geneEQTL">Gene eQTLs<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneEqtlTab"
-                                                                                                                         class="helpGeneRpt"
-                                                                                                                         src="/web/images/icons/help.png"/></div></span>
+    <span class="selectdetailMenu selected" name="geneDetail">Gene Details<div class="inpageHelp"
+                                                                               style="display:inline-block; "><img
+            id="HelpGeneDetailTab"
+            class="helpGeneRpt"
+            src="/web/images/icons/help.png"/></div></span>
+    <span class="selectdetailMenu" name="geneApp">Expression Data<div class="inpageHelp" style="display:inline-block; "><img
+            id="HelpGenePSTab"
+            class="helpGeneRpt"
+            src="/web/images/icons/help.png"/></div></span>
 
-    <span class="selectdetailMenu" name="geneMIrna">miRNA Targeting Gene(multiMiR)<div class="inpageHelp" style="display:inline-block; "><img
+    <%if (!isSmall) {%>
+    <span class="selectdetailMenu" name="geneEQTL">Gene eQTLs<div class="inpageHelp" style="display:inline-block; "><img
+            id="HelpGeneEqtlTab"
+            class="helpGeneRpt"
+            src="/web/images/icons/help.png"/></div></span>
+    <span class="selectdetailMenu" name="geneMIrna">miRNA Targeting Gene(multiMiR)<div class="inpageHelp"
+                                                                                       style="display:inline-block; "><img
             id="HelpMirTargetTab" class="helpGeneRpt" src="/web/images/icons/help.png"/></div></span>
     <!--<span class="selectdetailMenu" name="geneGO">GO<div class="inpageHelp" style="display:inline-block; "><img id="HelpUCSCImage" class="helpImage" src="/web/images/icons/help.png" /></div></span>-->
-    <span class="selectdetailMenu" name="geneWGCNA">WGCNA<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneWGCNATab" class="helpGeneRpt"
-                                                                                                                     src="/web/images/icons/help.png"/></div></span>
+    <span class="selectdetailMenu" name="geneWGCNA">WGCNA<div class="inpageHelp" style="display:inline-block; "><img
+            id="HelpGeneWGCNATab" class="helpGeneRpt"
+            src="/web/images/icons/help.png"/></div></span>
     <!--<span class="selectdetailMenu" name="chilibot">Gene Interactions<div class="inpageHelp" style="display:inline-block; "><img id="HelpGeneChilibotTab" class="helpGeneRpt" src="/web/images/icons/help.png" /></div></span>-->
     <%
     } else {
         if (myOrganism.equals("Rn") && genomeVer.equals("rn6")) {
     %>
-    <span class="selectdetailMenu" name="geneApp">Expression Data<div class="inpageHelp" style="display:inline-block; "><img id="HelpGenePSTab"
-                                                                                                                             class="helpGeneRpt"
-                                                                                                                             src="/web/images/icons/help.png"/></div></span>
+    <span class="selectdetailMenu" name="geneApp">Expression Data<div class="inpageHelp" style="display:inline-block; "><img
+            id="HelpGenePSTab"
+            class="helpGeneRpt"
+            src="/web/images/icons/help.png"/></div></span>
     <%
         }
         if (curGene.getGeneSymbol().toLowerCase().startsWith("mir") || curGene.getDescription().toLowerCase().startsWith("microrna") || curGene.getBioType().toLowerCase().indexOf("mirna") > -1) {
-            if (curGene.getGeneID().startsWith("ENS")) {
-    %>
-    <span class="selectdetailMenu" name="miGenerna">Genes Targeted by this miRNA(multiMiR)<div class="inpageHelp" style="display:inline-block; "><img
+            if (curGene.getGeneID().startsWith("ENS")) {%>
+    <span class="selectdetailMenu" name="miGenerna">Genes Targeted by this miRNA(multiMiR)<div class="inpageHelp"
+                                                                                               style="display:inline-block; "><img
             id="HelpGeneMirTargetTab" class="helpGeneRpt" src="/web/images/icons/help.png"/></div></span>
-    <%}//else{%>
+    <%}%>
     <!--<span class="selectdetailMenu" name="miGenernaPred">Predict Genes Targeted by this miRNA(PITA)<div class="inpageHelp" style="display:inline-block; "><img id="HelpPredictGeneMirTargetTab" class="helpGeneRpt" src="<%=contextRoot%>/web/images/icons/help.png" /></div></span>
                         -->
     <%
-                //}
+
             }
         }
     %>
@@ -366,7 +392,8 @@ $(this).removeClass("less");
                     <TD>
 
                         <%if (curGene.getGeneID().startsWith("ENS")) {%>
-                        <a href="<%=LinkGenerator.getEnsemblLinkEnsemblID(curGene.getGeneID(),fullOrg)%>" target="_blank"
+                        <a href="<%=LinkGenerator.getEnsemblLinkEnsemblID(curGene.getGeneID(),fullOrg)%>"
+                           target="_blank"
                            title="View Ensembl Gene Details"><%=curGene.getGeneID()%>
                         </a><BR/>
                         <span style="font-size:10px;">
@@ -386,13 +413,17 @@ $(this).removeClass("less");
                                             allenID = shortDesc;
                                         }%>
                                         All Organisms:<a href="<%=LinkGenerator.getNCBILink(tmpGS)%>" target="_blank">NCBI</a> |
-                                        <a href="<%=LinkGenerator.getUniProtLinkGene(tmpGS)%>" target="_blank">UniProt</a> <BR/>
-                                       <%=shortOrg%>: <a href="<%=LinkGenerator.getNCBILink(tmpGS,myOrganism)%>" target="_blank">NCBI</a> | <a
-                                href="<%=LinkGenerator.getUniProtLinkGene(tmpGS,myOrganism)%>" target="_blank">UniProt</a> |
+                                        <a href="<%=LinkGenerator.getUniProtLinkGene(tmpGS)%>"
+                                           target="_blank">UniProt</a> <BR/>
+                                       <%=shortOrg%>: <a href="<%=LinkGenerator.getNCBILink(tmpGS,myOrganism)%>"
+                                                         target="_blank">NCBI</a> | <a
+                                href="<%=LinkGenerator.getUniProtLinkGene(tmpGS,myOrganism)%>"
+                                target="_blank">UniProt</a> |
                                         <%if (myOrganism.equals("Mm")) {%>
                                             <a href="<%=LinkGenerator.getMGILink(tmpGS)%>" target="_blank">MGI</a> 
                                             <%if (!allenID.equals("")) {%>
-                                                | <a href="<%=LinkGenerator.getBrainAtlasLink(allenID)%>" target="_blank">Allen Brain Atlas</a>
+                                                | <a href="<%=LinkGenerator.getBrainAtlasLink(allenID)%>"
+                                                     target="_blank">Allen Brain Atlas</a>
                                             <%}%>
                                         <%} else {%>
                                             <a href="<%=LinkGenerator.getRGDLink(tmpGS,myOrganism)%>" target="_blank">RGD</a>
@@ -409,18 +440,23 @@ $(this).removeClass("less");
                     <TD style="width:20%;">Exonic Variants:</TD>
                     <TD style="width:78%;">
 
-                        <B>Common:</B> <%=curGene.getSnpCount("common", "SNP")%> (SNPs) / <%=curGene.getSnpCount("common", "Indel")%>(Insertions/Deletions)<BR/>
+                        <B>Common:</B> <%=curGene.getSnpCount("common", "SNP")%> (SNPs)
+                        / <%=curGene.getSnpCount("common", "Indel")%>(Insertions/Deletions)<BR/>
 
-                        <B>BN-Lx/CubPrin:</B> <%=curGene.getSnpCount("BNLX", "SNP")%> (SNPs) / <%=curGene.getSnpCount("BNLX", "Indel")%>
+                        <B>BN-Lx/CubPrin:</B> <%=curGene.getSnpCount("BNLX", "SNP")%> (SNPs)
+                        / <%=curGene.getSnpCount("BNLX", "Indel")%>
                         (Insertions/Deletions)<BR/>
 
-                        <B>SHR/OlaPrin:</B> <%=curGene.getSnpCount("SHRH", "SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRH", "Indel")%>
+                        <B>SHR/OlaPrin:</B> <%=curGene.getSnpCount("SHRH", "SNP")%> (SNPs)
+                        / <%=curGene.getSnpCount("SHRH", "Indel")%>
                         (Insertions/Deletions)<BR/>
 
-                        <B>SHR/NCrlPrin:</B> <%=curGene.getSnpCount("SHRJ", "SNP")%> (SNPs) / <%=curGene.getSnpCount("SHRJ", "Indel")%>
+                        <B>SHR/NCrlPrin:</B> <%=curGene.getSnpCount("SHRJ", "SNP")%> (SNPs)
+                        / <%=curGene.getSnpCount("SHRJ", "Indel")%>
                         (Insertions/Deletions)<BR/>
 
-                        <B>F344:</B> <%=curGene.getSnpCount("F344", "SNP")%> (SNPs) / <%=curGene.getSnpCount("F344", "Indel")%> (Insertions/Deletions)<BR/>
+                        <B>F344:</B> <%=curGene.getSnpCount("F344", "SNP")%> (SNPs)
+                        / <%=curGene.getSnpCount("F344", "Indel")%> (Insertions/Deletions)<BR/>
                         <span class="GN2Snps button" style="width:275px;height:37px;cursor: pointer;color:#658cb2;">GN2 SNP Browser (Additional Strains/Functional Annotation)</span>
 
                     </TD>
@@ -432,7 +468,8 @@ $(this).removeClass("less");
                         Literature Based Searches:
                     </TD>
                     <TD><span class="button" style="width:275px;height:37px;pointer;color:#658cb2;" id="chilibotLink">Gene Relationships / Interactions (Chilibot.net)</span><BR>
-                        <span class="button" style="width:275px;height:37px;cursor: pointer;color:#658cb2;" id="ratsPubLink">Gene Relationships for Addiction (genecup.org)</span>
+                        <span class="button" style="width:275px;height:37px;cursor: pointer;color:#658cb2;"
+                              id="ratsPubLink">Gene Relationships for Addiction (genecup.org)</span>
                     </TD>
                 </TR>
                 <TR>
@@ -485,11 +522,13 @@ $(this).removeClass("less");
                     </TR>
                     <TR>
                         <TD colspan="2">
-                            <table id="tblGeneDabg" name="items" class="list_base" style="width:100%; text-align:center;">
+                            <table id="tblGeneDabg" name="items" class="list_base"
+                                   style="width:100%; text-align:center;">
                                 <thead>
                                 <tr class="col_title">
                                     <TH style="color:#000000;">Tissue</TH>
-                                    <TH style="color:#000000;">Number of probe sets detected above background* in more than 1% of samples (out
+                                    <TH style="color:#000000;">Number of probe sets detected above background* in more
+                                        than 1% of samples (out
                                         of <%=curGene.getProbeCount()%> probe sets for this gene)
                                     </TH>
                                     <TH style="color:#000000;">Avg % of samples DABG*</TH>
@@ -539,9 +578,12 @@ $(this).removeClass("less");
                         </TD>
                     </TR>
                     <TR>
-                        <TD colspan="2">*DABG is based on Affymetrix software that assigns a P-value to the probe sets detection above background. Using a
-                            comparison of RNA-Seq data probe sets that overlap a high confidence exon in the transcriptome are not detected above background
-                            roughly 5% of the time. Increasing the P-value cutoff of 0.0001 can reduce this but only at the expense of greatly elevated false
+                        <TD colspan="2">*DABG is based on Affymetrix software that assigns a P-value to the probe sets
+                            detection above background. Using a
+                            comparison of RNA-Seq data probe sets that overlap a high confidence exon in the
+                            transcriptome are not detected above background
+                            roughly 5% of the time. Increasing the P-value cutoff of 0.0001 can reduce this but only at
+                            the expense of greatly elevated false
                             positives.
                         </TD>
                     </TR>
@@ -553,12 +595,14 @@ $(this).removeClass("less");
                     </TR>
                     <TR>
                         <TD colspan="2">
-                            <table id="tblGeneHerit" name="items" class="list_base" style="width:100%; text-align:center;">
+                            <table id="tblGeneHerit" name="items" class="list_base"
+                                   style="width:100%; text-align:center;">
                                 <thead>
 
                                 <tr class="col_title">
                                     <TH style="color:#000000;">Tissue</TH>
-                                    <TH style="color:#000000;">Number of probe sets with a heritability greater than 0.33 (out of <%=curGene.getProbeCount()%>
+                                    <TH style="color:#000000;">Number of probe sets with a heritability greater than
+                                        0.33 (out of <%=curGene.getProbeCount()%>
                                         probe sets for this gene)
                                     </TH>
                                     <TH style="color:#000000;">Avg Herit</TH>
@@ -619,7 +663,8 @@ $(this).removeClass("less");
                 //String[] curTissues=tc.getTissueList();%>
             <div style="width:100%;">
                 <div class="geneReport header" style="width:100%;">
-                    EQTLs Affymetrix Transcript Cluster(Confidence Level): <%=tc.getTranscriptClusterID()%> (<%=tc.getLevel()%>)
+                    EQTLs Affymetrix Transcript Cluster(Confidence Level): <%=tc.getTranscriptClusterID()%>
+                    (<%=tc.getLevel()%>)
                 </div>
                 <table style="width:100%;">
                     <!--<TR>
@@ -677,7 +722,8 @@ $(this).removeClass("less");
                                             start = 1;
                                         }
                                     %>
-                                    <a href="<%=lg.getRegionLink(maxEQTL.getMarkerChr(),start,stop,myOrganism,true,true,false)%>" target="_blank"
+                                    <a href="<%=lg.getRegionLink(maxEQTL.getMarkerChr(),start,stop,myOrganism,true,true,false)%>"
+                                       target="_blank"
                                        title="View Detailed Transcription Information for a region +- 500,000bp around the SNP location.">
                                         chr<%=maxEQTL.getMarkerChr() + ":" + dfC.format(maxEQTL.getMarker_start())%>
                                     </a>
@@ -744,9 +790,11 @@ $(this).removeClass("less");
             <TR>
                 <TD>
                     <H3 style="text-align: left;">2 Term search:</H3><BR>
-                    <div style="padding-top:10px;padding-bottom:10px;text-align:center;">Current Gene: <input type="text" id="chiliterm1"
-                                                                                                              value="<%=geneSymbol.get(0)%>"> & <input
-                            type="text" id="chiliterm2"><input type="button" class="GNButton" value="Go To Chilibot.net" onclick="linkChilibot2term()"><BR>Term2
+                    <div style="padding-top:10px;padding-bottom:10px;text-align:center;">Current Gene: <input
+                            type="text" id="chiliterm1"
+                            value="<%=geneSymbol.get(0)%>"> & <input
+                            type="text" id="chiliterm2"><input type="button" class="GNButton" value="Go To Chilibot.net"
+                                                               onclick="linkChilibot2term()"><BR>Term2
                         can be another gene/phenotype/other keyword/protein.
                     </div>
                 </TD>
@@ -757,9 +805,11 @@ $(this).removeClass("less");
             <TR>
                 <TD>
                     <H3 style="text-align: left;">Multiterm search:</H3><BR>
-                    <div style="padding-top:10px;padding-bottom:10px;text-align: center;">Multiterm list(2-10, one per line):<BR><textarea rows="5" cols="30"
-                                                                                                                                           id="chililist"><%=geneSymbol.get(0)%></textarea>
-                        <BR><input type="button" class="GNButton" value="Go To Chilibot.net" onclick="linkChilibotGeneList()"></div>
+                    <div style="padding-top:10px;padding-bottom:10px;text-align: center;">Multiterm list(2-10, one per
+                        line):<BR><textarea rows="5" cols="30"
+                                            id="chililist"><%=geneSymbol.get(0)%></textarea>
+                        <BR><input type="button" class="GNButton" value="Go To Chilibot.net"
+                                   onclick="linkChilibotGeneList()"></div>
                 </TD>
             </TR>
         </table>
@@ -774,6 +824,7 @@ $(this).removeClass("less");
 <script type="text/javascript">
     var idStr = "<%=id%>";
     var geneSymStr = "<%=curGene.getGeneSymbol()%>";
+    var version = <%if(genomeVer.equals("rn7")){%>6<%}else{%>5<%}%>;
 
     var rows = $("table#tblGeneDabg tr");
     stripeTable(rows);
@@ -829,7 +880,8 @@ $(this).removeClass("less");
                 geneSymbol: selectedGeneSymbol,
                 chromosome: chr,
                 id: selectedID,
-                genomeVer: genomeVer
+                genomeVer: genomeVer,
+                version: version
             };
             loadDivWithPage("div#geneEQTL", jspPage, scrollToDiv, params,
                 "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
@@ -926,7 +978,12 @@ $(this).removeClass("less");
                 peGR.rkChart.setWidth("98%");
             }
         }
-        createDialog("#GN2SNPBrowserForm", {width: 900, height: 375, title: "Link to GeneNetwork SNP Browser", zIndex: 999});
+        createDialog("#GN2SNPBrowserForm", {
+            width: 900,
+            height: 375,
+            title: "Link to GeneNetwork SNP Browser",
+            zIndex: 999
+        });
         createDialog("div#chilibot", {width: 600, height: 375, title: "Link to Chilibot", zIndex: 999});
         $('span.GN2Snps').on('click', function () {
             $('#GN2SNPBrowserForm [name=gene_name]').val(gs.selectedGeneSymbol);
