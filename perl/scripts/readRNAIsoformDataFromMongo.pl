@@ -1454,7 +1454,7 @@ sub readBinnedRNACountsDataFromMongo {
                 my $bp = 0;
                 my $skipCur = 0;
                 #find scenario and fill in count
-                if ($segStart == $curPos) {
+                if ($segStart == $curPos  || $segStart ==($curPos-1)) {
                     #Fill in count with value
                     if ($segStop <= $curStop) {
                         $bp = $segStop - $segStart + 1;

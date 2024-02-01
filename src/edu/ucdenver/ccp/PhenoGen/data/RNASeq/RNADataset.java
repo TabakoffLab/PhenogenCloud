@@ -224,8 +224,9 @@ public class RNADataset {
         }
         String query = selectWCount + " where ispublic=" + ispub + " and isvisible=1";
         if (!org.equals("All")) {
-            query = query + " and organism='" + org + "' order by created DESC, rna_dataset_id ASC";
+            query = query + " and organism='" + org + "'";
         }
+        query = query + " order by created DESC, rna_dataset_id ASC";
         log.debug("end of getRNADatasetsByPublic:\n" + query);
         return getRNADatasetsByQuery(query, pool);
     }
