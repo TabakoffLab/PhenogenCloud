@@ -12,8 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.*;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
@@ -52,10 +51,16 @@ public class AsyncBrowserRegion extends Thread {
     //private String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_TOOLS=? , RESULT=? where TRANS_DETAIL_ID=?";
     private String[] tissues = new String[2];
     private ExecHandler myExec_session = null;
+    private List threadList;
+    boolean doneThread = false;
+    int maxThreadCount = 2;
+    private GeneDataTools gdt = null;
 
-    public AsyncBrowserRegion(HttpSession inSession, DataSource pool, String organism, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, String ucscDB, String ensemblPath, int usageID, boolean runAGDT) {
+
+    public AsyncBrowserRegion(HttpSession inSession, DataSource pool, String organism, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, String ucscDB, String ensemblPath, int usageID, boolean runAGDT, GeneDataTools gdt) {
         this.session = inSession;
         this.outputDir = outputDir;
+        this.threadList = gdt.getThreadList();
         log = Logger.getRootLogger();
         log.debug("in AsynGeneDataTools()");
 
@@ -69,6 +74,8 @@ public class AsyncBrowserRegion extends Thread {
         this.usageID = usageID;
         this.org = organism;
         this.runAGDT = runAGDT;
+        this.gdt = gdt;
+        this.threadList = gdt.getThreadList();
 
         this.genomeVer = genomeVer;
         this.isEnsemblGene = isEnsemblGene;
@@ -89,11 +96,45 @@ public class AsyncBrowserRegion extends Thread {
 
 
     public void run() throws RuntimeException {
+        doneThread = false;
+        Thread thisThread = Thread.currentThread();
+        //wait for other Expr threads to finish
+        boolean waiting = true;
+        int myIndex = -1;
+        if (threadList.size() > 0) {
+            while (waiting) {
+                int waitingOnCount = 0;
+                boolean reachedMySelf = false;
+                for (int i = 0; i < threadList.size() && !reachedMySelf; i++) {
+                    if (thisThread.equals(threadList.get(i))) {
+                        reachedMySelf = true;
+                        myIndex = i;
+                    } else {
+                        if (((Thread) threadList.get(i)).isAlive()) {
+                            waitingOnCount++;
+                        }
+                    }
+                }
+                if (waitingOnCount < maxThreadCount) {
+                    waiting = false;
+                } else {
+                    try {
+                        //log.debug("WAITING PREVTHREAD");
+                        thisThread.sleep(2000);
+                    } catch (InterruptedException er) {
+                        log.error("wait interrupted", er);
+                    }
+                }
+            }
+        }
+        Date start = new Date();
+        //try{
+        log.debug("STARTING");
         done = false;
         createRegionImagesXMLFiles(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB);
         if (runAGDT) {
             AsyncGeneDataTools agdt;
-            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, "", "", null);
+            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, "", "", gdt);
             agdt.start();
             try {
                 agdt.join();
@@ -104,6 +145,8 @@ public class AsyncBrowserRegion extends Thread {
         }
         createRegionXML(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB);
         done = true;
+        doneThread = true;
+        threadList.remove(thisThread);
     }
 
     public HashMap<String, String> getGenomeVersionSource(String genomeVer) {
@@ -188,8 +231,10 @@ public class AsyncBrowserRegion extends Thread {
                 }
                 log.debug(i + " EnvVar::" + envVar[i]);
             }
+
             callWriteTrackXML("ensemblcoding", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
                     ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+
             if (organism.equals("Rn")) {
                 if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
                     callWriteTrackXML("probe", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
@@ -405,6 +450,8 @@ public class AsyncBrowserRegion extends Thread {
         boolean completedSuccessfully = false;
         //construct perl Args
         //construct perl Args
+
+        log.debug("running:" + track);
         String[] perlArgs = new String[26];
         perlArgs[0] = "perl";
         perlArgs[1] = perlDir + "writeXML_Track.pl";
@@ -451,9 +498,9 @@ public class AsyncBrowserRegion extends Thread {
         myExec_session = new ExecHandler(perlDir, perlArgs, envVar, outputDir + "genRegionAsync");
         boolean exception = false;
         try {
-
+            log.debug("about to execute :" + track);
             myExec_session.runExec();
-
+            log.debug("after execute :" + track);
         } catch (ExecException e) {
             exception = true;
             log.error("In Exception of run writeXML_Region.pl Exec_session", e);

@@ -59,6 +59,7 @@
          import="com.itextpdf.text.pdf.*"
          import="com.itextpdf.text.Document"
          import="com.itextpdf.text.Image"
+         import="java.util.Collections"
 %>
 <%@ page session="true" %>
 <%

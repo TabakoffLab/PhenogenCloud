@@ -24,6 +24,7 @@ import edu.ucdenver.ccp.util.ObjectHandler;
 import au.com.forward.threads.ThreadReturn;
 import au.com.forward.threads.ThreadInterruptedException;
 import au.com.forward.threads.ThreadException;
+
 import java.io.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -41,92 +42,91 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.Logger;
 
 public class AsyncGeneDataExpr extends Thread {
-        private String[] rErrorMsg = null;
-        Statistic myStatistic=null;
-        HttpSession session=null;
-        private Logger log = null;
-        private String perlDir = "", fullPath = "";
-        private String rFunctDir = "";
-        private String userFilesRoot = "";
-        private String urlPrefix = "";
-        private String perlEnvVar="";
-        private String ucscDir="";
-        private String bedDir="";
-        private String ver="";
-        private DataSource pool=null;
-        String outputDir="";
-        String pListFile="";
-        boolean doneThread=false;
+    private String[] rErrorMsg = null;
+    Statistic myStatistic = null;
+    HttpSession session = null;
+    private Logger log = null;
+    private String perlDir = "", fullPath = "";
+    private String rFunctDir = "";
+    private String userFilesRoot = "";
+    private String urlPrefix = "";
+    private String perlEnvVar = "";
+    private String ucscDir = "";
+    private String bedDir = "";
+    private String ver = "";
+    private DataSource pool = null;
+    String outputDir = "";
+    String pListFile = "";
+    boolean doneThread = false;
 
-        int maxThreadCount=1;
-        
-        
-        ArrayList<String> DSPathList=new ArrayList<String>();
-        ArrayList<String> sampleFileList=new ArrayList<String>();
-        ArrayList<String> groupFileList=new ArrayList<String>();
-        ArrayList<String> outGroupFileList=new ArrayList<String>();
-        ArrayList<String> outIndivFileList=new ArrayList<String>();
-        ArrayList<String> tissueList=new ArrayList<String>();
-        ArrayList<String> platformList=new ArrayList<String>();
-        AsyncGeneDataTools prevThread;
-        ArrayList<Thread> threadList;
-        BufferedWriter outGroup;
-        BufferedWriter outIndiv;
-        SyncAndClose sac;
-       
+    int maxThreadCount = 3;
 
 
-    public AsyncGeneDataExpr(HttpSession inSession,String pListFile,String outputDir,AsyncGeneDataTools prevThread,ArrayList<Thread> threadList,int maxThreadCount,BufferedWriter outGroup,BufferedWriter outIndiv,SyncAndClose sac,String ver ) {
-                this.session = inSession;
-                this.pListFile=pListFile;
-                this.outputDir=outputDir;
-                log = Logger.getRootLogger();
-                log.debug("in AsyncGeneDataExpr()");
-                this.session = inSession;
-                this.prevThread=prevThread;
-                this.threadList=threadList;
-                this.maxThreadCount=maxThreadCount;
-                this.outGroup=outGroup;
-                this.outIndiv=outIndiv;
-                this.sac=sac;
-                this.ver=ver;
+    ArrayList<String> DSPathList = new ArrayList<String>();
+    ArrayList<String> sampleFileList = new ArrayList<String>();
+    ArrayList<String> groupFileList = new ArrayList<String>();
+    ArrayList<String> outGroupFileList = new ArrayList<String>();
+    ArrayList<String> outIndivFileList = new ArrayList<String>();
+    ArrayList<String> tissueList = new ArrayList<String>();
+    ArrayList<String> platformList = new ArrayList<String>();
+    AsyncGeneDataTools prevThread;
+    ArrayList<Thread> threadList;
+    BufferedWriter outGroup;
+    BufferedWriter outIndiv;
+    SyncAndClose sac;
 
-                log.debug("AsyncGeneDataExpr Start");
 
-                //this.selectedDataset = (Dataset) session.getAttribute("selectedDataset");
-                //this.selectedDatasetVersion = (Dataset.DatasetVersion) session.getAttribute("selectedDatasetVersion");
-                //this.publicDatasets = (Dataset[]) session.getAttribute("publicDatasets");
-                this.pool = (DataSource) session.getAttribute("dbPool");
-                //log.debug("db");
-                this.perlDir = (String) session.getAttribute("perlDir") + "scripts/";
-                //log.debug("perl" + perlDir);
-                String contextRoot = (String) session.getAttribute("contextRoot");
-                //log.debug("context" + contextRoot);
-                String appRoot = (String) session.getAttribute("applicationRoot");
-                //log.debug("app" + appRoot);
-                this.fullPath = appRoot + contextRoot;
-                //log.debug("fullpath");
-                this.rFunctDir = (String) session.getAttribute("rFunctionDir");
-                //log.debug("rFunction");
-                this.userFilesRoot = (String) session.getAttribute("userFilesRoot");
-                //log.debug("userFilesRoot");
-                this.urlPrefix = (String) session.getAttribute("mainURL");
-                if (urlPrefix.endsWith(".jsp")) {
-                    urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf("/") + 1);
-                }
-                //log.debug("mainURL");
-                this.perlEnvVar = (String) session.getAttribute("perlEnvVar");
-                //log.debug("PerlEnv");
-                this.ucscDir = (String) session.getAttribute("ucscDir");
-                //log.debug("ucsc");
-                this.bedDir = (String) session.getAttribute("bedDir");
-                //log.debug("bedDir");
-                myStatistic = new Statistic();
-                myStatistic.setSession(session);
-                myStatistic.setRFunctionDir(this.rFunctDir);
+    public AsyncGeneDataExpr(HttpSession inSession, String pListFile, String outputDir, AsyncGeneDataTools prevThread, ArrayList<Thread> threadList, int maxThreadCount, BufferedWriter outGroup, BufferedWriter outIndiv, SyncAndClose sac, String ver) {
+        this.session = inSession;
+        this.pListFile = pListFile;
+        this.outputDir = outputDir;
+        log = Logger.getRootLogger();
+        log.debug("in AsyncGeneDataExpr()");
+        this.session = inSession;
+        this.prevThread = prevThread;
+        this.threadList = threadList;
+        this.maxThreadCount = maxThreadCount;
+        this.outGroup = outGroup;
+        this.outIndiv = outIndiv;
+        this.sac = sac;
+        this.ver = ver;
+
+        log.debug("AsyncGeneDataExpr Start");
+
+        //this.selectedDataset = (Dataset) session.getAttribute("selectedDataset");
+        //this.selectedDatasetVersion = (Dataset.DatasetVersion) session.getAttribute("selectedDatasetVersion");
+        //this.publicDatasets = (Dataset[]) session.getAttribute("publicDatasets");
+        this.pool = (DataSource) session.getAttribute("dbPool");
+        //log.debug("db");
+        this.perlDir = (String) session.getAttribute("perlDir") + "scripts/";
+        //log.debug("perl" + perlDir);
+        String contextRoot = (String) session.getAttribute("contextRoot");
+        //log.debug("context" + contextRoot);
+        String appRoot = (String) session.getAttribute("applicationRoot");
+        //log.debug("app" + appRoot);
+        this.fullPath = appRoot + contextRoot;
+        //log.debug("fullpath");
+        this.rFunctDir = (String) session.getAttribute("rFunctionDir");
+        //log.debug("rFunction");
+        this.userFilesRoot = (String) session.getAttribute("userFilesRoot");
+        //log.debug("userFilesRoot");
+        this.urlPrefix = (String) session.getAttribute("mainURL");
+        if (urlPrefix.endsWith(".jsp")) {
+            urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf("/") + 1);
+        }
+        //log.debug("mainURL");
+        this.perlEnvVar = (String) session.getAttribute("perlEnvVar");
+        //log.debug("PerlEnv");
+        this.ucscDir = (String) session.getAttribute("ucscDir");
+        //log.debug("ucsc");
+        this.bedDir = (String) session.getAttribute("bedDir");
+        //log.debug("bedDir");
+        myStatistic = new Statistic();
+        myStatistic.setSession(session);
+        myStatistic.setRFunctionDir(this.rFunctDir);
     }
-    
-    public void add(String DSPath,String sampleFile,String groupFile,String outGroupFile,String outIndivFile,String tissue,String platform) {
+
+    public void add(String DSPath, String sampleFile, String groupFile, String outGroupFile, String outIndivFile, String tissue, String platform) {
         DSPathList.add(DSPath);
         sampleFileList.add(sampleFile);
         groupFileList.add(groupFile);
@@ -266,120 +266,120 @@ public class AsyncGeneDataExpr extends Thread {
             }
         }
     }*/
-    
-    
+
+
     public void run() throws RuntimeException {
-        doneThread=false;
+        doneThread = false;
         Thread thisThread = Thread.currentThread();
-        if(prevThread!=null){
-            boolean done=prevThread.isDone();
+        if (prevThread != null) {
+            boolean done = prevThread.isDone();
             log.debug("WAITING PREVTHREAD");
-            while(!done){
-                try{
+            while (!done) {
+                try {
                     //log.debug("WAITING PREVTHREAD");
                     thisThread.sleep(5000);
-                }catch(InterruptedException er){
-                    log.error("wait interrupted",er);
+                } catch (InterruptedException er) {
+                    log.error("wait interrupted", er);
                 }
-                done=prevThread.isDone();
+                done = prevThread.isDone();
             }
             log.debug("Done Waiting Starting");
         }
         //wait for other Expr threads to finish
-        boolean waiting=true;
-        int myIndex=-1;
-        while(waiting){
-            int waitingOnCount=0;
-            boolean reachedMySelf=false;
-            for(int i=0;i<threadList.size()&&!reachedMySelf;i++){
-                if(thisThread.equals(threadList.get(i))){
-                    reachedMySelf=true;
-                    myIndex=i;
-                }else{
-                    if(threadList.get(i).isAlive()){
+        boolean waiting = true;
+        int myIndex = -1;
+        while (waiting) {
+            int waitingOnCount = 0;
+            boolean reachedMySelf = false;
+            for (int i = 0; i < threadList.size() && !reachedMySelf; i++) {
+                if (thisThread.equals(threadList.get(i))) {
+                    reachedMySelf = true;
+                    myIndex = i;
+                } else {
+                    if (threadList.get(i).isAlive()) {
                         waitingOnCount++;
                     }
                 }
             }
-            if(waitingOnCount<maxThreadCount){
-                waiting=false;
-            }else{
-                try{
+            if (waitingOnCount < maxThreadCount) {
+                waiting = false;
+            } else {
+                try {
                     //log.debug("WAITING PREVTHREAD");
-                    thisThread.sleep(5000);
-                }catch(InterruptedException er){
-                    log.error("wait interrupted",er);
+                    thisThread.sleep(2000);
+                } catch (InterruptedException er) {
+                    log.error("wait interrupted", er);
                 }
             }
         }
-        Date start=new Date();
+        Date start = new Date();
         //try{
-        log.debug("STARTING");        
-            int loopcount=0;
-            
-            while (!DSPathList.isEmpty()  && loopcount<6) {
-                String psListFile=outputDir + "tmp_psList.txt";
-                File psFile=new File(psListFile);
-                if(psFile.length()>0){
-                    loopcount=0;
-                    String sampleFile=sampleFileList.remove(0);
-                    String DSPath=DSPathList.remove(0);
-                    String outIndivFile=outIndivFileList.remove(0);
-                    String outGroupFile=outGroupFileList.remove(0);
-                    String groupFile=groupFileList.remove(0);
-                    String tissue=tissueList.remove(0);
-                    String tissueNoSpaces=tissue.replaceAll(" ", "_");
-                    String platform=platformList.remove(0);
-                    String outGroupPath=outputDir+outGroupFile;
-                    String outIndivPath=outputDir+outIndivFile;
-                    log.debug("about to run "+tissue+"\n");
-                    try {
-                        myStatistic.callHeatMapOutputRawSpecificBoth(platform,
-                                DSPath,
-                                ver,
-                                sampleFile,
-                                outputDir + "tmp_psList.txt",
-                                outIndivFile,
-                                outGroupFile,
-                                outputDir,
-                                //outputDir + "Gene.xml",
-                                outputDir + tissueNoSpaces +"_exonCorHeatMap.txt",
-                                thisThread.getId());
+        log.debug("STARTING");
+        int loopcount = 0;
 
-                        sac.processFiles(this,groupFile,outGroupPath,outIndivPath,tissue);
-                        doneThread=true;
-                        sac.done(this,"AsyncGeneDataExpr completed normally");
-                    } catch (RException e) {
-                        doneThread=true;
-                        sac.done(this,"AsyncGeneDataExpr("+tissue+","+thisThread.getId()+") had errors.");
-                        log.error("Error outputing Avg Values", e);
-                        Email myAdminEmail = new Email();
-                            myAdminEmail.setSubject("Exception in R_session: output.Raw.Specific.Gene.Both");
-                            myAdminEmail.setContent("There was an error while running output.Raw.Specific.Gene.Both("+tissue+","+thisThread.getId()+","+
-                                    DSPath+","+sampleFile+","+outputDir+
-                                    ") from AsyncGeneDataExpr Thread.\n");
-                            try {
-                                myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
-                            } catch (Exception mailException) {
-                                log.error("error sending message", mailException);
-                                throw new RuntimeException();
-                            }
-                    }
-                }else{
-                    log.debug("NO PROBESETS:"+psListFile);
-                    try {
-                        thisThread.wait(20000);
-                    } catch (InterruptedException ex) {
-                        log.error("Error NO PROBESETS",ex);
-                        //Logger.getLogger(AsyncGeneDataExpr.class.getName()).log(Level.SEVERE, null, ex);
+        while (!DSPathList.isEmpty() && loopcount < 6) {
+            String psListFile = outputDir + "tmp_psList.txt";
+            File psFile = new File(psListFile);
+            if (psFile.length() > 0) {
+                loopcount = 0;
+                String sampleFile = sampleFileList.remove(0);
+                String DSPath = DSPathList.remove(0);
+                String outIndivFile = outIndivFileList.remove(0);
+                String outGroupFile = outGroupFileList.remove(0);
+                String groupFile = groupFileList.remove(0);
+                String tissue = tissueList.remove(0);
+                String tissueNoSpaces = tissue.replaceAll(" ", "_");
+                String platform = platformList.remove(0);
+                String outGroupPath = outputDir + outGroupFile;
+                String outIndivPath = outputDir + outIndivFile;
+                log.debug("about to run " + tissue + "\n");
+                try {
+                    myStatistic.callHeatMapOutputRawSpecificBoth(platform,
+                            DSPath,
+                            ver,
+                            sampleFile,
+                            outputDir + "tmp_psList.txt",
+                            outIndivFile,
+                            outGroupFile,
+                            outputDir,
+                            //outputDir + "Gene.xml",
+                            outputDir + tissueNoSpaces + "_exonCorHeatMap.txt",
+                            thisThread.getId());
 
+                    sac.processFiles(this, groupFile, outGroupPath, outIndivPath, tissue);
+                    doneThread = true;
+                    sac.done(this, "AsyncGeneDataExpr completed normally");
+                } catch (RException e) {
+                    doneThread = true;
+                    sac.done(this, "AsyncGeneDataExpr(" + tissue + "," + thisThread.getId() + ") had errors.");
+                    log.error("Error outputing Avg Values", e);
+                    Email myAdminEmail = new Email();
+                    myAdminEmail.setSubject("Exception in R_session: output.Raw.Specific.Gene.Both");
+                    myAdminEmail.setContent("There was an error while running output.Raw.Specific.Gene.Both(" + tissue + "," + thisThread.getId() + "," +
+                            DSPath + "," + sampleFile + "," + outputDir +
+                            ") from AsyncGeneDataExpr Thread.\n");
+                    try {
+                        myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+                    } catch (Exception mailException) {
+                        log.error("error sending message", mailException);
+                        throw new RuntimeException();
                     }
                 }
-                loopcount++;
+            } else {
+                log.debug("NO PROBESETS:" + psListFile);
+                try {
+                    thisThread.wait(20000);
+                } catch (InterruptedException ex) {
+                    log.error("Error NO PROBESETS", ex);
+                    //Logger.getLogger(AsyncGeneDataExpr.class.getName()).log(Level.SEVERE, null, ex);
+
+                }
             }
-            doneThread=true;
-            
-            threadList.remove(thisThread);
+            loopcount++;
+        }
+        doneThread = true;
+
+        threadList.remove(thisThread);
         /*}catch(IOException e){
             sac.done(this, "AsyncGeneDataExpr had errors:"+e.getMessage());
             Date end=new Date();
@@ -402,11 +402,11 @@ public class AsyncGeneDataExpr extends Thread {
     public boolean isDone() {
         return doneThread;
     }
-   
-    public String getOuputDir(){
+
+    public String getOuputDir() {
         return outputDir;
     }
-    
-    
+
+
 }
  

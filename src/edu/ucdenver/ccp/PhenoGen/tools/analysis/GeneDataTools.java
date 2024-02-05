@@ -3,24 +3,14 @@ package edu.ucdenver.ccp.PhenoGen.tools.analysis;
 //import com.sun.org.apache.xpath.internal.operations.String;
 
 import edu.ucdenver.ccp.PhenoGen.data.Bio.*;
-import edu.ucdenver.ccp.PhenoGen.driver.RException;
 import edu.ucdenver.ccp.PhenoGen.driver.R_session;
-import edu.ucdenver.ccp.PhenoGen.data.AsyncUpdateDataset;
-import edu.ucdenver.ccp.PhenoGen.data.Dataset;
 import edu.ucdenver.ccp.PhenoGen.data.User;
-import edu.ucdenver.ccp.PhenoGen.driver.PerlHandler;
-import edu.ucdenver.ccp.PhenoGen.driver.PerlException;
 import edu.ucdenver.ccp.PhenoGen.driver.ExecHandler;
 import edu.ucdenver.ccp.PhenoGen.driver.ExecException;
 import edu.ucdenver.ccp.util.FileHandler;
-import edu.ucdenver.ccp.util.ObjectHandler;
-import edu.ucdenver.ccp.PhenoGen.tools.analysis.Statistic;
-import edu.ucdenver.ccp.PhenoGen.tools.analysis.AsyncGeneDataExpr;
-import edu.ucdenver.ccp.PhenoGen.tools.analysis.AsyncGeneDataTools;
 
 
-import java.util.GregorianCalendar;
-import java.util.Date;
+import java.util.*;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Connection;
@@ -33,19 +23,14 @@ import edu.ucdenver.ccp.PhenoGen.web.mail.*;
 import java.io.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
 
 public class GeneDataTools {
-    private ArrayList<Thread> threadList;
+    //private ArrayList<Thread> backingthreadList = new ArrayList<Thread>();
+    private List threadList = null;
+    private Map threadHashMap = null;
     private String[] rErrorMsg = null;
     private R_session myR_session = new R_session();
     //private PerlHandler myPerl_session=null;
@@ -124,6 +109,39 @@ public class GeneDataTools {
         return ucscGeneDir;
     }
 
+    public List getThreadList() {
+        return threadList;
+    }
+
+    public void appendThreadList(Thread newThread) {
+        log.debug("TL_size:" + threadList.size());
+        threadList.add(newThread);
+    }
+
+    public boolean appendRunningMap(String key, String val) {
+        boolean ret = false;
+        if (!threadHashMap.containsKey(key)) {
+            threadHashMap.put(key, val);
+            ret = true;
+        }
+        return ret;
+    }
+
+    public void removeRunning(String key) {
+        threadHashMap.remove(key);
+    }
+
+    public Map getRunningMap() {
+        return threadHashMap;
+    }
+
+    public boolean isRunning(String hash) {
+        boolean ret = false;
+        if (threadHashMap.containsKey(hash)) {
+            ret = true;
+        }
+        return ret;
+    }
 
     public int[] getOrganismSpecificIdentifiers(String organism, String genomeVer) {
 
@@ -1087,8 +1105,10 @@ public class GeneDataTools {
         HashMap<String, String> source = this.getGenomeVersionSource(genomeVer);
         String ensemblPath = source.get("ensembl");
         //boolean createdXML=this.createRegionImagesXMLFiles(folderName,organism,genomeVer,ensemblPath,arrayTypeID,RNADatasetID,source.get("ucsc"));
-        AsyncBrowserRegion abr = new AsyncBrowserRegion(session, pool, organism, outputDir, chrom, minCoord, maxCoord, arrayTypeID, RNADatasetID, genomeVer, source.get("ucsc"), ensemblPath, usageID, false);
+        AsyncBrowserRegion abr = new AsyncBrowserRegion(session, pool, organism, outputDir, chrom, minCoord, maxCoord, arrayTypeID, RNADatasetID, genomeVer, source.get("ucsc"), ensemblPath, usageID, false, this);
+        threadList.add(abr);
         abr.start();
+
         return true;
     }
 
@@ -1102,8 +1122,11 @@ public class GeneDataTools {
             //log.debug("make output dir");
             outDirF.mkdirs();
         }
-        AsyncBrowserRegion abr = new AsyncBrowserRegion(session, pool, organism, outputDir, chrom, minCoord, maxCoord, arrayTypeID, RNADatasetID, genomeVer, ucscDB, ensemblPath, usageID, true);
+        AsyncBrowserRegion abr = new AsyncBrowserRegion(session, pool, organism, outputDir, chrom, minCoord, maxCoord, arrayTypeID, RNADatasetID, genomeVer, ucscDB, ensemblPath, usageID, true, this);
+        threadList.add(abr);
+
         abr.start();
+
         //boolean createdXML=this.createRegionImagesXMLFiles(folderName,organism,genomeVer,ensemblPath,arrayTypeID,RNADatasetID,ucscDB);
         //AsyncGeneDataTools prevThread=callAsyncGeneDataTools(chrom, minCoord, maxCoord,arrayTypeID,RNADatasetID,genomeVer,false);
         return true;
@@ -2783,7 +2806,22 @@ public class GeneDataTools {
             this.userFilesRoot = (String) session.getAttribute("userFilesRoot");
             //log.debug("userFilesRoot");
         }
-        threadList = (ArrayList<Thread>) session.getServletContext().getAttribute("threadList");
+        if (session.getServletContext().getAttribute("threadList") != null) {
+            threadList = (List) session.getServletContext().getAttribute("threadList");
+        } else {
+            ArrayList<Thread> backingthreadList = new ArrayList<Thread>();
+            threadList = Collections.synchronizedList(backingthreadList);
+            session.getServletContext().setAttribute("threadList", threadList);
+        }
+        if (session.getServletContext().getAttribute("threadHashMap") != null) {
+            threadHashMap = (Map) session.getServletContext().getAttribute("threadHashMap");
+        } else {
+            HashMap<String, String> hm = new HashMap<String, String>();
+            threadHashMap = Collections.synchronizedMap(hm);
+            session.getServletContext().setAttribute("threadHashMap", threadHashMap);
+
+        }
+
         isSessionSet = true;
     }
 

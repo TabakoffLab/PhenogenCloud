@@ -136,6 +136,7 @@ public class AsyncGeneDataTools extends Thread {
 
 
     public void run() throws RuntimeException {
+        log.debug("AsyncGeneDataTools - running");
         done = false;
         try {
             String tmpOutDir = "";
@@ -145,12 +146,14 @@ public class AsyncGeneDataTools extends Thread {
                 tmpOutDir = gdt.getFullPath() + "tmpData/browserCache/" + genomeVer + "/regionData/" + chrom + "/" + minCoord + "_" + maxCoord + "/";
             }
             outputRNASeqExprFiles(tmpOutDir, chrom, minCoord, maxCoord, genomeVer, version);
+            log.debug("AsyncGeneDataTools - after ExprFiles:" + chrom + ":" + minCoord + ":" + maxCoord);
             if (isEnsemblGene) {
                 //if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
                 outputProbesetIDFiles(tmpOutDir, chrom, minCoord, maxCoord, arrayTypeID, genomeVer);
                 //}
                 done = true;
             }
+            log.debug("AsyncGeneDataTools - after probeset");
             if (ensemblID1 != null && !ensemblID1.equals("")) {
                 callWriteXML(ensemblID1, organism, genomeVer, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID);
             }
