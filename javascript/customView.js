@@ -1,5 +1,4 @@
 <script>
-
     var GDBCustomView=function(params){
         var that={};
         that.curTimeout=-1;

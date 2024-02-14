@@ -86,7 +86,7 @@ mouseOnly.probeMouse = 1;
 
 var mmVer = "Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer = "Rat(<span id=\"verSelect\"></span>) HRDP version:<span id=\"hrdpSelect\"></span> Strain:BN";
-var siteVer = "PhenoGen v3.9.1(2/1/2023)";
+var siteVer = "PhenoGen v3.9.2(2/8/2024)";
 
 var trackBinCutoff = 10000;
 var customTrackLevel = -1;
@@ -1924,7 +1924,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                         }
                     } else {
                         var data = d.documentElement.getElementsByTagName("Feature");
-                        console.log(data);
+                        //console.log(data);
                         try {
                             var newTrack = SpliceJunctionTrack(that, data, track, lblPrefix + "Splice Junctions", 3, "");
                             that.addTrackList(newTrack);
@@ -2431,7 +2431,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
             .on("click", function () {
                 nameSpan = d3.select(this).attr("name");
                 if (nameSpan.toLowerCase().indexOf("gene") > -1) {
-                    console.log(":" + selectedID + ":");
+                    //console.log(":" + selectedID + ":");
                     if (selectedID !== "") {
                         if (!$('div#selectedDetail').is(":visible") && selectedID.indexOf("ENS") === 0) {
                             that.getTrack("ensemblcoding").setSelected(selectedID);
@@ -2724,7 +2724,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
             .attr("cursor", "pointer");
         zoomBtnSpan.append("button").attr("id", "zoomMenuSelect" + that.levelNumber).attr("class", "zoomSelectMenu");
         if (testChrome) {
-            console.log("CHROME");
+            //console.log("CHROME");
             d3.select("#zoomSelect" + that.levelNumber).style("height", "2.3em");
         } else if (testSafari) {
             d3.select("#zoomSelect" + that.levelNumber).style("height", "2.3em");
@@ -3299,11 +3299,11 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                     }, 1500);
                 });
                 if (organism === 'Rn') {
-                    console.log("running update org:");
+                    //console.log("running update org:");
                     var rn7Opt = tmpSel.append('option')
                         .attr('value', 'rn7')
                         .html('rn7');
-                    console.log("rn7 added");
+                    //console.log("rn7 added");
                     if (genomeVer === 'rn7') {
                         rn7Opt.attr('selected', 'selected');
                     }
@@ -3359,7 +3359,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                     //if (hrdpVer === '6') {
                     rn6Opt.attr('selected', 'selected');
                     //}
-                } else if (genomverVer === "rn6") {
+                } else if (genomeVer === "rn6") {
                     var rn5pt = tmpSelh.append('option')
                         .attr('value', '5')
                         .html('HRDPv5');
@@ -3882,7 +3882,7 @@ function selectionSVG(div, imageWidth, levelNumber, parent) {
     };
 
     that.draw = function () {
-        console.log("selectionSVG.draw" + that.trackClass);
+        //console.log("selectionSVG.draw" + that.trackClass);
         if (that.visible) {
             var w = that.xScale(that.stop) - that.xScale(that.start);
             that.parent.updateTrackSelectedArea(that.start, that.stop);
@@ -6256,11 +6256,11 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
                     tmp = that.svg.selectAll("g.gene" + str).data();
                     if (tmp && tmp.length > 0) {
                         that.setupDetailedView(tmp[0].parent);
-                    } else {
-                        console.log("tmp[0]");
-                        console.log(tmp);
-                        //Rollbar.debug("tmp[0] is undefined.  tmp.length is "+tmp.length+":"+geneID+":"+that.gsvg.levelNumber+":"+that.trackClass);
-                    }
+                    } //else {
+                    //console.log("tmp[0]");
+                    //console.log(tmp);
+                    //Rollbar.debug("tmp[0] is undefined.  tmp.length is "+tmp.length+":"+geneID+":"+that.gsvg.levelNumber+":"+that.trackClass);
+                    //}
                 }
 
                 selectGene = "";
@@ -6317,7 +6317,7 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
             var newMin = 0;
             var newMax = 0;
             if (localTxType === "protein" || localTxType === "long" || localTxType.indexOf("liverTotal") === 0 || localTxType === "heartTotal" || localTxType.indexOf("brainTotal") === 0 || localTxType === "mergedTotal" || localTxType === "kidneyTotal" || (localTxType === "small" && genomeVer !== "rn5") || (localTxType === "small" && new String(d.getAttribute("ID")).indexOf("ENS") > -1)) {
-                console.log("totalType");
+                //console.log("totalType");
                 var displayID = d.getAttribute("ID");
                 var akaENS = "";
                 var akaGenSym = "";
@@ -6384,12 +6384,18 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
                     }
                 }
                 $('div#selectedImage').show();
-                console.log("here");
+                //console.log("here");
                 if ((new String(selectedID)).indexOf("ENS") > -1 && that.trackClass.indexOf("ensembl") > -1) {
-                    console.log("geneReport");
+                    //console.log("geneReport");
                     $('div#selectedReport').show();
                     var jspPage = pathPrefix + "geneReport.jsp";
-                    var params = {id: selectedID, geneSymbol: selectedGeneSymbol, chromosome: chr, species: organism, genomeVer: genomeVer};
+                    var params = {
+                        id: selectedID,
+                        geneSymbol: selectedGeneSymbol,
+                        chromosome: chr,
+                        species: organism,
+                        genomeVer: genomeVer
+                    };
                     DisplaySelectedDetailReport(jspPage, params);
                 } else {
                     if (localTxType !== "small") {
@@ -6478,7 +6484,10 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
             }
         } else if (that.drawnAs === "Gene") {
             var dataElem = d3.select("#Level" + that.gsvg.levelNumber + that.trackClass).selectAll("g.gene");
-            that.counts = [{value: 0, names: "Ensembl"}, {value: 0, names: "Brain RNA-Seq"}, {value: 0, names: "Liver RNA-Seq"}, {
+            that.counts = [{value: 0, names: "Ensembl"}, {value: 0, names: "Brain RNA-Seq"}, {
+                value: 0,
+                names: "Liver RNA-Seq"
+            }, {
                 value: 0,
                 names: "Heart RNA-Seq"
             }, {value: 0, names: "Merged RNA-Seq"}];
@@ -8527,7 +8536,10 @@ function RefSeqTrack(gsvg, data, trackClass, label, additionalOptions) {
     that.redrawLegend = function () {
         var legend = [];
         var curPos = 0;
-        legend = [{color: "#18814F", label: "Reviewed"}, {color: "#38A16F", label: "Validated"}, {color: "#78E1AF", label: "Provisional"}, {
+        legend = [{color: "#18814F", label: "Reviewed"}, {color: "#38A16F", label: "Validated"}, {
+            color: "#78E1AF",
+            label: "Provisional"
+        }, {
             color: "#A8FFDF",
             label: "Inferred"
         }, {color: "#A8DFFF", label: "Predicted/Model"}, {color: "#C8FFFF", label: "Unknown"}];
@@ -8940,7 +8952,10 @@ function ProbeTrack(gsvg, data, trackClass, label, additionalOptions) {
                 that.trackYMax = totalYMax * 15;
                 that.svg.attr("height", that.trackYMax);
             } else if (that.colorSelect === "annot") {
-                var legend = [{color: "#FF0000", label: "Core"}, {color: "#0000FF", label: "Extended"}, {color: "#006400", label: "Full"}, {
+                var legend = [{color: "#FF0000", label: "Core"}, {
+                    color: "#0000FF",
+                    label: "Extended"
+                }, {color: "#006400", label: "Full"}, {
                     color: "#000000",
                     label: "Ambiguous"
                 }];
@@ -9245,7 +9260,10 @@ function ProbeTrack(gsvg, data, trackClass, label, additionalOptions) {
             that.trackYMax = totalYMax;
             that.svg.attr("height", totalYMax * 15 + 45);
         } else if (that.colorSelect == "annot") {
-            var legend = [{color: "#FF0000", label: "Core"}, {color: "#0000FF", label: "Extended"}, {color: "#006400", label: "Full"}, {
+            var legend = [{color: "#FF0000", label: "Core"}, {color: "#0000FF", label: "Extended"}, {
+                color: "#006400",
+                label: "Full"
+            }, {
                 color: "#000000",
                 label: "Ambiguous"
             }];
@@ -9390,7 +9408,10 @@ function ProbeTrack(gsvg, data, trackClass, label, additionalOptions) {
 
     that.getDisplayedData = function () {
         var dataElem = d3.select("#Level" + that.gsvg.levelNumber + that.trackClass).selectAll("g.probe");
-        that.counts = [{value: 0, names: "Core"}, {value: 0, names: "Extended"}, {value: 0, names: "Full"}, {value: 0, names: "Ambiguous"}];
+        that.counts = [{value: 0, names: "Core"}, {value: 0, names: "Extended"}, {value: 0, names: "Full"}, {
+            value: 0,
+            names: "Ambiguous"
+        }];
         var tmpDat = dataElem[0];
         var dispData = new Array();
         var dispDataCount = 0;
@@ -9583,7 +9604,11 @@ function SNPTrack(gsvg, data, trackClass, density, additionalOptions) {
     } else if (that.include == 4) {
         lbl = lbl + " SNPs/Indels";
     }
-    that.counts = [{value: 0, perc: 0, names: "SNP " + that.displayStrain}, {value: 0, perc: 0, names: "Insertion " + that.displayStrain}, {
+    that.counts = [{value: 0, perc: 0, names: "SNP " + that.displayStrain}, {
+        value: 0,
+        perc: 0,
+        names: "Insertion " + that.displayStrain
+    }, {
         value: 0,
         perc: 0,
         names: "Deletion " + that.displayStrain
@@ -9682,9 +9707,9 @@ function SNPTrack(gsvg, data, trackClass, density, additionalOptions) {
                             that.updateSettingsFromUI();
                             that.updateData();
                         });
-                    } else {
+                    }/* else {
                         console.log("Undefined track settings:  " + controls[c]);
-                    }
+                    }*/
                 }
             }
             var buttonDiv = table.append("tr").append("td");
@@ -9899,7 +9924,11 @@ function SNPTrack(gsvg, data, trackClass, density, additionalOptions) {
     that.getDisplayedData = function () {
         var dataElem = d3.select("#Level" + that.gsvg.levelNumber + that.trackClass).selectAll(".snp");
         //that.counts=[{value:0,perc:0,names:"SNP "+that.displayStrain},{value:0,perc:0,names:"Insertion "+that.displayStrain},{value:0,perc:0,names:"Deletion "+that.displayStrain}];
-        that.counts = [{value: 0, perc: 0, names: "SNP"}, {value: 0, perc: 0, names: "Insertion"}, {value: 0, perc: 0, names: "Deletion"}];
+        that.counts = [{value: 0, perc: 0, names: "SNP"}, {value: 0, perc: 0, names: "Insertion"}, {
+            value: 0,
+            perc: 0,
+            names: "Deletion"
+        }];
         var tmpDat = dataElem[0];
         var dispData = new Array();
         var dispDataCount = 0;
@@ -10208,8 +10237,8 @@ function QTLTrack(gsvg, data, trackClass, density) {
         that.counts = new Array();
         var countsInd = 0;
         var tmpDat = dataElem.data();
-        console.log(dataElem);
-        console.log(tmpDat);
+        //console.log(dataElem);
+        //console.log(tmpDat);
         var dispData = new Array();
         var dispDataCount = 0;
         var total = 0;
@@ -10334,13 +10363,13 @@ function QTLTrack(gsvg, data, trackClass, density) {
         //update
         //that.svg.selectAll(".qtl").remove();
         if (that.data && that.data.length > 0) {
-            console.log(that.svg);
-            console.log(that.svg.selectAll(".qtl"));
+            //console.log(that.svg);
+            //console.log(that.svg.selectAll(".qtl"));
 
             var qtls = that.svg.selectAll(".qtl")
                 .data(data, key);
             //		.attr("transform",function(d,i){ return "translate("+that.xScale(d.getAttribute("start"))+","+that.calcY(d,i)+")";});
-            console.log(qtls);
+            //console.log(qtls);
             //add new
             qtls.enter().append("g")
                 .attr("class", "qtl")
@@ -11272,7 +11301,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
     var tmpMin = that.gsvg.xScale.domain()[0];
     var tmpMax = that.gsvg.xScale.domain()[1];
     var len = tmpMax - tmpMin;
-    console.log(that.trackClass + ":" + additionalOptions);
+    //console.log(that.trackClass + ":" + additionalOptions);
     var opts = [];
     if (additionalOptions) {
         if (additionalOptions.indexOf(",") > 0) {
@@ -11285,11 +11314,11 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         tmp = opts[0].split(":");
         that.scaleMin = tmp[0] * 1;
         that.scaleMax = tmp[1] * 1;
-        console.log("scale:" + that.scaleMin + ":" + that.scaleMax);
+        //console.log("scale:" + that.scaleMin + ":" + that.scaleMax);
     }
     if (opts.length > 2) {
         that.countType = opts[1] * 1;
-        console.log("countType:" + that.countType);
+        //console.log("countType:" + that.countType);
     }
 
 
@@ -11554,7 +11583,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         if (that.loadedDataMin <= tmpMin && tmpMax <= that.loadedDataMax) {
             that.redraw();
         } else {
-            console.log("Update caused updateFullData()" + this.trackID);
+            //console.log("Update caused updateFullData()" + this.trackID);
             that.updateFullData(0, 0);
         }
     };
@@ -11568,7 +11597,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         that.showLoading();
         if (retry === 0 || force == 1) {
             that.bin = that.calculateBin(len);
-            console.log(that.trackClass + ":bin size:" + that.bin);
+            //console.log(that.trackClass + ":bin size:" + that.bin);
         }
         var tmpCountType = "Total";
         if (that.countType === 2) {
@@ -11585,8 +11614,8 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
             tmpMax = tmpMax + (that.bin * 2 - (tmpMax % (that.bin * 2)));
             file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/tmp/" + tmpMin + "_" + tmpMax + ".bincount." + that.bin + "." + that.trackClass + "." + tmpCountType + ".xml";
         }
-        console.log(that.trackClass + ":file=" + file);
-        console.log(that.trackClass + ":folder=" + that.gsvg.folderName);
+        //console.log(that.trackClass + ":file=" + file);
+        //console.log(that.trackClass + ":folder=" + that.gsvg.folderName);
         d3.xml(file, function (error, d) {
             if (error) {
                 console.log("error:" + that.bin + ":" + file)
@@ -11661,10 +11690,10 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                     }, 15000);
                 }
             } else {
-                console.log("update data");
+                //console.log("update data");
                 //console.log(d);
                 if (d == null) {
-                    console.log("is null");
+                    //console.log("is null");
                     if (retry >= 32) {
                         data = new Array();
                         that.draw(data);
@@ -11675,7 +11704,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                         }, 5000);
                     }
                 } else {
-                    console.log("not null is drawing");
+                    //console.log("not null is drawing");
                     that.fullDataTimeOutHandle = 0;
                     that.loadedDataMin = tmpMin;
                     that.loadedDataMax = tmpMax;
@@ -11756,7 +11785,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         //d3.selectAll("."+that.trackClass).remove();
         //data.sort(function(a, b){return a.getAttribute("start")-b.getAttribute("start")});
         that.data = data;
-        console.log("draw:" + that.trackClass + ":" + data.length);
+        //console.log("draw:" + that.trackClass + ":" + data.length);
         /*if($("#"+that.trackClass+"Dense"+that.gsvg.levelNumber+"Select").length>0){
 			that.density=$("#"+that.trackClass+"Dense"+that.gsvg.levelNumber+"Select").val();
 		}*/
@@ -11806,9 +11835,9 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                 }
             }
         }
-        console.log("newData:" + newData.length);
+        //console.log("newData:" + newData.length);
         ndata = newData;
-        console.log("data:" + ndata.length);
+        //console.log("data:" + ndata.length);
         //that.svg.selectAll("." + that.trackClass).remove();
         that.svg.select(".y.axis").remove();
         that.svg.select("g.grid").remove();
@@ -11816,13 +11845,13 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         that.svg.select(".area").remove();
         that.svg.selectAll(".area").remove();
         if (that.density == 1) {
-            console.log("draw:den1");
+            //console.log("draw:den1");
             var tmpMax = that.gsvg.xScale.domain()[1];
             var points = that.svg.selectAll("." + that.trackClass).data(ndata, keyStart);
             points.enter()
                 .append("rect")
                 .attr("x", function (d) {
-                    console.log("x:" + d.getAttribute("start") + ":" + that.xScale(d.getAttribute("start")));
+                    //console.log("x:" + d.getAttribute("start") + ":" + that.xScale(d.getAttribute("start")));
                     return that.xScale(d.getAttribute("start"));
                 })
                 .attr("y", 15)
@@ -11874,7 +11903,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
 
             that.svg.attr("height", 30);
         } else if (that.density == 2) {
-            console.log("draw:den2");
+            //console.log("draw:den2");
             that.yScale.domain([0, tmpYMax]);
             that.yAxis = d3.axisLeft(that.yScale)
                 .ticks(5);

@@ -711,23 +711,26 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                       title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn7 (available)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
                         src="<%=imagesDir%>/icons/info.gif"></span>
                 <span id="" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>style="display: none;"<%}%>
-                    <label>
-                        Genome Version:
-                        <select name="genomeVerCB" id="genomeVerCB">
-                            <%if (myOrganism.equals("Rn")) {%>
-                            <option value="rn7">Rn7</option>
-                            <option value="rn6">Rn6</option>
-                            <option value="rn5">Rn5</option>
-                            <%} else { %>
-                            <option value="mm10">Mm10</option>
-                            <%}%>
-                        </select>
-                    </label>
+                <label>
+                    Genome Version:
+                    <select name="genomeVerCB" id="genomeVerCB">
+                        <%if (myOrganism.equals("Rn")) {%>
+                        <option value="rn7" <%if(genomeVer.equals("rn7")){%>SELECTED<%}%> >Rn7</option>
+                        <option value="rn6" <%if(genomeVer.equals("rn6")){%>SELECTED<%}%> >Rn6</option>
+                        <option value="rn5" <%if(genomeVer.equals("rn5")){%>SELECTED<%}%> >Rn5</option>
+                        <%} else { %>
+                        <option value="mm10">Mm10</option>
+                        <%}%>
+                    </select>
+                </label>
                 </span>
-                <BR><BR>or&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" name="translateBTN" id="translateBTN" value="Translate Region to Mouse/Rat"
-                          onClick="openTranslateRegion()">
+                <BR><BR>or&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button"
+                                                                                                   name="translateBTN"
+                                                                                                   id="translateBTN"
+                                                                                                   value="Translate Region to Mouse/Rat"
+                                                                                                   onClick="openTranslateRegion()">
                 <span style="padding-left:10px;float:right;"> <input type="submit" class="goBTN" id="goBTN1" value="Go"
-                                                         onClick="return displayWorking()"></span>
+                                                                     onClick="return displayWorking()"></span>
 
             </fieldset>
 
@@ -763,7 +766,8 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                                              value="Create Custom View"
                                                              onClick="return custView.displayCustom()"></span>
                     <BR><BR><BR>
-                    <span style="padding-left:10px;float:right;"> <input type="submit" class="goBTN" id="goBTN2" value="Go"
+                    <span style="padding-left:10px;float:right;"> <input type="submit" class="goBTN" id="goBTN2"
+                                                                         value="Go"
                                                                          onClick="return displayWorking()"></span>
                 </div>
             </fieldset>
@@ -772,7 +776,9 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                     <legend>3. What data should be included in the custom view?</legend>
                     <div class="controlgroup">
 
-                        <span style="float: right;"><span class="custViewStatus"></span><input type="submit" class="goBTN" id="goBTN3" value="Go"
+                        <span style="float: right;"><span class="custViewStatus"></span><input type="submit"
+                                                                                               class="goBTN" id="goBTN3"
+                                                                                               value="Go"
                                                                                                onClick="return displayWorking()"></span>
                         <BR>
                         Genome Version:
@@ -787,7 +793,8 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                         </select>
                         <BR>
                         Optional:
-                        <span style="margin-left:45px;">View Name:<input type="text" id="viewName"></span><span style="margin-left:45px;">Email for later retreival:<input
+                        <span style="margin-left:45px;">View Name:<input type="text" id="viewName"></span><span
+                            style="margin-left:45px;">Email for later retreival:<input
                             type="text" id="assocEmail"></span>
                         <BR>
                         <div id="accordion">
@@ -803,7 +810,8 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                     <input type="checkbox" class="custviewCbx" id="cbxTissueKidney">
                                     <label for="cbxTissueHeart">Kidney (HXB RNA-Seq) </label><BR>
                                     <input type="checkbox" class="custviewCbx" id="cbxTissueMerged">
-                                    <label for="cbxTissueMerged">Merged (HRDP RNA-Seq merged across tissues and strains) </label><BR>
+                                    <label for="cbxTissueMerged">Merged (HRDP RNA-Seq merged across tissues and
+                                        strains) </label><BR>
                                     <input type="checkbox" class="custviewCbx" id="cbxTissueBAT">
                                     <label for="cbxTissueBAT">Brown Adipose (HXB Arrays)</label>
                                 </p>
@@ -823,7 +831,8 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                         <option value="1">HRDP v3</option>
                                     </select><BR>-->
                                     Tracks:<BR>
-                                    <input type="checkbox" class="custviewCbx" id="cbxTrackReconstruction" checked="checked">
+                                    <input type="checkbox" class="custviewCbx" id="cbxTrackReconstruction"
+                                           checked="checked">
                                     <label>Reconstructed Transcriptome</label><BR>
                                     <input type="checkbox" class="custviewCbx" id="cbxTrackSpliceJunction">
                                     <label>Splice Junctions</label><BR>
@@ -848,18 +857,27 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                                onClick="return custView.selectAllStrains()">
                                         <input type="button" id="deselectAll" value="Deselect All"
                                                onClick="return custView.deselectAllStrains()"><BR>
-                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsBNLx">BNLx (HXB parent)</label>
-                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSHR">SHR (HXB parent)</label>
-                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsF344Stm">F344/Stm (FXLE parent)</label>
-                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEStm">LE/Stm (FXLE parent)</label>
+                                        <label><input type="checkbox" class="custviewCbx strainCbx"
+                                                      id="strainReadsBNLx">BNLx (HXB parent)</label>
+                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSHR">SHR
+                                            (HXB parent)</label>
+                                        <label><input type="checkbox" class="custviewCbx strainCbx"
+                                                      id="strainReadsF344Stm">F344/Stm (FXLE parent)</label>
+                                        <label><input type="checkbox" class="custviewCbx strainCbx"
+                                                      id="strainReadsLEStm">LE/Stm (FXLE parent)</label>
                                         <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsACI">ACI</label>
                                         <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsCOP">Cop</label>
                                         <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsDA">DA</label>
-                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsF344NCl">F344/NCl</label>
-                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsF344NHsd">F344/NHsd</label>
-                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEWCrl">LEW/Crl</label>
-                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsLEWSsnhsd">LEW/SsNHsd</label>
-                                        <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSHRP">SHRSP</label>
+                                        <label><input type="checkbox" class="custviewCbx strainCbx"
+                                                      id="strainReadsF344NCl">F344/NCl</label>
+                                        <label><input type="checkbox" class="custviewCbx strainCbx"
+                                                      id="strainReadsF344NHsd">F344/NHsd</label>
+                                        <label><input type="checkbox" class="custviewCbx strainCbx"
+                                                      id="strainReadsLEWCrl">LEW/Crl</label>
+                                        <label><input type="checkbox" class="custviewCbx strainCbx"
+                                                      id="strainReadsLEWSsnhsd">LEW/SsNHsd</label>
+                                        <label><input type="checkbox" class="custviewCbx strainCbx"
+                                                      id="strainReadsSHRP">SHRSP</label>
                                         <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSR">SR</label>
                                         <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsSS">SS</label>
                                         <label><input type="checkbox" class="custviewCbx strainCbx" id="strainReadsWKY">WKY</label>
@@ -942,7 +960,8 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                 <p>
                                     <input type="checkbox" class="custviewCbx" checked="checked" id="cbxTrackSequence">
                                     <label>Ensembl</label><BR>
-                                    <input type="checkbox" class="custviewCbx" checked="checked" id="cbxTrackEnsemblAnnotation">
+                                    <input type="checkbox" class="custviewCbx" checked="checked"
+                                           id="cbxTrackEnsemblAnnotation">
                                     <label>Ensembl</label><BR>
                                     <input type="checkbox" class="custviewCbx" id="cbxTrackRefSeq">
                                     <label>RefSeq</label><BR>
@@ -954,7 +973,9 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                             </div>
 
                         </div>
-                        <span style="float: right;"><span class="custViewStatus"></span><input type="submit" class="goBTN" id="goBTN4" value="Go"
+                        <span style="float: right;"><span class="custViewStatus"></span><input type="submit"
+                                                                                               class="goBTN" id="goBTN4"
+                                                                                               value="Go"
                                                                                                onClick="return displayWorking()"></span></span>
                     </div>
                 </fieldset>
@@ -1113,7 +1134,6 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                 console.log(defviewList);
                 //readCookieViews();
                 if (shouldUpdate === 1) {
-                    console.log("setupDefaultView()");
                     setupDefaultView();
                 }
             },
@@ -1204,13 +1224,17 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
         if (!overideGV) {
             var specStoredGenomeVer = checkStoredGenomeVersion(tmp);
             $('input#genomeVer').val(specStoredGenomeVer);
+            $('select#genomeVerCB').val(specStoredGenomeVer);
             genomeVer = specStoredGenomeVer;
+
         } else {
             if (isLocalStorage() === true) {
                 localStorage.setItem(tmp + "DefGenomeVer", genomeVer);
             } else {
                 $.cookie(tmp + "DefGenomeVer", genomeVer);
             }
+            $('input#genomeVer').val(genomeVer);
+            $('select#genomeVerCB').val(genomeVer);
         }
 
         d3.select("#defaultView").html("");
@@ -1257,6 +1281,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
     function changeGenome(gVer, curView) {
         genomeVer = gVer;
         $('input#genomeVer').val(gVer);
+        $('select#genomeVerCB select').val(gVer).change();
         getMainViewData(0);
         d3.select("#defaultView").html("");
         filterViewList = [];
@@ -1284,6 +1309,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 
     function updateDefaultView(gVer, curView) {
         $('input#genomeVer').val(gVer);
+        $('select#genomeVerCB select').val(gVer).change();
         genomeVer = gVer;
         getMainViewData(0);
         d3.select("#defaultView").html("");
@@ -1336,13 +1362,14 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
         var tmp = $("#speciesCB").val();
         var specStoredGenomeVer = checkStoredGenomeVersion(tmp);
         $('input#genomeVer').val(specStoredGenomeVer);
+        $("select#genomeVerCB select").val(specStoredGenomeVer).change();
         genomeVer = specStoredGenomeVer;
         getMainViewData(1);
         //setupDefaultView();
     });
 
     $("#genomeVerCB").on("change", function () {
-        var tmp = $("#speciesCB").val();
+        //var tmp = $("#speciesCB").val();
         var tmpGV = $("#genomeVerCB").val();
         if (isLocalStorage() === true) {
             localStorage.setItem(organism + "DefGenomeVer", tmpGV);
@@ -1350,10 +1377,14 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
             $.cookie(organism + "DefGenomeVer", tmpGV);
 
         }
-        var specStoredGenomeVer = checkStoredGenomeVersion(tmp);
-        $('input#genomeVer').val(specStoredGenomeVer);
-        genomeVer = specStoredGenomeVer;
-        getMainViewData(1);
+        //var specStoredGenomeVer = checkStoredGenomeVersion(tmp);
+        $('input#genomeVer').val(tmpGV);
+        //$("select#genomeVerCB select").val(specStoredGenomeVer).change();
+        genomeVer = tmpGV;
+        setTimeout(function () {
+            getMainViewData(1);
+        }, 10);
+
         //setupDefaultView();
     });
 
@@ -1523,29 +1554,31 @@ Hint: Try other synonyms if the first ID that you enter is not found.
     });
     $(window).ready(function () {
         setTimeout(function () {
-            getMainViewData(1);
             custView = GDBCustomView();
             custView.setup();
-        }, 10);
+        }, 500);
         setTimeout(function () {
             PhenogenAnonSession = SetupAnonSession();
             PhenogenAnonSession.setupSession();
+            getMainViewData(1);
         }, 20);
         //$( ".controlgroup" ).controlgroup()
         /*$( ".controlgroup-vertical" ).controlgroup({
             "direction": "vertical"
         });*/
 
-        $(".tooltipster").tooltipster({
-            position: 'top-right',
-            maxWidth: 250,
-            offsetX: 24,
-            offsetY: 5,
-            contentAsHTML: true,
-            //arrow: false,
-            interactive: true,
-            interactiveTolerance: 350
-        });
+        setTimeout(function () {
+            $(".tooltipster").tooltipster({
+                position: 'top-right',
+                maxWidth: 250,
+                offsetX: 24,
+                offsetY: 5,
+                contentAsHTML: true,
+                //arrow: false,
+                interactive: true,
+                interactiveTolerance: 350
+            });
+        }, 10);
     });
 </script>
 

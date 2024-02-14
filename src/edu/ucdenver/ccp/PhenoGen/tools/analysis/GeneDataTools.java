@@ -509,8 +509,8 @@ public class GeneDataTools {
                 File errorFile = new File(outputDir + "errMsg.txt");
                 if (geneDir.exists()) {
                     Date lastMod = new Date(geneDir.lastModified());
-                    Date prev2Months = new Date(start.getTime() - (60 * 24 * 60 * 60 * 1000));
-                    if (lastMod.before(prev2Months) || errorFile.exists()) {
+                    Date prev1Months = new Date(start.getTime() - (30 * 24 * 60 * 60 * 1000));
+                    if (lastMod.before(prev1Months) || errorFile.exists()) {
                         if (myFH.deleteAllFilesPlusDirectory(geneDir)) {
                         }
                         error = generateFiles(organism, genomeVer, source.get("ensembl"), rOutputPath, ensemblIDList, folderName, ensemblID1, RNADatasetID, arrayTypeID, panel);

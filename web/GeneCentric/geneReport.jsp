@@ -1,4 +1,7 @@
 <%@ include file="/web/common/anon_session_vars.jsp" %>
+<%@ page import="java.util.stream.Collectors"
+         import="java.util.Comparator"
+         %>
 
 <jsp:useBean id="gdt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.GeneDataTools" scope="session"></jsp:useBean>
 <%
@@ -285,6 +288,20 @@ $(this).removeClass("less");
             String chr = curGene.getChromosome();
             String phenogenID = curGene.getGeneID();
             ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Transcript> tmpTrx = curGene.getTranscripts();
+            HashMap<String,HashMap<String,String>> uniqueTrxList=new HashMap<String,HashMap<String,String>>();
+			for(int l=0;l<tmpTrx.size();l++) {
+				String tmpID=tmpTrx.get(l).getID();
+				if(!uniqueTrxList.containsKey(tmpID)) {
+					String idHTML=tmpTrx.get(l).getIDwToolTip();
+					String matched=tmpTrx.get(l).getMatchReason();
+					HashMap<String,String>
+							tmpHM=new HashMap<String,String>();
+					tmpHM.put("html",idHTML);
+					tmpHM.put("match",matched);
+					uniqueTrxList.put(tmpID,tmpHM);
+
+				}
+			}
             if (!chr.startsWith("chr")) {
                 chr = "chr" + chr;
             }
@@ -483,21 +500,24 @@ $(this).removeClass("less");
                         Transcripts:
                     </TD>
                     <TD style="width:78%;">
-                        <%
-                            for (int l = 0; l < tmpTrx.size(); l++) {%>
-                        <B><%=tmpTrx.get(l).getIDwToolTip()%>
-                        </B>
-                        <%
-                            if (myOrganism.equals("Rn") && curGene.getGeneID().startsWith("ENS")) {
-                                if (!tmpTrx.get(l).getID().startsWith("ENS")) {
-                        %>
-                        - <%=tmpTrx.get(l).getMatchReason()%>
-                        <%
-                                }
-                            }
-                        %>
-                        <BR>
+                        <% Set<String> keySet = uniqueTrxList.keySet();
+                        ArrayList<String> list=new ArrayList<String>(keySet);
 
+                        Collections.sort(list,new Comparator<String>() {
+                                    public int compare(String a, String b) {
+                                        if (a.equals(b)) {
+                                            return 0;
+                                        }
+                                        return a.compareTo(b);
+                                    }
+                                });
+                        for(Object key : list ) {
+                                HashMap<String,String> cur = uniqueTrxList.get(key);%>
+                        		<B><%=cur.get("html")%></B>
+                        		<%if(cur.containsKey("match") && !cur.get("match").equals("")) {%>
+                        			-  <%=cur.get("match")%>
+                        		<%}%>
+                        		<BR>
                         <%}%>
                     </TD>
                 </TR>
