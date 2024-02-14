@@ -28,6 +28,15 @@ span.control{
 		background:#989898;
 	}
 </style>
+<div class="whats_new version"><p><H3>Version 3.9.2</H3><BR> 2/8/2024</p></div>
+    <UL>
+        <LI>HRDP v6 TPM Data available via REST API and Downloads</LI>
+        <LI>HRDP v7 TPM Data available via REST API and Downloads</LI>
+        <LI>Added TPM and Heritablility summaries to gene reports.</LI>
+        <LI>Bug Fixes</LI>
+    </UL>
+
+<HR>
 <div class="whats_new version"><p><H3>Version 3.7.5</H3><BR> 12/11/2020</p></div>
     <UL>
         <LI>Sampled counts from every strain are now available as well as total counts.</LI>

@@ -2892,6 +2892,72 @@ public class GeneDataTools {
         return mainGenes;
     }
 
+    public HashMap<String, HashMap<String, HashMap<String, Double>>> getTPMHerit(String geneIDs, String dsIDs) {
+        HashMap<String, HashMap<String, HashMap<String, Double>>> ret = new HashMap<>();
+        String qHerit = "SELECT rd.TISSUE,rt.merge_gene_id,rt.merge_isoform_id,rt.HERIT_GENE,rt.HERIT_TRX FROM inia_prod.rna_transcripts rt left outer join rna_dataset rd on rd.RNA_DATASET_ID=rt.RNA_DATASET_ID where rt.RNA_DATASET_ID in (" + dsIDs + ") and merge_isoform_id in (" + geneIDs + ") or merge_gene_id in (" + geneIDs + ")";
+        String tpmQ = "select rd.tissue,rtt.feature_id,rtt.alt_feature_id,rtt.tpm_median, rtt.tpm_min, rtt.tpm_max,rtt.herit_gene,rtt.herit_trx from rna_transcripts_tpm rtt left outer join rna_dataset rd on rd.rna_dataset_id=rtt.rna_dataset_id  where rtt.rna_dataset_id in (" + dsIDs + ") and (rtt.feature_id in (" + geneIDs + ") or rtt.alt_feature_id in (" + geneIDs + ") )";
+        log.debug("TPMQ\n" + tpmQ);
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement psC = conn.prepareStatement(qHerit);
+            ResultSet trxRS = psC.executeQuery();
+            while (trxRS.next()) {
+                String tissue = trxRS.getString(1);
+                String geneID = trxRS.getString(2);
+                String trxID = trxRS.getString(3);
+                double heritGene = trxRS.getDouble(4);
+                double heritTrx = trxRS.getDouble(5);
+                //Add Gene
+                if (!ret.containsKey(geneID)) {
+                    ret.put(geneID, new HashMap<String, HashMap<String, Double>>());
+                }
+                if (!ret.get(geneID).containsKey(tissue)) {
+                    ret.get(geneID).put(tissue, new HashMap<String, Double>());
+                }
+                ret.get(geneID).get(tissue).put("geneHerit", heritGene);
+                //Add Trx
+                if (!ret.containsKey(trxID)) {
+                    ret.put(trxID, new HashMap<String, HashMap<String, Double>>());
+                }
+                if (!ret.get(trxID).containsKey(tissue)) {
+                    ret.get(trxID).put(tissue, new HashMap<String, Double>());
+                }
+                ret.get(trxID).get(tissue).put("trxHerit", heritGene);
+            }
+            trxRS.close();
+            psC = conn.prepareStatement(tpmQ);
+            ResultSet rsC = psC.executeQuery();
+            while (rsC.next()) {
+                String tissue = rsC.getString(1);
+                String id = rsC.getString(2);
+                //String altID = rsC.getString(3);
+                String mainID = id;
+                //if (!geneIDs.contains(id)) {
+                //    mainID = altID;
+                //}
+                if (!ret.containsKey(mainID)) {
+                    ret.put(mainID, new HashMap<String, HashMap<String, Double>>());
+                }
+                if (!ret.get(mainID).containsKey(tissue)) {
+                    ret.get(mainID).put(tissue, new HashMap<String, Double>());
+                }
+                HashMap<String, Double> tmp = new HashMap<>();
+                if (ret.get(mainID).containsKey(tissue)) {
+                    tmp = ret.get(mainID).get(tissue);
+                }
+                tmp.put("medTPM", rsC.getDouble(4));
+                tmp.put("minTPM", rsC.getDouble(5));
+                tmp.put("maxTPM", rsC.getDouble(6));
+                if (id.startsWith("ENS")) {
+                    tmp.put("geneHerit", rsC.getDouble(7));
+                    tmp.put("trxHerit", rsC.getDouble(8));
+                }
+            }
+        } catch (SQLException e) {
+            log.error("getTPM error", e);
+        }
+        return ret;
+    }
+
     public HashMap<String, HashMap<String, HashMap<String, Double>>> getTPM(String geneIDs, String dsIDs) {
         HashMap<String, HashMap<String, HashMap<String, Double>>> ret = new HashMap<>();
         String tpmQ = "select rd.tissue,rtt.* from rna_transcripts_tpm rtt left outer join rna_dataset rd on rd.rna_dataset_id=rtt.rna_dataset_id  where rtt.rna_dataset_id in (" + dsIDs + ") and (rtt.feature_id in (" + geneIDs + ") or rtt.alt_feature_id in (" + geneIDs + ") )";

@@ -5,7 +5,6 @@
 
 <jsp:useBean id="gdt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.GeneDataTools" scope="session"></jsp:useBean>
 <%
-
     gdt.setSession(session);
     ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> fullGeneList = new ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene>();
     String myOrganism = "";
@@ -85,14 +84,16 @@
         tissuesList1 = new String[4];
         tissuesList2 = new String[4];
         if (genomeVer.equals("rn7")) {
-            tissuesList1 = new String[3];
-            tissuesList2 = new String[3];
+            tissuesList1 = new String[4];
+            tissuesList2 = new String[4];
             tissuesList1[0] = "Brain";
             tissuesList2[0] = "Whole Brain";
             tissuesList1[1] = "Liver";
             tissuesList2[1] = "Liver";
-            tissuesList1[1] = "Kidney";
-            tissuesList2[1] = "Kidney";
+            tissuesList1[2] = "Kidney";
+            tissuesList2[2] = "Kidney";
+            tissuesList1[3] = "Heart";
+            tissuesList2[3] = "Heart";
         } else if (genomeVer.equals("rn6")) {
             tissuesList1 = new String[2];
             tissuesList2 = new String[2];
@@ -133,6 +134,7 @@
     genURL = urlPrefix + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/";
     ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(id, id, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, true);
     edu.ucdenver.ccp.PhenoGen.data.Bio.Gene curGene = null;
+
     for (int i = 0; i < tmpGeneList.size(); i++) {
         log.debug("check:" + tmpGeneList.get(i).getGeneID() + ":" + id);
         if (tmpGeneList.get(i).getGeneID().equals(id)) {
@@ -140,6 +142,8 @@
             curGene = tmpGeneList.get(i);
         }
     }
+
+
     long len = curGene.getEnd() - curGene.getStart();
     if (len < 200 && !curGene.getBioType().equals("protein_coding")) {
         isSmall = true;
@@ -289,6 +293,7 @@ $(this).removeClass("less");
             String phenogenID = curGene.getGeneID();
             ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Transcript> tmpTrx = curGene.getTranscripts();
             HashMap<String,HashMap<String,String>> uniqueTrxList=new HashMap<String,HashMap<String,String>>();
+            StringBuilder sb=new StringBuilder();
 			for(int l=0;l<tmpTrx.size();l++) {
 				String tmpID=tmpTrx.get(l).getID();
 				if(!uniqueTrxList.containsKey(tmpID)) {
@@ -299,8 +304,12 @@ $(this).removeClass("less");
 					tmpHM.put("html",idHTML);
 					tmpHM.put("match",matched);
 					uniqueTrxList.put(tmpID,tmpHM);
-
+                    sb.append(",\""+tmpID+"\"");
 				}
+			}
+            HashMap<String, HashMap<String,HashMap<String,Double>>> tpmData= new HashMap<String, HashMap<String,HashMap<String,Double>>>();
+			if(genomeVer.equals("rn7")){
+				tpmData=gdt.getTPMHerit( sb.substring(1), "190,191,192,193");
 			}
             if (!chr.startsWith("chr")) {
                 chr = "chr" + chr;
@@ -496,10 +505,33 @@ $(this).removeClass("less");
             </table>
             <table id="genePart2Tbl" class="geneReport adapt2Col" style="display:inline-block;">
                 <TR>
-                    <TD style="width:20%;">
-                        Transcripts:
+                    <TD style="width:100%;">
+                        <B>Transcript Expression and Heritability Summary:</B><BR><BR>
                     </TD>
-                    <TD style="width:78%;">
+                </TR>
+                <TR>
+                    <TD style="width:100%;">
+                    	<table id="tblTrxSummary" class="list_base" name="items" style="display:inline-block;">
+                    	<thead>
+                    		<TR>
+								<TH></TH>
+								<TH colspan="4">TPM</TH>
+								<TH colspan="4">Heritability</TH>
+
+                        	</TR>
+                    		<TR>
+								<TH>Transcripts (- match reason)</TH>
+								<TH>Whole Brain</TH>
+								<TH>Liver</TH>
+								<TH>Kidney</TH>
+								<TH>Heart</TH>
+								<TH>Whole Brain</TH>
+								<TH>Liver</TH>
+								<TH>Kidney</TH>
+								<TH>Heart</TH>
+							</TR>
+						</thead>
+						<tbody>
                         <% Set<String> keySet = uniqueTrxList.keySet();
                         ArrayList<String> list=new ArrayList<String>(keySet);
 
@@ -513,12 +545,34 @@ $(this).removeClass("less");
                                 });
                         for(Object key : list ) {
                                 HashMap<String,String> cur = uniqueTrxList.get(key);%>
-                        		<B><%=cur.get("html")%></B>
-                        		<%if(cur.containsKey("match") && !cur.get("match").equals("")) {%>
-                        			-  <%=cur.get("match")%>
-                        		<%}%>
-                        		<BR>
+                                <TR><TD>
+									<B><%=cur.get("html")%></B>
+									<%if(cur.containsKey("match") && !cur.get("match").equals("")) {%>
+										<BR> -  <%=cur.get("match")%>
+									<%}%>
+                        		</TD>
+                        		<%for(String tissue:tissuesList1){
+                        			String val="-";
+                                    if(tpmData.containsKey(key) && tpmData.get(key).containsKey(tissue)){
+                                        val=df2.format(tpmData.get(key).get(tissue).get("medTPM"))+"<BR>("+df2.format(tpmData.get(key).get(tissue).get("minTPM"))+"-"+df2.format(tpmData.get(key).get(tissue).get("maxTPM"))+")";
+                                    }
+                        		%>
+                        			<TD <%if( !(val.equals("-")) && tpmData.get(key).get(tissue).get("medTPM")>=1){%>style="background-color: #77d177;"<%}%>><%=val%></TD>
+
+                        		<%
+                                }
+                        		for(String tissue2:tissuesList1){
+									String val="-";
+									if(tpmData.containsKey(key) && tpmData.get(key).containsKey(tissue2)){
+										val=df2.format(tpmData.get(key).get(tissue2).get("trxHerit"));
+									}
+								%>
+									<TD <%if(!(val.equals("-")) && tpmData.get(key).get(tissue2).get("trxHerit")>=0.33){%>style="background-color: #77d177;"<%}%>><%=val%></TD>
+								<%}%>
+                        		</TR>
                         <%}%>
+                        </tbody>
+                        </table>
                     </TD>
                 </TR>
 
@@ -853,6 +907,9 @@ $(this).removeClass("less");
     rows = $("table#tblGeneEQTL tr");
     stripeTable(rows);
 
+    rows = $("table#tblTrxSummary tr");
+    stripeTable(rows);
+
     $(".reporttooltip").tooltipster({
         position: 'top-right',
         maxWidth: 250,
@@ -1016,11 +1073,23 @@ $(this).removeClass("less");
             $('div#chilibot').dialog("open").css({'font-size': 12});
         });
     }, 5000);
+    setTimeout(function(){
+        $('table#tblTrxSummary').DataTable({bPaginate: false,
+                                                       bProcessing: true,
+                                                       bStateSave: false,
+                                                       bAutoWidth: true,
+                                                       bDeferRender: false,
+                                                       sScrollX: "100%",
+                                                       sScrollY: "100%",
+                                                       sDom: '<"leftSearch"fr><"rightSearch"i><t>'
+                                                   });
+    },50);
     setTimeout(function () {
         $('span#ratsPubLink').on('click', function () {
             window.open("https://genecup.org/progress?query=%09<%=curGene.getGeneSymbol()%>+", "_blank");
         });
     }, 10);
+
     $(window).resize(function () {
         if ($(window).width() < 1500 && peGR) {
             if (peGR.rbChart) {

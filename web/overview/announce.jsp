@@ -12,6 +12,14 @@
 
 <H2 style="font-size: 24px;">Announcements</H2>
 <div style="overflow:auto;height:92%;margin-left: 10px;" class="announcement">
+	<H2 style="font-weight: bold;font-size:20px;">TPM/Heritability Summaries on Gene Reports</H2>
+    <div style="margin-left:5px;">
+        2/14/24 - First of many new display functions and refinements.  TPM and Heritability across tissues are summarized for each transcript in gene reports.  We've included a number of bug fixes.  Additional new features are coming.
+    </div>
+	<H2 style="font-weight: bold;font-size:20px;">HRDP v6/v7 TPM Data</H2>
+    <div style="margin-left:5px;">
+        PhenoGen HRDP v6/v7 TPM Data is available via the REST API and Website in the downloads section.  We continue to work on HRDP v7 data including 73 strains of the HRDP.
+    </div>
     <H2 style="font-weight: bold;font-size:20px;">UCSC Track Hubs HRDPv6</H2>
     <div style="margin-left:5px;">
         PhenoGen HRDP v6 UCSC Track Hubs are available now to access Transcriptomes and read depth tracks on UCSC Genome Browser. <a
