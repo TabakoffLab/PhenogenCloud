@@ -495,7 +495,7 @@ sub createXMLFile
 	    my $iTimeStart=time();
 	    my $isoformHOH ;
 	    if($genomeVer eq 'rn5'){
-	    	$isoformHOH =readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1," in ('PolyA+','NonPolyA+')","Brain",0,$genomeVer);
+	    	$isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1," in ('PolyA+','NonPolyA+')","Brain",0,$genomeVer);
 		}else{
             $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Brain",0,$genomeVer);
 		}

@@ -74,6 +74,9 @@ ratOnly.heartilluminaTotalPlus = 1;
 ratOnly.heartilluminaTotalMinus = 1;
 ratOnly.probe = 1;
 ratOnly.mergedTotal = 1;
+ratOnly.brainIso = 1;
+ratOnly.liverIso = 1;
+
 
 if (genomeVer === "rn5") {
     mouseOnly.brainTotal = 1;
@@ -86,7 +89,7 @@ mouseOnly.probeMouse = 1;
 
 var mmVer = "Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer = "Rat(<span id=\"verSelect\"></span>) HRDP version:<span id=\"hrdpSelect\"></span> Strain:BN";
-var siteVer = "PhenoGen v3.9.2(2/8/2024)";
+var siteVer = "PhenoGen v3.9.3(4/11/2024)";
 
 var trackBinCutoff = 10000;
 var customTrackLevel = -1;
@@ -1331,7 +1334,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                     }
                 }
             });
-        } else if (track.indexOf("liverTotal") === 0 || track === "heartTotal" || track.indexOf("brainTotal") === 0 || track === "mergedTotal" || track.indexOf("kidneyTotal") === 0) {
+        } else if (track.indexOf("liverTotal") === 0 || track === "heartTotal" || track.indexOf("brainTotal") === 0 || track === "mergedTotal" || track.indexOf("kidneyTotal") === 0 || track.indexOf("brainIso") === 0 || track.indexOf("liverIso") === 0) {
             var lbl = "Liver Reconstructed";
             if (track === "heartTotal") {
                 lbl = "Heart Reconstructed";
@@ -1341,6 +1344,10 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 lbl = "Merged (Brain,Heart,Liver,Kidney) Reconstructed";
             } else if (track === "kidneyTotal") {
                 lbl = "Kidney Reconstructed";
+            } else if (track === "liverIso") {
+                lbl = "Liver IsoSeq"
+            } else if (track === "brainIso") {
+                lbl = "Whole Brain IsoSeq"
             }
             if ((track.indexOf("liverTotal") === 0 || track.indexOf("brainTotal") === 0) && track.indexOf("_") > 0) {
                 var strain = track.substr(track.indexOf("_") + 1);
@@ -1359,7 +1366,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
 
             d3.xml(dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/" + track + ".xml", function (error, d) {
                 if (error) {
-                    if (retry === 1 && (track === "mergedTotal" || track.indexOf("liverTotal") === 0 || track.indexOf("brainTotal") === 0 || track.indexOf("kidneyTotal") === 0)) {
+                    if (retry === 1 && (track === "mergedTotal" || track.indexOf("liverTotal") === 0 || track.indexOf("brainTotal") === 0 || track.indexOf("kidneyTotal") === 0 || track.indexOf("brainIso") === 0 || track.indexOf("liverIso") === 0)) {
                         var tmpMin = that.xScale.domain()[0];
                         var tmpMax = that.xScale.domain()[1];
                         var tmpContext = "/" + pathPrefix;
@@ -1375,6 +1382,9 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             if (curPanel === "F344Stm") {
                                 curPanel = "F344-Stm";
                             }
+
+                        } else if (track.indexOf("brainIso") === 0 || track.indexOf("liverIso") === 0) {
+                            curPanel = "IsoSeq";
                         }
                         $.ajax({
                             url: tmpContext + "generateTrackXML.jsp",
@@ -3449,7 +3459,7 @@ function toolTipSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, typ
         } else if (track.indexOf("coding") > -1) {
             var newTrack = GeneTrack(that, data, track, "Protein Coding/PolyA+ Transcripts", additionalOptions);
             that.addTrackList(newTrack);
-        } else if (track.indexOf("liverTotal") === 0 || track === "heartTotal" || track.indexOf("brainTotal") === 0 || track.indexOf("kidneyTotal") === 0 || track === "mergedTotal") {
+        } else if (track.indexOf("liverTotal") === 0 || track === "heartTotal" || track.indexOf("brainTotal") === 0 || track.indexOf("kidneyTotal") === 0 || track === "mergedTotal" || track === "brainIso" || track === "liverIso") {
             var lbl = "Liver Total RNA Transcripts";
             if (track === "heartTotal") {
                 lbl = "Heart Total RNA Transcripts";
@@ -3459,6 +3469,10 @@ function toolTipSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, typ
                 lbl = "Merged (Brain,Heart,Liver,Kidney) Reconstructed";
             } else if (track === "kidneyTotal") {
                 lbl = "Kidney Total RNA Transcripts";
+            } else if (track === "liverIso") {
+                lbl = "Liver IsoSeq"
+            } else if (track === "brainIso") {
+                lbl = "Whole Brain IsoSeq"
             }
             var newTrack = GeneTrack(that, data, track, lbl, additionalOptions);
             that.addTrackList(newTrack);
@@ -5568,6 +5582,8 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
         that.ttTrackList.push("heartTotal");
         that.ttTrackList.push("kidneyTotal");
         that.ttTrackList.push("mergedTotal");
+        that.ttTrackList.push("brainIso");
+        that.ttTrackList.push("liverIso");
         that.ttTrackList.push("refSeq");
         that.ttTrackList.push("ensemblnoncoding");
         that.ttTrackList.push("brainnoncoding");
@@ -5686,6 +5702,10 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
             }
         } else if (that.trackClass === "mergedTotal") {
             color = "#9F4F92";
+        } else if (that.trackClass === "brainIso") {
+            color = "#4E85D6";
+        } else if (that.trackClass === "liverIso") {
+            color = "#9b9ebd";
         }
         color = d3.rgb(color);
         return color;
@@ -5794,6 +5814,10 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
             color = that.pieStrainSpecColor(color, d.data.names);
         } else if (that.trackClass === "mergedTotal") {
             color = "#9F4F92";
+        } else if (that.trackClass === "brainIso") {
+            color = "#4E85D6";
+        } else if (that.trackClass === "liverIso") {
+            color = "#9b9ebd";
         }
         color = d3.rgb(color);
         return color;
@@ -6554,7 +6578,7 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
         var path = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/" + that.trackClass + ".xml";
         d3.xml(path, function (error, d) {
             if (error) {
-                if (retry === 0 && (that.trackClass.indexOf("heartTotal") === 0 || that.trackClass.indexOf("liverTotal") === 0 || that.trackClass.indexOf("brainTotal") === 0 || that.trackClass.indexOf("kidneyTotal") === 0 || that.trackClass === 'mergedTotal' || that.trackClass.indexOf("smallnc") > -1)) {
+                if (retry === 0 && (that.trackClass.indexOf("heartTotal") === 0 || that.trackClass.indexOf("liverTotal") === 0 || that.trackClass.indexOf("brainTotal") === 0 || that.trackClass.indexOf("kidneyTotal") === 0 || that.trackClass === 'mergedTotal' || that.trackClass.indexOf("smallnc") > -1 || that.trackClass.indexOf("brainIso") === 0 || that.trackClass.indexOf("liverIso") === 0)) {
                     var tmpContext = "/" + pathPrefix;
                     if (!pathPrefix) {
                         tmpContext = "";
@@ -6569,6 +6593,8 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
                         if (curPanel === "F344Stm") {
                             curPanel = "F344-Stm";
                         }
+                    } else if (that.trackClass.indexOf("brainIso") === 0 || that.trackClass.indexOf("liverIso") === 0) {
+                        curPanel = "IsoSeq";
                     }
                     $.ajax({
                         url: tmpContext + "generateTrackXML.jsp",
@@ -7029,11 +7055,19 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
         } else if (that.trackClass == "mergedTotal") {
             lbl = "Merged (Brain,Heart,Liver,Kidney) Reconstructed";
             lbltxSuffix = "Total RNA";
+        } else if (that.trackClass == "brainIso") {
+            lbl = "Whole Brain";
+            lbltxSuffix = "Iso-Seq";
+        } else if (that.trackClass == "liverIso") {
+            lbl = "Liver";
+            lbltxSuffix = "Iso-Seq";
         }
         if (that.trackClass.indexOf("ensembl") > -1) {
             lbl = "Ensembl " + lbl + " " + type;
-        } else if (that.trackClass.indexOf("brainTotal") === -1 && that.trackClass.indexOf("liverTotal") === -1 && that.trackClass != "heartTotal" && that.trackClass != "mergedTotal" && that.trackClass.indexOf("kidenyTotal") === -1) {
+        } else if (that.trackClass.indexOf("brainTotal") === -1 && that.trackClass.indexOf("liverTotal") === -1 && that.trackClass != "heartTotal" && that.trackClass != "mergedTotal" && that.trackClass.indexOf("kidenyTotal") === -1 && that.trackClass.indexOf("Iso") === -1) {
             lbl = "Reconstruction " + lbl + lbltxSuffix + " " + type;
+        } else if (that.trackClass.indexOf("Iso") > -1) {
+            lbl = lbl + " " + lbltxSuffix;
         } else {
             lbl = lbl + lbltxSuffix + " " + type;
         }
@@ -7567,6 +7601,8 @@ function RefSeqTrack(gsvg, data, trackClass, label, additionalOptions) {
     that.ttTrackList.push("liverTotal");
     that.ttTrackList.push("heartTotal");
     that.ttTrackList.push("mergedTotal");
+    that.ttTrackList.push("brainIso");
+    that.ttTrackList.push("liverIso");
     that.ttTrackList.push("ensemblnoncoding");
     that.ttTrackList.push("brainnoncoding");
     that.ttTrackList.push("repeatMask");
@@ -9621,6 +9657,8 @@ function SNPTrack(gsvg, data, trackClass, density, additionalOptions) {
     that.ttTrackList.push("liverTotal");
     that.ttTrackList.push("heartTotal");
     that.ttTrackList.push("mergedTotal");
+    that.ttTrackList.push("brainIso");
+    that.ttTrackList.push("liverIso");
     that.ttTrackList.push("refSeq");
     that.ttTrackList.push("ensemblnoncoding");
     that.ttTrackList.push("brainnoncoding");
@@ -11086,6 +11124,8 @@ function SpliceJunctionTrack(gsvg, data, trackClass, label, density, additionalO
     that.ttTrackList.push("heartTotal");
     that.ttTrackList.push("kidneyTotal");
     that.ttTrackList.push("mergedTotal");
+    that.ttTrackList.push("brainIso");
+    that.ttTrackList.push("liverIso");
     that.ttTrackList.push("refSeq");
     that.ttTrackList.push("repeatMask");
     if (trackClass === "splcJnct") {
@@ -11337,6 +11377,8 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         that.ttTrackList.push("liverTotal");
         that.ttTrackList.push("heartTotal");
         that.ttTrackList.push("mergedTotal");
+        that.ttTrackList.push("brainIso");
+        that.ttTrackList.push("liverIso");
         that.ttTrackList.push("refSeq");
         that.ttTrackList.push("ensemblnoncoding");
         that.ttTrackList.push("brainnoncoding");
@@ -12614,6 +12656,8 @@ function RepeatMaskTrack(gsvg, data, trackClass, label, density, additionalOptio
     that.ttTrackList.push("liverTotal");
     that.ttTrackList.push("heartTotal");
     that.ttTrackList.push("mergedTotal");
+    that.ttTrackList.push("brainIso");
+    that.ttTrackList.push("liverIso");
     that.ttTrackList.push("refSeq");
     that.ttTrackList.push("spliceJnct");
     that.ttTrackList.push("liverspliceJnct");

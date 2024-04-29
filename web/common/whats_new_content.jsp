@@ -28,6 +28,31 @@ span.control{
 		background:#989898;
 	}
 </style>
+<div class="whats_new version"><p><H3>Version 3.9.3</H3><BR> 4/11/2024</p></div>
+	IsoSeq data updated
+    <UL>
+                    <LI>Brain/Liver/Merged IsoSeq Tracks showing IsoSeq Read alignments to rn7.</LI>
+                    <LI>Created IsoSeq UCSC Genome Browser track hub</LI>
+                    <LI>Fixed a gene display bug in the genome browser</LI>
+                    <LI>Downloads Added(<a href="http://phenogen.org/web/sysbio/resources.jsp?section=rnaseq">RNA-Seq Downloads</a>):</LI>
+                    <UL>
+                    <li>IsoSeq samples high quality Isoform FASTQ files.</li>
+                    <li>Rn7.2 merged genome alignment of FASTQ files</li>
+                    <li>Rn7.2 merged transcriptome as GTF</li>
+                    </UL>
+    </UL>
+
+<HR>
+<div class="whats_new version"><p><H3>Version 3.9.3</H3><BR> 4/3/2024</p></div>
+	HRDP v7 UCSC Genome Browser track hubs are available now.  <a href="http://phenogen.org/web/sysbio/resources.jsp?section=ucsc">Downloads -> UCSC</a>.
+    <UL>
+                    <LI>Tissue specific transcriptomes and merged transcriptomes</LI>
+                    <LI>Tissue/strain specific read count tracks both total(sum of 3 replicates) or sampled( randomly sampled reads to match the strain with the fewest reads)</LI>
+                    <LI>Merged across strain read counts and then sampled to represent 5 Billion reads.</LI>
+                    <LI>Splice junctions from merged and 5 billion read sampled Bam files.</LI>
+    </UL>
+
+<HR>
 <div class="whats_new version"><p><H3>Version 3.9.2</H3><BR> 2/8/2024</p></div>
     <UL>
         <LI>HRDP v6 TPM Data available via REST API and Downloads</LI>

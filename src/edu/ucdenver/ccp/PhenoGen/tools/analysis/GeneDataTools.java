@@ -2896,7 +2896,9 @@ public class GeneDataTools {
         HashMap<String, HashMap<String, HashMap<String, Double>>> ret = new HashMap<>();
         String qHerit = "SELECT rd.TISSUE,rt.merge_gene_id,rt.merge_isoform_id,rt.HERIT_GENE,rt.HERIT_TRX FROM inia_prod.rna_transcripts rt left outer join rna_dataset rd on rd.RNA_DATASET_ID=rt.RNA_DATASET_ID where rt.RNA_DATASET_ID in (" + dsIDs + ") and merge_isoform_id in (" + geneIDs + ") or merge_gene_id in (" + geneIDs + ")";
         String tpmQ = "select rd.tissue,rtt.feature_id,rtt.alt_feature_id,rtt.tpm_median, rtt.tpm_min, rtt.tpm_max,rtt.herit_gene,rtt.herit_trx from rna_transcripts_tpm rtt left outer join rna_dataset rd on rd.rna_dataset_id=rtt.rna_dataset_id  where rtt.rna_dataset_id in (" + dsIDs + ") and (rtt.feature_id in (" + geneIDs + ") or rtt.alt_feature_id in (" + geneIDs + ") )";
+        log.debug("qHerit\n" + qHerit);
         log.debug("TPMQ\n" + tpmQ);
+
         try (Connection conn = pool.getConnection()) {
             PreparedStatement psC = conn.prepareStatement(qHerit);
             ResultSet trxRS = psC.executeQuery();

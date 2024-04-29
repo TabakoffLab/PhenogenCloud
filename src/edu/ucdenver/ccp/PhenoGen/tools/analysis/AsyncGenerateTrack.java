@@ -84,7 +84,7 @@ public class AsyncGenerateTrack extends Thread {
     private String hashValue = "";
     private List threadList;
     boolean doneThread = false;
-    int maxThreadCount = 4;
+    int maxThreadCount = 6;
 
     public AsyncGenerateTrack(GeneDataTools gdt, HttpSession inSession, DataSource pool) {
         this.session = inSession;

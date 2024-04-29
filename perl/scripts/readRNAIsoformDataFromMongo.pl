@@ -35,16 +35,22 @@ sub addChr {
 sub getRNADatasetFromDB {
     my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $version) = @_;
     my %ret;
+    my $is_recon=1;
     if ($organism eq "Rat") {
         $organism = "Rn";
     }
     elsif ($organism eq "Mouse") {
         $organism = "Mm";
     }
+
+    if($panel eq "IsoSeq"){
+        $is_recon=0;
+    }
+
     my $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
     my $query = "select rd2.rna_dataset_id,rd2.build_version,rd2.tissue from rna_dataset rd2 where
 				rd2.organism = '$organism'
-                and rd2.trx_recon=1
+                and rd2.trx_recon=$is_recon
 				and rd2.user_id= $publicUserID
 				and rd2.genome_id='$genomeVer'
 				and rd2.visible=1 ";
@@ -231,7 +237,7 @@ sub readRNAIsoformDataFromDB {
                     $query = $query . " and rt.category='" . $type . "'";
                 }
             }
-            $query = $query . " order by rt.trstart,rt.gene_id,rt.isoform_id,re.estart";
+            $query = $query . " order by rt.gene_id,rt.trstart,rt.isoform_id,re.estart";
 
             print $query . "\n";
             $query_handle = $connect->prepare($query) or die(" RNA Isoform query prepare failed \n");
@@ -610,7 +616,7 @@ sub readSmallRNADataFromDB {
             $query = $query . " and rt.category='" . $type . "'";
         }
     }
-    $query = $query . " order by rt.trstart,rt.gene_id,rt.isoform_id,re.estart";
+    $query = $query . " order by rt.gene_id,rt.trstart,rt.isoform_id,re.estart";
 
     print $query . "\n";
     $query_handle = $connect->prepare($query) or die(" RNA Isoform query prepare failed \n");

@@ -53,7 +53,7 @@ public class AsyncBrowserRegion extends Thread {
     private ExecHandler myExec_session = null;
     private List threadList;
     boolean doneThread = false;
-    int maxThreadCount = 2;
+    int maxThreadCount = 3;
     private GeneDataTools gdt = null;
 
 

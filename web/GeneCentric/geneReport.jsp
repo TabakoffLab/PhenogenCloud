@@ -273,7 +273,8 @@ $(this).removeClass("less");
 <div id="geneDiv" style="display:inline-block;text-align:left; width:100%;">
     <div style="display:inline-block; text-align:left;width:100%;" id="geneDetail">
 
-        <% DecimalFormat df2 = new DecimalFormat("#.##");
+        <% DecimalFormat df1 = new DecimalFormat("#.#");
+        DecimalFormat df2 = new DecimalFormat("#.##");
             DecimalFormat df0 = new DecimalFormat("###");
             DecimalFormat df4 = new DecimalFormat("#.####");
             DecimalFormat dfC = new DecimalFormat("#,###");
@@ -293,6 +294,7 @@ $(this).removeClass("less");
             String phenogenID = curGene.getGeneID();
             ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Transcript> tmpTrx = curGene.getTranscripts();
             HashMap<String,HashMap<String,String>> uniqueTrxList=new HashMap<String,HashMap<String,String>>();
+            //HashMap<String,String> geneList=new HashMap<String,String>();
             StringBuilder sb=new StringBuilder();
 			for(int l=0;l<tmpTrx.size();l++) {
 				String tmpID=tmpTrx.get(l).getID();
@@ -307,6 +309,16 @@ $(this).removeClass("less");
                     sb.append(",\""+tmpID+"\"");
 				}
 			}
+            // Add gene ID
+            if(phenogenID.startsWith("PRN") || phenogenID.startsWith("ENSRNOG")){
+            	sb.append(",\""+phenogenID+"\"");
+            }
+            /*if(curGene.getEnsemblAnnotation().startsWith("ENSRNOG")){
+                String tmp2=curGene.getEnsemblAnnotation().split(":")[0];
+                if(tmp2.startsWith("ENSRNOG")){
+                    sb.append(","+tmp2);
+                }
+            }*/
             HashMap<String, HashMap<String,HashMap<String,Double>>> tpmData= new HashMap<String, HashMap<String,HashMap<String,Double>>>();
 			if(genomeVer.equals("rn7")){
 				tpmData=gdt.getTPMHerit( sb.substring(1), "190,191,192,193");
@@ -499,9 +511,65 @@ $(this).removeClass("less");
                     </TD>
                 </TR>
                 <TR>
-                    <TD></TD>
-                    <TD></TD>
+                    <TD>Gene Expression and Heritability:</TD>
+                    <TD>
+                    <TABLE id="tblGeneSummary" class="list_base" name="items" style="display:inline-block;">
+                    <THEAD>
+                    		<TR>
+                                        	<TH></TH>
+                                        	<TH colspan="4">TPM</TH>
+                                        	<TH colspan="4">Heritability</TH>
+                    		</TR>
+                    	<TR>
+                    	<TH>Gene ID</TH>
+                    	<TH>Whole Brain</TH>
+                        								<TH>Liver</TH>
+                        								<TH>Kidney</TH>
+                        								<TH>Heart</TH>
+                        								<TH>Whole Brain</TH>
+                        								<TH>Liver</TH>
+                        								<TH>Kidney</TH>
+                        								<TH>Heart</TH>
+						</TR>
+					</THEAD>
+					<tbody>
+                    <% if(tpmData!=null){
+                                    Set<String> tpmKeys=tpmData.keySet();
+                                    //ArrayList<String> geneArrayList=new ArrayList<String>();
+                                    for( String key : tpmKeys){
+                                        if(!uniqueTrxList.containsKey(key)){
+                                            %>
+                                            <TR>
+                                            <TD><%=key%></TD>
+											<%for(String tissue:tissuesList1){
+												String val="-";
+												if(tpmData.containsKey(key) && tpmData.get(key).containsKey(tissue) && tpmData.get(key).get(tissue).containsKey(("medTPM"))){
+													val=df1.format(tpmData.get(key).get(tissue).get("medTPM"))+"<BR>("+df1.format(tpmData.get(key).get(tissue).get("minTPM"))+"-"+df1.format(tpmData.get(key).get(tissue).get("maxTPM")) +")";
+												}
+												%>
+												<TD <%if( !(val.equals("-")) && tpmData.get(key).get(tissue).get("medTPM")>=1){%>style="background-color: #77d177;"<%}%>><%=val%></TD>
+
+												<%
+												}
+											for(String tissue2:tissuesList1){
+												String val="-";
+												if(tpmData.containsKey(key) && tpmData.get(key).containsKey(tissue2) && tpmData.get(key).get(tissue2).containsKey("geneHerit")){
+													val=df2.format(tpmData.get(key).get(tissue2).get("geneHerit"));
+												}
+												%>
+												<TD <%if(!(val.equals("-")) && tpmData.get(key).get(tissue2).get("geneHerit")>=0.33){%>style="background-color: #77d177;"<%}%>><%=val%></TD>
+											<%}%>
+                                            </TR>
+                                            <%
+										}
+                                    }
+                                    }
+                                    %>
+                      </tbody>
+                     </TABLE>
+					</TD>
                 </TR>
+
             </table>
             <table id="genePart2Tbl" class="geneReport adapt2Col" style="display:inline-block;">
                 <TR>
@@ -554,7 +622,7 @@ $(this).removeClass("less");
                         		<%for(String tissue:tissuesList1){
                         			String val="-";
                                     if(tpmData.containsKey(key) && tpmData.get(key).containsKey(tissue)){
-                                        val=df2.format(tpmData.get(key).get(tissue).get("medTPM"))+"<BR>("+df2.format(tpmData.get(key).get(tissue).get("minTPM"))+"-"+df2.format(tpmData.get(key).get(tissue).get("maxTPM"))+")";
+                                        val=df1.format(tpmData.get(key).get(tissue).get("medTPM"))+"<BR>("+df1.format(tpmData.get(key).get(tissue).get("minTPM"))+"-"+df1.format(tpmData.get(key).get(tissue).get("maxTPM"))+")";
                                     }
                         		%>
                         			<TD <%if( !(val.equals("-")) && tpmData.get(key).get(tissue).get("medTPM")>=1){%>style="background-color: #77d177;"<%}%>><%=val%></TD>
@@ -1083,6 +1151,15 @@ $(this).removeClass("less");
                                                        sScrollY: "100%",
                                                        sDom: '<"leftSearch"fr><"rightSearch"i><t>'
                                                    });
+        $('table#tblGeneSummary').DataTable({bPaginate: false,
+                                                               bProcessing: true,
+                                                               bStateSave: false,
+                                                               bAutoWidth: true,
+                                                               bDeferRender: true,
+                                                               sScrollX: "80%",
+                                                               sScrollY: "100%",
+                                                               sDom: '<"leftSearch"fr><"rightSearch"i><t>'
+                                                           });
     },50);
     setTimeout(function () {
         $('span#ratsPubLink').on('click', function () {

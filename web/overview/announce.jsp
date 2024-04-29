@@ -12,6 +12,34 @@
 
 <H2 style="font-size: 24px;">Announcements</H2>
 <div style="overflow:auto;height:92%;margin-left: 10px;" class="announcement">
+	<H2 style="font-weight: bold;font-size:20px;">HRDP v7 IsoSeq Data</H2>
+        <div style="margin-left:5px;">
+            <span style="font-size: larger;">4/11/24 - IsoSeq data available raw and rn7.2 aligned </span><BR>
+            <div style="text-align: left;margin-left:45px;">
+            IsoSeq data updated:
+                <UL>
+                                <LI>Brain/Liver/Merged IsoSeq Tracks showing IsoSeq Read alignments to rn7.</LI>
+                                <LI>Created IsoSeq UCSC Genome Browser track hub</LI>
+                                <LI>Fixed a gene display bug in the genome browser</LI>
+                                <LI>Downloads Added (<a href="http://phenogen.org/web/sysbio/resources.jsp?section=rnaseq">RNA-Seq Downloads</a>):</LI>
+                                <UL>
+                                <li>IsoSeq samples high quality Isoform FASTQ files.</li>
+                                <li>Rn7.2 merged genome alignment of FASTQ files</li>
+                                <li>Rn7.2 merged transcriptome as GTF</li>
+                                </UL>
+                </UL>
+            </div>
+        </div>
+	<H2 style="font-weight: bold;font-size:20px;">HRDP v7 UCSC Track Hubs</H2>
+        <div style="margin-left:5px;">
+            <span style="font-size: larger;">4/3/24 - HRDP v7 UCSC Genome Browser track hubs are available now.  <a href="http://phenogen.org/web/sysbio/resources.jsp?section=ucsc">Downloads -> UCSC</a>.</span><BR>
+            <div style="text-align: left;margin-left:45px;">
+            - Tissue specific transcriptomes and merged transcriptomes<BR>
+            - Tissue/strain specific read count tracks both total(sum of 3 replicates) or sampled( randomly sampled reads to match the strain with the fewest reads)<BR>
+            - Merged across strain read counts and then sampled to represent 5 Billion reads.<BR>
+            - Splice junctions from merged and 5 billion read sampled Bam files.<BR>
+            </div>
+        </div>
 	<H2 style="font-weight: bold;font-size:20px;">TPM/Heritability Summaries on Gene Reports</H2>
     <div style="margin-left:5px;">
         2/14/24 - First of many new display functions and refinements.  TPM and Heritability across tissues are summarized for each transcript in gene reports.  We've included a number of bug fixes.  Additional new features are coming.
