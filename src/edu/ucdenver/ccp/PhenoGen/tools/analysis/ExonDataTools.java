@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 import edu.ucdenver.ccp.PhenoGen.web.mail.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.PreparedStatement;
@@ -48,13 +49,13 @@ public class ExonDataTools {
     private String rFunctDir = "";
     private String userFilesRoot = "";
     private String urlPrefix = "";
-    private int validTime=7*24*60*60*1000;
-    private String perlEnvVar="";
-    private String ucscDir="";
-    private String bedDir="";
-    private String dbPropertiesFile="";
-    private String ensemblDBPropertiesFile="";
-    private String genomeVer="";
+    private int validTime = 7 * 24 * 60 * 60 * 1000;
+    private String perlEnvVar = "";
+    private String ucscDir = "";
+    private String bedDir = "";
+    private String dbPropertiesFile = "";
+    private String ensemblDBPropertiesFile = "";
+    private String genomeVer = "";
 
     public ExonDataTools() {
         log = Logger.getRootLogger();
@@ -63,12 +64,12 @@ public class ExonDataTools {
 
     /**
      * Calls the Perl script WriteXML.pl and R script ExonCorrelation.R.
-     * @param ensemblID       the ensemblIDs as a comma separated list
-     * @param organism        the organism
-     * @param RDataFile       the full path to the RDataFile         
-     * 
+     *
+     * @param ensemblID the ensemblIDs as a comma separated list
+     * @param organism  the organism
+     * @param RDataFile the full path to the RDataFile
      */
-    public void getExonHeatMapData(String ensemblIDList,
+    /*public void getExonHeatMapData(String ensemblIDList,
             String H5File, String version,
             String organism,
             String genomeVer,
@@ -111,11 +112,11 @@ public class ExonDataTools {
                     java.sql.Timestamp ts=rs.getTimestamp("Created_ON");
                     java.sql.Timestamp pastWeek=new java.sql.Timestamp(System.currentTimeMillis()-(validTime));
                     if(ts.before(pastWeek)){//check to see if files are older than the amount of time in validTime
-                        /*rs.deleteRow();
+                        *//*rs.deleteRow();
                         while(rs.next()){
                             rs.deleteRow();
                             //TODO delete files too
-                        }*/
+                        }*//*
                         //log.debug("Results are older than 1 week generating new");
                         generateFiles(outputDir,organism,genomeVer,rOutputPath,H5File,version,ensemblIDList,folderName,publicPath,datasetName);
                     }else{
@@ -153,9 +154,9 @@ public class ExonDataTools {
             session.setAttribute("exonCorGeneFile", "No Ensembl ID");
             session.setAttribute("exonCorHeatFile", "No Ensembl ID");
         }
-    }
+    }*/
 
-    public boolean generateFiles(String outputDir,String organism,String genomeVer ,String rOutputPath,String h5File,String version, String ensemblIDList,String folderName,String publicPath,String datasetName) {
+    /*public boolean generateFiles(String outputDir,String organism,String genomeVer ,String rOutputPath,String h5File,String version, String ensemblIDList,String folderName,String publicPath,String datasetName) {
         //log.debug("generate files");
         boolean completedSuccessfully = false;
         File outDirF = new File(outputDir);
@@ -238,9 +239,9 @@ public class ExonDataTools {
         perlArgs[16]=ensPassword;
         
         //print Perl Args
-        /*for (int i = 0; i < perlArgs.length; i++) {
+        *//*for (int i = 0; i < perlArgs.length; i++) {
             log.debug(i + "::" + perlArgs[i]);
-        }*/
+        }*//*
 
 
         //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list
@@ -277,7 +278,7 @@ public class ExonDataTools {
         }
         
         if(myExec_session.getExitValue()!=0){
-            /*FileHandler myFileHandler=new FileHandler();
+            *//*FileHandler myFileHandler=new FileHandler();
             File errorFile=new File(fullPath + "tmpData/" + userLoggedIn.getUser_name() + "/_execErrors.txt");
             File outputFile=new File(fullPath + "tmpData/" + userLoggedIn.getUser_name() + "/_execOut.out");
             String[] errors=myFileHandler.getFileContents(errorFile,"");
@@ -288,7 +289,7 @@ public class ExonDataTools {
             }
             for(int i=0;i<errors.length;i++){
                 sb.append(errors[i]+"\n");
-            }*/
+            }*//*
             Email myAdminEmail = new Email();
             myAdminEmail.setSubject("Exception thrown in Exec_session");
             myAdminEmail.setContent("There was an error while running "
@@ -390,8 +391,7 @@ public class ExonDataTools {
             }
         }
         return completedSuccessfully;
-    }
-    
+    }*/
     public void setSession(HttpSession inSession) {
         this.session = inSession;
         //this.selectedDataset = (Dataset) session.getAttribute("selectedDataset");
@@ -405,14 +405,14 @@ public class ExonDataTools {
         this.fullPath = appRoot + contextRoot;
         this.rFunctDir = (String) session.getAttribute("rFunctionDir");
         this.userFilesRoot = (String) session.getAttribute("userFilesRoot");
-        this.urlPrefix=(String)session.getAttribute("mainURL");
-        this.urlPrefix=this.urlPrefix.substring(0, this.urlPrefix.lastIndexOf("/")+1);
+        this.urlPrefix = (String) session.getAttribute("mainURL");
+        this.urlPrefix = this.urlPrefix.substring(0, this.urlPrefix.lastIndexOf("/") + 1);
         //log.debug("URL"+this.urlPrefix);
-        this.perlEnvVar=(String)session.getAttribute("perlEnvVar");
-        this.ucscDir=(String)session.getAttribute("ucscDir");
-        this.bedDir=(String) session.getAttribute("bedDir");
-        this.dbPropertiesFile = (String)session.getAttribute("dbPropertiesFile");
-        this.ensemblDBPropertiesFile = (String)session.getAttribute("ensDbPropertiesFile");
+        this.perlEnvVar = (String) session.getAttribute("perlEnvVar");
+        this.ucscDir = (String) session.getAttribute("ucscDir");
+        this.bedDir = (String) session.getAttribute("bedDir");
+        this.dbPropertiesFile = (String) session.getAttribute("dbPropertiesFile");
+        this.ensemblDBPropertiesFile = (String) session.getAttribute("ensDbPropertiesFile");
         this.pool = (DataSource) session.getAttribute("dbPool");
     }
 

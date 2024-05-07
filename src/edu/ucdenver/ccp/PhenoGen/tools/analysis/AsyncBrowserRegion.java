@@ -39,6 +39,7 @@ public class AsyncBrowserRegion extends Thread {
     private String perlEnvVar = "";
     private String ucscDB = "";
     private String org = "";
+    private String dataVer = "";
 
     private int minCoord = 0;
     private int maxCoord = 0;
@@ -57,7 +58,7 @@ public class AsyncBrowserRegion extends Thread {
     private GeneDataTools gdt = null;
 
 
-    public AsyncBrowserRegion(HttpSession inSession, DataSource pool, String organism, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, String ucscDB, String ensemblPath, int usageID, boolean runAGDT, GeneDataTools gdt) {
+    public AsyncBrowserRegion(HttpSession inSession, DataSource pool, String organism, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, String ucscDB, String ensemblPath, int usageID, boolean runAGDT, GeneDataTools gdt, String dataVer) {
         this.session = inSession;
         this.outputDir = outputDir;
         this.threadList = gdt.getThreadList();
@@ -78,6 +79,7 @@ public class AsyncBrowserRegion extends Thread {
         this.threadList = gdt.getThreadList();
 
         this.genomeVer = genomeVer;
+        this.dataVer = dataVer;
         this.isEnsemblGene = isEnsemblGene;
         this.pool = pool;
         dbPropertiesFile = (String) session.getAttribute("dbPropertiesFile");
@@ -134,7 +136,7 @@ public class AsyncBrowserRegion extends Thread {
         createRegionImagesXMLFiles(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB);
         if (runAGDT) {
             AsyncGeneDataTools agdt;
-            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, "", "", gdt);
+            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, dataVer, "", gdt);
             agdt.start();
             try {
                 agdt.join();

@@ -186,7 +186,7 @@ sub createXMLFile
 	#
 
 	# Read in the arguments for the subroutine	
-	my($ucscDir, $outputDir, $folderName,$species,$type,$chromosome,$minCoord,$maxCoord,$arrayTypeID,$rnaDatasetID,$publicID,$genomeVer,$dsn,$usr,$passwd,$ucscDB,$ensDB,$ensHost,$ensPort,$ensUsr,$ensPasswd,$mdsn,$muser,$mpass)=@_;
+	my($ucscDir, $outputDir, $folderName,$species,$type,$chromosome,$minCoord,$maxCoord,$arrayTypeID,$rnaDatasetID,$publicID,$genomeVer,$dsn,$usr,$passwd,$ucscDB,$ensDB,$ensHost,$ensPort,$ensUsr,$ensPasswd,$mdsn,$muser,$mpass,$dataVer)=@_;
 	
 	my $scriptStart=time();
 	my $shortSpecies="";
@@ -943,34 +943,34 @@ sub createXMLFile
 	createProteinCodingXMLTrack(\%ensemblHOH,$outputDir."ensemblnoncoding.xml",0);
 	
 	my $geneHOHRef=mergeByAnnotation(\%GeneHOH);
-	my %tmpGeneHOH=%$geneHOHRef;
+#	my %tmpGeneHOH=%$geneHOHRef;
 	
-	my $geneListRef=$tmpGeneHOH{Gene};
-	my @geneList=();
-	eval{
-		@geneList=@$geneListRef;
-	}or do{
-		@geneList=();
-	};
+#	my $geneListRef=$tmpGeneHOH{Gene};
+#	my @geneList=();
+#	eval{
+#		@geneList=@$geneListRef;
+#	}or do{
+#		@geneList=();
+#	};
 	
 	#print "list before sort:".@geneList."\n";
-	my @sortedlist = sort { $a->{start} <=> $b->{start} } @geneList;
+#	my @sortedlist = sort { $a->{start} <=> $b->{start} } @geneList;
 	#print "sorted List:".@sortedlist."\n";
-	$GeneHOH{Gene}=\@sortedlist;
+#	$GeneHOH{Gene}=\@sortedlist;
 	
 	##output XML file
-	my $xml = new XML::Simple (RootName=>'GeneList');
-	my $data = $xml->XMLout(\%GeneHOH);
-	# open xml file
-	my $xmlOutputFileName=">$outputDir/Region.xml";
-	open XMLFILE, $xmlOutputFileName or die " Could not open XML file $xmlOutputFileName for writing $!\n\n";
-	# write the header 
-	print XMLFILE '<?xml version="1.0" encoding="UTF-8"?>';
-	print XMLFILE "\n\n";
-	# Write the xml data
-	print XMLFILE $data;
-	close XMLFILE;
-	
+#	my $xml = new XML::Simple (RootName=>'GeneList');
+#	my $data = $xml->XMLout(\%GeneHOH);
+#	# open xml file
+#	my $xmlOutputFileName=">$outputDir/Region.xml";
+#	open XMLFILE, $xmlOutputFileName or die " Could not open XML file $xmlOutputFileName for writing $!\n\n";
+#	# write the header
+#	print XMLFILE '<?xml version="1.0" encoding="UTF-8"?>';
+#	print XMLFILE "\n\n";
+#	# Write the xml data
+#	print XMLFILE $data;
+#	close XMLFILE;
+#
 	#read QTLs
 	my $qStart=time();
 	my $qtlRef=readQTLDataFromDB($chr,$species,$minCoord,$maxCoord,$genomeVer,$dsn,$usr,$passwd);
@@ -1041,7 +1041,8 @@ sub createXMLFile
         my $arg22=$ARGV[21];
         my $arg23=$ARGV[22];
 	my $arg24=$ARGV[23];
+	my $arg25=$ARGV[24];
 
-	createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9,$arg10,$arg11,$arg12,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18,$arg19,$arg20,$arg21,$arg22,$arg23,$arg24);
+	createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9,$arg10,$arg11,$arg12,$arg13,$arg14,$arg15,$arg16,$arg17,$arg18,$arg19,$arg20,$arg21,$arg22,$arg23,$arg24,$arg25);
 
 exit 0;

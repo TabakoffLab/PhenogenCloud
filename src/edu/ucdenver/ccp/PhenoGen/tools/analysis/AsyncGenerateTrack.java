@@ -69,6 +69,7 @@ public class AsyncGenerateTrack extends Thread {
     private String type = "";
     private String web = "";
     private String version = "";
+    private String dataVer = "";
     private int countType = 0;
 
     private int minCoord = 0;
@@ -94,7 +95,7 @@ public class AsyncGenerateTrack extends Thread {
         log = Logger.getRootLogger();
     }
 
-    public void setupGenerateTrackXML(String chr, int min, int max, String panel, String track, String org, String genomeVer, int rnaDatasetID, int arrayTypeID, String folderName, int binSize, String version, int countType, String hashValue) {
+    public void setupGenerateTrackXML(String chr, int min, int max, String panel, String track, String org, String genomeVer, int rnaDatasetID, int arrayTypeID, String folderName, int binSize, String version, int countType, String hashValue, String dataVer) {
         log.debug("in setupGenerateTrackXML");
         this.chrom = chr;
         this.minCoord = min;
@@ -108,6 +109,7 @@ public class AsyncGenerateTrack extends Thread {
         this.outputDir = folderName;
         this.binSize = binSize;
         this.version = version;
+        this.dataVer = dataVer;
         this.countType = countType;
         this.hashValue = hashValue;
         this.execType = this.GENERATE_TRACK_XML;
@@ -192,12 +194,12 @@ public class AsyncGenerateTrack extends Thread {
 
             if (binSize > 0) {
                 if (!countType.equals("")) {
-                    retPathFile = tmpOutputDir + "tmp/" + minCoord + "_" + maxCoord + ".bincount." + binSize + "." + tmpType + "." + countType + ".xml";
+                    retPathFile = tmpOutputDir + "tmp/" + dataVer + "_" + minCoord + "_" + maxCoord + ".bincount." + binSize + "." + tmpType + "." + countType + ".xml";
                 } else {
-                    retPathFile = tmpOutputDir + "tmp/" + minCoord + "_" + maxCoord + ".bincount." + binSize + "." + tmpType + ".xml";
+                    retPathFile = tmpOutputDir + "tmp/" + dataVer + "_" + minCoord + "_" + maxCoord + ".bincount." + binSize + "." + tmpType + ".xml";
                 }
             } else {
-                retPathFile = tmpOutputDir + minCoord + "_" + maxCoord + ".count." + track + "." + tmpType + ".xml";
+                retPathFile = tmpOutputDir + dataVer + "_" + minCoord + "_" + maxCoord + ".count." + track + "." + tmpType + ".xml";
             }
         }
         return retPathFile;
@@ -253,7 +255,7 @@ public class AsyncGenerateTrack extends Thread {
             done = false;
             try {
                 if (execType == this.GENERATE_TRACK_XML) {
-                    gdt.generateXMLTrack(chrom, minCoord, maxCoord, panel, track, organism, genomeVer, rnaDatasetID, arrayTypeID, outputDir, binSize, version, countType);
+                    gdt.generateXMLTrack(chrom, minCoord, maxCoord, panel, track, organism, genomeVer, rnaDatasetID, arrayTypeID, outputDir, binSize, version, countType, dataVer);
                 } else if (execType == this.GENERATE_CUSTOM_REMOTE_TRACK_XML) {
                     gdt.generateCustomRemoteXMLTrack(chrom, minCoord, maxCoord, track, organism, outputDir, bedFile, outFile, type, web, binSize);
                 } else if (execType == this.GENERATE_CUSTOM_BED_TRACK_XML) {

@@ -18,6 +18,7 @@
     String gcPath = "";
     String source = "seq";
     String version = "";
+    String dataVer="";
     String trxID = "";
     int selectedGene = 0;
     String transcriptome = "ensembl";
@@ -83,6 +84,9 @@
     if (request.getParameter("version") != null) {
         version = FilterInput.getFilteredInput(request.getParameter("version"));
     }
+    if (request.getParameter("dataVer") != null) {
+            dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer"));
+        }
     if (request.getParameter("trxCB") != null) {
         trxID = FilterInput.getFilteredInput(request.getParameter("trxCB"));
     }
@@ -137,12 +141,12 @@
     int arrayTypeID = 0;
 
 
-    int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer);
+    int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer,dataVer);
     if (tmp != null && tmp.length == 2) {
         rnaDatasetID = tmp[1];
         arrayTypeID = tmp[0];
     }
-    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(id, id, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, true);
+    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(id, id, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, true,dataVer);
 
     log.debug("OPENED GENE:" + id);
 

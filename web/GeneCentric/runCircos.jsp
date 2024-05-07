@@ -32,7 +32,7 @@
     String timeStampString = null;
     String genomeVer = "";
     String source = "seq";
-    String version = "";
+    String dataVer = "";
     String transcriptome = "ensembl";
     String cisOnly = "all";
     FileHandler myFH = new FileHandler();
@@ -56,8 +56,8 @@
     if (request.getParameter("genomeVer") != null) {
         genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
     }
-    if (request.getParameter("version") != null) {
-        version = FilterInput.getFilteredInput(request.getParameter("version"));
+    if (request.getParameter("dataVer") != null) {
+        dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer"));
     }
     if (request.getParameter("transcriptome") != null) {
         transcriptome = FilterInput.getFilteredInput(request.getParameter("transcriptome"));

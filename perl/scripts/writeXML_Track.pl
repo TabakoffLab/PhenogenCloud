@@ -233,7 +233,7 @@ sub getFeatureInfo {
 
 sub createXMLFile {
     # Read in the arguments for the subroutine
-    my ($outputDir, $species, $type, $panel, $chromosome, $minCoord, $maxCoord, $publicID, $binSize, $tissue, $genomeVer, $dsn, $usr, $passwd, $ensDsn, $ensHost, $ensUsr, $ensPasswd, $ucscDsn, $ucscUsr, $ucscPasswd, $mongoDsn, $mongoUser, $mongoPasswd) = @_;
+    my ($outputDir, $species, $type, $panel, $chromosome, $minCoord, $maxCoord, $publicID, $binSize, $tissue, $genomeVer, $dsn, $usr, $passwd, $ensDsn, $ensHost, $ensUsr, $ensPasswd, $ucscDsn, $ucscUsr, $ucscPasswd, $mongoDsn, $mongoUser, $mongoPasswd, $dataVer) = @_;
 
     my $scriptStart = time();
 
@@ -1255,7 +1255,8 @@ my $arg21 = $ARGV[20];
 my $arg22 = $ARGV[21];
 my $arg23 = $ARGV[22];
 my $arg24 = $ARGV[23];
+my $arg25 = $ARGV[24];
 
-createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10, $arg11, $arg12, $arg13, $arg14, $arg15, $arg16, $arg17, $arg18, $arg19, $arg20, $arg21, $arg22, $arg23, $arg24);
+createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10, $arg11, $arg12, $arg13, $arg14, $arg15, $arg16, $arg17, $arg18, $arg19, $arg20, $arg21, $arg22, $arg23, $arg24,$arg25);
 
 exit 0;

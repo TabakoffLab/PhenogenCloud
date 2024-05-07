@@ -89,7 +89,7 @@ mouseOnly.probeMouse = 1;
 
 var mmVer = "Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer = "Rat(<span id=\"verSelect\"></span>) HRDP version:<span id=\"hrdpSelect\"></span> Strain:BN";
-var siteVer = "PhenoGen v3.9.3(4/11/2024)";
+var siteVer = "PhenoGen v3.9.4(5/9/2024)";
 
 var trackBinCutoff = 10000;
 var customTrackLevel = -1;
@@ -1275,6 +1275,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                                 arrayTypeID: arrayTypeID,
                                 myOrganism: organism,
                                 genomeVer: genomeVer,
+                                dataVer: dataVer,
                                 track: track,
                                 folder: that.folderName
                             },
@@ -1400,6 +1401,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                                 arrayTypeID: arrayTypeID,
                                 myOrganism: organism,
                                 genomeVer: genomeVer,
+                                dataVer: dataVer,
                                 track: track,
                                 folder: that.folderName
                             },
@@ -1486,6 +1488,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                                 arrayTypeID: arrayTypeID,
                                 myOrganism: organism,
                                 genomeVer: genomeVer,
+                                dataVer: dataVer,
                                 track: track,
                                 folder: that.folderName
                             },
@@ -1565,6 +1568,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                                 arrayTypeID: arrayTypeID,
                                 myOrganism: organism,
                                 genomeVer: genomeVer,
+                                dataVer: dataVer,
                                 track: track,
                                 folder: that.folderName
                             },
@@ -1750,6 +1754,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                                 arrayTypeID: arrayTypeID,
                                 myOrganism: organism,
                                 genomeVer: genomeVer,
+                                dataVer: dataVer,
                                 track: track,
                                 folder: that.folderName,
                                 binSize: tmpBin,
@@ -1893,6 +1898,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                                 arrayTypeID: arrayTypeID,
                                 myOrganism: organism,
                                 genomeVer: genomeVer,
+                                dataVer: dataVer,
                                 track: track,
                                 folder: that.folderName
                             },
@@ -2008,6 +2014,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                                 arrayTypeID: arrayTypeID,
                                 myOrganism: organism,
                                 genomeVer: genomeVer,
+                                dataVer: dataVer,
                                 track: track,
                                 folder: that.folderName
                             },
@@ -3353,7 +3360,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 } else {
                     $.cookie(organism + "DefHRDPVer", $(this).val());
                 }
-                changeHRDPVer($(this).val(), that.currentView);
+                changeHRDPVer($(this).val());
                 setTimeout(function () {
                     //console.log("submit genomeVer"+$('input#genomeVer').attr("value"));
                     $('form#geneCentricForm').submit();
@@ -3363,25 +3370,35 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 $('span#hrdpSelect').css("display", "inline-block");
 
                 if (genomeVer === "rn7") {
+                    console.log("append:v6");
                     var rn6Opt = tmpSelh.append('option')
-                        .attr('value', '6')
-                        .html('HRDPv6');
-                    //if (hrdpVer === '6') {
-                    rn6Opt.attr('selected', 'selected');
-                    //}
+                        .attr('value', 'hrdp6')
+                        .html('HRDP v6');
+                    if (dataVer === "hrdp6") {
+                        rn6Opt.attr('selected', 'selected');
+                    }
+                    console.log("append:v7");
+                    var rn7Opt = tmpSelh.append('option')
+                        .attr('value', 'hrdp7')
+                        .html('HRDP v7');
+                    if (dataVer === "hrdp7") {
+                        rn7Opt.attr('selected', 'selected');
+                    }
                 } else if (genomeVer === "rn6") {
+                    console.log("append:v5");
                     var rn5pt = tmpSelh.append('option')
-                        .attr('value', '5')
-                        .html('HRDPv5');
+                        .attr('value', 'hrdp5')
+                        .html('HRDP v5');
+                    rn5pt.attr('selected', 'selected');
+                } else if (genomeVer === "rn5") {
+                    console.log("append:v4");
+                    var rn5pt = tmpSelh.append('option')
+                        .attr('value', 'hrdp3')
+                        .html('HRDP v4');
                     //if (hrdpVer === '5') {
                     rn5pt.attr('selected', 'selected');
-                    //}
-                    //var rn4pt = tmpSelh.append('option')
-                    //    .attr('value', '4')
-                    //    .html('HRDPv4');
-                    //if (hrdpVer === '4') {
-                    //    rn4pt.attr('selected', 'selected');
-                    //}
+                } else {
+                    console.error("Unsupported genome version");
                 }
             } else if (organism === 'Mm') {
                 $('span#hrdpSelect').css("display", "none");
@@ -5358,6 +5375,7 @@ function SequenceTrack(gsvg, trackClass, label, additionalOptions) {
                                     arrayTypeID: arrayTypeID,
                                     myOrganism: organism,
                                     genomeVer: genomeVer,
+                                    dataVer: dataVer,
                                     track: that.trackClass,
                                     folder: that.gsvg.folderName
                                 },
@@ -6610,6 +6628,7 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
                             arrayTypeID: arrayTypeID,
                             myOrganism: organism,
                             genomeVer: genomeVer,
+                            dataVer: dataVer,
                             track: file,
                             folder: that.gsvg.folderName
                         },
@@ -6702,6 +6721,7 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
                             arrayTypeID: arrayTypeID,
                             myOrganism: organism,
                             genomeVer: genomeVer,
+                            dataVer: dataVer,
                             track: file,
                             folder: that.gsvg.folderName
                         },
@@ -8139,6 +8159,8 @@ function RefSeqTrack(gsvg, data, trackClass, label, additionalOptions) {
                             rnaDatasetID: rnaDatasetID,
                             arrayTypeID: arrayTypeID,
                             myOrganism: organism,
+                            genomeVer: genomeVer,
+                            dataVer: dataVer,
                             track: that.trackClass,
                             folder: that.gsvg.folderName,
                             panel: panel
@@ -11236,6 +11258,7 @@ function CustomCountTrack(gsvg, data, trackClass, density, additionalOptions) {
                                 maxCoord: tmpMax,
                                 myOrganism: organism,
                                 genomeVer: genomeVer,
+                                dataVer: dataVer,
                                 track: that.trackClass,
                                 bedFile: bedFile,
                                 outFile: file,
@@ -11684,6 +11707,7 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
                             arrayTypeID: arrayTypeID,
                             myOrganism: organism,
                             genomeVer: genomeVer,
+                            dataVer: dataVer,
                             track: that.trackClass,
                             folder: that.gsvg.folderName,
                             binSize: that.bin,
@@ -13390,6 +13414,7 @@ function GenericTranscriptTrack(gsvg, data, trackClass, label, density, addition
                             arrayTypeID: arrayTypeID,
                             myOrganism: organism,
                             genomeVer: genomeVer,
+                            dataVer: dataVer,
                             track: that.trackClass,
                             folder: that.gsvg.folderName
                         },

@@ -17,6 +17,7 @@
     String panel = "";
     String gcPath = "";
     String genomeVer = "";
+    String dataVer = "";
     String defaultGenomeVer = "";
     boolean isSmall = false;
     boolean isNovel = false;
@@ -75,6 +76,9 @@
             genomeVer = defaultGenomeVer;
         }
     }
+    if (request.getParameter("dataVer") != null) {
+            dataVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("dataVer"));
+	}
     log.debug("after params");
     gcPath = applicationRoot + contextRoot + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/";
 
@@ -120,7 +124,7 @@
     int rnaDatasetID = 0;
     int arrayTypeID = 0;
 
-    int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer);
+    int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer,dataVer);
     if (tmp != null && tmp.length == 2) {
         rnaDatasetID = tmp[1];
         log.debug("REPORT DSID:" + rnaDatasetID);
@@ -132,7 +136,7 @@
         urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf("/") + 1);
     }
     genURL = urlPrefix + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/";
-    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(id, id, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, true);
+    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(id, id, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, true,dataVer);
     edu.ucdenver.ccp.PhenoGen.data.Bio.Gene curGene = null;
 
     for (int i = 0; i < tmpGeneList.size(); i++) {

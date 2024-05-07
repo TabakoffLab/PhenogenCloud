@@ -129,6 +129,7 @@
     String regionError = "";
     String genomeVer = "rn7";
     String defaultGenomeVer = "rn7";
+    String dataVer = "hrdp7";
 
     Set iDecoderAnswer;
 
@@ -149,8 +150,9 @@
         if (myOrganism.equals("Rn")) {
             panel = "BNLX/SHRH";
             fullOrg = "Rattus_norvegicus";
-            genomeVer = "rn6";
-            defaultGenomeVer = "rn6";
+            genomeVer = "rn7";
+            defaultGenomeVer = "rn7";
+            dataVer= "hrdp7";
         } else if (myOrganism.equals("Mm")) {
             panel = "ILS/ISS";
             fullOrg = "Mus_musculus";
@@ -175,6 +177,24 @@
         }
         log.debug("******\nreading Genome Ver:" + genomeVer);
     }
+
+     if (request.getParameter("dataVer") != null) {
+         dataVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("dataVer").trim());
+         if(genomeVer.equals("rn7")){
+             if(!dataVer.equals("hrdp7") && !dataVer.equals("hrdp6")){
+                 dataVer="hrdp7";
+             }
+         }else if (genomeVer.equals("rn6")){
+             if(!dataVer.equals("hrdp5")){
+                 dataVer="hrdp5";
+             }
+         }else if(genomeVer.equals("rn5")){
+             if(!dataVer.equals("hrdp3")){
+                 dataVer="hrdp3";
+             }
+         }
+     }
+
     int val = -1;
     try {
         val = Integer.parseInt(defView);
@@ -183,9 +203,7 @@
     if (genomeVer.equals("rn6") && val > -1 && val < 11) {
         defView = Integer.toString(val + 10);
     }
-    log.debug("*****\ncurGenome:" + genomeVer);
     ArrayList<BrowserView> views = bt.getBrowserViews(genomeVer, UUID);
-    log.debug("*****\nView length:" + views.size());
     String[] tissuesList1 = new String[1];
     String[] tissuesList2 = new String[1];
     if (myOrganism.equals("Rn")) {
@@ -210,7 +228,7 @@
             auto = true;
         }
     }
-    log.debug("Selected Gene=" + request.getParameter("geneSelect"));
+
     if (request.getParameter("geneSelect") != null && !(request.getParameter("geneSelect").equals(""))) {
         selectedEnsemblID = FilterInput.getFilteredInput(request.getParameter("geneSelect").trim());
         //selectedGene=Integer.parseInt(request.getParameter("geneSelect").trim());
@@ -295,7 +313,7 @@
         }
 
         if (homologList != null && homologList.size() > 0) {
-            int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer);
+            int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer,dataVer);
             if (tmp != null && tmp.length == 2) {
                 rnaDatasetID = tmp[1];
                 arrayTypeID = tmp[0];
@@ -306,7 +324,7 @@
                 if (homologIdentifier.getIdentifier().indexOf("ENSMUSG") > -1 || homologIdentifier.getIdentifier().indexOf("ENSRNOG") > -1) {
                     //myEnsemblIDs.add(homologIdentifier.getIdentifier());
                     log.debug("RUNNING GDT for " + homologIdentifier.getIdentifier());
-                    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(myGene, homologIdentifier.getIdentifier(), panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, false);
+                    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(myGene, homologIdentifier.getIdentifier(), panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, false,dataVer);
 
                     String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
                     String tmpGeneSymbol = gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
@@ -370,7 +388,7 @@
                 min = Integer.parseInt(part2[0]);
                 max = Integer.parseInt(part2[1]);
                 myDisplayGene = myGene;
-                fullGeneList = gdt.getRegionData(chr, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false, false);
+                fullGeneList = gdt.getRegionData(chr, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false, false,dataVer);
                 String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
                 String tmpGeneSymbol = gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
                 String tmpUcscURL = gdt.getUCSCURL();//(String)session.getAttribute("ucscURL");
@@ -394,7 +412,7 @@
                                 }*/
                 }
             } else {
-                gdt.getGeneCentricData(myGene, "", panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, false);
+                gdt.getGeneCentricData(myGene, "", panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, false,dataVer);
                 displayNoEnsembl = true;
             }
         }
@@ -402,7 +420,7 @@
             || (auto && region)) {
         mySessionHandler.createSessionActivity(session.getId(), "GTD Browser Region: " + myGene, pool);
         //log.debug("RUNNING REGION");
-        int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer);
+        int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer,dataVer);
         if (tmp != null && tmp.length == 2) {
             rnaDatasetID = tmp[1];
             arrayTypeID = tmp[0];
@@ -573,7 +591,7 @@
                     }
                     DecimalFormat df0 = new DecimalFormat("#,###");
                     myDisplayGene = chromosome + ":" + df0.format(min) + "-" + df0.format(max);
-                    fullGeneList = gdt.getRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false, false);
+                    fullGeneList = gdt.getRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false, false,dataVer);
                     String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
                     String tmpGeneSymbol = gdt.getGeneSymbol();//(String)session.getAttribute("geneSymbol");
                     String tmpUcscURL = gdt.getUCSCURL();//(String)session.getAttribute("ucscURL");
@@ -711,30 +729,61 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                       title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn7 (available)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
                         src="<%=imagesDir%>/icons/info.gif"></span>
                 <span id="" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>style="display: none;"<%}%>
-                <label>
-                    Genome Version:
-                    <select name="genomeVerCB" id="genomeVerCB">
-                        <%if (myOrganism.equals("Rn")) {%>
-                        <option value="rn7" <%if(genomeVer.equals("rn7")){%>SELECTED<%}%> >Rn7</option>
-                        <option value="rn6" <%if(genomeVer.equals("rn6")){%>SELECTED<%}%> >Rn6</option>
-                        <option value="rn5" <%if(genomeVer.equals("rn5")){%>SELECTED<%}%> >Rn5</option>
-                        <%} else { %>
-                        <option value="mm10">Mm10</option>
-                        <%}%>
-                    </select>
-                </label>
+					<label>
+						Genome Version:
+						<select name="genomeVerCB" id="genomeVerCB">
+							<%if (myOrganism.equals("Rn")) {%>
+								<option value="rn7" <%if(genomeVer.equals("rn7")){%>SELECTED<%}%> >Rn7</option>
+								<option value="rn6" <%if(genomeVer.equals("rn6")){%>SELECTED<%}%> >Rn6</option>
+								<option value="rn5" <%if(genomeVer.equals("rn5")){%>SELECTED<%}%> >Rn5</option>
+							<%} else { %>
+								<option value="mm10">Mm10</option>
+							<%}%>
+						</select>
+					</label>
+					<label>
+										Dataset Version:
+										<select name="dataVerCB" id="dataVerCB">
+											<option value="hrdp7" <%if(dataVer.equals("hrdp7")){%>SELECTED<%}%> <%if(! genomeVer.equals("rn7")){%>DISABLED<%}%> >HRDP v7</option>
+											<option value="hrdp6" <%if(dataVer.equals("hrdp6")){%>SELECTED<%}%> <%if(! genomeVer.equals("rn7")){%>DISABLED<%}%> >HRDP v6</option>
+											<option value="hrdp5" <%if(dataVer.equals("hrdp5")){%>SELECTED<%}%>  <%if(! genomeVer.equals("rn6")){%>DISABLED<%}%> >HRDP v5</option>
+											<option value="hrdp3" <%if(dataVer.equals("hrdp3")){%>SELECTED<%}%>  <%if(! genomeVer.equals("rn5")){%>DISABLED<%}%> >HRDP v4</option>
+										</select>
+					</label>
+
+					<span style="padding-left:10px;float:right;"> <input type="submit" class="goBTN" id="goBTN1" value="Go"
+                                                                                         onClick="return displayWorking()"></span>
+					<span id="dataAvailability" style="display:none;">
+					<BR><BR>
+						<h3>Current Data Type Availability:</h3><BR>
+						<table name="items" class="list_base tablesorter" style="display: inline-block;text-align: left;">
+							<thead class="col_title">
+							<TR><TH>Data Type</TH><TH>HRDP v7</TH><TH>HRDP v6</TH></TR>
+							</thead>
+							<tbody>
+							<TR class="odd"><TD>Transcriptome</TD><TD>Y</TD><TD>Y</TD></TR>
+							<TR class="even"><TD>Expression Graph/Heatmaps</TD><TD>Y</TD><TD>Y</TD></TR>
+							<TR class="odd"><TD>TPM Summaries</TD><TD>Y</TD><TD>Y</TD></TR>
+							<TR class="even"><TD>Heritability</TD><TD>Y</TD><TD>Y</TD></TR>
+							<TR class="odd"><TD>eQTLs</TD><TD>Coming Soon</TD><TD>Y</TD></TR>
+							<TR class="even"><TD>WGCNA Modules</TD><TD>Coming Soon</TD><TD>Y</TD></TR>
+							</tbody>
+						</table>
+
+					</span>
+
                 </span>
-                <BR><BR>or&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button"
-                                                                                                   name="translateBTN"
-                                                                                                   id="translateBTN"
-                                                                                                   value="Translate Region to Mouse/Rat"
-                                                                                                   onClick="openTranslateRegion()">
-                <span style="padding-left:10px;float:right;"> <input type="submit" class="goBTN" id="goBTN1" value="Go"
-                                                                     onClick="return displayWorking()"></span>
+                <BR><BR>
+                or&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button"
+								   name="translateBTN"
+								   id="translateBTN"
+								   value="Translate Region to Mouse/Rat"
+								   onClick="openTranslateRegion()">
+
 
             </fieldset>
 
-            <fieldset class="top">
+            <fieldset class="top" id="fsRight">
                 <legend>2. What data do you want to view?</legend>
                 <div class="controlgroup">
                     <label>Initial View:
@@ -784,11 +833,11 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                         Genome Version:
                         <select id="custGenomeVer">
                             <%if (myOrganism.equals("Rn")) {%>
-                            <option value="rn7">Rn7</option>
-                            <option value="rn6">Rn6</option>
-                            <option value="rn5">Rn5</option>
+								<option value="rn7">Rn7</option>
+								<option value="rn6">Rn6</option>
+								<option value="rn5">Rn5</option>
                             <%} else { %>
-                            <option value="mm10">Mm10</option>
+                            	<option value="mm10">Mm10</option>
                             <%}%>
                         </select>
                         <BR>
@@ -824,12 +873,13 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                                     <label>Total RNA-Seq (Ribosome depleted)</label><BR>
                                 <div class="checkbox-l3" id="totalOpts">
                                     <!--Version:
-                                    <select id="selDataTotalVer">
-                                        <option value="0">Current Version(update if newer versions)</option>
-                                        <option value="5">HRDP v5(Current)</option>
-                                        <option value="3">HRDP v4</option>
-                                        <option value="1">HRDP v3</option>
-                                    </select><BR>-->
+										<select id="selDataTotalVer">
+											<option value="0">Current Version(update if newer versions)</option>
+											<option value="5">HRDP v5(Current)</option>
+											<option value="3">HRDP v4</option>
+											<option value="1">HRDP v3</option>
+										</select><BR>-->
+
                                     Tracks:<BR>
                                     <input type="checkbox" class="custviewCbx" id="cbxTrackReconstruction"
                                            checked="checked">
@@ -995,6 +1045,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
         <input type="hidden" name="firstENSArray" id="firstENSArray" value="<%=firstENSString%>"/>
         <input type="hidden" name="geneSelect" id="geneSelect" value="<%=selectedGene%>"/>
         <input type="hidden" name="genomeVer" id="genomeVer" value="<%=genomeVer%>"/>
+        <input type="hidden" name="dataVer" id="dataVer" value="<%=dataVer%>"/>
         <input type="hidden" name="uuid" id="uuid" value="<%=UUID%>"/>
     </form>
     <%if (genURL.size() > 1) {%>
@@ -1031,6 +1082,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 <script type="text/javascript">
     var organism = "<%=myOrganism%>";
     var genomeVer = "<%=genomeVer%>";
+    var dataVer = "<%=dataVer%>";
     //console.log("initially set GenomeVer:"+genomeVer);
     var defaultGenomeVer = "<%=defaultGenomeVer%>";
     var defaultView =<%=defView%>;
@@ -1224,7 +1276,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
         if (!overideGV) {
             var specStoredGenomeVer = checkStoredGenomeVersion(tmp);
             $('input#genomeVer').val(specStoredGenomeVer);
-            $('select#genomeVerCB').val(specStoredGenomeVer);
+            $('select#genomeVerCB').val(specStoredGenomeVer).change();
             genomeVer = specStoredGenomeVer;
 
         } else {
@@ -1287,7 +1339,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
         filterViewList = [];
         var newViewID = -1;
         for (var i = 0; i < defviewList.length; i++) {
-            console.log(defviewList[i].ViewID + "  " + defviewList[i].genomeVersion + ":" + genomeVer);
+            //console.log(defviewList[i].ViewID + "  " + defviewList[i].genomeVersion + ":" + genomeVer);
             if (defviewList[i].Organism.toLowerCase() === "aa" || defviewList[i].Organism.toLowerCase() === $('#speciesCB').val().toLowerCase()
             ) {
                 filterViewList.push(defviewList[i]);
@@ -1303,8 +1355,17 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                 $("#defaultView").val(3);
             } else if (genomeVer === "rn6") {
                 $("#defaultView").val(13);
+            }else if (genomeVer === "rn6") {
+               $("#defaultView").val(295);
             }
         }
+    }
+
+    function changeHRDPVer(ver) {
+        dataVer = ver;
+		$('input#dataVer').val(ver);
+		$('select#hrdpVerCB select').val(ver).change();
+		getMainViewData(0);
     }
 
     function updateDefaultView(gVer, curView) {
@@ -1364,28 +1425,66 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
         $('input#genomeVer').val(specStoredGenomeVer);
         $("select#genomeVerCB select").val(specStoredGenomeVer).change();
         genomeVer = specStoredGenomeVer;
-        getMainViewData(1);
+
+        setTimeout(function () {
+        	getMainViewData(1);
+        },10);
         //setupDefaultView();
     });
 
     $("#genomeVerCB").on("change", function () {
+        console.log("genomeVerCB:change()");
         //var tmp = $("#speciesCB").val();
         var tmpGV = $("#genomeVerCB").val();
-        if (isLocalStorage() === true) {
-            localStorage.setItem(organism + "DefGenomeVer", tmpGV);
-        } else {
-            $.cookie(organism + "DefGenomeVer", tmpGV);
+        if(tmpGV != genomeVer){
+			if (isLocalStorage() === true) {
+				localStorage.setItem(organism + "DefGenomeVer", tmpGV);
+			} else {
+				$.cookie(organism + "DefGenomeVer", tmpGV);
 
+			}
+			$('input#genomeVer').val(tmpGV);
+			tmpDV="hrdpv7";
+			if(tmpGV==="rn7"){
+				tmpDV="hrdp7";
+				$('#dataVerCB option[value="hrdp7"]').prop("disabled",false);
+				$('#dataVerCB option[value="hrdp6"]').prop("disabled",false);
+				$('#dataVerCB option[value="hrdp5"]').prop("disabled",true);
+				$('#dataVerCB option[value="hrdp3"]').prop("disabled",true);
+				$('#dataAvailability').show();
+				$('#fsRight').css("min-height","274px");
+			}
+			else if(tmpGV==="rn6"){
+				   tmpDV="hrdp5";
+				   $('#dataVerCB option[value="hrdp7"]').prop("disabled",true);
+				   $('#dataVerCB option[value="hrdp6"]').prop("disabled",true);
+				   $('#dataVerCB option[value="hrdp5"]').prop("disabled",false);
+				   $('#dataVerCB option[value="hrdp3"]').prop("disabled",true);
+				   $('#dataAvailability').hide();
+				   $('#fsRight').css("min-height","141px");
+			}else if(tmpGV==="rn5"){
+				   tmpDV="hrdp3";
+
+				   $('#dataVerCB option[value="hrdp7"]').prop("disabled",true);
+				   $('#dataVerCB option[value="hrdp6"]').prop("disabled",true);
+				   $('#dataVerCB option[value="hrdp5"]').prop("disabled",true);
+				   $('#dataVerCB option[value="hrdp3"]').prop("disabled",false);
+				   $('#dataAvailability').hide();
+				   $('#fsRight').css("min-height","141px");
+			}
+
+			$('#dataVerCB').val(tmpDV);
+			//$('input#dataVerCB').val(tmpDV);
+			$('input#dataVer').val(tmpDV);
+			//fix dataVerCB
+
+			// update ver vars
+			genomeVer = tmpGV;
+			dataVer=tmpDV;
+			setTimeout(function () {
+				getMainViewData(1);
+			}, 10);
         }
-        //var specStoredGenomeVer = checkStoredGenomeVersion(tmp);
-        $('input#genomeVer').val(tmpGV);
-        //$("select#genomeVerCB select").val(specStoredGenomeVer).change();
-        genomeVer = tmpGV;
-        setTimeout(function () {
-            getMainViewData(1);
-        }, 10);
-
-        //setupDefaultView();
     });
 
 </script>

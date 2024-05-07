@@ -18,7 +18,7 @@
 
 <%
     gdt.setSession(session);
-    String chromosome = "", panel = "", myOrganism = "", track = "", folderName = "", bedFile = "", outputFile = "", web = "", type = "", genomeVer = "", version = "";
+    String chromosome = "", panel = "", myOrganism = "", track = "", folderName = "", bedFile = "", outputFile = "", web = "", type = "", genomeVer = "", version = "",dataVer="";
     int min = 0, max = 0, rnaDatasetID = 0, arrayTypeID = 0, binSize = 0, countType = 1;
     double forwardPValueCutoff = 0;
     if (request.getParameter("chromosome") != null) {
@@ -33,6 +33,9 @@
     if (request.getParameter("version") != null) {
         version = FilterInput.getFilteredInput(request.getParameter("version").trim());
     }
+    if (request.getParameter("dataVer") != null) {
+           dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer").trim());
+        }
     if (request.getParameter("minCoord") != null) {
         try {
             min = Integer.parseInt(request.getParameter("minCoord").trim());
@@ -111,13 +114,13 @@
 <%
     String status = "";
     try {
-        String toHash = "generateTrack:" + chromosome + "_" + min + "_" + max + "_" + panel + "_" + track + "_" + myOrganism + "_" + genomeVer + "_" + rnaDatasetID + "_" + arrayTypeID + "_" + folderName + "_" + binSize + "_" + version + "_" + countType + "_" + bedFile + "_" + outputFile + "_" + type + "_" + web;
+        String toHash = "generateTrack:" + chromosome + "_" + min + "_" + max + "_" + panel + "_" + track + "_" + myOrganism + "_" + genomeVer + "_" + rnaDatasetID + "_" + arrayTypeID + "_" + folderName + "_" + binSize + "_" + version +"_"+dataVer+ "_" + countType + "_" + bedFile + "_" + outputFile + "_" + type + "_" + web;
         if (!gdt.isRunning(toHash)) {
             AsyncGenerateTrack agt = new AsyncGenerateTrack(gdt, session, pool);
             gdt.appendRunningMap(toHash, "True");
             gdt.appendThreadList(agt);
             if (!track.startsWith("custom") && bedFile.equals("") && outputFile.equals("")) {
-                agt.setupGenerateTrackXML(chromosome, min, max, panel, track, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, folderName, binSize, version, countType, toHash);
+                agt.setupGenerateTrackXML(chromosome, min, max, panel, track, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, folderName, binSize, version, countType, toHash,dataVer);
             } else if (track.startsWith("custom")) {
                 log.debug("Generating custom xml track");
                 if (web.startsWith("http")) {

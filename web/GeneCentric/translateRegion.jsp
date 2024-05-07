@@ -38,22 +38,25 @@ Fill in the form below to translate a Human/Mouse/Rat region to regions on Mouse
         
         <label>Source Species:
   			<select name="transSourceSpeciesCB" id="transSourceSpeciesCB">
-           		<option value="hg19"  selected>Human (Hg19)</option>
-                <option value="hg38"  selected>Human (Hg38)</option>
-  				<option value="mm9">Mouse (Mm9)</option>
-                <option value="mm10">Mouse (Mm10)</option>
-   				<option value="rn4">Rat (Rn4)</option>
-   				<option value="rn5">Rat (Rn5)</option>
-                <option value="rn6">Rat (Rn6)</option>
+  				<option value="rn4">Rat (Rn4)</option>
+				<option value="rn5">Rat (Rn5)</option>
+				<option value="rn6" selected>Rat (Rn6)</option>
+				<option value="rn7" >Rat (Rn7)</option>
+				<option value="mm9">Mouse (Mm9)</option>
+				<option value="mm10">Mouse (Mm10)</option>
+				<option value="mm39">Mouse (Mm39)</option>
+           		<option value="hg19"  >Human (Hg19)</option>
+                <option value="hg38"  >Human (Hg38)</option>
+
   			</select>
   		</label>
-        ->
         <label>Target Species:
-  <select name="transSpeciesCB" id="transSpeciesCB">
-  	<option value="Mm10"  <%if(selectedSpecies.equals("Mm")){%>selected<%}%>>Mouse (Mm10)</option>
-    <option value="Rn6"  <%if(selectedSpecies.equals("Rn")){%>selected<%}%>>Rat (Rn6)</option>
-      <option value="Rn5">Rat (Rn5)</option>
-  </select>
+			  <select name="transSpeciesCB" id="transSpeciesCB">
+				<option value="Mm10"  <%if(selectedSpecies.equals("Mm")){%>selected<%}%>>Mouse (Mm10)</option>
+				<option value="Rn7"  <%if(selectedSpecies.equals("Rn")){%>selected<%}%>>Rat (Rn7)</option>
+				<option value="Rn6" >Rat (Rn6)</option>
+				<option value="Rn5">Rat (Rn5)</option>
+			  </select>
   </label>
         <BR /><BR />
         
@@ -144,8 +147,15 @@ This filters the results based on length of the target sequence and qeury sequen
 			var dest=$('#transSpeciesCB').val().toLowerCase();
 			if(source==dest){
 				alert("Please change the destination or source so they are not equal.");
-			}else if((source=='mm9' && !(dest=='mm10' || dest=='rn5')) || (source=='mm10' && !(dest=='rn5' || dest=='rn6')) || (source=='rn4' && !(dest=='rn5' || dest=='rn6'))
-                || (source=='rn5' && !(dest=='mm10' || dest=='rn6')) || (source=='rn6' && !(dest=='hg38' || dest=='mm10'))
+			}else if(
+                (source=='mm9' && !(dest=='mm10' || dest=='rn5')) ||
+                 (source=='mm10' && !(dest=='rn5' || dest=='rn6')) ||
+                 (source=='mm39' && !(dest=='rn6'|| dest=='rn7')) ||
+                  (source=='rn4' && !(dest=='rn5' || dest=='rn6')) ||
+                   (source=='rn5' && !(dest=='mm10' || dest=='rn6' || dest=='rn7')) ||
+                    (source=='rn6' && !(dest=='mm10' || dest=='rn7')) ||
+                    (source=='rn7' && !(dest=='mm10' || dest=='mm39' || dest=='rn5' || dest=='rn6')) ||
+                    (source=='hg38' && !(dest=='mm10' || dest=='mm39' || dest=='rn5' || dest=='rn6'|| dest=='rn7'))
                     ){
 				alert("This conversion is not supported.  Sorry for any inconvenience.  Please change the destination or source.");
 			}
@@ -155,10 +165,17 @@ This filters the results based on length of the target sequence and qeury sequen
 			var dest=$('#transSpeciesCB').val().toLowerCase();
 			if(source==dest){
 				alert("Please change the destination or source so they are not equal.");
-			}else if((source=='mm9' && !(dest=='mm10' || dest=='rn5')) || (source=='mm10' && !(dest=='rn5' || dest=='rn6')) || (source=='rn4' && !(dest=='rn5' || dest=='rn6'))
-                || (source=='rn5' && !(dest=='mm10' || dest=='rn6')) || (source=='rn6' && !(dest=='hg38' || dest=='mm10'))
-            ){
-                alert("This conversion is not supported.  Sorry for any inconvenience.  Please change the destination or source.");
+			}else if(
+			  (source=='mm9' && !(dest=='mm10' || dest=='rn5')) ||
+			   (source=='mm10' && !(dest=='rn5' || dest=='rn6')) ||
+			   (source=='mm39' && !(dest=='rn6'|| dest=='rn7')) ||
+				(source=='rn4' && !(dest=='rn5' || dest=='rn6')) ||
+				 (source=='rn5' && !(dest=='mm10' || dest=='rn6' || dest=='rn7')) ||
+				  (source=='rn6' && !(dest=='mm10' || dest=='rn7')) ||
+				  (source=='rn7' && !(dest=='mm10' || dest=='mm39' || dest=='rn5' || dest=='rn6')) ||
+				  (source=='hg38' && !(dest=='mm10' || dest=='mm39' || dest=='rn5' || dest=='rn6'|| dest=='rn7'))
+				  ){
+             				alert("This conversion is not supported.  Sorry for any inconvenience.  Please change the destination or source.");
             }
 	 });
 
