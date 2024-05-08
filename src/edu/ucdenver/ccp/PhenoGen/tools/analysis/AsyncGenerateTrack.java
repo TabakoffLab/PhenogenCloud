@@ -217,13 +217,13 @@ public class AsyncGenerateTrack extends Thread {
         String outputTrackFile = this.generateFileName();
         File testFile = new File(outputTrackFile);
         if (!testFile.exists() || testFile.length() <= 0) {
-            log.debug("AsyncGenerateTrack - running");
+            log.debug("AsyncGenerateTrack - running-" + track);
 
             //wait for other Expr threads to finish
             boolean waiting = true;
             int myIndex = -1;
             if (threadList.size() > 0) {
-                log.debug("AsyncGenerateTrack - non-zero threadlist");
+                log.debug("AsyncGenerateTrack - non-zero threadlist - " + track);
                 while (waiting) {
                     int waitingOnCount = 0;
                     boolean reachedMySelf = false;
@@ -251,7 +251,7 @@ public class AsyncGenerateTrack extends Thread {
             }
             Date start = new Date();
             //try{
-            log.debug("STARTING");
+            log.debug("STARTING - track:" + track);
             done = false;
             try {
                 if (execType == this.GENERATE_TRACK_XML) {
@@ -264,7 +264,7 @@ public class AsyncGenerateTrack extends Thread {
                     gdt.generateCustomBedGraphXMLTrack(chrom, minCoord, maxCoord, track, organism, outputDir, bedFile, outFile, binSize);
                 }
                 done = true;
-                log.debug("AsyncGeneDataTools DONE");
+                log.debug("AsyncGeneDataTools DONE-" + track);
             } catch (Exception ex) {
                 done = true;
 

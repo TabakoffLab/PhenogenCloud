@@ -33,7 +33,7 @@ sub addChr {
 1;
 
 sub getRNADatasetFromDB {
-    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $version) = @_;
+    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $dataVer) = @_;
     my %ret;
     my $is_recon=1;
     if ($organism eq "Rat") {
@@ -62,7 +62,11 @@ sub getRNADatasetFromDB {
         $query = $query . " order by build_version DESC";
     }
     else {
-        $query = $query . " and rd2.build_version='" . $version . "'";
+        my $ver =$dataVer;
+        if(index($ver,"hrdp")==0){
+            $ver=substr($ver,4);
+        }
+        $query = $query . " and rd2.build_version='" . $ver . "'";
     }
     print $query . "\n";
     $query_handle = $connect->prepare($query) or die(" RNA Isoform query prepare failed \n");

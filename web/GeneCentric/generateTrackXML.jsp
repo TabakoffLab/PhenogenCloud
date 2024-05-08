@@ -120,6 +120,7 @@
             gdt.appendRunningMap(toHash, "True");
             gdt.appendThreadList(agt);
             if (!track.startsWith("custom") && bedFile.equals("") && outputFile.equals("")) {
+                log.debug("calling GenerateTrack:"+track+":"+dataVer);
                 agt.setupGenerateTrackXML(chromosome, min, max, panel, track, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, folderName, binSize, version, countType, toHash,dataVer);
             } else if (track.startsWith("custom")) {
                 log.debug("Generating custom xml track");

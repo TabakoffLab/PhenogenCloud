@@ -419,11 +419,11 @@ public class AsyncGeneDataTools extends Thread {
 
         if (success) {
             log.debug("call processTotal()");
-            success = processTotal(tissuesTotal, chr, min, max, outputDir);
+            success = processTotal(tissuesTotal, chr, min, max, outputDir, dataVer);
         }
         log.debug("****AFTER TOTAL");
         if (success) {
-            success = processSmall(tissuesSmall, chr, min, max, outputDir);
+            success = processSmall(tissuesSmall, chr, min, max, outputDir, dataVer);
         } else {
             log.error("SMALLRNA not run as total ended unsuccessfully.");
         }
@@ -435,7 +435,7 @@ public class AsyncGeneDataTools extends Thread {
         return done;
     }
 
-    private boolean processTotal(HashMap<String, Tissues> tissuesTotal, String chr, int min, int max, String outputDir) {
+    private boolean processTotal(HashMap<String, Tissues> tissuesTotal, String chr, int min, int max, String outputDir, String dataVer) {
         boolean success = true;
         Iterator itr = tissuesTotal.keySet().iterator();
         while (itr.hasNext()) {
@@ -532,7 +532,7 @@ public class AsyncGeneDataTools extends Thread {
                 conn.close();
                 //log.debug("after R2");
                 //log.debug("PERLGENELIST:\n"+perlGeneList);
-                String heritFile = outputDir + curTissue.getTissue() + "_herit.txt";
+                String heritFile = outputDir + dataVer + "_" + curTissue.getTissue() + "_herit.txt";
                 //output heritablity file for each dataset
                 try {
                     BufferedWriter psout = new BufferedWriter(new FileWriter(new File(heritFile)));
@@ -557,13 +557,14 @@ public class AsyncGeneDataTools extends Thread {
                 String[] perlArgs = new String[9];
                 perlArgs[0] = "perl";
                 perlArgs[1] = perlDir + "readExprDataFromMongo.pl";
-                perlArgs[2] = outputDir + curTissue.getTissue() + "expr.json";
+                perlArgs[2] = outputDir + dataVer + "_" + curTissue.getTissue() + "expr.json";
                 perlArgs[3] = Integer.toString(curTissue.getExprDataID());
                 perlArgs[4] = perlGeneList;
                 perlArgs[5] = heritFile;
                 perlArgs[6] = mongoHost;
                 perlArgs[7] = mongoUser;
                 perlArgs[8] = mongoPassword;
+
 
                 //log.debug("after perl args");
                 log.debug("setup params");
@@ -613,7 +614,7 @@ public class AsyncGeneDataTools extends Thread {
         return success;
     }
 
-    private boolean processSmall(HashMap<String, Tissues> tissuesSmall, String chr, int min, int max, String outputDir) {
+    private boolean processSmall(HashMap<String, Tissues> tissuesSmall, String chr, int min, int max, String outputDir, String dataVer) {
         boolean success = true;
         log.debug("processSmall");
         Iterator itr = tissuesSmall.keySet().iterator();
@@ -743,13 +744,14 @@ public class AsyncGeneDataTools extends Thread {
             String[] perlArgs = new String[9];
             perlArgs[0] = "perl";
             perlArgs[1] = perlDir + "readExprDataFromMongo.pl";
-            perlArgs[2] = outputDir + curTissue.getTissue() + "_sm_expr.json";
+            perlArgs[2] = outputDir + dataVer + "_" + curTissue.getTissue() + "_sm_expr.json";
             perlArgs[3] = Integer.toString(curTissue.getExprDataID());
             perlArgs[4] = perlGeneList;
             perlArgs[5] = heritFile;
             perlArgs[6] = mongoHost;
             perlArgs[7] = mongoUser;
             perlArgs[8] = mongoPassword;
+
 
             log.debug("after perl args");
             log.debug("setup params");

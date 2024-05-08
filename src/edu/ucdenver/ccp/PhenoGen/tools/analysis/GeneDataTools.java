@@ -1684,7 +1684,7 @@ public class GeneDataTools {
             }
 
             //construct perl Args
-            String[] perlArgs = new String[26];
+            String[] perlArgs = new String[27];
             perlArgs[0] = "perl";
             perlArgs[1] = perlDir + "writeXML_Track.pl";
             perlArgs[2] = tmpOutputDir;
@@ -1726,7 +1726,11 @@ public class GeneDataTools {
             perlArgs[23] = mongoHost;
             perlArgs[24] = mongoUser;
             perlArgs[25] = mongoPassword;
-
+            perlArgs[26] = dataVer;
+            /*String cmd="";
+            for (int i = 0; i < perlArgs.length; i++) {
+                cmd=cmd+perlArgs[i]
+            }*/
             //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list
             String[] envVar = perlEnvVar.split(",");
 

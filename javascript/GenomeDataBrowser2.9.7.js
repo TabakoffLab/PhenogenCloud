@@ -1281,9 +1281,6 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             },
                             dataType: 'json',
                             success: function (data2) {
-                                /*if(ga){
-										ga('send','event','browser','generateTrackRefseq');
-									}*/
                                 gtag('event', 'generateTrack' + track, {'event_category': 'browser'});
                             },
                             error: function (xhr, status, error) {
@@ -1291,9 +1288,11 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             }
                         });
                     }
-                    if (retry < 60) {//wait before trying again
+                    if (retry < 70) {//wait before trying again
                         var time = 1500;
-                        if (retry == 1) {
+                        if (retry > 10) {
+                            time = 5000;
+                        } else if (retry > 2) {
                             time = 2500;
                         }
                         setTimeout(function () {
@@ -1365,9 +1364,9 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
 
             }
 
-            d3.xml(dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/" + track + ".xml", function (error, d) {
+            d3.xml(dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/" + dataVer + "_" + track + ".xml", function (error, d) {
                 if (error) {
-                    if (retry === 1 && (track === "mergedTotal" || track.indexOf("liverTotal") === 0 || track.indexOf("brainTotal") === 0 || track.indexOf("kidneyTotal") === 0 || track.indexOf("brainIso") === 0 || track.indexOf("liverIso") === 0)) {
+                    if (retry === 0 && (track === "mergedTotal" || track.indexOf("liverTotal") === 0 || track.indexOf("brainTotal") === 0 || track.indexOf("kidneyTotal") === 0 || track.indexOf("brainIso") === 0 || track.indexOf("liverIso") === 0)) {
                         var tmpMin = that.xScale.domain()[0];
                         var tmpMax = that.xScale.domain()[1];
                         var tmpContext = "/" + pathPrefix;
@@ -1417,9 +1416,11 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             }
                         });
                     }
-                    if (retry < 60) {//wait before trying again
+                    if (retry < 70) {//wait before trying again
                         var time = 1500;
-                        if (retry == 1) {
+                        if (retry > 10) {
+                            time = 5000;
+                        } else if (retry > 2) {
                             time = 2500;
                         }
                         setTimeout(function () {
@@ -1504,9 +1505,11 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             }
                         });
                     }
-                    if (retry < 60) {//wait before trying again
+                    if (retry < 70) {//wait before trying again
                         var time = 1500;
-                        if (retry === 1) {
+                        if (retry > 10) {
+                            time = 5000;
+                        } else if (retry > 2) {
                             time = 2500;
                         }
                         setTimeout(function () {
@@ -1549,7 +1552,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
             d3.xml(file, function (error, d) {
                 if (error) {
                     console.log(error);
-                    if (retry == 0) {
+                    if (retry === 0) {
                         var tmpContext = "/" + pathPrefix;
                         if (!pathPrefix) {
                             tmpContext = "";
@@ -1574,9 +1577,6 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             },
                             dataType: 'json',
                             success: function (data2) {
-                                /*if(ga){
-										ga('send','event','browser','generateTrackSNP');
-									}*/
                                 gtag('event', 'generateTrack' + track, {'event_category': 'browser'});
                             },
                             error: function (xhr, status, error) {
@@ -1584,9 +1584,11 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             }
                         });
                     }
-                    if (retry < 60) {//wait before trying again
+                    if (retry < 70) {//wait before trying again
                         var time = 1500;
-                        if (retry === 1) {
+                        if (retry > 10) {
+                            time = 5000;
+                        } else if (retry > 2) {
                             time = 2500;
                         }
                         setTimeout(function () {
@@ -1723,11 +1725,11 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 }
             }
             //var file=dataPrefix+"tmpData/regionData/"+that.folderName+"/count"+track+".xml";
-            var file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/tmp/" + tmpMin + "_" + tmpMax + ".count." + track + "." + tmpCount + ".xml";
+            var file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/tmp/" + dataVer + "_" + tmpMin + "_" + tmpMax + ".count." + track + "." + tmpCount + ".xml";
             if (tmpBin > 0) {
                 tmpMin = tmpMin - (tmpMin % tmpBin);
                 tmpMax = tmpMax + (tmpBin - (tmpMax % tmpBin));
-                file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/tmp/" + tmpMin + "_" + tmpMax + ".bincount." + tmpBin + "." + track + "." + tmpCount + ".xml";
+                file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/tmp/" + dataVer + "_" + tmpMin + "_" + tmpMax + ".bincount." + tmpBin + "." + track + "." + tmpCount + ".xml";
             }
             d3.xml(file, function (error, d) {
                 if (error) {
@@ -1762,9 +1764,6 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             },
                             dataType: 'json',
                             success: function (data2) {
-                                /*if(ga){
-										ga('send','event','browser','generateTrackCounts');
-									}*/
                                 gtag('event', 'generateTrack' + track, {'event_category': 'browser'});
                             },
                             error: function (xhr, status, error) {
@@ -1773,9 +1772,11 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                         });
                         time = 10000;
                     }
-                    if (retry < 60) {//wait before trying again
+                    if (retry < 70) {//wait before trying again
                         var time = 1000;
-                        if (retry === 0) {
+                        if (retry > 10) {
+                            time = 5000;
+                        } else if (retry > 2) {
                             time = 2500;
                         }
                         setTimeout(function () {
@@ -1869,7 +1870,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
             //var include=$("#"+track+that.levelNumber+"Select").val();
             var tmpMin = that.xScale.domain()[0];
             var tmpMax = that.xScale.domain()[1];
-            var file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/" + track + ".xml";
+            var file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/" + dataVer + "_" + track + ".xml";
             var lblPrefix = "Brain ";
             if (track == "liverspliceJnct") {
                 lblPrefix = "Liver ";
@@ -1879,7 +1880,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
             d3.xml(file, function (error, d) {
                 if (error) {
                     console.log(error);
-                    if (retry == 0) {
+                    if (retry === 0) {
                         var tmpContext = "/" + pathPrefix;
                         if (!pathPrefix) {
                             tmpContext = "";
@@ -1914,9 +1915,11 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             }
                         });
                     }
-                    if (retry < 60) {//wait before trying again
+                    if (retry < 70) {//wait before trying again
                         var time = 1500;
-                        if (retry === 1) {
+                        if (retry > 10) {
+                            time = 5000;
+                        } else if (retry > 2) {
                             time = 2500;
                         }
                         setTimeout(function () {
@@ -2020,9 +2023,6 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             },
                             dataType: 'json',
                             success: function (data2) {
-                                /*if(ga){
-										ga('send','event','browser','generateTrackRepeatMask');
-									}*/
                                 gtag('event', 'generateTrack' + track, {'event_category': 'browser'});
                             },
                             error: function (xhr, status, error) {
@@ -2030,9 +2030,11 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                             }
                         });
                     }
-                    if (retry < 60) {//wait before trying again
+                    if (retry < 70) {//wait before trying again
                         var time = 1500;
-                        if (retry === 1) {
+                        if (retry > 10) {
+                            time = 5000;
+                        } else if (retry > 2) {
                             time = 2500;
                         }
                         setTimeout(function () {
@@ -2089,12 +2091,10 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
             that.addTrackList(newTrack);
         }
         $(".sortable" + that.levelNumber).sortable("refresh");
-        /*if(ga){
-			ga('send','event','trackAdded',track);
-		}*/
+
         gtag('event', track, {'event_category': 'trackAdded'});
-    }
-    ;
+    };
+
 
     that.addTrackList = function (newTrack) {
         if (newTrack != null) {
@@ -6594,6 +6594,10 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
     that.updateData = function (retry) {
         var tag = "Gene";
         var path = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/" + that.trackClass + ".xml";
+        if (that.trackClass.indexOf("heartTotal") === 0 || that.trackClass.indexOf("liverTotal") === 0 || that.trackClass.indexOf("brainTotal") === 0 || that.trackClass.indexOf("kidneyTotal") === 0 || that.trackClass === 'mergedTotal' || that.trackClass.indexOf("brainIso") === 0 || that.trackClass.indexOf("liverIso") === 0) {
+            path = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/" + dataVer + "_" + that.trackClass + ".xml";
+        }
+
         d3.xml(path, function (error, d) {
             if (error) {
                 if (retry === 0 && (that.trackClass.indexOf("heartTotal") === 0 || that.trackClass.indexOf("liverTotal") === 0 || that.trackClass.indexOf("brainTotal") === 0 || that.trackClass.indexOf("kidneyTotal") === 0 || that.trackClass === 'mergedTotal' || that.trackClass.indexOf("smallnc") > -1 || that.trackClass.indexOf("brainIso") === 0 || that.trackClass.indexOf("liverIso") === 0)) {
@@ -6689,6 +6693,9 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
     that.updateDataVersion = function (ver, retry) {
         var tag = "Gene";
         var file = that.trackClass + "_" + ver;
+        if (that.trackClass.indexOf("heartTotal") === 0 || that.trackClass.indexOf("liverTotal") === 0 || that.trackClass.indexOf("brainTotal") === 0 || that.trackClass.indexOf("kidneyTotal") === 0 || that.trackClass === 'mergedTotal' || that.trackClass.indexOf("brainIso") === 0 || that.trackClass.indexOf("liverIso") === 0) {
+            file = dataVer + "_" + that.trackClass + ".xml";
+        }
         var path = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/" + file + ".xml";
         d3.xml(path, function (error, d) {
             if (error) {
@@ -11671,13 +11678,13 @@ function CountTrack(gsvg, data, trackClass, density, additionalOptions) {
         //console.log("update "+that.trackClass);
 
         var tag = "Count";
-        var file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/tmp/" + tmpMin + "_" + tmpMax + ".count." + that.trackClass + "." + tmpCountType + ".xml";
+        var file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/tmp/" + dataVer + "_" + tmpMin + "_" + tmpMax + ".count." + that.trackClass + "." + tmpCountType + ".xml";
         if (that.bin > 0) {
             tmpMin = tmpMin - (that.bin * 2);
             tmpMin = tmpMin - (tmpMin % (that.bin * 2));
             tmpMax = tmpMax + (that.bin * 2);
             tmpMax = tmpMax + (that.bin * 2 - (tmpMax % (that.bin * 2)));
-            file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/tmp/" + tmpMin + "_" + tmpMax + ".bincount." + that.bin + "." + that.trackClass + "." + tmpCountType + ".xml";
+            file = dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.gsvg.folderName + "/tmp/" + dataVer + "_" + tmpMin + "_" + tmpMax + ".bincount." + that.bin + "." + that.trackClass + "." + tmpCountType + ".xml";
         }
         //console.log(that.trackClass + ":file=" + file);
         //console.log(that.trackClass + ":folder=" + that.gsvg.folderName);
