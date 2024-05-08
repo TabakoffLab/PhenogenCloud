@@ -58,7 +58,7 @@ sub getRNADatasetFromDB {
         $query = $query . "and rd2.tissue = '" . $tissue . "' ";
     }
     $query = $query . " and rd2.strain_panel like '" . $panel . "' ";
-    if ($version == 0 || $version eq "") {
+    if ($dataVer == 0 || $dataVer eq "") {
         $query = $query . " order by build_version DESC";
     }
     else {
@@ -102,7 +102,7 @@ sub getRNADatasetFromDB {
 }
 1;
 sub getSmallRNADatasetFromDB {
-    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $version) = @_;
+    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $dataVer) = @_;
     my $ret = 0;
     if ($organism eq "Rat") {
         $organism = "Rn";
@@ -120,11 +120,15 @@ sub getSmallRNADatasetFromDB {
         $query = $query . "and rd2.tissue = '" . $tissue . "' ";
     }
     $query = $query . " and rd2.strain_panel like '" . $panel . "' ";
-    if ($$version == 0) {
+    if ($dataVer eq "" or version == 0) {
         $query = $query . " and rd2.visible=0 and rd2.previous=0";
     }
     else {
-        $query = $query . " and rd2.build_version='" . $$version . "'";
+        my $ver =$dataVer;
+        if(index($ver,"hrdp")==0){
+            $ver=substr($ver,4);
+        }
+        $query = $query . " and rd2.build_version='" . $ver . "'";
     }
     $query = $query . " and rd2.description like '%Smallnc'";
 

@@ -158,51 +158,37 @@ public class GeneDataTools {
          *  regard to tissues as all other tables link to the brain dataset since we have brain for both supported organisms
          */
         String rnaIDQuery = "select rna_dataset_id from RNA_DATASET " +
-                "where organism = '" + organism + "' and tissue='Brain' and strain_panel='BNLX/SHRH' and visible=1 and genome_id='" + genomeVer + "' order by BUILD_VERSION DESC";
-        log.debug("\nRNAID Query:\n" + rnaIDQuery);
-        Connection conn = null;
-        PreparedStatement ps = null;
-        try {
-            conn = pool.getConnection();
-            ps = conn.prepareStatement(atQuery);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                ret[0] = rs.getInt(1);
-            }
-            ps.close();
-        } catch (SQLException ex) {
-            log.error("SQL Exception retreiving Array_Type_ID from array_types for Organism=" + organism, ex);
-            try {
-                ps.close();
-            } catch (Exception ex1) {
+                "where organism = '" + organism + "' and tissue='Brain' and strain_panel='BNLX/SHRH' and visible=1 and genome_id='" + genomeVer + "'";
 
+        if (dataVer == null || dataVer.equals("")) {
+            rnaIDQuery = rnaIDQuery + " order by BUILD_VERSION DESC";
+        } else {
+            String ver = dataVer;
+            if (dataVer.startsWith("hrdp")) {
+                ver = ver.substring(4);
             }
+            rnaIDQuery = rnaIDQuery + " and build_version='" + ver + "'";
         }
-        try {
-            if (conn == null || conn.isClosed()) {
-                conn = pool.getConnection();
+        log.debug("\nRNAID Query:\n" + rnaIDQuery);
+        try (Connection conn = pool.getConnection()) {
+            if (!genomeVer.equals("rn7")) {
+                PreparedStatement ps = conn.prepareStatement(atQuery);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    ret[0] = rs.getInt(1);
+                }
+                ps.close();
             }
-            ps = conn.prepareStatement(rnaIDQuery);
+            PreparedStatement ps = conn.prepareStatement(rnaIDQuery);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 ret[1] = rs.getInt(1);
             }
             ps.close();
-            conn.close();
         } catch (SQLException ex) {
-            log.error("SQL Exception retreiving RNA_dataset_ID from RNA_DATASET for Organism=" + organism, ex);
-            try {
-                ps.close();
-            } catch (Exception ex1) {
-
-            }
-        } finally {
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException ex) {
-            }
+            log.error("SQL Exception retreiving Array_Type_ID from array_types for Organism=" + organism, ex);
         }
+
         return ret;
 
     }
@@ -2932,7 +2918,7 @@ public class GeneDataTools {
         return ret;
     }
 
-    public void addRegionHeritEQTLs(ArrayList<Gene> list, int min, int max, String organism, String chr, String hrdpVer, String genomeVer, double pvalue) {
+    public void addRegionHeritEQTLs(ArrayList<Gene> list, int min, int max, String organism, String chr, String dataVer, String genomeVer, double pvalue) {
 
         if (chr.startsWith("chr")) {
             chr = chr.substring(3);
@@ -2955,8 +2941,10 @@ public class GeneDataTools {
             rsC.close();
             psC.close();
             String dsList = "97,98,189";
-            if (genomeVer.equals("rn7") || hrdpVer.equals("6")) {
+            if (genomeVer.equals("rn7") || dataVer.equals("hrdp6")) {
                 dsList = "190,191,192,193";
+            } else if (genomeVer.equals("rn7") || dataVer.equals("hrdp7")) {
+                dsList = "204,205,206,207";
             }
             //get region Phenogen Gene IDs
             String heritQ = "select rt.merge_gene_id, rt.herit_gene,rt.rna_dataset_id,rta.annotation from rna_transcripts rt " +
@@ -3469,8 +3457,10 @@ public class GeneDataTools {
             psC.close();
 
             String tmpDatasets = "97,98";
-            if (genomeVer.equals("rn7")) {
+            if (genomeVer.equals("rn7") && dataVer.equals("hrdp6")) {
                 tmpDatasets = "190,191,193";
+            } else if (genomeVer.equals("rn7") && dataVer.equals("hrdp7")) {
+                tmpDatasets = "204,205,206,207";
             }
 
             int snpcount = 0;
@@ -3994,8 +3984,10 @@ public class GeneDataTools {
             String datasetList = "";
             if (genomeVer.equals("rn6")) {
                 datasetList = "(97,98)";
-            } else {
-                datasetList = "(190,191,193)";
+            } else if (genomeVer.equals("rn7") && dataVer.equals("hrdp6")) {
+                datasetList = "(190,191,193,194)";
+            } else if (genomeVer.equals("rn7") && dataVer.equals("hrdp7")) {
+                datasetList = "(204,205,206,207)";
             }
             PreparedStatement psC = conn.prepareStatement(chrQ);
             ResultSet rsC = psC.executeQuery();

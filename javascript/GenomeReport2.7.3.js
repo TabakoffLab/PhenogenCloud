@@ -201,11 +201,12 @@ function loadEQTLTable() {
         cisOnly: cisOnly
 
     };
-    loadDivWithPage("div#regionEQTLTable", jspPage, false, params,
-        "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
-    /*if(ga){
-        ga('send','event','loadEQTLTable','eQTLTable');
-    }*/
+    if (dataVer != "hrdp7") {
+        loadDivWithPage("div#regionEQTLTable", jspPage, false, params,
+            "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+    } else {
+        $("div#regionEQTLTable").css("font-size", "20pt").css("color", "#FF0000").html("Coming soon for HRDP v7.  HRDP v6(rn7) does have eQTLs if you would like to switch please change the drop down list at the top of the page.");
+    }
     gtag('event', 'eQTLTable', {'event_category': 'loadEQTLTable'});
 }
 
@@ -218,11 +219,13 @@ function loadRegionWGCNA() {
     var params = {
         region: chr + ":" + curmin + "-" + curmax
     };
-    loadDivWithPage("div#regionWGCNAEQTL", jspPage, true, params,
-        "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
-    /*if(ga){
-        ga('send','event','loadWGCNA','wgcna');
-    }*/
+    if (dataVer != "hrdp7") {
+        loadDivWithPage("div#regionWGCNAEQTL", jspPage, true, params,
+            "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+    } else {
+        $("div#regionWGCNAEQTL").css("font-size", "20pt").css("color", "#FF0000").html("Coming soon for HRDP v7.  HRDP v6(rn7) does have WGCNA modules if you would like to switch please change the drop down list at the top of the page.");
+    }
+
     gtag('event', 'wgcna', {'event_category': 'loadWGCNA'});
 }
 

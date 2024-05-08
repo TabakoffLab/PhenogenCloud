@@ -361,8 +361,7 @@ sub createXMLFile {
         if (index($chromosome, "chr") > -1) {
             $chromosome = substr($chromosome, 3);
         }
-
-        my $spliceRef = readSpliceJunctFromDB($chromosome, $species, $minCoord, $maxCoord, $publicID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd);
+        my $spliceRef = readSpliceJunctFromDB($chromosome, $species, $minCoord, $maxCoord, $publicID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd,$dataVer);
         my %spliceHOH = %$spliceRef;
         my $rnaCountEnd = time();
         print "Splice Junction completed in " . ($rnaCountEnd - $rnaCountStart) . " sec.\n";
