@@ -80,7 +80,7 @@
         genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
     }
     if (request.getParameter("dataVer") != null) {
-            dataVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("dataVer"));
+            dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer"));
         }
     if (request.getParameter("track") != null) {
         track = FilterInput.getFilteredInput(request.getParameter("track"));
@@ -189,7 +189,11 @@
     <%
         String hrdpVer = "HRDP v5";
         if (genomeVer.equals("rn7")) {
-            hrdpVer = "HRDP v6";
+            if(dataVer.equals("hrdp6")){
+            	hrdpVer = "HRDP v6";
+            }else if(dataVer.equals("hrdp7")){
+                hrdpVer = "HRDP v7";
+            }
         }
         String[] hTissues = new String[0];
         String[] dTissues = new String[0];

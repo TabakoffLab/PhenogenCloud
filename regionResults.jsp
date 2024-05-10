@@ -170,6 +170,8 @@
     <div id="imageMenu"></div>
     <div id="viewMenu"></div>
     <div id="trackMenu"></div>
+
+    <div id="warningOldVersion" style="display: none;"><span style="color: #ff0000">NOTE:</span> This is not the latest version of PhenoGen datasets.  Rn7/HRDP v7 is the latest version.  You can select it above or <a href="https://phenogen.org/gene.jsp?speciesCB=Rn&geneTxt=<%=chromosome%>:<%=min%>-<%=max%>&overideGV=Y&genomeVer=rn7&dataVer=hrdp7&auto=Y">click here</a>, unless you need a specific genome version we recommend using the most current dataset.</div>
     <div style=" background-color:#DEDEDE; color:#000000; text-align:left; width:100%;">
         <table style="width:100%;" cellpadding="0" cellspacing="0">
             <tbody>
@@ -500,6 +502,8 @@
             }
         });
     });
+
+
 </script>
 
 
@@ -549,4 +553,10 @@
 <BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR><BR>
 <%}%>
 <%}%>
-    
+
+
+<script>
+    if(dataVer !="hrdp7"){
+             $("div#warningOldVersion").show();
+    }
+</script>

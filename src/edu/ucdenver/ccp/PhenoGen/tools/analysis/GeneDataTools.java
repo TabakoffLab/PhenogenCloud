@@ -884,7 +884,7 @@ public class GeneDataTools {
             if (withRNASeqEQTL) {
                 if (genomeVer.equals("rn6")) {
                     this.addRegionHeritEQTLs(ret, minCoord, maxCoord, organism, chromosome, "5", "rn6", pValue);
-                } else if (genomeVer.equals("rn7")) {
+                } else if (genomeVer.equals("rn7") && dataVer.equals("hrdp6")) {
                     this.addRegionHeritEQTLs(ret, minCoord, maxCoord, organism, chromosome, "6", "rn7", pValue);
                 }
             }

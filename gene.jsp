@@ -36,6 +36,7 @@
     String myDisplayGene = "";
     String defView = "3";
     String overideGV = "N";
+    String overideDV="N";
     String UUID = "";
     boolean scriptError = false;
     boolean organismError = false;
@@ -179,7 +180,10 @@
     }
 
      if (request.getParameter("dataVer") != null) {
-         dataVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("dataVer").trim());
+         dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer").trim());
+
+         log.debug("\nDataVer:"+dataVer+"\n");
+
          if(genomeVer.equals("rn7")){
              if(!dataVer.equals("hrdp7") && !dataVer.equals("hrdp6")){
                  dataVer="hrdp7";
@@ -193,6 +197,7 @@
                  dataVer="hrdp3";
              }
          }
+         log.debug("\nEND DataVer:"+dataVer+"\n");
      }
 
     int val = -1;
@@ -728,7 +733,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                 <span class="tooltipster"
                       title="Mm - mm10 (default)<BR>Rn - rn6 (default)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn7 (available)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rn5 (available)<BR>To change genome versions: look for a drop down list in the upper right corner of the browser once a region is displayed."><img
                         src="<%=imagesDir%>/icons/info.gif"></span>
-                <span id="" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>style="display: none;"<%}%>
+                <span id="" <%if(myOrganism!=null && myOrganism.equals("Mm")){%>style="display: none;"<%}%>>
 					<label>
 						Genome Version:
 						<select name="genomeVerCB" id="genomeVerCB">
@@ -1153,20 +1158,10 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 
     function getMainViewData(shouldUpdate) {
         var tmpContext = "/" + pathPrefix;
-        console.log("main view url:" + tmpContext);
         if (pathPrefix == "") {
             tmpContext = "";
         }
-
-        /*submitVer="mm10,rn6";
-         if(genomeVer==='rn5'){
-         submitVer="mm10,rn5";
-         }*/
-        /*var submitVer=genomeVer;
-         if(submitVer==''){
-         submitVer=defaultGenomeVer;
-         }*/
-
+        console.log("tmpContext:"+tmpContext);
         params = {genomeVer: genomeVer};
         if (PhenogenAnonSession) {
             params["UUID"] = PhenogenAnonSession.UUID;
@@ -1175,6 +1170,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
             PhenogenAnonSession.setupSession();
             params["UUID"] = PhenogenAnonSession.UUID;
         }
+
         $.ajax({
             url: tmpContext + "getBrowserViews.jsp",
             type: 'GET',
@@ -1288,6 +1284,29 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
             $('input#genomeVer').val(genomeVer);
             $('select#genomeVerCB').val(genomeVer);
         }
+        if(genomeVer ==="rn7"){
+			 if(dataVer!=("hrdp7") && dataVer!="hrdp6"){
+				 dataVer="hrdp7";
+			 }
+		}else if (genomeVer==="rn6"){
+			 if(dataVer!="hrdp5"){
+				 dataVer="hrdp5";
+			 }
+		}else if(genomeVer==="rn5"){
+			 if(dataVer!="hrdp3"){
+				 dataVer="hrdp3";
+			 }
+		}
+        if (isLocalStorage() === true) {
+			localStorage.setItem(tmp + "DefDataVer", dataVer);
+		} else {
+			$.cookie(tmp + "DefDataVer", dataVer);
+		}
+		$('input#dataVer').val(dataVer);
+		$('span#dataVerCB select').val(dataVer);
+
+
+
 
         d3.select("#defaultView").html("");
 
@@ -1355,7 +1374,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                 $("#defaultView").val(3);
             } else if (genomeVer === "rn6") {
                 $("#defaultView").val(13);
-            }else if (genomeVer === "rn6") {
+            }else if (genomeVer === "rn7") {
                $("#defaultView").val(295);
             }
         }
@@ -1486,6 +1505,22 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 			}, 10);
         }
     });
+
+    $("#dataVerCB").on("change", function () {
+        var tmpDV = $("#dataVerCB").val();
+		if(tmpDV != dataVer){
+			if (isLocalStorage() === true) {
+				localStorage.setItem(organism + "DefDataVer", tmpDV);
+			} else {
+				$.cookie(organism + "DefDataVer", tmpDV);
+
+			}
+			$('input#dataVer').val(tmpDV);
+			dataVer=tmpDV;
+		}
+    });
+
+
 
 </script>
 
@@ -1679,6 +1714,10 @@ Hint: Try other synonyms if the first ID that you enter is not found.
             });
         }, 10);
     });
+
+    if(dataVer !="hrdp7"){
+                 $("div#warningOldVersion").show();
+    }
 </script>
 
 <%if (popup) {%>

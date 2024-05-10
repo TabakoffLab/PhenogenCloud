@@ -5,6 +5,7 @@
 
 <jsp:useBean id="gdt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.GeneDataTools" scope="session"></jsp:useBean>
 <%
+	log.debug("head geneReport.jsp");
     gdt.setSession(session);
     ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> fullGeneList = new ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene>();
     String myOrganism = "";
@@ -77,7 +78,7 @@
         }
     }
     if (request.getParameter("dataVer") != null) {
-            dataVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("dataVer"));
+            dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer"));
 	}
     log.debug("after params");
     gcPath = applicationRoot + contextRoot + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/";

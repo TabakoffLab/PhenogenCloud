@@ -47,7 +47,7 @@
         dataSource = request.getParameter("dataSource");
     }
     if (request.getParameter("dataVer") != null) {
-            dataVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("dataVer"));
+            dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer"));
     }
     String[] tissuesList1 = new String[1];
     String[] tissuesList2 = new String[1];

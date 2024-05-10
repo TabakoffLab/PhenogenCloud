@@ -74,7 +74,7 @@ if(request.getParameter("genomeVer")!=null){
 }
 
 if(request.getParameter("dataVer")!=null){
-    dataVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("dataVer"));
+    dataVer=FilterInput.getFilteredInput(request.getParameter("dataVer"));
 }
 
 %>

@@ -413,7 +413,7 @@ sub createXMLFile
 		    }
 		}
 	    }
-	    createLiverTotalXMLTrack(\%liverHOH,$outputDir.$dataVer."_liverTotal.xml");
+#	    createLiverTotalXMLTrack(\%liverHOH,$outputDir.$dataVer."_liverTotal.xml");
 	    
 	    my $refheartHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Heart",0,$genomeVer);
 	    %heartHOH=%$refheartHOH;
@@ -500,7 +500,7 @@ sub createXMLFile
 		    }
 		}
 	    }
-	    createLiverTotalXMLTrack(\%heartHOH,$outputDir.$dataVer."_heartTotal.xml");
+#	    createLiverTotalXMLTrack(\%heartHOH,$outputDir.$dataVer."_heartTotal.xml");
 	    
 	    my $iTimeStart=time();
 	    my $isoformHOH ;
@@ -596,10 +596,10 @@ sub createXMLFile
 		}
 	    }
 	    if($genomeVer eq 'rn5'){
-	    	createProteinCodingXMLTrack(\%brainHOH,$outputDir.$dataVer."_braincoding.xml",1);
-	    	createProteinCodingXMLTrack(\%brainHOH,$outputDir.$dataVer."_brainnoncoding.xml",0);
+#	    	createProteinCodingXMLTrack(\%brainHOH,$outputDir.$dataVer."_braincoding.xml",1);
+#	    	createProteinCodingXMLTrack(\%brainHOH,$outputDir.$dataVer."_brainnoncoding.xml",0);
 		}else{
-            createLiverTotalXMLTrack(\%brainHOH,$outputDir.$dataVer."_brainTotal.xml");
+#            createLiverTotalXMLTrack(\%brainHOH,$outputDir.$dataVer."_brainTotal.xml");
 		}
 		if($genomeVer eq 'rn6' || $genomeVer eq 'rn7'){
 			my $refMergedHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Merged",0,$genomeVer);
@@ -687,7 +687,7 @@ sub createXMLFile
 			    }
 			}
 		    }
-		    createLiverTotalXMLTrack(\%mergedHOH,$outputDir.$dataVer."_mergedTotal.xml");
+#		    createLiverTotalXMLTrack(\%mergedHOH,$outputDir.$dataVer."_mergedTotal.xml");
 		}
 	}elsif($shortSpecies eq 'Mm'){
 	    my $iTimeStart=time();
@@ -776,7 +776,7 @@ sub createXMLFile
 		    }
 		}
 	    }
-	    createLiverTotalXMLTrack(\%brainHOH,$outputDir."brainTotal.xml");
+#	    createLiverTotalXMLTrack(\%brainHOH,$outputDir."brainTotal.xml");
 	}
 	#my $geneListFile=$outputDir."geneList.txt";
 	#open GLFILE, ">".$geneListFile;
@@ -954,44 +954,39 @@ sub createXMLFile
 	} # loop through genes
 	#close GLFILE;
 	
-	createProteinCodingXMLTrack(\%ensemblHOH,$outputDir."ensemblcoding.xml",1);
-	createProteinCodingXMLTrack(\%ensemblHOH,$outputDir."ensemblnoncoding.xml",0);
+#	createProteinCodingXMLTrack(\%ensemblHOH,$outputDir."ensemblcoding.xml",1);
+#	createProteinCodingXMLTrack(\%ensemblHOH,$outputDir."ensemblnoncoding.xml",0);
 	
 	my $geneHOHRef=mergeByAnnotation(\%GeneHOH);
-#	my %tmpGeneHOH=%$geneHOHRef;
+	my %tmpGeneHOH=%$geneHOHRef;
 	
-#	my $geneListRef=$tmpGeneHOH{Gene};
-#	my @geneList=();
-#	eval{
-#		@geneList=@$geneListRef;
-#	}or do{
-#		@geneList=();
-#	};
+	my $geneListRef=$tmpGeneHOH{Gene};
+	my @geneList=();
+	eval{
+		@geneList=@$geneListRef;
+	}or do{
+		@geneList=();
+	};
 	
 	#print "list before sort:".@geneList."\n";
-#	my @sortedlist = sort { $a->{start} <=> $b->{start} } @geneList;
+	my @sortedlist = sort { $a->{start} <=> $b->{start} } @geneList;
 	#print "sorted List:".@sortedlist."\n";
-#	$GeneHOH{Gene}=\@sortedlist;
+	$GeneHOH{Gene}=\@sortedlist;
 	
 	##output XML file
-#	my $xml = new XML::Simple (RootName=>'GeneList');
-#	my $data = $xml->XMLout(\%GeneHOH);
-#	# open xml file
-#	my $xmlOutputFileName=">$outputDir/Region.xml";
-#	open XMLFILE, $xmlOutputFileName or die " Could not open XML file $xmlOutputFileName for writing $!\n\n";
-#	# write the header
-#	print XMLFILE '<?xml version="1.0" encoding="UTF-8"?>';
-#	print XMLFILE "\n\n";
-#	# Write the xml data
-#	print XMLFILE $data;
-#	close XMLFILE;
+	my $xml = new XML::Simple (RootName=>'GeneList');
+	my $data = $xml->XMLout(\%GeneHOH);
+	# open xml file
+	my $xmlOutputFileName=">$outputDir/Region.xml";
+	open XMLFILE, $xmlOutputFileName or die " Could not open XML file $xmlOutputFileName for writing $!\n\n";
+	# write the header
+	print XMLFILE '<?xml version="1.0" encoding="UTF-8"?>';
+	print XMLFILE "\n\n";
+	# Write the xml data
+	print XMLFILE $data;
+	close XMLFILE;
 #
-	#read QTLs
-	my $qStart=time();
-	my $qtlRef=readQTLDataFromDB($chr,$species,$minCoord,$maxCoord,$genomeVer,$dsn,$usr,$passwd);
-	my %qtlHOH=%$qtlRef;
-	my $qEnd=time();
-	print "QTLs completed in ".($qEnd-$qStart)." sec.\n";
+
 	
 	
 	my %smncHOH;
@@ -1014,20 +1009,27 @@ sub createXMLFile
 
 	
 	#create bed files in region folder
-	createQTLXMLTrack(\%qtlHOH,$outputDir."qtl.xml",$chr);
+
 
 	if($genomeVer ne "rn7"){
+	    #read QTLs
+        my $qStart=time();
+        my $qtlRef=readQTLDataFromDB($chr,$species,$minCoord,$maxCoord,$genomeVer,$dsn,$usr,$passwd);
+        my %qtlHOH=%$qtlRef;
+        my $qEnd=time();
+        print "QTLs completed in ".($qEnd-$qStart)." sec.\n";
+	    createQTLXMLTrack(\%qtlHOH,$outputDir."qtl.xml",$chr);
 	    createSNPXMLTrack(\%snpHOH,$outputDir);
 	}
 	
 		
 
-    print "start read RefSeq\n";
-	my $ensDsn="DBI:mysql:database=".$ucscDB.";host=".$ensHost.";port=6033;";
-    my $refSeqRef=readRefSeqDataFromDB($chr,$species,$minCoord,$maxCoord,$ensDsn,$ensUsr,$ensPasswd);
-    my %refSeqHOH=%$refSeqRef;
-    createRefSeqXMLTrack(\%refSeqHOH,$outputDir."refSeq.xml");
-    print "end read RefSeq\n";
+    #print "start read RefSeq\n";
+	#my $ensDsn="DBI:mysql:database=".$ucscDB.";host=".$ensHost.";port=6033;";
+    #my $refSeqRef=readRefSeqDataFromDB($chr,$species,$minCoord,$maxCoord,$ensDsn,$ensUsr,$ensPasswd);
+    #my %refSeqHOH=%$refSeqRef;
+    #createRefSeqXMLTrack(\%refSeqHOH,$outputDir."refSeq.xml");
+    #print "end read RefSeq\n";
 
 	#createRNACountXMLTrack(\%rnaCountHOH,$outputDir."helicos.xml");
 	my $scriptEnd=time();

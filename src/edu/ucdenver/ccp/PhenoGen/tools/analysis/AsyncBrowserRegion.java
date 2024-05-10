@@ -280,7 +280,7 @@ public class AsyncBrowserRegion extends Thread {
             }
             Email myAdminEmail = new Email();
             myAdminEmail.setSubject("Exception thrown in GeneDataTools.java");
-            myAdminEmail.setContent("There was an error setting up to run writeXML_Region.pl\n\nFull Stacktrace:\n" + fullerrmsg);
+            myAdminEmail.setContent("There was an error setting up to running multiple individual tracks.\n\nFull Stacktrace:\n" + fullerrmsg);
             try {
                 myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
             } catch (Exception mailException) {
@@ -507,7 +507,7 @@ public class AsyncBrowserRegion extends Thread {
             log.debug("after execute :" + track);
         } catch (ExecException e) {
             exception = true;
-            log.error("In Exception of run writeXML_Region.pl Exec_session", e);
+            log.error("In Exception of run writeXML_Track.pl Exec_session", e);
             //setError("Running Perl Script to get Gene and Transcript details/images.");
             Email myAdminEmail = new Email();
             myAdminEmail.setSubject("Exception thrown in Exec_session");

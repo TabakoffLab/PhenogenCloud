@@ -89,7 +89,7 @@ mouseOnly.probeMouse = 1;
 
 var mmVer = "Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer = "Rat(<span id=\"verSelect\"></span>) HRDP version:<span id=\"hrdpSelect\"></span> Strain:BN";
-var siteVer = "PhenoGen v3.9.4(5/9/2024)";
+var siteVer = "PhenoGen v3.9.5(5/16/2024)";
 
 var trackBinCutoff = 10000;
 var customTrackLevel = -1;
@@ -177,7 +177,8 @@ function updatePage(topSVG) {
                 rnaDatasetID: rnaDatasetID,
                 arrayTypeID: arrayTypeID,
                 myOrganism: organism,
-                genomeVer: genomeVer
+                genomeVer: genomeVer,
+                dataVer: dataVer
             },
             dataType: 'json',
             success: function (data2) {
@@ -852,6 +853,7 @@ function keySNP(d) {
 //SVG functions
 function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type, allowSelectGenomeVer) {
     var that = {};
+    console.log("SVG dataVer:" + dataVer)
     that.isToolTip = 0;
     that.folderName = "";
     that.selectedTrackSetting = "";
@@ -1149,6 +1151,8 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
         }
         //end of track div setup
 
+        console.log("Add Track:" + track + ":" + dataVer);
+
         var success = 0;
         if (track == "genomeSeq") {
             var newTrack = SequenceTrack(that, track, "Reference Genomic Sequence", additionalOptions);
@@ -1363,7 +1367,6 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 }
 
             }
-
             d3.xml(dataPrefix + "tmpData/browserCache/" + genomeVer + "/regionData/" + that.folderName + "/" + dataVer + "_" + track + ".xml", function (error, d) {
                 if (error) {
                     if (retry === 0 && (track === "mergedTotal" || track.indexOf("liverTotal") === 0 || track.indexOf("brainTotal") === 0 || track.indexOf("kidneyTotal") === 0 || track.indexOf("brainIso") === 0 || track.indexOf("liverIso") === 0)) {
@@ -6436,7 +6439,8 @@ function GeneTrack(gsvg, data, trackClass, label, additionalOptions) {
                         geneSymbol: selectedGeneSymbol,
                         chromosome: chr,
                         species: organism,
-                        genomeVer: genomeVer
+                        genomeVer: genomeVer,
+                        dataVer: dataVer
                     };
                     DisplaySelectedDetailReport(jspPage, params);
                 } else {
@@ -14148,6 +14152,7 @@ function CircRNATrack(gsvg, data, trackClass, label, density, additionalOptions)
                                 track: that.trackClass,
                                 myOrganism: organism,
                                 genomeVer: genomeVer,
+                                dataVer: dataVer
                             },
                             //data: {chromosome: chr,minCoord:minCoord,maxCoord:maxCoord,panel:panel,rnaDatasetID:rnaDatasetID,arrayTypeID: arrayTypeID, myOrganism: organism, track: that.trackClass, folder: folderName,binSize:that.bin},
                             dataType: 'json',

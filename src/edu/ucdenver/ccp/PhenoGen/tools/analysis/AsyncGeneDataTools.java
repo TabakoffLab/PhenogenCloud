@@ -148,6 +148,13 @@ public class AsyncGeneDataTools extends Thread {
             }
             outputRNASeqExprFiles(tmpOutDir, chrom, minCoord, maxCoord, genomeVer, dataVer);
             log.debug("AsyncGeneDataTools - after ExprFiles:" + chrom + ":" + minCoord + ":" + maxCoord);
+            if (genomeVer.toLowerCase().equals("rn7")) {
+                String newVer = "hrdp6";
+                if (dataVer.equals("hrdp6")) {
+                    newVer = "hrdp7";
+                }
+                outputRNASeqExprFiles(tmpOutDir, chrom, minCoord, maxCoord, genomeVer, newVer);
+            }
             if (isEnsemblGene) {
                 if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
                     outputProbesetIDFiles(tmpOutDir, chrom, minCoord, maxCoord, arrayTypeID, genomeVer);

@@ -45,6 +45,7 @@ sub getRNADatasetFromDB {
 
     if($panel eq "IsoSeq"){
         $is_recon=0;
+        $dataVer="hrdp7";
     }
 
     my $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
@@ -58,7 +59,7 @@ sub getRNADatasetFromDB {
         $query = $query . "and rd2.tissue = '" . $tissue . "' ";
     }
     $query = $query . " and rd2.strain_panel like '" . $panel . "' ";
-    if ($dataVer == 0 || $dataVer eq "") {
+    if ( $dataVer eq "") {
         $query = $query . " order by build_version DESC";
     }
     else {
@@ -166,12 +167,12 @@ sub readRNAIsoformDataFromDB {
     # Stop position on the chromosome
 
     # Read inputs
-    my ($geneChrom, $organism, $publicUserID, $panel, $geneStart, $geneStop, $dsn, $usr, $passwd, $shortName, $tmpType, $tissue, $version, $genomeVer) = @_;
+    my ($geneChrom, $organism, $publicUserID, $panel, $geneStart, $geneStop, $dsn, $usr, $passwd, $shortName, $tmpType, $tissue, $dataVer, $genomeVer) = @_;
 
-    my $dsRef = getRNADatasetFromDB($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $version);
+    my $dsRef = getRNADatasetFromDB($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $dataVer);
     my %ds = %$dsRef;
     print(%ds . "\n");
-    print "$organism:$publicUserID:$panel:$tissue:$genomeVer,$version\n";
+    print "$organism:$publicUserID:$panel:$tissue:$genomeVer,$dataVer\n";
     my @dsIDs = keys %ds;
     my $dsid = "";
     foreach my $rID (@dsIDs) {
@@ -501,7 +502,7 @@ sub readRNAIsoformDataFromDB {
 
             }
             #close PSFILE;
-            $geneHOH{ver} = $version;
+            $geneHOH{ver} = $dataVer;
         }
     }
     else {
