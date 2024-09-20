@@ -902,6 +902,7 @@ $(this).removeClass("less");
     </div>
 
     <div style="display:none;" id="geneEQTL">
+    	<span class="hrdp7Warn" style="color:#FF0000;<%if(!dataVer.equals("hrdp7")){%>display:none;<%}%>"> eQTLs are not yet available for HRDP v7.  You can view eQTLs now with HRDP v6 simply switch HRDP versions above.  Check back soon for HRDP v7 eQTLS. </span>
     </div>
 
     <div style="display:none;" id="geneApp">
@@ -931,6 +932,7 @@ $(this).removeClass("less");
     <div style="display:none;" id="miGenerna">
     </div>
     <div style="display:none;" id="geneWGCNA">
+    	<span class="hrdp7Warn" style="color:#FF0000; <%if(!dataVer.equals("hrdp7")){%>display:none;<%}%>" > WGCNA modules are not yet available for HRDP v7.  You can view WGCNA modules now with HRDP v6 simply switch HRDP versions above.  Check back soon for HRDP v7 WGCNA modules. </span>
     </div>
     <div style="display:none;" id="chilibot">
         <table>
@@ -1024,17 +1026,21 @@ $(this).removeClass("less");
 
     function loadGeneReportTabs(id, scrollToDiv) {
         if (id === "geneEQTL") {
-            var jspPage = contextRoot + "web/GeneCentric/geneEQTLAjax.jsp";
-            var params = {
-                species: organism,
-                geneSymbol: selectedGeneSymbol,
-                chromosome: chr,
-                id: selectedID,
-                genomeVer: genomeVer,
-                version: version
-            };
-            loadDivWithPage("div#geneEQTL", jspPage, scrollToDiv, params,
-                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+            if(dataVer==="hrdp7"){
+
+            }else{
+				var jspPage = contextRoot + "web/GeneCentric/geneEQTLAjax.jsp";
+				var params = {
+					species: organism,
+					geneSymbol: selectedGeneSymbol,
+					chromosome: chr,
+					id: selectedID,
+					genomeVer: genomeVer,
+					version: version
+				};
+				loadDivWithPage("div#geneEQTL", jspPage, scrollToDiv, params,
+					"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+            }
         } else if (id === "geneApp") {
             setTimeout(function () {
                 $('html, body').animate({
@@ -1066,15 +1072,19 @@ $(this).removeClass("less");
             loadDivWithPage("div#miGenerna", jspPage, scrollToDiv, params,
                 "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
         } else if (id === "geneWGCNA") {
-            $("div#regionWGCNAEQTL").html("");
-            var jspPage = contextRoot + "web/GeneCentric/wgcnaGene.jsp";
-            var params = {
-                species: organism,
-                id: selectedID,
-                genomeVer: genomeVer
-            };
-            loadDivWithPage("div#geneWGCNA", jspPage, scrollToDiv, params,
-                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+            if(dataVer==="hrdp7"){
+
+            }else{
+				$("div#regionWGCNAEQTL").html("");
+				var jspPage = contextRoot + "web/GeneCentric/wgcnaGene.jsp";
+				var params = {
+					species: organism,
+					id: selectedID,
+					genomeVer: genomeVer
+				};
+				loadDivWithPage("div#geneWGCNA", jspPage, scrollToDiv, params,
+					"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+			}
         }
     }
 

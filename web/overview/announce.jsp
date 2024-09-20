@@ -12,6 +12,19 @@
 
 <H2 style="font-size: 24px;">Announcements</H2>
 <div style="overflow:auto;height:92%;margin-left: 10px;" class="announcement">
+	<H2 style="font-weight: bold;font-size:20px;">HRDP v7 in Phenogen Browser</H2>
+            <div style="margin-left:5px;">
+                <span style="font-size: larger;">5/14/24 - v3.9.5 - Genome Transcriptome Browser has HRDP v7 data</span><BR>
+                <div style="text-align: left;margin-left:45px;">
+                HRDP v7 Data Available:
+                    <UL>
+                                    <LI>HRDP v7 Tracks: Transcriptome, Splice Junction Tracks</LI>
+                                    <LI>Expression: TPM summaries, detailed normalized expression at the region or gene level</LI>
+                                    <LI>Coming soon: eQTLs and WGCNA - HRDP v6(rn7) is still available simply select the HRDP version to display.</LI>
+
+                    </UL>
+                </div>
+            </div>
 	<H2 style="font-weight: bold;font-size:20px;">HRDP v7 IsoSeq Data</H2>
         <div style="margin-left:5px;">
             <span style="font-size: larger;">4/11/24 - IsoSeq data available raw and rn7.2 aligned </span><BR>
