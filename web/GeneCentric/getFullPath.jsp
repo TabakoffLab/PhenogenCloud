@@ -21,7 +21,7 @@ import="org.json.*" %>
 
 <%
 gdt.setSession(session);
-String chromosome="",panel="",myOrganism="Rn",genomeVer="";
+String chromosome="",panel="",myOrganism="Rn",genomeVer="",dataVer="";
 int min=0,max=0,rnaDatasetID=0,arrayTypeID=0;
 double forwardPValueCutoff=0;
 if(request.getParameter("chromosome")!=null){
@@ -72,11 +72,16 @@ if(request.getParameter("forwardPValueCutoff")!=null){
 if(request.getParameter("genomeVer")!=null){
     genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 }
+
+if(request.getParameter("dataVer")!=null){
+    dataVer=FilterInput.getFilteredInput(request.getParameter("dataVer"));
+}
+
 %>
 
 
 <% 
-	String tmpOutput=gdt.getImageRegionData(chromosome,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,false);
+	String tmpOutput=gdt.getImageRegionData(chromosome,min,max,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,false,dataVer);
 	String foldername=chromosome+"/img_"+min+"_"+max;
 	JSONObject genejson;
 	genejson = new JSONObject();

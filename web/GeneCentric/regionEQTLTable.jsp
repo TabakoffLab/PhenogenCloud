@@ -14,6 +14,7 @@
     String folderName = "";
     String type = "";
     String genomeVer = "";
+    String dataVer="";
     String dataSource="seq";
     LinkGenerator lg = new LinkGenerator(session);
     double pValueCutoff = 0.01;
@@ -337,7 +338,7 @@
         log.debug("loc:" + chromosome + ":" + min + "-" + max + "::" + folderName);
         log.debug("get EQTLs");
         java.util.Date tmpStart = new java.util.Date();
-        ArrayList<TranscriptCluster> transOutQTLs = gdt.getTransControllingEQTLs(min, max, chromosome, arrayTypeID, rnaDatasetID, pValueCutoff, levelString, myOrganism, genomeVer, tissueString, chromosomeString,dataSource);//this region controls what genes
+        ArrayList<TranscriptCluster> transOutQTLs = gdt.getTransControllingEQTLs(min, max, chromosome, arrayTypeID, rnaDatasetID, pValueCutoff, levelString, myOrganism, genomeVer, tissueString, chromosomeString,dataSource,dataVer);//this region controls what genes
         time = new java.util.Date();
         log.debug("Setup after getcontrolling eqtls:\n" + (time.getTime() - tmpStart.getTime()));
         tmpStart = new java.util.Date();

@@ -33,18 +33,25 @@ sub addChr {
 1;
 
 sub getRNADatasetFromDB {
-    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $version) = @_;
+    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $dataVer) = @_;
     my %ret;
+    my $is_recon=1;
     if ($organism eq "Rat") {
         $organism = "Rn";
     }
     elsif ($organism eq "Mouse") {
         $organism = "Mm";
     }
+
+    if($panel eq "IsoSeq"){
+        $is_recon=0;
+        $dataVer="hrdp7";
+    }
+
     my $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
     my $query = "select rd2.rna_dataset_id,rd2.build_version,rd2.tissue from rna_dataset rd2 where
 				rd2.organism = '$organism'
-                and rd2.trx_recon=1
+                and rd2.trx_recon=$is_recon
 				and rd2.user_id= $publicUserID
 				and rd2.genome_id='$genomeVer'
 				and rd2.visible=1 ";
@@ -52,11 +59,15 @@ sub getRNADatasetFromDB {
         $query = $query . "and rd2.tissue = '" . $tissue . "' ";
     }
     $query = $query . " and rd2.strain_panel like '" . $panel . "' ";
-    if ($version == 0 || $version eq "") {
+    if ( $dataVer eq "") {
         $query = $query . " order by build_version DESC";
     }
     else {
-        $query = $query . " and rd2.build_version='" . $version . "'";
+        my $ver =$dataVer;
+        if(index($ver,"hrdp")==0){
+            $ver=substr($ver,4);
+        }
+        $query = $query . " and rd2.build_version='" . $ver . "'";
     }
     print $query . "\n";
     $query_handle = $connect->prepare($query) or die(" RNA Isoform query prepare failed \n");
@@ -92,7 +103,7 @@ sub getRNADatasetFromDB {
 }
 1;
 sub getSmallRNADatasetFromDB {
-    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $version) = @_;
+    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $dataVer) = @_;
     my $ret = 0;
     if ($organism eq "Rat") {
         $organism = "Rn";
@@ -110,11 +121,15 @@ sub getSmallRNADatasetFromDB {
         $query = $query . "and rd2.tissue = '" . $tissue . "' ";
     }
     $query = $query . " and rd2.strain_panel like '" . $panel . "' ";
-    if ($$version == 0) {
+    if ($dataVer eq "" or version == 0) {
         $query = $query . " and rd2.visible=0 and rd2.previous=0";
     }
     else {
-        $query = $query . " and rd2.build_version='" . $$version . "'";
+        my $ver =$dataVer;
+        if(index($ver,"hrdp")==0){
+            $ver=substr($ver,4);
+        }
+        $query = $query . " and rd2.build_version='" . $ver . "'";
     }
     $query = $query . " and rd2.description like '%Smallnc'";
 
@@ -152,12 +167,12 @@ sub readRNAIsoformDataFromDB {
     # Stop position on the chromosome
 
     # Read inputs
-    my ($geneChrom, $organism, $publicUserID, $panel, $geneStart, $geneStop, $dsn, $usr, $passwd, $shortName, $tmpType, $tissue, $version, $genomeVer) = @_;
+    my ($geneChrom, $organism, $publicUserID, $panel, $geneStart, $geneStop, $dsn, $usr, $passwd, $shortName, $tmpType, $tissue, $dataVer, $genomeVer) = @_;
 
-    my $dsRef = getRNADatasetFromDB($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $version);
+    my $dsRef = getRNADatasetFromDB($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $dataVer);
     my %ds = %$dsRef;
     print(%ds . "\n");
-    print "$organism:$publicUserID:$panel:$tissue:$genomeVer,$version\n";
+    print "$organism:$publicUserID:$panel:$tissue:$genomeVer,$dataVer\n";
     my @dsIDs = keys %ds;
     my $dsid = "";
     foreach my $rID (@dsIDs) {
@@ -231,7 +246,7 @@ sub readRNAIsoformDataFromDB {
                     $query = $query . " and rt.category='" . $type . "'";
                 }
             }
-            $query = $query . " order by rt.trstart,rt.gene_id,rt.isoform_id,re.estart";
+            $query = $query . " order by rt.gene_id,rt.trstart,rt.isoform_id,re.estart";
 
             print $query . "\n";
             $query_handle = $connect->prepare($query) or die(" RNA Isoform query prepare failed \n");
@@ -487,7 +502,7 @@ sub readRNAIsoformDataFromDB {
 
             }
             #close PSFILE;
-            $geneHOH{ver} = $version;
+            $geneHOH{ver} = $dataVer;
         }
     }
     else {
@@ -610,7 +625,7 @@ sub readSmallRNADataFromDB {
             $query = $query . " and rt.category='" . $type . "'";
         }
     }
-    $query = $query . " order by rt.trstart,rt.gene_id,rt.isoform_id,re.estart";
+    $query = $query . " order by rt.gene_id,rt.trstart,rt.isoform_id,re.estart";
 
     print $query . "\n";
     $query_handle = $connect->prepare($query) or die(" RNA Isoform query prepare failed \n");

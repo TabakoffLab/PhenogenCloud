@@ -373,7 +373,12 @@ function setupDownloadLink(formName) {
  *  this function sets up the events for the DOWNLOAD button on each row
 /*/
 function setupDownloadButton(url) {
-    var modalOptions = {height: 550, width: 750, position: [250, 150], title: "Download Item"};
+    var modalOptions = {
+        height: 550,
+        width: 750,
+        position: {my: "center", at: "center", of: window},
+        title: "Download Item"
+    };
     downloadModal = createDialog(".downloadItem", modalOptions);
 
     $("table[name='items']").find("td div.download").click(function () {
@@ -404,7 +409,12 @@ function setupDownloadButton(url) {
  *  this function sets up the events if there is more than one DOWNLOAD button on each row
 /*/
 function setupDownloadButtonByType(url, url2) {
-    var modalOptions = {height: 550, width: 950, position: {my: "center", at: "center", of: window}, title: "Download Resources"};
+    var modalOptions = {
+        height: 650,
+        width: 1250,
+        position: {my: "center", at: "center", of: window},
+        title: "Download Resources"
+    };
     downloadModal = createDialog(".downloadItem", modalOptions);
 
     $("table[name='items'][id!='rnaseqTbl']").find("td div.download").click(function () {
@@ -421,7 +431,7 @@ function setupDownloadButtonByType(url, url2) {
             data: dataParams,
             async: false,
             success: function (html) {
-                downloadModal.dialog("option", "position", {my: "center bottom", at: "center top", of: "tr#" + id});
+                downloadModal.dialog("option", "position", {my: "center", at: "center", of: window});
                 downloadModal.html(html).dialog("open");
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -444,7 +454,7 @@ function setupDownloadButtonByType(url, url2) {
                 data: dataParams,
                 async: false,
                 success: function (html) {
-                    downloadModal.dialog("option", "position", {my: "center bottom", at: "center top", of: "tr#" + id});
+                    downloadModal.dialog("option", "position", {my: "center", at: "center", of: window});
                     downloadModal.html(html).dialog("open");
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {

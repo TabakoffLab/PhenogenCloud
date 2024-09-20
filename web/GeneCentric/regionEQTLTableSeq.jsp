@@ -17,7 +17,7 @@
     String dataSource = "seq";
     String transcriptome = "ensembl";
     String cisOnly = "all";
-    String hrdpVer = "v6";
+    String dataVer = "";
     LinkGenerator lg = new LinkGenerator(session);
     double pValueCutoff = 0.01;
     int rnaDatasetID = 0;
@@ -46,6 +46,9 @@
     if (request.getParameter("dataSource") != null) {
         dataSource = request.getParameter("dataSource");
     }
+    if (request.getParameter("dataVer") != null) {
+            dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer"));
+    }
     String[] tissuesList1 = new String[1];
     String[] tissuesList2 = new String[1];
     if (myOrganism.equals("Rn")) {
@@ -57,9 +60,9 @@
                 tissuesList2[0] = "Whole Brain";
                 tissuesList1[1] = "Liver";
                 tissuesList2[1] = "Liver";
-                hrdpVer = "v5";
+                dataVer = "hrdp5";
                 if (genomeVer.equals("rn5")) {
-                    hrdpVer = "v4";
+                    dataVer = "hrdp3";
                 }
             } else {
                 tissuesList1 = new String[3];
@@ -70,7 +73,7 @@
                 tissuesList2[1] = "Liver";
                 tissuesList1[2] = "Kidney";
                 tissuesList2[2] = "Kidney";
-                hrdpVer = "v6";
+                dataVer = "hrdp6";
             }
         } else {
             tissuesList1 = new String[4];
@@ -540,7 +543,7 @@
         log.debug("loc:" + chromosome + ":" + min + "-" + max + "::" + folderName);
         log.debug("get EQTLs");
         java.util.Date tmpStart = new java.util.Date();
-        HashMap<String, TranscriptomeQTL> transOutQTLs = gdt.getRegionEQTLs(min, max, chromosome, arrayTypeID, rnaDatasetID, pValueCutoff, myOrganism, genomeVer, tissueString, chromosomeString, transcriptome, cisOnly);//this region controls what genes
+        HashMap<String, TranscriptomeQTL> transOutQTLs = gdt.getRegionEQTLs(min, max, chromosome, arrayTypeID, rnaDatasetID, pValueCutoff, myOrganism, genomeVer, tissueString, chromosomeString, transcriptome, cisOnly,dataVer);//this region controls what genes
         String errorMessage = gdt.getRegionEQTLMessage();
         time = new java.util.Date();
         log.debug("Setup after getcontrolling eqtls:\n" + (time.getTime() - tmpStart.getTime()));
@@ -590,7 +593,7 @@
     <div id="circosDiv">
         <div class="regionSubHeader" style="font-size:18px; font-weight:bold; text-align:center; width:100%;">
 
-            Genes with an eQTL overlaping this region(HRDP <%=hrdpVer%> RNA-Seq <%=transcriptome%>
+            Genes with an eQTL overlaping this region(HRDP <%=dataVer%> RNA-Seq <%=transcriptome%>
             Data(<%if (cisOnly.equals("cis")) {%>Cis eQTLs<%} else {%>Cis and Trans eQTLS<%}%>))
             <div class="inpageHelp" style="display:inline-block;"><img id="HelpRevCircos" class="helpImage"
                                                                        src="../web/images/icons/help.png"/></div>
@@ -754,7 +757,7 @@
                 <%} else {%>
                 <th colspan="<%=tissuesList2.length*tissueColumnCount+4%>" class="center noSort topLine"
                     title="">
-                    HRDP <%=hrdpVer%> Ribosome Depleted TotalRNA Sequencing Dataset
+                    HRDP <%=dataVer%> Ribosome Depleted TotalRNA Sequencing Dataset
                     <div class="inpageHelp" style="display:inline-block;"><img id="HelpeQTLRNA" class="helpImage"
                                                                                src="../web/images/icons/help.png"/>
                     </div>

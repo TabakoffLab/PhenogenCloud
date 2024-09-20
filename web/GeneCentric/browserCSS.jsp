@@ -346,8 +346,8 @@ fieldset.top{
     vertical-align: top;
     position: relative;
     display:inline-block;
-    min-height: 112px;
-    max-height: 112px;
+    min-height: 141px;
+    max-height: 274px;
 }
 fieldset.customFieldSet{
     width:94%;

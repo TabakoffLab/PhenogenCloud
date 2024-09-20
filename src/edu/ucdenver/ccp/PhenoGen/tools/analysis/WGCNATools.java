@@ -513,13 +513,13 @@ public class WGCNATools {
         return ret;
     }
 
-    private int[] getWGCNADataset(String panel, String tissue, String org, String genomeVer, String source, String version, String rLevel) {
+    private int[] getWGCNADataset(String panel, String tissue, String org, String genomeVer, String source, String dataVer, String rLevel) {
         Connection conn = null;
         String query = "Select wdsid,rna_dataset_id,level from WGCNA_Dataset where organism=? and tissue=? and panel=? and genome_id=? and type=? and visible=1";
         if (genomeVer.equals("rn7") && rLevel != null && !rLevel.equals("")) {
             query = query + " and level='" + rLevel + "'";
         }
-        if (version.equals("")) {
+        if (dataVer.equals("")) {
             query = query + " order by version DESC";
         } else {
             query = query + " and version=?";
@@ -533,8 +533,12 @@ public class WGCNATools {
             ps.setString(3, panel);
             ps.setString(4, genomeVer);
             ps.setString(5, source);
-            if (!version.equals("")) {
-                ps.setString(6, version);
+            if (!dataVer.equals("")) {
+                String ver = dataVer;
+                if (dataVer.startsWith("hrdp")) {
+                    ver = ver.substring(4);
+                }
+                ps.setString(6, ver);
             }
             log.debug(ps);
             ResultSet rs = ps.executeQuery();

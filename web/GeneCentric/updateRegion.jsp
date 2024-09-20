@@ -23,7 +23,7 @@
 
 <%
     gdt.setSession(session);
-String chromosome="",panel="",myOrganism="Rn",genomeVer="";
+String chromosome="",panel="",myOrganism="Rn",genomeVer="",dataVer="";
 int min=0,max=0,rnaDatasetID=0,arrayTypeID=0,fullMin=0,fullMax=0;
 double forwardPValueCutoff=0;
 if(request.getParameter("chromosome")!=null){
@@ -63,6 +63,9 @@ if(request.getParameter("panel")!=null){
 if(request.getParameter("myOrganism")!=null){
 		myOrganism=request.getParameter("myOrganism").trim();
 }
+if(request.getParameter("dataVer")!=null){
+		dataVer=request.getParameter("dataVer").trim();
+}
 if(request.getParameter("genomeVer")!=null){
 		genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
 }
@@ -91,7 +94,7 @@ if(request.getParameter("forwardPValueCutoff")!=null){
 
 
 <% 
-	AsyncGeneDataThread agdt=new AsyncGeneDataThread(session,gdt,chromosome,min,max,fullMin,fullMax,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff);
+	AsyncGeneDataThread agdt=new AsyncGeneDataThread(session,gdt,chromosome,min,max,fullMin,fullMax,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,dataVer);
 	agdt.start();
 	Date start=new Date();
 	Date cur=new Date();

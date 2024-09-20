@@ -12,8 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Properties;
+import java.util.*;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
@@ -40,6 +39,7 @@ public class AsyncBrowserRegion extends Thread {
     private String perlEnvVar = "";
     private String ucscDB = "";
     private String org = "";
+    private String dataVer = "";
 
     private int minCoord = 0;
     private int maxCoord = 0;
@@ -52,10 +52,16 @@ public class AsyncBrowserRegion extends Thread {
     //private String updateSQL="update TRANS_DETAIL_USAGE set TIME_ASYNC_GENE_DATA_TOOLS=? , RESULT=? where TRANS_DETAIL_ID=?";
     private String[] tissues = new String[2];
     private ExecHandler myExec_session = null;
+    private List threadList;
+    boolean doneThread = false;
+    int maxThreadCount = 3;
+    private GeneDataTools gdt = null;
 
-    public AsyncBrowserRegion(HttpSession inSession, DataSource pool, String organism, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, String ucscDB, String ensemblPath, int usageID, boolean runAGDT) {
+
+    public AsyncBrowserRegion(HttpSession inSession, DataSource pool, String organism, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, String ucscDB, String ensemblPath, int usageID, boolean runAGDT, GeneDataTools gdt, String dataVer) {
         this.session = inSession;
         this.outputDir = outputDir;
+        this.threadList = gdt.getThreadList();
         log = Logger.getRootLogger();
         log.debug("in AsynGeneDataTools()");
 
@@ -69,8 +75,11 @@ public class AsyncBrowserRegion extends Thread {
         this.usageID = usageID;
         this.org = organism;
         this.runAGDT = runAGDT;
+        this.gdt = gdt;
+        this.threadList = gdt.getThreadList();
 
         this.genomeVer = genomeVer;
+        this.dataVer = dataVer;
         this.isEnsemblGene = isEnsemblGene;
         this.pool = pool;
         dbPropertiesFile = (String) session.getAttribute("dbPropertiesFile");
@@ -89,11 +98,45 @@ public class AsyncBrowserRegion extends Thread {
 
 
     public void run() throws RuntimeException {
+        doneThread = false;
+        Thread thisThread = Thread.currentThread();
+        //wait for other Expr threads to finish
+        boolean waiting = true;
+        int myIndex = -1;
+        if (threadList.size() > 0) {
+            while (waiting) {
+                int waitingOnCount = 0;
+                boolean reachedMySelf = false;
+                for (int i = 0; i < threadList.size() && !reachedMySelf; i++) {
+                    if (thisThread.equals(threadList.get(i))) {
+                        reachedMySelf = true;
+                        myIndex = i;
+                    } else {
+                        if (((Thread) threadList.get(i)).isAlive()) {
+                            waitingOnCount++;
+                        }
+                    }
+                }
+                if (waitingOnCount < maxThreadCount) {
+                    waiting = false;
+                } else {
+                    try {
+                        //log.debug("WAITING PREVTHREAD");
+                        thisThread.sleep(2000);
+                    } catch (InterruptedException er) {
+                        log.error("wait interrupted", er);
+                    }
+                }
+            }
+        }
+        Date start = new Date();
+        //try{
+        log.debug("STARTING");
         done = false;
-        createRegionImagesXMLFiles(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB);
+        createRegionImagesXMLFiles(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB, dataVer);
         if (runAGDT) {
             AsyncGeneDataTools agdt;
-            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, "", "", null);
+            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, dataVer, "", gdt);
             agdt.start();
             try {
                 agdt.join();
@@ -102,8 +145,10 @@ public class AsyncBrowserRegion extends Thread {
                 log.error("Error waiting on AsyncGeneDataTools:" + chrom + ":" + minCoord + "-" + maxCoord + ":", e);
             }
         }
-        createRegionXML(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB);
+        createRegionXML(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB, dataVer);
         done = true;
+        doneThread = true;
+        threadList.remove(thisThread);
     }
 
     public HashMap<String, String> getGenomeVersionSource(String genomeVer) {
@@ -131,7 +176,7 @@ public class AsyncBrowserRegion extends Thread {
 
     }
 
-    public boolean createRegionImagesXMLFiles(String folderName, String organism, String genomeVer, int arrayTypeID, int rnaDatasetID, String ucscDB) {
+    public boolean createRegionImagesXMLFiles(String folderName, String organism, String genomeVer, int arrayTypeID, int rnaDatasetID, String ucscDB, String dataVer) {
         boolean completedSuccessfully = false;
         try {
             HashMap<String, String> source = this.getGenomeVersionSource(genomeVer);
@@ -188,38 +233,40 @@ public class AsyncBrowserRegion extends Thread {
                 }
                 log.debug(i + " EnvVar::" + envVar[i]);
             }
+
             callWriteTrackXML("ensemblcoding", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                    ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                    ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, dataVer);
+
             if (organism.equals("Rn")) {
                 if (genomeVer.equals("rn5") || genomeVer.equals("rn6")) {
                     callWriteTrackXML("probe", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, dataVer);
                 }
                 if (genomeVer.equals("rn5")) {
                     callWriteTrackXML("braincoding", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Brain", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, dataVer);
                     callWriteTrackXML("brainnoncoding", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Brain", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, dataVer);
                 } else {
                     callWriteTrackXML("brainTotal", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Brain", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, dataVer);
                     callWriteTrackXML("liverTotal", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Liver", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, dataVer);
                     callWriteTrackXML("heartTotal", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Heart", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, dataVer);
                     callWriteTrackXML("kidneyTotal", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Kidney", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, dataVer);
                     callWriteTrackXML("mergedTotal", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Merged", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                            ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, dataVer);
                 }
 
             } else if (organism.equals("Mm")) {
                 callWriteTrackXML("braincoding", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Brain", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                        ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                        ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, "");
                 callWriteTrackXML("brainnoncoding", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "Brain", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                        ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                        ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, "");
                 callWriteTrackXML("qtl", folderName, organism, "", 1, panel, chrom, minCoord, maxCoord, publicUserID, 0, "", genomeVer, dsn, dbUser, dbPassword, ensDsn, ensHost, ensUser, ensPassword,
-                        ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar);
+                        ucscDsn, ucscUser, ucscPassword, mongoHost, mongoUser, mongoPassword, envVar, "");
             }
 
             //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
@@ -233,7 +280,7 @@ public class AsyncBrowserRegion extends Thread {
             }
             Email myAdminEmail = new Email();
             myAdminEmail.setSubject("Exception thrown in GeneDataTools.java");
-            myAdminEmail.setContent("There was an error setting up to run writeXML_Region.pl\n\nFull Stacktrace:\n" + fullerrmsg);
+            myAdminEmail.setContent("There was an error setting up to running multiple individual tracks.\n\nFull Stacktrace:\n" + fullerrmsg);
             try {
                 myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
             } catch (Exception mailException) {
@@ -248,7 +295,7 @@ public class AsyncBrowserRegion extends Thread {
         return completedSuccessfully;
     }
 
-    public boolean createRegionXML(String folderName, String organism, String genomeVer, int arrayTypeID, int rnaDatasetID, String ucscDB) {
+    public boolean createRegionXML(String folderName, String organism, String genomeVer, int arrayTypeID, int rnaDatasetID, String ucscDB, String dataVer) {
         boolean completedSuccessfully = false;
         try {
             HashMap<String, String> source = this.getGenomeVersionSource(genomeVer);
@@ -307,7 +354,7 @@ public class AsyncBrowserRegion extends Thread {
             }
 
             //construct perl Args
-            String[] perlArgs = new String[26];
+            String[] perlArgs = new String[27];
             perlArgs[0] = "perl";
             perlArgs[1] = perlDir + "writeXML_Region.pl";
             perlArgs[2] = "blank";
@@ -341,6 +388,7 @@ public class AsyncBrowserRegion extends Thread {
             perlArgs[23] = mongoHost;
             perlArgs[24] = mongoUser;
             perlArgs[25] = mongoPassword;
+            perlArgs[26] = dataVer;
 
 
             //construct ExecHandler which is used instead of Perl Handler because environment variables were needed.
@@ -401,11 +449,13 @@ public class AsyncBrowserRegion extends Thread {
     private boolean callWriteTrackXML(String track, String tmpOutputDir, String organism, String version, int countType, String panel, String chromosome,
                                       int min, int max, int publicUserID, int binSize, String tissue, String genomeVer, String dsn, String dbUser, String dbPassword, String
                                               ensDsn, String ensHost, String ensUser, String ensPassword,
-                                      String ucscDsn, String ucscUser, String ucscPassword, String mongoHost, String mongoUser, String mongoPassword, String[] envVar) {
+                                      String ucscDsn, String ucscUser, String ucscPassword, String mongoHost, String mongoUser, String mongoPassword, String[] envVar, String dataVer) {
         boolean completedSuccessfully = false;
         //construct perl Args
         //construct perl Args
-        String[] perlArgs = new String[26];
+
+        log.debug("running:" + track);
+        String[] perlArgs = new String[27];
         perlArgs[0] = "perl";
         perlArgs[1] = perlDir + "writeXML_Track.pl";
         perlArgs[2] = tmpOutputDir;
@@ -447,16 +497,17 @@ public class AsyncBrowserRegion extends Thread {
         perlArgs[23] = mongoHost;
         perlArgs[24] = mongoUser;
         perlArgs[25] = mongoPassword;
+        perlArgs[26] = dataVer;
 
         myExec_session = new ExecHandler(perlDir, perlArgs, envVar, outputDir + "genRegionAsync");
         boolean exception = false;
         try {
-
+            log.debug("about to execute :" + track);
             myExec_session.runExec();
-
+            log.debug("after execute :" + track);
         } catch (ExecException e) {
             exception = true;
-            log.error("In Exception of run writeXML_Region.pl Exec_session", e);
+            log.error("In Exception of run writeXML_Track.pl Exec_session", e);
             //setError("Running Perl Script to get Gene and Transcript details/images.");
             Email myAdminEmail = new Email();
             myAdminEmail.setSubject("Exception thrown in Exec_session");

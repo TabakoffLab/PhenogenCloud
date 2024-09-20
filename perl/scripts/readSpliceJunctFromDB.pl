@@ -32,7 +32,7 @@ sub addChr{
 
 
 sub readSpliceJunctFromDB{
-	my($geneChrom,$organism,$geneStart,$geneStop,$publicUserID,$panel,$tissue,$genomeVer,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$organism,$geneStart,$geneStop,$publicUserID,$panel,$tissue,$genomeVer,$dsn,$usr,$passwd,$dataVer)=@_;
 
 
 	my %spliceHOH; # giant array of hashes and arrays containing probeset data
@@ -46,12 +46,21 @@ sub readSpliceJunctFromDB{
 
         my $queryDS="select rd2.rna_dataset_id,rd2.build_version from rna_dataset rd2 where
 				rd2.organism = '".$organism."' "."
-                                and rd2.trx_recon=1
+                and rd2.trx_recon=1
 				and rd2.user_id= $publicUserID
-                                and rd2.tissue = '".$tissue."' 
-                                and rd2.genome_id= '".$genomeVer."'
-                                and rd2.strain_panel like '".$panel."'
-                                and rd2.visible=1 and rd2.previous=0";
+                and rd2.tissue = '".$tissue."'
+                and rd2.genome_id= '".$genomeVer."'
+                and rd2.strain_panel like '".$panel."'
+                and rd2.visible=1";
+        if($dataVer eq "" || $dataVer==0){
+             $queryDS = $queryDS . " order by build_version DESC";
+        }else{
+             my $ver =$dataVer;
+            if(index($ver,"hrdp")==0){
+                $ver=substr($ver,4);
+            }
+            $queryDS = $queryDS . " and rd2.build_version='" . $ver . "'";
+        }
             
         print $query."\n";
         my $query_handle1 = $connect->prepare($queryDS) or die (" RNA Dataset query prepare failed \n");

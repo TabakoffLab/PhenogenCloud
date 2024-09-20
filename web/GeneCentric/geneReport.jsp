@@ -1,8 +1,11 @@
 <%@ include file="/web/common/anon_session_vars.jsp" %>
+<%@ page import="java.util.stream.Collectors"
+         import="java.util.Comparator"
+         %>
 
 <jsp:useBean id="gdt" class="edu.ucdenver.ccp.PhenoGen.tools.analysis.GeneDataTools" scope="session"></jsp:useBean>
 <%
-
+	log.debug("head geneReport.jsp");
     gdt.setSession(session);
     ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> fullGeneList = new ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene>();
     String myOrganism = "";
@@ -15,6 +18,7 @@
     String panel = "";
     String gcPath = "";
     String genomeVer = "";
+    String dataVer = "";
     String defaultGenomeVer = "";
     boolean isSmall = false;
     boolean isNovel = false;
@@ -73,6 +77,9 @@
             genomeVer = defaultGenomeVer;
         }
     }
+    if (request.getParameter("dataVer") != null) {
+            dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer"));
+	}
     log.debug("after params");
     gcPath = applicationRoot + contextRoot + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/";
 
@@ -82,14 +89,16 @@
         tissuesList1 = new String[4];
         tissuesList2 = new String[4];
         if (genomeVer.equals("rn7")) {
-            tissuesList1 = new String[3];
-            tissuesList2 = new String[3];
+            tissuesList1 = new String[4];
+            tissuesList2 = new String[4];
             tissuesList1[0] = "Brain";
             tissuesList2[0] = "Whole Brain";
             tissuesList1[1] = "Liver";
             tissuesList2[1] = "Liver";
-            tissuesList1[1] = "Kidney";
-            tissuesList2[1] = "Kidney";
+            tissuesList1[2] = "Kidney";
+            tissuesList2[2] = "Kidney";
+            tissuesList1[3] = "Heart";
+            tissuesList2[3] = "Heart";
         } else if (genomeVer.equals("rn6")) {
             tissuesList1 = new String[2];
             tissuesList2 = new String[2];
@@ -116,7 +125,7 @@
     int rnaDatasetID = 0;
     int arrayTypeID = 0;
 
-    int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer);
+    int[] tmp = gdt.getOrganismSpecificIdentifiers(myOrganism, genomeVer,dataVer);
     if (tmp != null && tmp.length == 2) {
         rnaDatasetID = tmp[1];
         log.debug("REPORT DSID:" + rnaDatasetID);
@@ -128,8 +137,9 @@
         urlPrefix = urlPrefix.substring(0, urlPrefix.lastIndexOf("/") + 1);
     }
     genURL = urlPrefix + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/";
-    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(id, id, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, true);
+    ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Gene> tmpGeneList = gdt.getGeneCentricData(id, id, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, true,dataVer);
     edu.ucdenver.ccp.PhenoGen.data.Bio.Gene curGene = null;
+
     for (int i = 0; i < tmpGeneList.size(); i++) {
         log.debug("check:" + tmpGeneList.get(i).getGeneID() + ":" + id);
         if (tmpGeneList.get(i).getGeneID().equals(id)) {
@@ -137,6 +147,8 @@
             curGene = tmpGeneList.get(i);
         }
     }
+
+
     long len = curGene.getEnd() - curGene.getStart();
     if (len < 200 && !curGene.getBioType().equals("protein_coding")) {
         isSmall = true;
@@ -266,7 +278,8 @@ $(this).removeClass("less");
 <div id="geneDiv" style="display:inline-block;text-align:left; width:100%;">
     <div style="display:inline-block; text-align:left;width:100%;" id="geneDetail">
 
-        <% DecimalFormat df2 = new DecimalFormat("#.##");
+        <% DecimalFormat df1 = new DecimalFormat("#.#");
+        DecimalFormat df2 = new DecimalFormat("#.##");
             DecimalFormat df0 = new DecimalFormat("###");
             DecimalFormat df4 = new DecimalFormat("#.####");
             DecimalFormat dfC = new DecimalFormat("#,###");
@@ -285,6 +298,36 @@ $(this).removeClass("less");
             String chr = curGene.getChromosome();
             String phenogenID = curGene.getGeneID();
             ArrayList<edu.ucdenver.ccp.PhenoGen.data.Bio.Transcript> tmpTrx = curGene.getTranscripts();
+            HashMap<String,HashMap<String,String>> uniqueTrxList=new HashMap<String,HashMap<String,String>>();
+            //HashMap<String,String> geneList=new HashMap<String,String>();
+            StringBuilder sb=new StringBuilder();
+			for(int l=0;l<tmpTrx.size();l++) {
+				String tmpID=tmpTrx.get(l).getID();
+				if(!uniqueTrxList.containsKey(tmpID)) {
+					String idHTML=tmpTrx.get(l).getIDwToolTip();
+					String matched=tmpTrx.get(l).getMatchReason();
+					HashMap<String,String>
+							tmpHM=new HashMap<String,String>();
+					tmpHM.put("html",idHTML);
+					tmpHM.put("match",matched);
+					uniqueTrxList.put(tmpID,tmpHM);
+                    sb.append(",\""+tmpID+"\"");
+				}
+			}
+            // Add gene ID
+            if(phenogenID.startsWith("PRN") || phenogenID.startsWith("ENSRNOG")){
+            	sb.append(",\""+phenogenID+"\"");
+            }
+            /*if(curGene.getEnsemblAnnotation().startsWith("ENSRNOG")){
+                String tmp2=curGene.getEnsemblAnnotation().split(":")[0];
+                if(tmp2.startsWith("ENSRNOG")){
+                    sb.append(","+tmp2);
+                }
+            }*/
+            HashMap<String, HashMap<String,HashMap<String,Double>>> tpmData= new HashMap<String, HashMap<String,HashMap<String,Double>>>();
+			if(genomeVer.equals("rn7")){
+				tpmData=gdt.getTPMHerit( sb.substring(1), "190,191,192,193");
+			}
             if (!chr.startsWith("chr")) {
                 chr = "chr" + chr;
             }
@@ -473,32 +516,136 @@ $(this).removeClass("less");
                     </TD>
                 </TR>
                 <TR>
-                    <TD></TD>
-                    <TD></TD>
+                    <TD>Gene Expression and Heritability:</TD>
+                    <TD>
+                    <TABLE id="tblGeneSummary" class="list_base" name="items" style="display:inline-block;">
+                    <THEAD>
+                    		<TR>
+                                        	<TH></TH>
+                                        	<TH colspan="4">TPM</TH>
+                                        	<TH colspan="4">Heritability</TH>
+                    		</TR>
+                    	<TR>
+                    	<TH>Gene ID</TH>
+                    	<TH>Whole Brain</TH>
+                        								<TH>Liver</TH>
+                        								<TH>Kidney</TH>
+                        								<TH>Heart</TH>
+                        								<TH>Whole Brain</TH>
+                        								<TH>Liver</TH>
+                        								<TH>Kidney</TH>
+                        								<TH>Heart</TH>
+						</TR>
+					</THEAD>
+					<tbody>
+                    <% if(tpmData!=null){
+                                    Set<String> tpmKeys=tpmData.keySet();
+                                    //ArrayList<String> geneArrayList=new ArrayList<String>();
+                                    for( String key : tpmKeys){
+                                        if(!uniqueTrxList.containsKey(key)){
+                                            %>
+                                            <TR>
+                                            <TD><%=key%></TD>
+											<%for(String tissue:tissuesList1){
+												String val="-";
+												if(tpmData.containsKey(key) && tpmData.get(key).containsKey(tissue) && tpmData.get(key).get(tissue).containsKey(("medTPM"))){
+													val=df1.format(tpmData.get(key).get(tissue).get("medTPM"))+"<BR>("+df1.format(tpmData.get(key).get(tissue).get("minTPM"))+"-"+df1.format(tpmData.get(key).get(tissue).get("maxTPM")) +")";
+												}
+												%>
+												<TD <%if( !(val.equals("-")) && tpmData.get(key).get(tissue).get("medTPM")>=1){%>style="background-color: #77d177;"<%}%>><%=val%></TD>
+
+												<%
+												}
+											for(String tissue2:tissuesList1){
+												String val="-";
+												if(tpmData.containsKey(key) && tpmData.get(key).containsKey(tissue2) && tpmData.get(key).get(tissue2).containsKey("geneHerit")){
+													val=df2.format(tpmData.get(key).get(tissue2).get("geneHerit"));
+												}
+												%>
+												<TD <%if(!(val.equals("-")) && tpmData.get(key).get(tissue2).get("geneHerit")>=0.33){%>style="background-color: #77d177;"<%}%>><%=val%></TD>
+											<%}%>
+                                            </TR>
+                                            <%
+										}
+                                    }
+                                    }
+                                    %>
+                      </tbody>
+                     </TABLE>
+					</TD>
                 </TR>
+
             </table>
             <table id="genePart2Tbl" class="geneReport adapt2Col" style="display:inline-block;">
                 <TR>
-                    <TD style="width:20%;">
-                        Transcripts:
+                    <TD style="width:100%;">
+                        <B>Transcript Expression and Heritability Summary:</B><BR><BR>
                     </TD>
-                    <TD style="width:78%;">
-                        <%
-                            for (int l = 0; l < tmpTrx.size(); l++) {%>
-                        <B><%=tmpTrx.get(l).getIDwToolTip()%>
-                        </B>
-                        <%
-                            if (myOrganism.equals("Rn") && curGene.getGeneID().startsWith("ENS")) {
-                                if (!tmpTrx.get(l).getID().startsWith("ENS")) {
-                        %>
-                        - <%=tmpTrx.get(l).getMatchReason()%>
-                        <%
-                                }
-                            }
-                        %>
-                        <BR>
+                </TR>
+                <TR>
+                    <TD style="width:100%;">
+                    	<table id="tblTrxSummary" class="list_base" name="items" style="display:inline-block;">
+                    	<thead>
+                    		<TR>
+								<TH></TH>
+								<TH colspan="4">TPM</TH>
+								<TH colspan="4">Heritability</TH>
 
+                        	</TR>
+                    		<TR>
+								<TH>Transcripts (- match reason)</TH>
+								<TH>Whole Brain</TH>
+								<TH>Liver</TH>
+								<TH>Kidney</TH>
+								<TH>Heart</TH>
+								<TH>Whole Brain</TH>
+								<TH>Liver</TH>
+								<TH>Kidney</TH>
+								<TH>Heart</TH>
+							</TR>
+						</thead>
+						<tbody>
+                        <% Set<String> keySet = uniqueTrxList.keySet();
+                        ArrayList<String> list=new ArrayList<String>(keySet);
+
+                        Collections.sort(list,new Comparator<String>() {
+                                    public int compare(String a, String b) {
+                                        if (a.equals(b)) {
+                                            return 0;
+                                        }
+                                        return a.compareTo(b);
+                                    }
+                                });
+                        for(Object key : list ) {
+                                HashMap<String,String> cur = uniqueTrxList.get(key);%>
+                                <TR><TD>
+									<B><%=cur.get("html")%></B>
+									<%if(cur.containsKey("match") && !cur.get("match").equals("")) {%>
+										<BR> -  <%=cur.get("match")%>
+									<%}%>
+                        		</TD>
+                        		<%for(String tissue:tissuesList1){
+                        			String val="-";
+                                    if(tpmData.containsKey(key) && tpmData.get(key).containsKey(tissue)){
+                                        val=df1.format(tpmData.get(key).get(tissue).get("medTPM"))+"<BR>("+df1.format(tpmData.get(key).get(tissue).get("minTPM"))+"-"+df1.format(tpmData.get(key).get(tissue).get("maxTPM"))+")";
+                                    }
+                        		%>
+                        			<TD <%if( !(val.equals("-")) && tpmData.get(key).get(tissue).get("medTPM")>=1){%>style="background-color: #77d177;"<%}%>><%=val%></TD>
+
+                        		<%
+                                }
+                        		for(String tissue2:tissuesList1){
+									String val="-";
+									if(tpmData.containsKey(key) && tpmData.get(key).containsKey(tissue2)){
+										val=df2.format(tpmData.get(key).get(tissue2).get("trxHerit"));
+									}
+								%>
+									<TD <%if(!(val.equals("-")) && tpmData.get(key).get(tissue2).get("trxHerit")>=0.33){%>style="background-color: #77d177;"<%}%>><%=val%></TD>
+								<%}%>
+                        		</TR>
                         <%}%>
+                        </tbody>
+                        </table>
                     </TD>
                 </TR>
 
@@ -755,6 +902,7 @@ $(this).removeClass("less");
     </div>
 
     <div style="display:none;" id="geneEQTL">
+    	<span class="hrdp7Warn" style="color:#FF0000;<%if(!dataVer.equals("hrdp7")){%>display:none;<%}%>"> eQTLs are not yet available for HRDP v7.  You can view eQTLs now with HRDP v6 simply switch HRDP versions above.  Check back soon for HRDP v7 eQTLS. </span>
     </div>
 
     <div style="display:none;" id="geneApp">
@@ -784,6 +932,7 @@ $(this).removeClass("less");
     <div style="display:none;" id="miGenerna">
     </div>
     <div style="display:none;" id="geneWGCNA">
+    	<span class="hrdp7Warn" style="color:#FF0000; <%if(!dataVer.equals("hrdp7")){%>display:none;<%}%>" > WGCNA modules are not yet available for HRDP v7.  You can view WGCNA modules now with HRDP v6 simply switch HRDP versions above.  Check back soon for HRDP v7 WGCNA modules. </span>
     </div>
     <div style="display:none;" id="chilibot">
         <table>
@@ -833,6 +982,9 @@ $(this).removeClass("less");
     rows = $("table#tblGeneEQTL tr");
     stripeTable(rows);
 
+    rows = $("table#tblTrxSummary tr");
+    stripeTable(rows);
+
     $(".reporttooltip").tooltipster({
         position: 'top-right',
         maxWidth: 250,
@@ -874,17 +1026,21 @@ $(this).removeClass("less");
 
     function loadGeneReportTabs(id, scrollToDiv) {
         if (id === "geneEQTL") {
-            var jspPage = contextRoot + "web/GeneCentric/geneEQTLAjax.jsp";
-            var params = {
-                species: organism,
-                geneSymbol: selectedGeneSymbol,
-                chromosome: chr,
-                id: selectedID,
-                genomeVer: genomeVer,
-                version: version
-            };
-            loadDivWithPage("div#geneEQTL", jspPage, scrollToDiv, params,
-                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+            if(dataVer==="hrdp7"){
+
+            }else{
+				var jspPage = contextRoot + "web/GeneCentric/geneEQTLAjax.jsp";
+				var params = {
+					species: organism,
+					geneSymbol: selectedGeneSymbol,
+					chromosome: chr,
+					id: selectedID,
+					genomeVer: genomeVer,
+					version: version
+				};
+				loadDivWithPage("div#geneEQTL", jspPage, scrollToDiv, params,
+					"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+            }
         } else if (id === "geneApp") {
             setTimeout(function () {
                 $('html, body').animate({
@@ -916,15 +1072,19 @@ $(this).removeClass("less");
             loadDivWithPage("div#miGenerna", jspPage, scrollToDiv, params,
                 "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
         } else if (id === "geneWGCNA") {
-            $("div#regionWGCNAEQTL").html("");
-            var jspPage = contextRoot + "web/GeneCentric/wgcnaGene.jsp";
-            var params = {
-                species: organism,
-                id: selectedID,
-                genomeVer: genomeVer
-            };
-            loadDivWithPage("div#geneWGCNA", jspPage, scrollToDiv, params,
-                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+            if(dataVer==="hrdp7"){
+
+            }else{
+				$("div#regionWGCNAEQTL").html("");
+				var jspPage = contextRoot + "web/GeneCentric/wgcnaGene.jsp";
+				var params = {
+					species: organism,
+					id: selectedID,
+					genomeVer: genomeVer
+				};
+				loadDivWithPage("div#geneWGCNA", jspPage, scrollToDiv, params,
+					"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+			}
         }
     }
 
@@ -996,11 +1156,32 @@ $(this).removeClass("less");
             $('div#chilibot').dialog("open").css({'font-size': 12});
         });
     }, 5000);
+    setTimeout(function(){
+        $('table#tblTrxSummary').DataTable({bPaginate: false,
+                                                       bProcessing: true,
+                                                       bStateSave: false,
+                                                       bAutoWidth: true,
+                                                       bDeferRender: false,
+                                                       sScrollX: "100%",
+                                                       sScrollY: "100%",
+                                                       sDom: '<"leftSearch"fr><"rightSearch"i><t>'
+                                                   });
+        $('table#tblGeneSummary').DataTable({bPaginate: false,
+                                                               bProcessing: true,
+                                                               bStateSave: false,
+                                                               bAutoWidth: true,
+                                                               bDeferRender: true,
+                                                               sScrollX: "80%",
+                                                               sScrollY: "100%",
+                                                               sDom: '<"leftSearch"fr><"rightSearch"i><t>'
+                                                           });
+    },50);
     setTimeout(function () {
         $('span#ratsPubLink').on('click', function () {
             window.open("https://genecup.org/progress?query=%09<%=curGene.getGeneSymbol()%>+", "_blank");
         });
     }, 10);
+
     $(window).resize(function () {
         if ($(window).width() < 1500 && peGR) {
             if (peGR.rbChart) {

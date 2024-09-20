@@ -233,7 +233,7 @@ sub getFeatureInfo {
 
 sub createXMLFile {
     # Read in the arguments for the subroutine
-    my ($outputDir, $species, $type, $panel, $chromosome, $minCoord, $maxCoord, $publicID, $binSize, $tissue, $genomeVer, $dsn, $usr, $passwd, $ensDsn, $ensHost, $ensUsr, $ensPasswd, $ucscDsn, $ucscUsr, $ucscPasswd, $mongoDsn, $mongoUser, $mongoPasswd) = @_;
+    my ($outputDir, $species, $type, $panel, $chromosome, $minCoord, $maxCoord, $publicID, $binSize, $tissue, $genomeVer, $dsn, $usr, $passwd, $ensDsn, $ensHost, $ensUsr, $ensPasswd, $ucscDsn, $ucscUsr, $ucscPasswd, $mongoDsn, $mongoUser, $mongoPasswd, $dataVer) = @_;
 
     my $scriptStart = time();
 
@@ -297,10 +297,10 @@ sub createXMLFile {
                 mkdir $outputDir . "tmp";
             }
             if ($countType ne "") {
-                createRNACountXMLTrack(\%rnaBinned, $outputDir . "tmp/" . $roundMin . "_" . $roundMax . ".bincount." . $binSize . "." . $type . "." . $countType . ".xml");
+                createRNACountXMLTrack(\%rnaBinned, $outputDir . "tmp/" . $dataVer . "_" . $roundMin . "_" . $roundMax . ".bincount." . $binSize . "." . $type . "." . $countType . ".xml");
             }
             else {
-                createRNACountXMLTrack(\%rnaBinned, $outputDir . "tmp/" . $roundMin . "_" . $roundMax . ".bincount." . $binSize . "." . $type . ".xml");
+                createRNACountXMLTrack(\%rnaBinned, $outputDir . "tmp/" . $dataVer . "_"  . $roundMin . "_" . $roundMax . ".bincount." . $binSize . "." . $type . ".xml");
             }
         }
         else {
@@ -316,7 +316,7 @@ sub createXMLFile {
             else {
                 mkdir $outputDir . "tmp";
             }
-            createRNAFullCountXMLTrack(\%rnaCountHOH, $outputDir . "tmp/" . $roundMin . "_" . $roundMax . ".count." . $type . "." . $countType . ".xml");
+            createRNAFullCountXMLTrack(\%rnaCountHOH, $outputDir . "tmp/" . $dataVer . "_" . $roundMin . "_" . $roundMax . ".count." . $type . "." . $countType . ".xml");
         }
         #createRNACountXMLTrack(\%rnaCountHOH,$outputDir."count".$type.".xml");
     }
@@ -361,12 +361,11 @@ sub createXMLFile {
         if (index($chromosome, "chr") > -1) {
             $chromosome = substr($chromosome, 3);
         }
-
-        my $spliceRef = readSpliceJunctFromDB($chromosome, $species, $minCoord, $maxCoord, $publicID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd);
+        my $spliceRef = readSpliceJunctFromDB($chromosome, $species, $minCoord, $maxCoord, $publicID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd,$dataVer);
         my %spliceHOH = %$spliceRef;
         my $rnaCountEnd = time();
         print "Splice Junction completed in " . ($rnaCountEnd - $rnaCountStart) . " sec.\n";
-        createGenericXMLTrack(\%spliceHOH, $outputDir . $type . ".xml");
+        createGenericXMLTrack(\%spliceHOH, $outputDir . $dataVer ."_". $type . ".xml");
     }
     elsif (index($type, "repeatMask") > -1) {
         my $rnaCountStart = time();
@@ -652,7 +651,7 @@ sub createXMLFile {
         createProteinCodingXMLTrack(\%ensemblHOH, $outputDir . "ensemblcoding.xml", 1);
         createProteinCodingXMLTrack(\%ensemblHOH, $outputDir . "ensemblnoncoding.xml", 0);
     }
-    elsif (index($type, "brainTotal") > -1 or index($type, "liverTotal") > -1 or index($type, "heartTotal") > -1 or index($type, "kidneyTotal") > -1 or index($type, "braincoding") > -1 or index($type, "mergedTotal") > -1 or index($type, "brainnoncoding") > -1) {
+    elsif (index($type, "brainTotal") > -1 or index($type, "liverTotal") > -1 or index($type, "heartTotal") > -1 or index($type, "kidneyTotal") > -1 or index($type, "braincoding") > -1 or index($type, "mergedTotal") > -1 or index($type, "brainnoncoding") > -1 or index($type,"brainIso")>-1 or index($type,"liverIso")>-1) {
         my $ver = substr($type, index($type, "_") + 1);
         print "Type:$type\n";
         print "Ver:$ver\n";
@@ -664,22 +663,26 @@ sub createXMLFile {
         my @probesetHOH;
         my %snpHOH;
         my $rnaType = "totalRNA";
-        my @snpStrain;
+        my @snpStrain = ("BNLX", "SHRH", "SHRJ", "F344");
+
         if ($genomeVer eq "rn6" or $genomeVer eq "rn5") {
             my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr" . $chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $dsn, $usr, $passwd);
             @probesetHOH = @$probesetHOHRef;
-
             my $snpRef = readSNPDataFromDB($genomeVer, $chromosome, $species, $minCoord, $maxCoord, $mongoDsn, $mongoUser, $mongoPasswd);
             %snpHOH = %$snpRef;
-            @snpStrain = ("BNLX", "SHRH", "SHRJ", "F344");
+
             if (index($type, "braincoding") > -1) {
                 $rnaType = "PolyA+";
             }
             elsif (index($type, "brainnoncoding") > -1) {
                 $rnaType = "NonPolyA+";
             }
+        }else{
+            if($panel eq "IsoSeq"){
+                $rnaType="isoSeq";
+            }
         }
-        my $isoformHOH = readRNAIsoformDataFromDB($chromosome, $species, $publicID, $panel, $minCoord, $maxCoord, $dsn, $usr, $passwd, 1, $rnaType, $tissue, $ver, $genomeVer);
+        my $isoformHOH = readRNAIsoformDataFromDB($chromosome, $species, $publicID, $panel, $minCoord, $maxCoord, $dsn, $usr, $passwd, 1, $rnaType, $tissue, $dataVer, $genomeVer);
 
         my %brainHOH = %$isoformHOH;
         my $regionSize = $maxCoord - $minCoord;
@@ -690,11 +693,6 @@ sub createXMLFile {
         #process RNA genes/transcripts and assign probesets.
         my $tmpGeneArray = $$isoformHOH{Gene};
         foreach my $tmpgene (@$tmpGeneArray) {
-            # "gene:".$$tmpgene{ID}."\n";
-            #$GeneHOH{Gene}[$cntGenes]=$tmpgene;
-            #$GeneHOH{Gene}[$cntGenes]{extStart}=$GeneHOH{Gene}[$cntGenes]{start};
-            #$GeneHOH{Gene}[$cntGenes]{extStop}=$GeneHOH{Gene}[$cntGenes]{stop};
-            #$cntGenes++;
             my $tmpTransArray = $$tmpgene{TranscriptList}{Transcript};
             foreach my $tmptranscript (@$tmpTransArray) {
                 my $tmpExonArray = $$tmptranscript{exonList}{exon};
@@ -714,53 +712,55 @@ sub createXMLFile {
                     $cntProbesets = 0;
                     my $cntMatchingProbesets = 0;
                     my $cntMatchingIntronProbesets = 0;
-                    foreach (@probesetHOH) {
-                        if ((($probesetHOH[$cntProbesets]{start} >= $exonStart) and ($probesetHOH[$cntProbesets]{start} <= $exonStop) or
-                            ($probesetHOH[$cntProbesets]{stop} >= $exonStart) and ($probesetHOH[$cntProbesets]{stop} <= $exonStop))
-                            and
-                            $probesetHOH[$cntProbesets]{strand} == $tmpStrand
-                        ) {
-                            delete $probesetHOH[$cntProbesets]{herit};
-                            delete $probesetHOH[$cntProbesets]{dabg};
-                            $$tmpexon{ProbesetList}{Probeset}[$cntMatchingProbesets] = $probesetHOH[$cntProbesets];
-                            $cntMatchingProbesets = $cntMatchingProbesets + 1;
-                        }
-                        elsif ((($probesetHOH[$cntProbesets]{start} >= $intronStart) and ($probesetHOH[$cntProbesets]{start} <= $intronStop) or
-                            ($probesetHOH[$cntProbesets]{stop} >= $intronStart) and ($probesetHOH[$cntProbesets]{stop} <= $intronStop))
-                            and
-                            $probesetHOH[$cntProbesets]{strand} == $tmpStrand
-                        ) {
-                            delete $probesetHOH[$cntProbesets]{herit};
-                            delete $probesetHOH[$cntProbesets]{dabg};
-                            $$tmptranscript{intronList}{intron}[$cntIntron]{ProbesetList}{Probeset}[$cntMatchingIntronProbesets] =
-                                $probesetHOH[$cntProbesets];
-                            $cntMatchingIntronProbesets = $cntMatchingIntronProbesets + 1;
-                        }
-                        $cntProbesets = $cntProbesets + 1;
-                    } # loop through probesets
+                    if( $genomeVer ne "rn7"){
+                        foreach (@probesetHOH) {
+                            if ((($probesetHOH[$cntProbesets]{start} >= $exonStart) and ($probesetHOH[$cntProbesets]{start} <= $exonStop) or
+                                ($probesetHOH[$cntProbesets]{stop} >= $exonStart) and ($probesetHOH[$cntProbesets]{stop} <= $exonStop))
+                                and
+                                $probesetHOH[$cntProbesets]{strand} == $tmpStrand
+                            ) {
+                                delete $probesetHOH[$cntProbesets]{herit};
+                                delete $probesetHOH[$cntProbesets]{dabg};
+                                $$tmpexon{ProbesetList}{Probeset}[$cntMatchingProbesets] = $probesetHOH[$cntProbesets];
+                                $cntMatchingProbesets = $cntMatchingProbesets + 1;
+                            }
+                            elsif ((($probesetHOH[$cntProbesets]{start} >= $intronStart) and ($probesetHOH[$cntProbesets]{start} <= $intronStop) or
+                                ($probesetHOH[$cntProbesets]{stop} >= $intronStart) and ($probesetHOH[$cntProbesets]{stop} <= $intronStop))
+                                and
+                                $probesetHOH[$cntProbesets]{strand} == $tmpStrand
+                            ) {
+                                delete $probesetHOH[$cntProbesets]{herit};
+                                delete $probesetHOH[$cntProbesets]{dabg};
+                                $$tmptranscript{intronList}{intron}[$cntIntron]{ProbesetList}{Probeset}[$cntMatchingIntronProbesets] =
+                                    $probesetHOH[$cntProbesets];
+                                $cntMatchingIntronProbesets = $cntMatchingIntronProbesets + 1;
+                            }
+                            $cntProbesets = $cntProbesets + 1;
+                        } # loop through probesets
 
-                    if ($regionSize < 5000000) {
-                        foreach my $strain (@snpStrain) {
-                            #print "match snp strains:".$strain;
-                            my @snpList;
-                            my $snpListRef = $snpHOH{$strain}{Snp};
-                            eval {
-                                @snpList = @$snpListRef;
-                            } or do {
-                                @snpList = ();
-                            };
-                            #match snps/indels to exons
-                            my $cntSnps = 0;
-                            my $cntMatchingSnps = 0;
-                            foreach (@snpList) {
-                                if ((($snpHOH{$strain}{Snp}[$cntSnps]{start} >= $exonStart) and ($snpHOH{$strain}{Snp}[$cntSnps]{start} <= $exonStop) or
-                                    ($snpHOH{$strain}{Snp}[$cntSnps]{stop} >= $exonStart) and ($snpHOH{$strain}{Snp}[$cntSnps]{stop} <= $exonStop))
-                                ) {
-                                    $$tmpexon{VariantList}{Variant}[$cntMatchingSnps] = $snpHOH{$strain}{Snp}[$cntSnps];
-                                    $cntMatchingSnps++;
-                                }
-                                $cntSnps++;
-                            } # loop through snps/indels
+                        if ($regionSize < 5000000) {
+                            foreach my $strain (@snpStrain) {
+                                #print "match snp strains:".$strain;
+                                my @snpList;
+                                my $snpListRef = $snpHOH{$strain}{Snp};
+                                eval {
+                                    @snpList = @$snpListRef;
+                                } or do {
+                                    @snpList = ();
+                                };
+                                #match snps/indels to exons
+                                my $cntSnps = 0;
+                                my $cntMatchingSnps = 0;
+                                foreach (@snpList) {
+                                    if ((($snpHOH{$strain}{Snp}[$cntSnps]{start} >= $exonStart) and ($snpHOH{$strain}{Snp}[$cntSnps]{start} <= $exonStop) or
+                                        ($snpHOH{$strain}{Snp}[$cntSnps]{stop} >= $exonStart) and ($snpHOH{$strain}{Snp}[$cntSnps]{stop} <= $exonStop))
+                                    ) {
+                                        $$tmpexon{VariantList}{Variant}[$cntMatchingSnps] = $snpHOH{$strain}{Snp}[$cntSnps];
+                                        $cntMatchingSnps++;
+                                    }
+                                    $cntSnps++;
+                                } # loop through snps/indels
+                            }
                         }
                     }
                     $cntIntron++;
@@ -768,13 +768,13 @@ sub createXMLFile {
             }
         }
         if ($type eq 'braincoding') {
-            createProteinCodingXMLTrack(\%brainHOH, $outputDir . $type . ".xml", 1);
+            createProteinCodingXMLTrack(\%brainHOH, $outputDir .  $type . ".xml", 1);
         }
         elsif ($type eq 'brainnoncoding') {
             createProteinCodingXMLTrack(\%brainHOH, $outputDir . $type . ".xml", 0);
         }
         else {
-            createLiverTotalXMLTrack(\%brainHOH, $outputDir . $type . ".xml");
+            createLiverTotalXMLTrack(\%brainHOH, $outputDir . $dataVer ."_". $type . ".xml");
         }
         my $rnaCountEnd = time();
         print "Track version completed in " . ($rnaCountEnd - $rnaCountStart) . " sec.\n";
@@ -1251,7 +1251,8 @@ my $arg21 = $ARGV[20];
 my $arg22 = $ARGV[21];
 my $arg23 = $ARGV[22];
 my $arg24 = $ARGV[23];
+my $arg25 = $ARGV[24];
 
-createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10, $arg11, $arg12, $arg13, $arg14, $arg15, $arg16, $arg17, $arg18, $arg19, $arg20, $arg21, $arg22, $arg23, $arg24);
+createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10, $arg11, $arg12, $arg13, $arg14, $arg15, $arg16, $arg17, $arg18, $arg19, $arg20, $arg21, $arg22, $arg23, $arg24,$arg25);
 
 exit 0;

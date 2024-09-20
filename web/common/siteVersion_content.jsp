@@ -53,7 +53,7 @@
 <BR><BR>
 <h2>Genome Data Browser Annotations</h2>
 <ul>
-    <li>Ensembl v106,Rn6-Ensembl v104, except Rn5-v79</li>
+    <li>Ensembl v111,Rn6-Ensembl v104, except Rn5-v79</li>
     <li>RefSeq(source:UCSC Genome Browser): Downloaded 2/2022 except rn6- ,rn5 - 7/2015</li>
     <!--<li>RGD QTL information: Downloaded </li>-->
 </ul>

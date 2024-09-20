@@ -15,6 +15,7 @@
     String type = "";
     String source = "";
     String genomeVer = "";
+    String dataVer="";
     String track = "";
     LinkGenerator lg = new LinkGenerator(session);
     HashMap<String, Integer> geneHM = new HashMap<String, Integer>();
@@ -78,6 +79,9 @@
     if (request.getParameter("genomeVer") != null) {
         genomeVer = FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
     }
+    if (request.getParameter("dataVer") != null) {
+            dataVer = FilterInput.getFilteredInput(request.getParameter("dataVer"));
+        }
     if (request.getParameter("track") != null) {
         track = FilterInput.getFilteredInput(request.getParameter("track"));
     }
@@ -86,9 +90,9 @@
             min = 1;
         }
         if (track.startsWith("brainTotal") || track.startsWith("liverTotal") || track.startsWith("heartTotal") || track.startsWith("mergedTotal") || track.startsWith("kidneyTotal")) {
-            fullGeneList = gdt.getTrackRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, true, true, track);
+            fullGeneList = gdt.getTrackRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, true, true, track,dataVer);
         } else {
-            fullGeneList = gdt.getRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, true, true);
+            fullGeneList = gdt.getRegionData(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, true, true,dataVer);
 
         }
         /*if (source.startsWith("merged")) {
@@ -185,7 +189,11 @@
     <%
         String hrdpVer = "HRDP v5";
         if (genomeVer.equals("rn7")) {
-            hrdpVer = "HRDP v6";
+            if(dataVer.equals("hrdp6")){
+            	hrdpVer = "HRDP v6";
+            }else if(dataVer.equals("hrdp7")){
+                hrdpVer = "HRDP v7";
+            }
         }
         String[] hTissues = new String[0];
         String[] dTissues = new String[0];

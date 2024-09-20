@@ -156,24 +156,30 @@
         </div>
     </div>
     <div style="width:100%;text-align:left;">
-        Not sure where to start: <a href="web/demo/largerDemo.jsp?demoPath=web/demo/BrowserNavDemo" target="_blank">watch a quick navigation demonstration</a>
+        Not sure where to start: <a href="web/demo/largerDemo.jsp?demoPath=web/demo/BrowserNavDemo" target="_blank">watch
+        a quick navigation demonstration</a>
         or <a id="fbhelp1" class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help1.1.jpg"
-              title="Navigation Help<BR>Basic Controls on the main image."> view the help images again</a><a id="fbhelp2" class="fancybox" rel="fancybox-thumb"
-                                                                                                             href="web/GeneCentric/help2.jpg"
-                                                                                                             title="Controls to select and edit views."></a><a
-            id="fbhelp3" class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help3.jpg" title="Controls to select and edit views."></a>
+              title="Navigation Help<BR>Basic Controls on the main image."> view the help images again</a><a
+            id="fbhelp2" class="fancybox" rel="fancybox-thumb"
+            href="web/GeneCentric/help2.jpg"
+            title="Controls to select and edit views."></a><a
+            id="fbhelp3" class="fancybox" rel="fancybox-thumb" href="web/GeneCentric/help3.jpg"
+            title="Controls to select and edit views."></a>
     </div>
 
     <div id="imageMenu"></div>
     <div id="viewMenu"></div>
     <div id="trackMenu"></div>
+
+    <div id="warningOldVersion" style="display: none;"><span style="color: #ff0000">NOTE:</span> This is not the latest version of PhenoGen datasets.  Rn7/HRDP v7 is the latest version.  You can select it above or <a href="https://phenogen.org/gene.jsp?speciesCB=Rn&geneTxt=<%=chromosome%>:<%=min%>-<%=max%>&overideGV=Y&genomeVer=rn7&dataVer=hrdp7&auto=Y">click here</a>, unless you need a specific genome version we recommend using the most current dataset.</div>
     <div style=" background-color:#DEDEDE; color:#000000; text-align:left; width:100%;">
         <table style="width:100%;" cellpadding="0" cellspacing="0">
             <tbody>
             <TR>
                 <TD style="background-color:#DEDEDE;font-size:18px; font-weight:bold;">
                     <span class="trigger less triggerEC" name="collapsableImage">Region Image</span>
-                    <div class="inpageHelp" style="display:inline-block; "><img id="HelpRegionImage" class="helpImage" src="../web/images/icons/help.png"/>
+                    <div class="inpageHelp" style="display:inline-block; "><img id="HelpRegionImage" class="helpImage"
+                                                                                src="../web/images/icons/help.png"/>
                     </div>
                 </TD>
                 <TD style="background-color:#DEDEDE; text-align:center; width:50%;font-size:18px; font-weight:bold; vertical-align: middle;">
@@ -194,12 +200,13 @@
     </div>
 
     <div style="border-color:#CCCCCC; border-width:1px; border-style:inset; text-align:center;">
-        <span id="mouseHelp" style=" min-height:20px;">Navigation Hints: Hold mouse over areas of the image for available actions.</span> <BR/>
+        <span id="mouseHelp" style=" min-height:20px;">Navigation Hints: Hold mouse over areas of the image for available actions.</span>
+        <BR/>
         <div id="collapsableImage" class="geneimage">
             <div id="geneImage" class="ucscImage" style="display:inline-block;width:100%;">
 
-                <script src="javascript/gdb.2.9.17.min.js" type="text/javascript"></script>
-                <!--<script src="javascript/GenomeDataBrowser2.9.6.js" type="text/javascript"></script>
+                <script src="javascript/gdb.2.9.21.min.js" type="text/javascript"></script>
+                <!-- <script src="javascript/GenomeDataBrowser2.9.7.js" type="text/javascript"></script>
                 <script src="javascript/GenomeReport2.7.3.js" type="text/javascript"></script>
                 <script src="javascript/GenomeViewMenu2.6.3.js" type="text/javascript"></script>
                 <script src="javascript/GenomeTrackMenu2.6.2.js" type="text/javascript"></script>
@@ -212,21 +219,26 @@
         <BR/>
         <div style="width:100%;">
             <div style="font-size:18px; font-weight:bold;  color:#FFFFFF; text-align:center; width:100%; padding-top: 3px; ">
-                <span id="detail1" class="detailMenu selected" name="regionSummary">Track Details<div class="inpageHelp" style="display:inline-block; "><img
+                <span id="detail1" class="detailMenu selected" name="regionSummary">Track Details<div class="inpageHelp"
+                                                                                                      style="display:inline-block; "><img
                         id="HelpTrackDetails" class="helpImage" src="../web/images/icons/help.png"/></div></span>
                 <%if (myOrganism.equals("Rn") && (genomeVer.equals("rn6") || genomeVer.equals("rn7"))) {%>
-                <span id="detail2" class="detailMenu" name="regionEQTLTable">Genes with an eQTL in this region<div class="inpageHelp"style="display:inline-block;"><img
+                <span id="detail2" class="detailMenu" name="regionEQTLTable">Genes with an eQTL in this region<div
+                        class="inpageHelp" style="display:inline-block;"><img
                         id="HelpeQTLTab" class="helpImage" src="../web/images/icons/help.png"/></div></span>
-                <span id="detail3" class="detailMenu" name="regionWGCNAEQTL">WGCNA<div class="inpageHelp" style="display:inline-block; "><img
+                <span id="detail3" class="detailMenu" name="regionWGCNAEQTL">WGCNA<div class="inpageHelp"
+                                                                                       style="display:inline-block; "><img
                         id="HelpRegionWGCNATab" class="helpImage" src="../web/images/icons/help.png"/></div></span>
-                <span id="detail4" class="detailMenu" name="regionExpr">Expression<div class="inpageHelp" style="display:inline-block; "><img
+                <span id="detail4" class="detailMenu" name="regionExpr">Expression<div class="inpageHelp"
+                                                                                       style="display:inline-block; "><img
                         id="HelpRegionExprTab" class="helpImage" src="../web/images/icons/help.png"/></div></span>
                 <%}%>
             </div>
         </div>
         <div style="font-size:18px; font-weight:bold; background-color:#3f92d2; color:#FFFFFF; text-align:left; width:100%;">
             <span class="trigger triggerEC less" name="collapsableReport">Region Summary</span>
-            <div class="inpageHelp" style="display:inline-block; "><img id="HelpRegionSummary" class="helpImage" src="../web/images/icons/help.png"/></div>
+            <div class="inpageHelp" style="display:inline-block; "><img id="HelpRegionSummary" class="helpImage"
+                                                                        src="../web/images/icons/help.png"/></div>
         </div>
         <div id="collapsableReport" style="width:100%;">
             <div style="display:inline-block;width:100%;" id="regionSummary">
@@ -244,11 +256,14 @@
                     </div>
                 </div>
                 <div id="regionTableDiv">
-                    <div id="regionTableSubHeader" class="regionSubHeader" style="font-size:18px; font-weight:bold; text-align:left; width:100%; ">
+                    <div id="regionTableSubHeader" class="regionSubHeader"
+                         style="font-size:18px; font-weight:bold; text-align:left; width:100%; ">
                         <!--<span class="trigger triggerRegionTable" name="regionTable"  style="margin-left:30px;"></span>-->
-                        <span style="margin-left:30px;">Features in Selected Track<div class="inpageHelp" style="display:inline-block; "><img id="HelpUCSCImage"
-                                                                                                                                              class="helpImage"
-                                                                                                                                              src="../web/images/icons/help.png"/></div></span>
+                        <span style="margin-left:30px;">Features in Selected Track<div class="inpageHelp"
+                                                                                       style="display:inline-block; "><img
+                                id="HelpUCSCImage"
+                                class="helpImage"
+                                src="../web/images/icons/help.png"/></div></span>
                     </div>
                     <div id="regionTable" style="display:none;">
 
@@ -339,8 +354,10 @@
     <div id="selectedDetailHeader"
          style=" display:none; font-size:18px; font-weight:bold; background-color:#00992D; color:#FFFFFF; text-align:left; width:100%;">
         <span class="trigger less triggerEC" name="selectedDetail">Selected Feature Image</span>
-        <div class="inpageHelp" style="display:inline-block; "><img id="HelpUCSCImage" class="helpImage" src="../web/images/icons/help.png"/></div>
-        <span class="closeDetail" style="float:right;margin-right: 8px;"><img src="../web/images/icons/close.png"/></span>
+        <div class="inpageHelp" style="display:inline-block; "><img id="HelpUCSCImage" class="helpImage"
+                                                                    src="../web/images/icons/help.png"/></div>
+        <span class="closeDetail" style="float:right;margin-right: 8px;"><img
+                src="../web/images/icons/close.png"/></span>
     </div>
     <div id="selectedDetail" style="display:none;">
         <div id="selectedImage" style="text-align:center;">
@@ -349,7 +366,8 @@
         </div>
     </div>
     <div style="display:none">
-        <a id="helpExampleNav" class="fancybox fancybox.iframe" href="web/GeneCentric/example.jsp" title="Browser Navigation"></a>
+        <a id="helpExampleNav" class="fancybox fancybox.iframe" href="web/GeneCentric/example.jsp"
+           title="Browser Navigation"></a>
     </div>
 
     <BR/><BR/><BR/>
@@ -484,6 +502,8 @@
             }
         });
     });
+
+
 </script>
 
 
@@ -492,12 +512,14 @@
     if (myGene.startsWith("ENS")) {
         if (genURL.get(0).startsWith("ERROR:")) {
 %>
-<div class="error"><%=genURL.get(selectedGene)%><BR/>The administrator has been notified of the problem and we will work on supporting contigs. We apologize for
+<div class="error"><%=genURL.get(selectedGene)%><BR/>The administrator has been notified of the problem and we will work
+    on supporting contigs. We apologize for
     any inconvenience.
 </div>
 <BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR><BR>
 <%} else {%>
-<div class="error">ERROR: The Ensembl ID entered is not present in the current version of the Ensembl database being used
+<div class="error">ERROR: The Ensembl ID entered is not present in the current version of the Ensembl database being
+    used
     for your selected genome version (<%=genomeVer%>).
     <BR><BR>
     <%
@@ -511,9 +533,11 @@
     %>
     We recommend trying again after switching genome versions to <% if (genomeVer.equals("rn5")) {
         newGenomeVer = "rn6";%>Rn6<%} else {%>Rn5<%}%> by <a
-            href="<%=prefix+"://"+host+contextRoot+"gene.jsp?geneTxt="+myGene+"&genomeVer="+newGenomeVer+"&auto=Y&overideGV=Y"%>">following this link</a>.
+            href="<%=prefix+"://"+host+contextRoot+"gene.jsp?geneTxt="+myGene+"&genomeVer="+newGenomeVer+"&auto=Y&overideGV=Y"%>">following
+        this link</a>.
     <BR><BR>
-    It is possible that the ID is from an older ensembl/genome version or an intermediate version of the ensembl database that is not supported on PhenoGen. We
+    It is possible that the ID is from an older ensembl/genome version or an intermediate version of the ensembl
+    database that is not supported on PhenoGen. We
     only support the latest
     version of the Ensembl database for each genome version. Currently v79 for rn5 and v84 for rn6.
 
@@ -522,10 +546,17 @@
 <BR><BR><BR/><BR><BR>
 <%}%>
 <%} else {%>
-<div class="error"><%=genURL.get(selectedGene)%><BR/>The administrator has been notified of the problem and will investigate the error. We apologize for any
+<div class="error"><%=genURL.get(selectedGene)%><BR/>The administrator has been notified of the problem and will
+    investigate the error. We apologize for any
     inconvenience.
 </div>
 <BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR/><BR><BR>
 <%}%>
 <%}%>
-    
+
+
+<script>
+    if(dataVer !="hrdp7"){
+             $("div#warningOldVersion").show();
+    }
+</script>

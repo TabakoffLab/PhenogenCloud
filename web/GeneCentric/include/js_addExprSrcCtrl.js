@@ -173,10 +173,10 @@ PhenogenExpr = function (params) {
                 that.curPrefix = that.curPrefix.replace("https://", "http://");
             }
         }
-        that.brainURL = that.curPrefix + "/Brainexpr.json";
-        that.liverURL = that.curPrefix + "/Liverexpr.json";
-        that.kidneyURL = that.curPrefix + "/Kidneyexpr.json";
-        that.heartURL = that.curPrefix + "/Heartexpr.json";
+        that.brainURL = that.curPrefix + "/" + dataVer + "_Brainexpr.json";
+        that.liverURL = that.curPrefix + "/" + dataVer + "_Liverexpr.json";
+        that.kidneyURL = that.curPrefix + "/" + dataVer + "_Kidneyexpr.json";
+        that.heartURL = that.curPrefix + "/" + dataVer + "_Heartexpr.json";
         if (that.featureType === "Small") {
             that.brainURL = that.curPrefix + "/Brain_sm_expr.json";
             that.liverURL = that.curPrefix + "/Liver_sm_expr.json";
