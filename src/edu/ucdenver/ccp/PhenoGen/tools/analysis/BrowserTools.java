@@ -119,19 +119,14 @@ public class BrowserTools {
         BrowserTrack bt = new BrowserTrack();
 
         BrowserView curView = bv.getBrowserView(viewID, pool);
-        log.debug("GOT curView");
-        log.debug(trackString);
         String[] checkBoxes = trackString.split(",");
         //Get BrowserTracks that fit trackString
         ArrayList<BrowserTrack> tracks = bt.getBrowserTracks(checkBoxes, genomeVer, datasetVer, pool);
-        log.debug("got tracks");
 
         curView.updateTracks(tracks);
-        log.debug("update tracks");
         curView.setName(name);
         curView.setEmail(email);
         curView.updateView(countDensity, countDefault, pool);
-        log.debug("update view");
         success = true;
 
         return success;
@@ -178,16 +173,14 @@ public class BrowserTools {
 
     public void addViewCount(int id) {
         String update = "update browser_view_counts set counter=(counter+1) where bvid=" + id;
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+
+        try (Connection conn = pool.getConnection()) {
+
             PreparedStatement ps = conn.prepareStatement(update,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
             ps.execute();
             ps.close();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             e.printStackTrace(System.err);
             Logger log = Logger.getRootLogger();
@@ -205,15 +198,6 @@ public class BrowserTools {
             } catch (Exception mailException) {
                 log.error("error sending message", mailException);
                 throw new RuntimeException();
-            }
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException er) {
-
             }
         }
     }

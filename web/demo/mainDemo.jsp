@@ -117,7 +117,7 @@
 
         $("#accordion").accordion({
             heightStyle: "fill",
-            activate: function (event, ui) {
+           activate: function (event, ui) {
                 //if(ga){
                 var h = "";
                 if (ui.newHeader) {
@@ -129,7 +129,6 @@
             }
         });
         $('#largerView').attr("href", "<%=webDir%>demo/largerDemo.jsp?demoPath=<%=defaultVideo.getFileBase()%>");
-
         var tableRows = getRows();
         hoverRows(tableRows);
         tableRows.each(function () {

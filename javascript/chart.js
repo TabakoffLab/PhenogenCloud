@@ -137,7 +137,7 @@ chart = function (params) {
         that.svgTop = that.imgDiv.append("svg").attr("id", "chartSVG")
             .attr("width", that.curWidth + that.margin.left + that.margin.right)
             .attr("height", that.curHeight + that.margin.top + that.margin.bottom);
-        that.svg = that.svgTop.append("g")
+        that.svg = that.svgTop.append("g").attr("class", "")
             .attr("transform", "translate(" + that.margin.left + "," + that.margin.top + ")");
         if (that.display.herit === true) {
             that.hChartTop = that.imgDiv.append("svg").attr("id", "heritSVG")
@@ -200,7 +200,6 @@ chart = function (params) {
                     that.functionBar.select("span#plotBtn").style("background", "#DCDCDC");
                     /*if(ga){
 						ga('send','event','clickPan','');
-
 					}*/
                     gtag('event', '', {'event_category': 'clickPan'});
                 })
@@ -532,8 +531,20 @@ chart = function (params) {
             that.xAxGUI = that.svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + that.curHeight + ")")
-                .call(that.xAxis)
-                .selectAll("text")
+                .call(that.xAxis);
+            that.xAxGUI.selectAll(".x.axis text")
+                .attr("class", function (d) {
+                    var classes = d;
+                    return classes;
+                }).on("mouseover", function (d) {
+                d3.selectAll(".dot." + d).attr("r", 8);
+                d3.selectAll(".tick text." + d).attr("stroke", "#FF0000").attr("fill", "#FF0000").style("font-size", "12pt");
+                //console.log(this);
+            }).on("mouseout", function (d) {
+                d3.selectAll(".dot." + d).attr("r", 2.5);
+                d3.selectAll(".tick text." + d).attr("stroke", "#000000").attr("fill", "#000000").style("font-size", "8pt");
+                //console.log(this);
+            })
                 .attr("y", 0)
                 .attr("x", 9)
                 .attr("dy", ".35em")
@@ -788,7 +799,7 @@ chart = function (params) {
         tmpMax = -1;
         //console.log("findMax");
         for (i = 0; i < that.geneIDs.length; i++) {
-            console.log(".legend.box." + that.geneIDs[i].id.replace(/\./g, "_"));
+            //console.log(".legend.box." + that.geneIDs[i].id.replace(/\./g, "_"));
             if (d3.selectAll(".legend.box." + that.geneIDs[i].id.replace(/\./g, "_")).style("fill") != d3.rgb(255, 255, 255)) {
                 if (tmpMax < that.maxYList[i]) {
                     tmpMax = that.maxYList[i];
@@ -1730,7 +1741,11 @@ chart = function (params) {
                         that.maxYList.push(list[k].VALUES[i][that.value]);
                         //console.log("set initial value:"+list[k].VALUES[i][that.value]);
                     }
-                    that.data.push({"id": id, "strain": list[k].VALUES[i].Strain, "val": list[k].VALUES[i][that.value]});
+                    that.data.push({
+                        "id": id,
+                        "strain": list[k].VALUES[i].Strain,
+                        "val": list[k].VALUES[i][that.value]
+                    });
                     if (that.yMin > list[k].VALUES[i][that.value]) {
                         that.yMin = list[k].VALUES[i][that.value];
                     }
@@ -1754,7 +1769,11 @@ chart = function (params) {
                             that.maxYList.push(list[k].TRXLIST[j].VALUES[i][that.value]);
                             //console.log("set initial value"+list[k].TRXLIST[j].VALUES[i][that.value]);
                         }
-                        that.data.push({"id": id, "strain": list[k].TRXLIST[j].VALUES[i].Strain, "val": list[k].TRXLIST[j].VALUES[i][that.value]});
+                        that.data.push({
+                            "id": id,
+                            "strain": list[k].TRXLIST[j].VALUES[i].Strain,
+                            "val": list[k].TRXLIST[j].VALUES[i][that.value]
+                        });
                         if (that.yMin > list[k].TRXLIST[j].VALUES[i][that.value]) {
                             that.yMin = list[k].TRXLIST[j].VALUES[i][that.value];
                         }

@@ -365,7 +365,6 @@ fieldset {
     position: relative;
     display:inline-block;
     /*min-height: 450px;*/
-
 }
 div.checkbox-choice label{
     display:inline-block;
@@ -387,6 +386,7 @@ div.rightSearch{
     float:right;
     display:inline-block;
 }
+
 
 @media all and (max-width:30em){
     span.shrt-button{display:block;margin:0.2em auto;}

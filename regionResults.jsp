@@ -171,7 +171,7 @@
     <div id="viewMenu"></div>
     <div id="trackMenu"></div>
 
-    <div id="warningOldVersion" style="display: none;"><span style="color: #ff0000">NOTE:</span> This is not the latest version of PhenoGen datasets.  Rn7/HRDP v7 is the latest version.  You can select it above or <a href="https://phenogen.org/gene.jsp?speciesCB=Rn&geneTxt=<%=chromosome%>:<%=min%>-<%=max%>&overideGV=Y&genomeVer=rn7&dataVer=hrdp7&auto=Y">click here</a>, unless you need a specific genome version we recommend using the most current dataset.</div>
+    <div id="warningOldVersion" style="display: none;"><span style="color: #ff0000">NOTE:</span> This is not the latest version of PhenoGen datasets.  Rn7/HRDP v7.1 is the latest version.  You can select it above or <a href="https://phenogen.org/gene.jsp?speciesCB=Rn&geneTxt=<%=chromosome%>:<%=min%>-<%=max%>&overideGV=Y&genomeVer=rn7&dataVer=hrdp7.1&auto=Y">click here</a>, unless you need a specific genome version we recommend using the most current dataset.</div>
     <div style=" background-color:#DEDEDE; color:#000000; text-align:left; width:100%;">
         <table style="width:100%;" cellpadding="0" cellspacing="0">
             <tbody>
@@ -204,14 +204,14 @@
         <BR/>
         <div id="collapsableImage" class="geneimage">
             <div id="geneImage" class="ucscImage" style="display:inline-block;width:100%;">
-
-                <script src="javascript/gdb.2.9.21.min.js" type="text/javascript"></script>
+                <script src="javascript/gdb.2.9.25.min.js" type="text/javascript"></script>
                 <!-- <script src="javascript/GenomeDataBrowser2.9.7.js" type="text/javascript"></script>
                 <script src="javascript/GenomeReport2.7.3.js" type="text/javascript"></script>
                 <script src="javascript/GenomeViewMenu2.6.3.js" type="text/javascript"></script>
                 <script src="javascript/GenomeTrackMenu2.6.2.js" type="text/javascript"></script>
                 <script src="javascript/wgcnaBrowser1.4.0.js" type="text/javascript"></script>-->
             </div>
+
         </div>
 
     </div><!--end Border Div -->
@@ -453,12 +453,16 @@
         }, 20);
         var pe;
         setTimeout(function () {
-            pe = PhenogenExpr({
-                "div": "regionExpr",
-                "genomeBrowser": gs,
-                "type": "heatmap",
-                "featureType": "Long"
-            });
+            if(dataVer==="hrdp7.1"){
+                $("#regionExpr").html("<span style=\"text-align:center;width:100%;color:#FF0000;font-size:20pt;\">Coming soon for HRDP v7.1. HRDP v6(rn7) does have WGCNA modules if you would like to switch please change the drop down list at the top of the page.</span>");
+            }else{
+            	pe = PhenogenExpr({
+					"div": "regionExpr",
+					"genomeBrowser": gs,
+					"type": "heatmap",
+					"featureType": "Long"
+            	});
+            }
             /*if ($(window).width() < 1200) {
                 pe.rlChart.setWidth("98%");
                 pe.rrChart.setWidth("98%");
@@ -539,7 +543,7 @@
     It is possible that the ID is from an older ensembl/genome version or an intermediate version of the ensembl
     database that is not supported on PhenoGen. We
     only support the latest
-    version of the Ensembl database for each genome version. Currently v79 for rn5 and v84 for rn6.
+    version of the Ensembl database for each genome version. Currently v79 for rn5 and v105 for rn6 and v111 for rn7.
 
     <%}%>
 </div>
@@ -556,7 +560,7 @@
 
 
 <script>
-    if(dataVer !="hrdp7"){
+    if(dataVer !="hrdp7.1"){
              $("div#warningOldVersion").show();
     }
 </script>
