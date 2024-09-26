@@ -93,9 +93,12 @@ if(request.getParameter("forwardPValueCutoff")!=null){
 %>
 
 
-<% 
-	AsyncGeneDataThread agdt=new AsyncGeneDataThread(session,gdt,chromosome,min,max,fullMin,fullMax,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,dataVer);
-	agdt.start();
+<%
+	String hash = chromosome + ":" + min + "-" + max + "_" + dataVer + "_" + genomeVer + ":updateRegion";
+	AsyncGeneDataThread agdt=new AsyncGeneDataThread(session,gdt,chromosome,min,max,fullMin,fullMax,panel,myOrganism,genomeVer,rnaDatasetID,arrayTypeID,forwardPValueCutoff,dataVer,hash);
+    if (gdt.appendRunningMap(hash, "True")) {
+                gdt.appendThreadList(agdt);
+    }
 	Date start=new Date();
 	Date cur=new Date();
 	long elapsed=0;

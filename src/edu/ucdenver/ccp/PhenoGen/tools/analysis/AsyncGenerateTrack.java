@@ -83,14 +83,14 @@ public class AsyncGenerateTrack extends Thread {
     private ExecHandler myExec_session = null;
     private int execType;
     private String hashValue = "";
-    private List threadList;
+
     boolean doneThread = false;
-    int maxThreadCount = 6;
+    int maxThreadCount = 3;
 
     public AsyncGenerateTrack(GeneDataTools gdt, HttpSession inSession, DataSource pool) {
         this.session = inSession;
         this.gdt = gdt;
-        this.threadList = gdt.getThreadList();
+
         this.pool = pool;
         log = Logger.getRootLogger();
     }
@@ -220,7 +220,7 @@ public class AsyncGenerateTrack extends Thread {
             log.debug("AsyncGenerateTrack - running-" + track);
 
             //wait for other Expr threads to finish
-            boolean waiting = true;
+            /*boolean waiting = true;
             int myIndex = -1;
             if (threadList.size() > 0) {
                 log.debug("AsyncGenerateTrack - non-zero threadlist - " + track);
@@ -242,28 +242,31 @@ public class AsyncGenerateTrack extends Thread {
                     } else {
                         try {
                             //log.debug("WAITING PREVTHREAD");
-                            thisThread.sleep(1000);
+                            thisThread.sleep(2000);
                         } catch (InterruptedException er) {
                             log.error("wait interrupted", er);
                         }
                     }
                 }
-            }
+            }*/
             Date start = new Date();
             //try{
             log.debug("STARTING - track:" + track);
             done = false;
             try {
-                if (execType == this.GENERATE_TRACK_XML) {
-                    gdt.generateXMLTrack(chrom, minCoord, maxCoord, panel, track, organism, genomeVer, rnaDatasetID, arrayTypeID, outputDir, binSize, version, countType, dataVer);
-                } else if (execType == this.GENERATE_CUSTOM_REMOTE_TRACK_XML) {
-                    gdt.generateCustomRemoteXMLTrack(chrom, minCoord, maxCoord, track, organism, outputDir, bedFile, outFile, type, web, binSize);
-                } else if (execType == this.GENERATE_CUSTOM_BED_TRACK_XML) {
-                    gdt.generateCustomBedXMLTrack(chrom, minCoord, maxCoord, track, organism, outputDir, bedFile, outFile);
-                } else if (execType == this.GENERATE_CUSTOM_BEDGRAPH_TRACK_XML) {
-                    gdt.generateCustomBedGraphXMLTrack(chrom, minCoord, maxCoord, track, organism, outputDir, bedFile, outFile, binSize);
+                if (!testFile.exists() || testFile.length() <= 0) {
+                    if (execType == this.GENERATE_TRACK_XML) {
+                        gdt.generateXMLTrack(chrom, minCoord, maxCoord, panel, track, organism, genomeVer, rnaDatasetID, arrayTypeID, outputDir, binSize, version, countType, dataVer);
+                    } else if (execType == this.GENERATE_CUSTOM_REMOTE_TRACK_XML) {
+                        gdt.generateCustomRemoteXMLTrack(chrom, minCoord, maxCoord, track, organism, outputDir, bedFile, outFile, type, web, binSize);
+                    } else if (execType == this.GENERATE_CUSTOM_BED_TRACK_XML) {
+                        gdt.generateCustomBedXMLTrack(chrom, minCoord, maxCoord, track, organism, outputDir, bedFile, outFile);
+                    } else if (execType == this.GENERATE_CUSTOM_BEDGRAPH_TRACK_XML) {
+                        gdt.generateCustomBedGraphXMLTrack(chrom, minCoord, maxCoord, track, organism, outputDir, bedFile, outFile, binSize);
+                    }
                 }
                 done = true;
+
                 log.debug("AsyncGeneDataTools DONE-" + track);
             } catch (Exception ex) {
                 done = true;
@@ -286,8 +289,7 @@ public class AsyncGenerateTrack extends Thread {
         }
         done = true;
         doneThread = true;
-        gdt.removeRunning(hashValue);
-        threadList.remove(thisThread);
+        gdt.removeRunning(hashValue, thisThread);
     }
 
     public boolean isDone() {
