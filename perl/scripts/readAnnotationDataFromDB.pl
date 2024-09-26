@@ -39,13 +39,13 @@ sub readTranscriptAnnotationDataFromDB{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$geneStart,$geneStop,$dsid,$type,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$geneStart,$geneStop,$dsid,$type,$connect)=@_;
 	#Initializing Arrays
 
 	my %annotHOH; # giant array of hashes and arrays containing annotation data
 	
 	# PERL DBI CONNECT
-	my $connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#my $connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 
 	#my $org="Rn";
     #if($genomeVer eq "mm10"){
@@ -125,8 +125,7 @@ sub readTranscriptAnnotationDataFromDB{
 		$curCount++;
 	}
 	$query_handle->finish();
-	$connect->disconnect();
-	
+
 	return (\%annotHOH);
 }
 
@@ -139,7 +138,7 @@ sub readSmallNCAnnotationDataFromDB{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$organism,$publicUserID,$panel,$geneStart,$geneStop,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$organism,$publicUserID,$panel,$geneStart,$geneStop,$connect)=@_;
 	
 	#open PSFILE, $psOutputFileName;//Added to output for R but now not needed.  R will read in XML file
 	#print "read probesets chr:$geneChrom\n";
@@ -152,7 +151,7 @@ sub readSmallNCAnnotationDataFromDB{
 	#$dsn = "dbi:$platform:$service_name";
 	
 	# PERL DBI CONNECT
-	my $connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#my $connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	my $query="";
 	
@@ -238,7 +237,7 @@ sub readSmallNCAnnotationDataFromDB{
 		$curCount++;
 	}
 	$query_handle->finish();
-	$connect->disconnect();
+
 	
 	return (\%annotHOH);
 }

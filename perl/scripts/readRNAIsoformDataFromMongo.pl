@@ -33,7 +33,7 @@ sub addChr {
 1;
 
 sub getRNADatasetFromDB {
-    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $dataVer) = @_;
+    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $connect, $dataVer) = @_;
     my %ret;
     my $is_recon=1;
     if ($organism eq "Rat") {
@@ -45,10 +45,10 @@ sub getRNADatasetFromDB {
 
     if($panel eq "IsoSeq"){
         $is_recon=0;
-        $dataVer="hrdp7";
+        $dataVer="hrdp7.1";
     }
 
-    my $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
+    #my $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
     my $query = "select rd2.rna_dataset_id,rd2.build_version,rd2.tissue from rna_dataset rd2 where
 				rd2.organism = '$organism'
                 and rd2.trx_recon=$is_recon
@@ -56,7 +56,7 @@ sub getRNADatasetFromDB {
 				and rd2.genome_id='$genomeVer'
 				and rd2.visible=1 ";
     if (!($tissue eq "Any")) {
-        $query = $query . "and rd2.tissue = '" . $tissue . "' ";
+        $query = $query . "and rd2.tissue like '" . $tissue . "%' ";
     }
     $query = $query . " and rd2.strain_panel like '" . $panel . "' ";
     if ( $dataVer eq "") {
@@ -98,12 +98,12 @@ sub getRNADatasetFromDB {
         }
     }
     $query_handle->finish();
-    $connect->disconnect();
+    #$connect->disconnect();
     return \%ret;
 }
 1;
 sub getSmallRNADatasetFromDB {
-    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $dataVer) = @_;
+    my ($organism, $publicUserID, $panel, $tissue, $genomeVer, $connect, $dataVer) = @_;
     my $ret = 0;
     if ($organism eq "Rat") {
         $organism = "Rn";
@@ -111,7 +111,7 @@ sub getSmallRNADatasetFromDB {
     elsif ($organism eq "Mouse") {
         $organism = "Mm";
     }
-    my $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
+    #my $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
     my $query = "select rd2.rna_dataset_id,rd2.build_version from rna_dataset rd2 where
 				rd2.organism = '" . $organism . "' " . "
                                 and rd2.trx_recon=0
@@ -155,7 +155,7 @@ sub getSmallRNADatasetFromDB {
         $c++;
     }
     $query_handle->finish();
-    $connect->disconnect();
+    #$connect->disconnect();
     return $ret;
 }
 
@@ -167,9 +167,9 @@ sub readRNAIsoformDataFromDB {
     # Stop position on the chromosome
 
     # Read inputs
-    my ($geneChrom, $organism, $publicUserID, $panel, $geneStart, $geneStop, $dsn, $usr, $passwd, $shortName, $tmpType, $tissue, $dataVer, $genomeVer) = @_;
+    my ($geneChrom, $organism, $publicUserID, $panel, $geneStart, $geneStop, $connect, $shortName, $tmpType, $tissue, $dataVer, $genomeVer) = @_;
 
-    my $dsRef = getRNADatasetFromDB($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, $dataVer);
+    my $dsRef = getRNADatasetFromDB($organism, $publicUserID, $panel, $tissue, $genomeVer, $connect, $dataVer);
     my %ds = %$dsRef;
     print(%ds . "\n");
     print "$organism:$publicUserID:$panel:$tissue:$genomeVer,$dataVer\n";
@@ -198,7 +198,7 @@ sub readRNAIsoformDataFromDB {
 
 
             # PERL DBI CONNECT
-            $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
+            #$connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
 
             my $type = "Any";
             if (defined $tmpType) {
@@ -223,7 +223,7 @@ sub readRNAIsoformDataFromDB {
             $query_handle1->bind_columns(\$chrID);
             $query_handle1->fetch();
 
-            my $ref = readTranscriptAnnotationDataFromDB($geneChrom, $geneStart, $geneStop, $dsid, $type, $dsn, $usr, $passwd);
+            my $ref = readTranscriptAnnotationDataFromDB($geneChrom, $geneStart, $geneStop, $dsid, $type, $connect);
             my %annotHOH = %$ref;
 
             $query = "Select rd.tissue,rt.gene_id,rt.isoform_id,rt.source,rt.trstart,rt.trstop,rt.strand,rt.category,rt.strain,'" . $geneChromNumber . "',re.enumber,re.estart,re.estop ,rt.rna_transcript_id, rt.merge_gene_id, rt.merge_isoform_id,rt.gene_flag,rt.trx_flag " .
@@ -271,6 +271,7 @@ sub readRNAIsoformDataFromDB {
             my $geneMax = 0;
             my $previousGeneName = "";
             my $previousTranscript = 0;
+            my %uniqueTrxID;
 
             my $trtmp_id = "";
             my $trtmp_start = 0;
@@ -319,27 +320,31 @@ sub readRNAIsoformDataFromDB {
                     }
                     else {
                         #print "Adding transcript $trtmp_id::$cntTranscript\n";
+                        if(exists $uniqueTrxID{$trtmp_id}){
 
-                        $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
-                            ID             => $trtmp_id,
-                            start          => $trtmp_start,
-                            stop           => $trtmp_stop,
-                            source         => $trtmp_source,
-                            strand         => $trtmp_strand,
-                            category       => $trtmp_category,
-                            strain         => $trtmp_strain,
-                            chromosome     => $trtmp_chromosome,
-                            exonList       => { exon => \@$exonArray },
-                            intronList     => { intron => \@$intronArray },
-                            transcriptFlag => $trtmp_trxFlag
-                        };
-                        my $reftmp = $annotHOH{$trtmp_trid};
-                        my @tmp = @$reftmp;
-                        if (@tmp > 0) {
-                            $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript]{annotationList} = { annotation => \@tmp };
+                        }else{
+                            $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
+                                ID             => $trtmp_id,
+                                start          => $trtmp_start,
+                                stop           => $trtmp_stop,
+                                source         => $trtmp_source,
+                                strand         => $trtmp_strand,
+                                category       => $trtmp_category,
+                                strain         => $trtmp_strain,
+                                chromosome     => $trtmp_chromosome,
+                                exonList       => { exon => \@$exonArray },
+                                intronList     => { intron => \@$intronArray },
+                                transcriptFlag => $trtmp_trxFlag
+                            };
+                            my $reftmp = $annotHOH{$trtmp_trid};
+                            my @tmp = @$reftmp;
+                            if (@tmp > 0) {
+                                $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript]{annotationList} = { annotation => \@tmp };
+                            }
+
+                            $cntTranscript++;
+                            $uniqueTrxID{$trtmp_id}=1;
                         }
-
-                        $cntTranscript++;
                         #print "adding transcript $isoform_id\n";
                         if ($shortName == 0) {
                             $trtmp_id = $tissue . " Isoform " . $isoform_id;
@@ -385,28 +390,33 @@ sub readRNAIsoformDataFromDB {
                 }
                 else {
                     if ($cntGene > 0) {
-                        #print "adding transcript".$trtmp_id."\n";
-                        $geneHOH{Gene}[$cntGene - 1]{start} = $genetmp_start;
-                        $geneHOH{Gene}[$cntGene - 1]{stop} = $genetmp_stop;
-                        $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
-                            ID             => $trtmp_id,
-                            start          => $trtmp_start,
-                            stop           => $trtmp_stop,
-                            source         => $trtmp_source,
-                            strand         => $trtmp_strand,
-                            category       => $trtmp_category,
-                            strain         => $trtmp_strain,
-                            chromosome     => $trtmp_chromosome,
-                            exonList       => { exon => \@$exonArray },
-                            intronList     => { intron => \@$intronArray },
-                            transcriptFlag => $trtmp_trxFlag
-                        };
-                        my $reftmp = $annotHOH{$trtmp_trid};
-                        my @tmp = @$reftmp;
-                        if (@tmp > 0) {
-                            $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript]{annotationList} = { annotation => \@tmp };
+                        if(exists $uniqueTrxID{$trtmp_id}){
+
+                        }else{
+                            #print "adding transcript".$trtmp_id."\n";
+                            $geneHOH{Gene}[$cntGene - 1]{start} = $genetmp_start;
+                            $geneHOH{Gene}[$cntGene - 1]{stop} = $genetmp_stop;
+                            $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
+                                ID             => $trtmp_id,
+                                start          => $trtmp_start,
+                                stop           => $trtmp_stop,
+                                source         => $trtmp_source,
+                                strand         => $trtmp_strand,
+                                category       => $trtmp_category,
+                                strain         => $trtmp_strain,
+                                chromosome     => $trtmp_chromosome,
+                                exonList       => { exon => \@$exonArray },
+                                intronList     => { intron => \@$intronArray },
+                                transcriptFlag => $trtmp_trxFlag
+                            };
+                            my $reftmp = $annotHOH{$trtmp_trid};
+                            my @tmp = @$reftmp;
+                            if (@tmp > 0) {
+                                $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript]{annotationList} = { annotation => \@tmp };
+                            }
+                            $cntTranscript++;
+                            $uniqueTrxID{$trtmp_id}=1;
                         }
-                        $cntTranscript++;
                     }
                     #print "adding gene $gene_id\n";
                     my $tmpGeneID = $gene_id;
@@ -476,30 +486,33 @@ sub readRNAIsoformDataFromDB {
             }
             $query_handle1->finish();
             $query_handle->finish();
-            $connect->disconnect();
 
             if ($cntGene > 0) {
-                $geneHOH{Gene}[$cntGene - 1]{start} = $genetmp_start;
-                $geneHOH{Gene}[$cntGene - 1]{stop} = $genetmp_stop;
-                $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
-                    ID             => $trtmp_id,
-                    start          => $trtmp_start,
-                    stop           => $trtmp_stop,
-                    source         => $trtmp_source,
-                    strand         => $trtmp_strand,
-                    category       => $trtmp_category,
-                    strain         => $trtmp_strain,
-                    chromosome     => $trtmp_chromosome,
-                    exonList       => { exon => \@$exonArray },
-                    intronList     => { intron => \@$intronArray },
-                    transcriptFlag => $trtmp_trxFlag
-                };
-                my $reftmp = $annotHOH{$trtmp_trid};
-                my @tmp = @$reftmp;
-                if (@tmp > 0) {
-                    $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript]{annotationList} = { annotation => \@tmp };
-                }
+                if(exists $uniqueTrxID{$trtmp_id}){
 
+                }else{
+                    $geneHOH{Gene}[$cntGene - 1]{start} = $genetmp_start;
+                    $geneHOH{Gene}[$cntGene - 1]{stop} = $genetmp_stop;
+                    $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript] = {
+                        ID             => $trtmp_id,
+                        start          => $trtmp_start,
+                        stop           => $trtmp_stop,
+                        source         => $trtmp_source,
+                        strand         => $trtmp_strand,
+                        category       => $trtmp_category,
+                        strain         => $trtmp_strain,
+                        chromosome     => $trtmp_chromosome,
+                        exonList       => { exon => \@$exonArray },
+                        intronList     => { intron => \@$intronArray },
+                        transcriptFlag => $trtmp_trxFlag
+                    };
+                    my $reftmp = $annotHOH{$trtmp_trid};
+                    my @tmp = @$reftmp;
+                    if (@tmp > 0) {
+                        $geneHOH{Gene}[$cntGene - 1]{TranscriptList}{Transcript}[$cntTranscript]{annotationList} = { annotation => \@tmp };
+                    }
+                    $uniqueTrxID{$trtmp_id}=1;
+                }
             }
             #close PSFILE;
             $geneHOH{ver} = $dataVer;
@@ -521,9 +534,9 @@ sub readSmallRNADataFromDB {
     # Stop position on the chromosome
 
     # Read inputs
-    my ($geneChrom, $organism, $publicUserID, $panel, $geneStart, $geneStop, $dsn, $usr, $passwd, $shortName, $tmpType, $tissue, $version, $genomeVer) = @_;
+    my ($geneChrom, $organism, $publicUserID, $panel, $geneStart, $geneStop, $connect, $shortName, $tmpType, $tissue, $version, $genomeVer) = @_;
 
-    my $dsid = getSmallRNADatasetFromDB($organism, $publicUserID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd, \$version);
+    my $dsid = getSmallRNADatasetFromDB($organism, $publicUserID, $panel, $tissue, $genomeVer, $connect, \$version);
 
     #open PSFILE, $psOutputFileName;//Added to output for R but now not needed.  R will read in XML file
     #print "read probesets chr:$geneChrom\n";
@@ -537,7 +550,7 @@ sub readSmallRNADataFromDB {
 
 
     # PERL DBI CONNECT
-    $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
+    #$connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
     my $geneChromNumber = $geneChrom;
     if (length($geneChromNumber) > 2) {
         $geneChromNumber = addChr($geneChrom, "subtract");
@@ -896,7 +909,7 @@ sub readSmallRNADataFromDB {
     }
     $query_handle1->finish();
     $query_handle->finish();
-    $connect->disconnect();
+    #$connect->disconnect();
 
     if ($cntGene > 0) {
         $geneHOH{Gene}[$cntGene - 1]{start} = $genetmp_start;
@@ -951,7 +964,7 @@ sub readSmallRNADataFromDB {
 
 
 sub readRNACountsDataFromMongo {
-    my ($geneChrom, $organism, $publicUserID, $panel, $type, $countType, $buildVersion, $geneStart, $geneStop, $genomeVer, $dsn, $usr, $passwd, $mongoHost, $mongoUsr, $mongoPwd) = @_;
+    my ($geneChrom, $organism, $publicUserID, $panel, $type, $countType, $buildVersion, $geneStart, $geneStop, $genomeVer, $connect, $mongoHost, $mongoUsr, $mongoPwd) = @_;
 
     my $org = "Mm";
     if ($organism eq "Rat") {
@@ -959,7 +972,7 @@ sub readRNACountsDataFromMongo {
     }
 
     # PERL DBI CONNECT
-    $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
+    #$connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
 
     $geneChrom = uc($geneChrom);
     my $tmpType = $type;
@@ -1029,7 +1042,7 @@ sub readRNACountsDataFromMongo {
     }
 
     $query_handle->finish();
-    $connect->disconnect();
+    #$connect->disconnect();
     my %countHOH;
     print "mongohost:" . $mongoHost . "\n";
     #print "mongouser:".$mongoUsr."\n";
@@ -1086,7 +1099,7 @@ sub readRNACountsDataFromMongo {
 
 
 sub readBinnedRNACountsDataFromMongoUpdated {
-    my ($geneChrom, $organism, $publicUserID, $panel, $type, $countType, $buildVersion, $geneStart, $geneStop, $genomeVer, $dsn, $usr, $passwd, $mongoHost, $mongoUsr, $mongoPwd, $bin, $start, $stop) = @_;
+    my ($geneChrom, $organism, $publicUserID, $panel, $type, $countType, $buildVersion, $geneStart, $geneStop, $genomeVer, $connect, $mongoHost, $mongoUsr, $mongoPwd, $bin, $start, $stop) = @_;
 
     my $org = "Mm";
     if ($organism eq "Rat") {
@@ -1094,7 +1107,7 @@ sub readBinnedRNACountsDataFromMongoUpdated {
     }
 
     # PERL DBI CONNECT
-    $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
+    #$connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
 
     $geneChrom = uc($geneChrom);
     my $tmpType = $type;
@@ -1172,7 +1185,7 @@ sub readBinnedRNACountsDataFromMongoUpdated {
     }
 
     $query_handle->finish();
-    $connect->disconnect();
+    #$connect->disconnect();
     #my %countHOH;
     print "mongohost:" . $mongoHost . "\n";
     #print "mongouser:".$mongoUsr."\n";
@@ -1341,7 +1354,7 @@ sub readBinnedRNACountsDataFromMongoUpdated {
 
 
 sub readBinnedRNACountsDataFromMongo {
-    my ($geneChrom, $organism, $publicUserID, $panel, $type, $countType, $buildVersion, $geneStart, $geneStop, $genomeVer, $dsn, $usr, $passwd, $mongoHost, $mongoUsr, $mongoPwd, $bin, $start, $stop) = @_;
+    my ($geneChrom, $organism, $publicUserID, $panel, $type, $countType, $buildVersion, $geneStart, $geneStop, $genomeVer, $connect, $mongoHost, $mongoUsr, $mongoPwd, $bin, $start, $stop) = @_;
 
     my $org = "Mm";
     if ($organism eq "Rat") {
@@ -1349,7 +1362,7 @@ sub readBinnedRNACountsDataFromMongo {
     }
 
     # PERL DBI CONNECT
-    $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
+    #$connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
 
     $geneChrom = uc($geneChrom);
     my $tmpType = $type;
@@ -1425,7 +1438,7 @@ sub readBinnedRNACountsDataFromMongo {
     }
 
     $query_handle->finish();
-    $connect->disconnect();
+    #$connect->disconnect();
     #my %countHOH;
     print "mongohost:" . $mongoHost . "\n";
     #print "mongouser:".$mongoUsr."\n";
@@ -1581,7 +1594,7 @@ sub readBinnedRNACountsDataFromMongo {
 
 
 sub readRNACountsDataFromDB {
-    my ($geneChrom, $organism, $publicUserID, $panel, $type, $geneStart, $geneStop, $genomeVer, $dsn, $usr, $passwd) = @_;
+    my ($geneChrom, $organism, $publicUserID, $panel, $type, $geneStart, $geneStop, $genomeVer, $connect) = @_;
     my %countHOH;
 
     my $org = "Mm";
@@ -1589,7 +1602,7 @@ sub readRNACountsDataFromDB {
         $org = "Rn";
     }
     # PERL DBI CONNECT
-    $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
+    #$connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
 
     $geneChrom = uc($geneChrom);
 
@@ -1639,7 +1652,7 @@ sub readRNACountsDataFromDB {
         $listCount++;
     }
     $query_handle->finish();
-    $connect->disconnect();
+    #$connect->disconnect();
     return (\%countHOH);
 }
 

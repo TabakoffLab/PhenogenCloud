@@ -13,7 +13,7 @@ require 'readRNAIsoformDataFromMongo.pl';
 require 'readQTLDataFromDB.pl';
 require 'readSNPDataFromMongo.pl';
 require 'readSmallNCDataFromDB.pl';
-require 'readRefSeqDataFromDB.pl';
+#require 'readRefSeqDataFromDB.pl';
 require 'createXMLTrack.pl';
 require 'PolyA2XML.pl';
 
@@ -285,12 +285,15 @@ sub createXMLFile
 	    push(@slicelist, $tmpslice);
 	    #print "gene list:".@genelist."\n";
 	}
-	
+
+	my $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
+
+
 	#read Probests
 	my @probesetHOH = [];
 	if($genomeVer ne "rn7"){
         my $psTimeStart=time();
-        my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr".$chr,$minCoord,$maxCoord,$arrayTypeID,$genomeVer,$dsn,$usr,$passwd);
+        my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr".$chr,$minCoord,$maxCoord,$arrayTypeID,$genomeVer,$connect);
         @probesetHOH = @$probesetHOHRef;
         my $psTimeEnd=time();
         createProbesetXMLTrack(\@probesetHOH,$outputDir."probe.xml");
@@ -313,7 +316,7 @@ sub createXMLFile
 	if($shortSpecies eq 'Rn'){
 	    if($genomeVer eq 'rn5'){
 	    	my $output=$outputDir."polyASite.xml";
-	    	my $refPoly=PolyA2XML($output,$minCoord,$maxCoord,$chr,$shortSpecies,$dsn,$usr,$passwd);
+	    	my $refPoly=PolyA2XML($output,$minCoord,$maxCoord,$chr,$shortSpecies,$connect);
 		}
 	    
 	    #read SNPs/Indels
@@ -328,7 +331,7 @@ sub createXMLFile
 	    }
 	    
 	    
-	    my $refliverHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Liver",0,$genomeVer);
+	    my $refliverHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$connect,1,"totalRNA","Liver",0,$genomeVer);
 	    %liverHOH=%$refliverHOH;
 	    
 
@@ -415,7 +418,7 @@ sub createXMLFile
 	    }
 #	    createLiverTotalXMLTrack(\%liverHOH,$outputDir.$dataVer."_liverTotal.xml");
 	    
-	    my $refheartHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Heart",0,$genomeVer);
+	    my $refheartHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$connect,1,"totalRNA","Heart",0,$genomeVer);
 	    %heartHOH=%$refheartHOH;
 	    
 
@@ -505,9 +508,9 @@ sub createXMLFile
 	    my $iTimeStart=time();
 	    my $isoformHOH ;
 	    if($genomeVer eq 'rn5'){
-	    	$isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1," in ('PolyA+','NonPolyA+')","Brain",0,$genomeVer);
+	    	$isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$connect,1," in ('PolyA+','NonPolyA+')","Brain",0,$genomeVer);
 		}else{
-            $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Brain",0,$genomeVer);
+            $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$connect,1,"totalRNA","Brain",0,$genomeVer);
 		}
 	    %brainHOH=%$isoformHOH;
 	    #$tmpGeneArray=$$isoformHOH{Gene};
@@ -602,7 +605,7 @@ sub createXMLFile
 #            createLiverTotalXMLTrack(\%brainHOH,$outputDir.$dataVer."_brainTotal.xml");
 		}
 		if($genomeVer eq 'rn6' || $genomeVer eq 'rn7'){
-			my $refMergedHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Merged",0,$genomeVer);
+			my $refMergedHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$connect,1,"totalRNA","Merged",0,$genomeVer);
 		    %mergedHOH=%$refMergedHOH;
 		    
 
@@ -691,7 +694,7 @@ sub createXMLFile
 		}
 	}elsif($shortSpecies eq 'Mm'){
 	    my $iTimeStart=time();
-	    my $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'ILS/ISS',$minCoord,$maxCoord,$dsn,$usr,$passwd,1,"totalRNA","Brain",0,$genomeVer);
+	    my $isoformHOH = readRNAIsoformDataFromDB($chr,$shortSpecies,$publicID,'ILS/ISS',$minCoord,$maxCoord,$connect,1,"totalRNA","Brain",0,$genomeVer);
 	    %brainHOH=%$isoformHOH;
 	    #$tmpGeneArray=$$isoformHOH{Gene};
 	    my $iTimeEnd=time();
@@ -977,7 +980,9 @@ sub createXMLFile
 	my $xml = new XML::Simple (RootName=>'GeneList');
 	my $data = $xml->XMLout(\%GeneHOH);
 	# open xml file
-	my $xmlOutputFileName=">$outputDir/Region.xml";
+
+	my $xmlOutputFileName=">$outputDir/".$dataVer."_Region.xml";
+
 	open XMLFILE, $xmlOutputFileName or die " Could not open XML file $xmlOutputFileName for writing $!\n\n";
 	# write the header
 	print XMLFILE '<?xml version="1.0" encoding="UTF-8"?>';
@@ -992,7 +997,7 @@ sub createXMLFile
 	my %smncHOH;
 	if($genomeVer eq "rn5"){
 		my $smStart=time();
-		my $smncRef=readSmallNoncodingDataFromDB($chr,$species,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$dsn,$usr,$passwd);
+		my $smncRef=readSmallNoncodingDataFromDB($chr,$species,$publicID,'BNLX/SHRH',$minCoord,$maxCoord,$connect);
 		%smncHOH=%$smncRef;
 		my $smEnd=time();
 		print "Small RNA completed in ".($smEnd-$smStart)." sec.\n";
@@ -1014,7 +1019,7 @@ sub createXMLFile
 	if($genomeVer ne "rn7"){
 	    #read QTLs
         my $qStart=time();
-        my $qtlRef=readQTLDataFromDB($chr,$species,$minCoord,$maxCoord,$genomeVer,$dsn,$usr,$passwd);
+        my $qtlRef=readQTLDataFromDB($chr,$species,$minCoord,$maxCoord,$genomeVer,$connect);
         my %qtlHOH=%$qtlRef;
         my $qEnd=time();
         print "QTLs completed in ".($qEnd-$qStart)." sec.\n";
@@ -1030,7 +1035,7 @@ sub createXMLFile
     #my %refSeqHOH=%$refSeqRef;
     #createRefSeqXMLTrack(\%refSeqHOH,$outputDir."refSeq.xml");
     #print "end read RefSeq\n";
-
+    $connect->disconnect();
 	#createRNACountXMLTrack(\%rnaCountHOH,$outputDir."helicos.xml");
 	my $scriptEnd=time();
 	print " script completed in ".($scriptEnd-$scriptStart)." sec.\n";

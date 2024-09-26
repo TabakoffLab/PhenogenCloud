@@ -41,7 +41,7 @@ sub readSmallNoncodingDataFromDB{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$organism,$publicUserID,$panel,$geneStart,$geneStop,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$organism,$publicUserID,$panel,$geneStart,$geneStop,$connect)=@_;
 
 
 	my %smncHOH; # giant array of hashes and arrays containing probeset data
@@ -56,7 +56,7 @@ sub readSmallNoncodingDataFromDB{
 	}
 	
 	# PERL DBI CONNECT
-	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	# PREPARE THE QUERY for probesets
 	# There's got to be a better way to handle the chromosome...
@@ -117,7 +117,6 @@ sub readSmallNoncodingDataFromDB{
 		$cntSmnc++;
 	}
 	$query_handle->finish();
-	$connect->disconnect();
 	return (\%smncHOH);
 }
 1;
