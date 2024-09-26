@@ -190,7 +190,6 @@
         if (!loggedIn && userLoggedIn == null) {
             log.debug("try logging in.");
             userLoggedIn = myUser.getUser("anon", "4lesw7n35h!", pool);
-
             log.debug("last_name = " + userLoggedIn.getLast_name() + ", id = " + userLoggedIn.getUser_id());
             if (userLoggedIn.getUser_id() == -1) {
                 log.info("anon just failed to log in.");
@@ -242,20 +241,23 @@
     String full_name = (String) session.getAttribute("full_name");
     String lab_name = (String) session.getAttribute("lab_name");
     String user = userID + "-" + userName;
-
-    if (publicDatasets == null || privateDatasetsForUser == null) {
-        Dataset myDataset = new Dataset();
-        Dataset[] allDatasets = myDataset.getAllDatasetsForUser(userLoggedIn, pool);
-        if (publicDatasets == null) {
-            log.debug("publicDatasets not set, so setting it now");
-            publicDatasets = myDataset.getDatasetsForUser(allDatasets, "public");
-            session.setAttribute("publicDatasets", publicDatasets);
-        }
-        if (privateDatasetsForUser == null) {
-            log.debug("privateDatasetsForUser not set, so setting it now");
-            privateDatasetsForUser = myDataset.getDatasetsForUser(allDatasets, "private");
-            session.setAttribute("privateDatasetsForUser", privateDatasetsForUser);
-        }
+    String URL=request.getRequestURL().toString();
+    String pageUrl=URL.substring(URL.lastIndexOf("/"));
+	if(!(pageUrl.contains("gene.jsp") || pageUrl.contains("listGeneLists.jsp"))){
+		if (publicDatasets == null || privateDatasetsForUser == null) {
+			Dataset myDataset = new Dataset();
+			Dataset[] allDatasets = myDataset.getAllDatasetsForUser(userLoggedIn, pool);
+			if (publicDatasets == null) {
+				log.debug("publicDatasets not set, so setting it now");
+				publicDatasets = myDataset.getDatasetsForUser(allDatasets, "public");
+				session.setAttribute("publicDatasets", publicDatasets);
+			}
+			if (privateDatasetsForUser == null) {
+				log.debug("privateDatasetsForUser not set, so setting it now");
+				privateDatasetsForUser = myDataset.getDatasetsForUser(allDatasets, "private");
+				session.setAttribute("privateDatasetsForUser", privateDatasetsForUser);
+			}
+		}
     }
     /*}catch(Exception e){
         log.error("ERROR:",e);

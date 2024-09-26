@@ -885,7 +885,6 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
             </fieldset>
 
             <fieldset class="top" id="fsRight">
-
                 <legend>2. What data do you want to view?</legend>
                 <div class="controlgroup">
                     <label>Initial View:
@@ -1785,7 +1784,6 @@ Hint: Try other synonyms if the first ID that you enter is not found.
     });
     $(window).ready(function () {
         setTimeout(function () {
-
             custView = GDBCustomView();
             custView.setup();
         }, 500);
@@ -1811,7 +1809,6 @@ Hint: Try other synonyms if the first ID that you enter is not found.
                 interactiveTolerance: 350
             });
         }, 10);
-
     });
 
     if(dataVer !="hrdp7.1"){

@@ -1,12 +1,5 @@
 <%@ include file="adaptive_headTags.jsp" %>
-
 <body style="text-align:center;" class="noPrint">
-	<style>
-		.search{
-			position:relative;
-			top:-16px;
-		}
-	</style>
 
 
 <%@ include file="/web/common/menu.jsp" %>

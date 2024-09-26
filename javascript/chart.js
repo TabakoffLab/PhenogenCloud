@@ -200,6 +200,7 @@ chart = function (params) {
                     that.functionBar.select("span#plotBtn").style("background", "#DCDCDC");
                     /*if(ga){
 						ga('send','event','clickPan','');
+
 					}*/
                     gtag('event', '', {'event_category': 'clickPan'});
                 })

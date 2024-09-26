@@ -57,7 +57,6 @@ if(request.getParameter("UUID")!=null){
 }
 if(request.getParameter("genomeVer")!=null){
 	genomeVer=FilterInput.getFilteredInputGenomeVer(request.getParameter("genomeVer"));
-
 }
 
 if(type.equals("blank")){
