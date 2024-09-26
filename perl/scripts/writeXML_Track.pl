@@ -235,7 +235,11 @@ sub createXMLFile {
     # Read in the arguments for the subroutine
     my ($outputDir, $species, $type, $panel, $chromosome, $minCoord, $maxCoord, $publicID, $binSize, $tissue, $genomeVer, $dsn, $usr, $passwd, $ensDsn, $ensHost, $ensUsr, $ensPasswd, $ucscDsn, $ucscUsr, $ucscPasswd, $mongoDsn, $mongoUser, $mongoPasswd, $dataVer) = @_;
 
+
+
     my $scriptStart = time();
+
+    my $connect = DBI->connect($dsn, $usr, $passwd) or die($DBI::errstr . "\n");
 
     #my $panel="ILS/ISS";
     my $arrayTypeID = 21;
@@ -284,10 +288,10 @@ sub createXMLFile {
         if ($binSize > 0) {
             my $ref;
             if ($genomeVer eq 'rn7') {
-                $ref = readBinnedRNACountsDataFromMongoUpdated($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $dsn, $usr, $passwd, $mongoDsn, $mongoUser, $mongoPasswd, $binSize, $roundMin, $roundMax);
+                $ref = readBinnedRNACountsDataFromMongoUpdated($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $connect, $mongoDsn, $mongoUser, $mongoPasswd, $binSize, $roundMin, $roundMax);
             }
             else {
-                $ref = readBinnedRNACountsDataFromMongo($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $dsn, $usr, $passwd, $mongoDsn, $mongoUser, $mongoPasswd, $binSize, $roundMin, $roundMax);
+                $ref = readBinnedRNACountsDataFromMongo($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $connect, $mongoDsn, $mongoUser, $mongoPasswd, $binSize, $roundMin, $roundMax);
             }
             my %rnaBinned = %$ref;
             if (-d $outputDir . "tmp") {
@@ -304,7 +308,7 @@ sub createXMLFile {
             }
         }
         else {
-            my $rnaCountRef = readRNACountsDataFromMongo($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $dsn, $usr, $passwd, $mongoDsn, $mongoUser, $mongoPasswd);
+            my $rnaCountRef = readRNACountsDataFromMongo($chromosome, $species, $publicID, $panel, $type, $countType, $ver, $roundMin, $roundMax, $genomeVer, $connect, $mongoDsn, $mongoUser, $mongoPasswd);
 
             my %rnaCountHOH = %$rnaCountRef;
             my $rnaCountEnd = time();
@@ -339,9 +343,11 @@ sub createXMLFile {
         if (index($chromosome, "chr") > -1) {
             $chromosome = substr($chromosome, 3);
         }
-        my $refSeqRef = readRefSeqDataFromDB($chromosome, $species, $minCoord, $maxCoord, $ucscDsn, $ucscUsr, $ucscPasswd);
+        my $connectRef = DBI->connect($ucscDsn, $ucscUsr, $ucscPasswd) or die($DBI::errstr . "\n");
+        my $refSeqRef = readRefSeqDataFromDB($chromosome, $species, $minCoord, $maxCoord, $connectRef,$genomeVer);
         my %refSeqHOH = %$refSeqRef;
         my $rnaCountEnd = time();
+        $connectRef->disconnect();
         print "Ref Seq completed in " . ($rnaCountEnd - $rnaCountStart) . " sec.\n";
 
         createRefSeqXMLTrack(\%refSeqHOH, $outputDir . $type . ".xml");
@@ -361,7 +367,7 @@ sub createXMLFile {
         if (index($chromosome, "chr") > -1) {
             $chromosome = substr($chromosome, 3);
         }
-        my $spliceRef = readSpliceJunctFromDB($chromosome, $species, $minCoord, $maxCoord, $publicID, $panel, $tissue, $genomeVer, $dsn, $usr, $passwd,$dataVer);
+        my $spliceRef = readSpliceJunctFromDB($chromosome, $species, $minCoord, $maxCoord, $publicID, $panel, $tissue, $genomeVer, $connect,$dataVer);
         my %spliceHOH = %$spliceRef;
         my $rnaCountEnd = time();
         print "Splice Junction completed in " . ($rnaCountEnd - $rnaCountStart) . " sec.\n";
@@ -372,9 +378,11 @@ sub createXMLFile {
         if (index($chromosome, "chr") > -1) {
             $chromosome = substr($chromosome, 3);
         }
-        my $repeatMaskRef = readRepeatMaskFromDB($chromosome, $species, $minCoord, $maxCoord, $ucscDsn, $ucscUsr, $ucscPasswd);
+        my $connectUCSC= DBI->connect($ucscDsn, $ucscUsr, $ucscPasswd) or die($DBI::errstr . "\n");
+        my $repeatMaskRef = readRepeatMaskFromDB($chromosome, $species, $minCoord, $maxCoord, $connect);
         my %repeatMaskHOH = %$repeatMaskRef;
         my $rnaCountEnd = time();
+        $connectUCSC->disconnect();
         print "RepeatMask completed in " . ($rnaCountEnd - $rnaCountStart) . " sec.\n";
         createGenericXMLTrack(\%repeatMaskHOH, $outputDir . $type . ".xml");
     }
@@ -458,7 +466,7 @@ sub createXMLFile {
         }
         print "gene list:" . @genelist . "\n";
         if ($keepGoing == 1) {
-            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes($chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $dsn, $usr, $passwd);
+            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes($chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $connect);
             my @probesetHOH = @$probesetHOHRef;
 
             my $ensemblCount = 0;
@@ -666,7 +674,7 @@ sub createXMLFile {
         my @snpStrain = ("BNLX", "SHRH", "SHRJ", "F344");
 
         if ($genomeVer eq "rn6" or $genomeVer eq "rn5") {
-            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr" . $chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $dsn, $usr, $passwd);
+            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr" . $chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $connect);
             @probesetHOH = @$probesetHOHRef;
             my $snpRef = readSNPDataFromDB($genomeVer, $chromosome, $species, $minCoord, $maxCoord, $mongoDsn, $mongoUser, $mongoPasswd);
             %snpHOH = %$snpRef;
@@ -682,7 +690,7 @@ sub createXMLFile {
                 $rnaType="isoSeq";
             }
         }
-        my $isoformHOH = readRNAIsoformDataFromDB($chromosome, $species, $publicID, $panel, $minCoord, $maxCoord, $dsn, $usr, $passwd, 1, $rnaType, $tissue, $dataVer, $genomeVer);
+        my $isoformHOH = readRNAIsoformDataFromDB($chromosome, $species, $publicID, $panel, $minCoord, $maxCoord, $connect, 1, $rnaType, $tissue, $dataVer, $genomeVer);
 
         my %brainHOH = %$isoformHOH;
         my $regionSize = $maxCoord - $minCoord;
@@ -789,14 +797,14 @@ sub createXMLFile {
             if (index($chromosome, "chr") > -1) {
                 $chromosome = substr($chromosome, 3);
             }
-            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr" . $chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $dsn, $usr, $passwd);
+            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr" . $chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $connect);
             my @probesetHOH = @$probesetHOHRef;
 
             my $snpRef = readSNPDataFromDB($genomeVer, $chromosome, $species, $minCoord, $maxCoord, $mongoDsn, $mongoUser, $mongoPasswd);
             my %snpHOH = %$snpRef;
             my @snpStrain = ("BNLX", "SHRH", "SHRJ", "F344");
             my $rnaType = "Any";
-            my $isoformHOH = readSmallRNADataFromDB($chromosome, $species, $publicID, $panel, $minCoord, $maxCoord, $dsn, $usr, $passwd, 1, $rnaType, $tissue, $ver, $genomeVer);
+            my $isoformHOH = readSmallRNADataFromDB($chromosome, $species, $publicID, $panel, $minCoord, $maxCoord, $connect, 1, $rnaType, $tissue, $ver, $genomeVer);
 
             my %brainHOH = %$isoformHOH;
             my $regionSize = $maxCoord - $minCoord;
@@ -988,7 +996,7 @@ sub createXMLFile {
 
             #read Probests
             my $psTimeStart = time();
-            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr" . $chr, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $dsn, $usr, $passwd);
+            my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes("chr" . $chr, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $connect);
             my @probesetHOH = @$probesetHOHRef;
             my $psTimeEnd = time();
             createProbesetXMLTrack(\@probesetHOH, $outputDir . "probe.xml");
@@ -1204,7 +1212,7 @@ sub createXMLFile {
     }
     elsif (index($type, "probe") > -1) {
         my $psTimeStart = time();
-        my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes($chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $dsn, $usr, $passwd);
+        my ($probesetHOHRef) = readAffyProbesetDataFromDBwoProbes($chromosome, $minCoord, $maxCoord, $arrayTypeID, $genomeVer, $connect);
         my @probesetHOH = @$probesetHOHRef;
         my $psTimeEnd = time();
         createProbesetXMLTrack(\@probesetHOH, $outputDir . "probe.xml");
@@ -1212,14 +1220,14 @@ sub createXMLFile {
     }
     elsif (index($type, "qtl") > -1) {
         my $qStart = time();
-        my $qtlRef = readQTLDataFromDB($chromosome, $species, $minCoord, $maxCoord, $genomeVer, $dsn, $usr, $passwd);
+        my $qtlRef = readQTLDataFromDB($chromosome, $species, $minCoord, $maxCoord, $genomeVer, $connect);
         my %qtlHOH = %$qtlRef;
         createQTLXMLTrack(\%qtlHOH, $outputDir . "qtl.xml", $chromosome);
         my $qEnd = time();
         print "QTLs completed in " . ($qEnd - $qStart) . " sec.\n";
 
     }
-
+    $connect->disconnect();
     my $scriptEnd = time();
     print " script completed in " . ($scriptEnd - $scriptStart) . " sec.\n";
     return 1;

@@ -115,7 +115,8 @@ function loadTrackTable() {
             forwardPvalueCutoff: forwardPValueCutoff,
             folderName: regionfolderName,
             genomeVer: genomeVer,
-            track: reportSelectedTrack.trackClass
+            track: reportSelectedTrack.trackClass,
+            dataVer: dataVer
         };
         //console.log("ready to send");
         //console.log(params);
@@ -169,7 +170,7 @@ function loadTrackTable() {
         }
         if (jspPage) {
             loadDivWithPage("div#regionTable", jspPage, false, params,
-                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>", 0);
         }
     }
     /*if(ga){
@@ -201,11 +202,11 @@ function loadEQTLTable() {
         cisOnly: cisOnly
 
     };
-    if (dataVer != "hrdp7") {
+    if (dataVer != "hrdp7.1") {
         loadDivWithPage("div#regionEQTLTable", jspPage, false, params,
-            "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+            "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>", 0);
     } else {
-        $("div#regionEQTLTable").css("font-size", "20pt").css("color", "#FF0000").html("Coming soon for HRDP v7.  HRDP v6(rn7) does have eQTLs if you would like to switch please change the drop down list at the top of the page.");
+        $("div#regionEQTLTable").css("font-size", "20pt").css("color", "#FF0000").html("Coming soon for HRDP v7.1.  HRDP v6(rn7) does have eQTLs if you would like to switch please change the drop down list at the top of the page.");
     }
     gtag('event', 'eQTLTable', {'event_category': 'loadEQTLTable'});
 }
@@ -219,11 +220,11 @@ function loadRegionWGCNA() {
     var params = {
         region: chr + ":" + curmin + "-" + curmax
     };
-    if (dataVer != "hrdp7") {
+    if (dataVer != "hrdp7.1") {
         loadDivWithPage("div#regionWGCNAEQTL", jspPage, true, params,
-            "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+            "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>", 0);
     } else {
-        $("div#regionWGCNAEQTL").css("font-size", "20pt").css("color", "#FF0000").html("Coming soon for HRDP v7.  HRDP v6(rn7) does have WGCNA modules if you would like to switch please change the drop down list at the top of the page.");
+        $("div#regionWGCNAEQTL").css("font-size", "20pt").css("color", "#FF0000").html("Coming soon for HRDP v7.1.  HRDP v6(rn7) does have WGCNA modules if you would like to switch please change the drop down list at the top of the page.");
     }
 
     gtag('event', 'wgcna', {'event_category': 'loadWGCNA'});
@@ -256,7 +257,7 @@ function loadEQTLTableWParams(levelList, chrList, tisList, pval, dataSource) {
 
     };
     loadDivWithPage("div#regionEQTLTable", jspPage, false, params,
-        "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+        "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>", 0);
     /*if(ga){
         ga('send','event','loadEQTLTableWParams','eqtlwparams');
     }*/
@@ -264,7 +265,7 @@ function loadEQTLTableWParams(levelList, chrList, tisList, pval, dataSource) {
 }
 
 
-function loadDivWithPage(divSelector, jspPage, scrollToDiv, params, loadingHTML) {
+function loadDivWithPage(divSelector, jspPage, scrollToDiv, params, loadingHTML, retryNum) {
     $(divSelector).html(loadingHTML);
     $.ajax({
         url: jspPage,
@@ -285,10 +286,14 @@ function loadDivWithPage(divSelector, jspPage, scrollToDiv, params, loadingHTML)
             //setTimeout(displayHelpFirstTime,200);
         },
         error: function (xhr, status, error) {
-            $(divSelector).html("<span style=\"color:#FF0000;\">An error occurred generating this page.  This can occur when loading the report the first time. Will automatically continue trying to load the report.</span>");
-            setTimeout(function () {
-                loadDivWithPage(divSelector, jspPage, scrollToDiv, params, loadingHTML);
-            }, 15000);
+            if (jspPage.indexOf("geneReport.jsp") == -1 || (jspPage.indexOf("geneReport.jsp") > 0 && retryNum < 30)) {
+                $(divSelector).html("<span style=\"color:#FF0000;\">An error occurred generating this page.  This can occur when loading the report the first time. Will automatically continue trying to load the report.</span>");
+                setTimeout(function () {
+                    loadDivWithPage(divSelector, jspPage, scrollToDiv, params, loadingHTML, retryNum + 1);
+                }, 15000);
+            } else {
+                $(divSelector).html("<span style=\"color:#FF0000;\">An error occurred generating this page.  This can happen initially when loading the report. This error has occurred too many times and has been reported.</span>");
+            }
 
         }
     });
@@ -407,7 +412,7 @@ function DisplaySelectedDetailReport(jspPage, params) {
     }
     setTimeout(function () {
         loadDivWithPage("div#selectedReport", jspPage, false, params,
-            "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+            "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>", 0);
         if (jspPage.indexOf("geneReport.jsp") > 0) {
             $("div#selectedReport").show();
         }

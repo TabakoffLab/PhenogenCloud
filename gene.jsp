@@ -130,7 +130,7 @@
     String regionError = "";
     String genomeVer = "rn7";
     String defaultGenomeVer = "rn7";
-    String dataVer = "hrdp7";
+    String dataVer = "hrdp7.1";
 
     Set iDecoderAnswer;
 
@@ -153,7 +153,7 @@
             fullOrg = "Rattus_norvegicus";
             genomeVer = "rn7";
             defaultGenomeVer = "rn7";
-            dataVer= "hrdp7";
+            dataVer= "hrdp7.1";
         } else if (myOrganism.equals("Mm")) {
             panel = "ILS/ISS";
             fullOrg = "Mus_musculus";
@@ -171,10 +171,13 @@
         } else {
             genomeVer = defaultGenomeVer;
         }
-        if (genomeVer.startsWith("hs") || genomeVer.startsWith("rn") || genomeVer.startsWith("mm")) {
+        if (genomeVer.startsWith("hs") || genomeVer.startsWith("rn") || genomeVer.startsWith("mm") && genomeVer.length()<=4) {
 
         } else {
             genomeVer = defaultGenomeVer;
+        }
+        if(!(genomeVer.equals("rn7") ||genomeVer.equals("rn6") ||genomeVer.equals("rn5") || genomeVer.equals("mm10") )){
+            genomeVer=defaultGenomeVer;
         }
         log.debug("******\nreading Genome Ver:" + genomeVer);
     }
@@ -185,8 +188,8 @@
          log.debug("\nDataVer:"+dataVer+"\n");
 
          if(genomeVer.equals("rn7")){
-             if(!dataVer.equals("hrdp7") && !dataVer.equals("hrdp6")){
-                 dataVer="hrdp7";
+             if(!dataVer.equals("hrdp7.1") && !dataVer.equals("hrdp6")){
+                 dataVer="hrdp7.1";
              }
          }else if (genomeVer.equals("rn6")){
              if(!dataVer.equals("hrdp5")){
@@ -198,6 +201,9 @@
              }
          }
          log.debug("\nEND DataVer:"+dataVer+"\n");
+     }
+     if(!genomeVer.startsWith("rn")){
+         dataVer="";
      }
 
     int val = -1;
@@ -257,7 +263,15 @@
         myDisplayGene = myGene;
         mySessionHandler.createSessionActivity(session.getId(), "GTD Browser Gene: " + myGene, pool);
         List homologList = null;
-
+		if(myGene.indexOf("'")>-1){
+            myGene=myGene.replaceAll("'","");
+		}
+        if(myGene.indexOf("`")>-1){
+                    myGene=myGene.replaceAll("`","");
+        		}
+        if(myGene.indexOf("\"")>-1){
+                    myGene=myGene.replaceAll("\"","");
+        		}
         if (myGene.startsWith("ENSRNOG") || myGene.startsWith("ENSMUSG")) {
             myIDecoderClient.setNum_iterations(0);
         } else {
@@ -390,8 +404,24 @@
                 String[] part1 = loc.split(":");
                 String[] part2 = part1[1].split("-");
                 String chr = part1[0];
-                min = Integer.parseInt(part2[0]);
-                max = Integer.parseInt(part2[1]);
+                try{
+                	min = Integer.parseInt(part2[0]);
+                	max = Integer.parseInt(part2[1]);
+                }catch(NumberFormatException e){
+                    Email myAdminEmail = new Email();
+					myAdminEmail.setSubject("Exception thrown in gene.jsp: NumberFormat");
+					myAdminEmail.setContent("Error: Gene with PRN:"+loc+".\n\nFull Stacktrace:\n" + e.toString());
+					try {
+						myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+					} catch (Exception mailException) {
+						log.error("error sending message", mailException);
+						try {
+							myAdminEmail.sendEmailToAdministrator("");
+						} catch (Exception mailException1) {
+							//throw new RuntimeException();
+						}
+					}
+                }
                 myDisplayGene = myGene;
                 fullGeneList = gdt.getRegionData(chr, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, forwardPValueCutoff, false, false,dataVer);
                 String tmpURL = gdt.getGenURL();//(String)session.getAttribute("genURL");
@@ -452,17 +482,33 @@
                 } else if (maxCoord.toLowerCase().contains("m")) {
                     maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("m") - 1);
                 }
-                if (minCoord.indexOf(".") == -1) {
-                    min = Integer.parseInt(minCoord);
-                } else {
-                    double mb = Double.parseDouble(minCoord);
-                    min = (int) Math.floor(mb * multI);
-                }
-                if (maxCoord.indexOf(".") == -1) {
-                    max = Integer.parseInt(maxCoord);
-                } else {
-                    double mb = Double.parseDouble(maxCoord);
-                    max = (int) Math.floor(mb * multA);
+                try{
+					if (minCoord.indexOf(".") == -1) {
+						min = Integer.parseInt(minCoord);
+					} else {
+						double mb = Double.parseDouble(minCoord);
+						min = (int) Math.floor(mb * multI);
+					}
+					if (maxCoord.indexOf(".") == -1) {
+						max = Integer.parseInt(maxCoord);
+					} else {
+						double mb = Double.parseDouble(maxCoord);
+						max = (int) Math.floor(mb * multA);
+					}
+                }catch(NumberFormatException e){
+					 Email myAdminEmail = new Email();
+					myAdminEmail.setSubject("Exception thrown in gene.jsp: NumberFormat");
+					myAdminEmail.setContent("Error: Region:"+myGene+"::"+minCoord+":"+maxCoord+".\n"+myGene+"\nFull Stacktrace:\n" + e.toString());
+					try {
+						myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+					} catch (Exception mailException) {
+						log.error("error sending message", mailException);
+						try {
+							myAdminEmail.sendEmailToAdministrator("");
+						} catch (Exception mailException1) {
+							//throw new RuntimeException();
+						}
+					}
                 }
                 int tmpInt = max;
                 max = min + tmpInt;
@@ -482,17 +528,33 @@
                 } else if (maxCoord.toLowerCase().contains("m")) {
                     maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("m") - 1);
                 }
-                if (minCoord.indexOf(".") == -1) {
-                    min = Integer.parseInt(minCoord);
-                } else {
-                    double mb = Double.parseDouble(minCoord);
-                    min = (int) Math.floor(mb * multI);
-                }
-                if (maxCoord.indexOf(".") == -1) {
-                    max = Integer.parseInt(maxCoord);
-                } else {
-                    double mb = Double.parseDouble(maxCoord);
-                    max = (int) Math.floor(mb * multA);
+                try{
+					if (minCoord.indexOf(".") == -1) {
+						min = Integer.parseInt(minCoord);
+					} else {
+						double mb = Double.parseDouble(minCoord);
+						min = (int) Math.floor(mb * multI);
+					}
+					if (maxCoord.indexOf(".") == -1) {
+						max = Integer.parseInt(maxCoord);
+					} else {
+						double mb = Double.parseDouble(maxCoord);
+						max = (int) Math.floor(mb * multA);
+					}
+                }catch(NumberFormatException e){
+                    Email myAdminEmail = new Email();
+                    myAdminEmail.setSubject("Exception thrown in gene.jsp: NumberFormat");
+					myAdminEmail.setContent("Error: Region:"+myGene+"::"+minCoord+":"+maxCoord+".\n"+myGene+"\nFull Stacktrace:\n" + e.toString());
+					try {
+						myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+					} catch (Exception mailException) {
+						log.error("error sending message", mailException);
+						try {
+							myAdminEmail.sendEmailToAdministrator("");
+						} catch (Exception mailException1) {
+							//throw new RuntimeException();
+						}
+					}
                 }
                 int tmpInt = max;
                 max = min + tmpInt;
@@ -512,6 +574,7 @@
                 } else if (maxCoord.toLowerCase().contains("m")) {
                     maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("m") - 1);
                 }
+                try{
                 if (minCoord.indexOf(".") == -1) {
                     min = Integer.parseInt(minCoord);
                 } else {
@@ -524,6 +587,21 @@
                     double mb = Double.parseDouble(maxCoord);
                     max = (int) Math.floor(mb * multA);
                 }
+                }catch(NumberFormatException e){
+					Email myAdminEmail = new Email();
+					myAdminEmail.setSubject("Exception thrown in gene.jsp: NumberFormat");
+					myAdminEmail.setContent("Error: Region:"+myGene+"::"+minCoord+":"+maxCoord+".\n"+myGene+"\nFull Stacktrace:\n" + e.toString());
+					try {
+						myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+					} catch (Exception mailException) {
+						log.error("error sending message", mailException);
+						try {
+							myAdminEmail.sendEmailToAdministrator("");
+						} catch (Exception mailException1) {
+							//throw new RuntimeException();
+						}
+					}
+				}
                 max = min + max;
             } else if (myGene.indexOf("-") > 0) {
                 minCoord = myGene.substring(myGene.indexOf(":") + 1, myGene.indexOf("-")).trim();
@@ -540,18 +618,34 @@
                 } else if (maxCoord.toLowerCase().contains("m")) {
                     maxCoord = maxCoord.substring(0, maxCoord.toLowerCase().indexOf("m") - 1);
                 }
-                if (minCoord.indexOf(".") == -1) {
-                    min = Integer.parseInt(minCoord);
-                } else {
-                    double mb = Double.parseDouble(minCoord);
-                    min = (int) Math.floor(mb * multI);
-                }
-                if (maxCoord.indexOf(".") == -1) {
-                    max = Integer.parseInt(maxCoord);
-                } else {
-                    double mb = Double.parseDouble(maxCoord);
-                    max = (int) Math.floor(mb * multA);
-                }
+                try{
+					if (minCoord.indexOf(".") == -1) {
+						min = Integer.parseInt(minCoord);
+					} else {
+						double mb = Double.parseDouble(minCoord);
+						min = (int) Math.floor(mb * multI);
+					}
+					if (maxCoord.indexOf(".") == -1) {
+						max = Integer.parseInt(maxCoord);
+					} else {
+						double mb = Double.parseDouble(maxCoord);
+						max = (int) Math.floor(mb * multA);
+					}
+                }catch(NumberFormatException e){
+					 Email myAdminEmail = new Email();
+					 myAdminEmail.setSubject("Exception thrown in gene.jsp: NumberFormat");
+					myAdminEmail.setContent("Error: Region:"+myGene+"::"+minCoord+":"+maxCoord+".\n"+myGene+"\nFull Stacktrace:\n" + e.toString());
+					try {
+						myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
+					} catch (Exception mailException) {
+						log.error("error sending message", mailException);
+						try {
+							myAdminEmail.sendEmailToAdministrator("");
+						} catch (Exception mailException1) {
+							//throw new RuntimeException();
+						}
+					}
+				 }
 
             } else {
                 regionError = "You have entered an invalid region.  Please see the examples in the instructions.";
@@ -718,7 +812,9 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
                         <img src="<%=imagesDir%>/icons/info.gif"></span>
                     <BR>
                     ex. chr1:1-50000 or Agt
-                </label><BR><BR>
+
+                </label>
+                <BR><BR>
 
                 <label>Species:
                     <select name="speciesCB" id="speciesCB">
@@ -749,7 +845,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 					<label>
 										Dataset Version:
 										<select name="dataVerCB" id="dataVerCB">
-											<option value="hrdp7" <%if(dataVer.equals("hrdp7")){%>SELECTED<%}%> <%if(! genomeVer.equals("rn7")){%>DISABLED<%}%> >HRDP v7</option>
+											<option value="hrdp7.1" <%if(dataVer.equals("hrdp7.1")){%>SELECTED<%}%> <%if(! genomeVer.equals("rn7")){%>DISABLED<%}%> >HRDP v7.1</option>
 											<option value="hrdp6" <%if(dataVer.equals("hrdp6")){%>SELECTED<%}%> <%if(! genomeVer.equals("rn7")){%>DISABLED<%}%> >HRDP v6</option>
 											<option value="hrdp5" <%if(dataVer.equals("hrdp5")){%>SELECTED<%}%>  <%if(! genomeVer.equals("rn6")){%>DISABLED<%}%> >HRDP v5</option>
 											<option value="hrdp3" <%if(dataVer.equals("hrdp3")){%>SELECTED<%}%>  <%if(! genomeVer.equals("rn5")){%>DISABLED<%}%> >HRDP v4</option>
@@ -763,13 +859,13 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 						<h3>Current Data Type Availability:</h3><BR>
 						<table name="items" class="list_base tablesorter" style="display: inline-block;text-align: left;">
 							<thead class="col_title">
-							<TR><TH>Data Type</TH><TH>HRDP v7</TH><TH>HRDP v6</TH></TR>
+							<TR><TH>Data Type</TH><TH>HRDP v7.1</TH><TH>HRDP v6</TH></TR>
 							</thead>
 							<tbody>
 							<TR class="odd"><TD>Transcriptome</TD><TD>Y</TD><TD>Y</TD></TR>
-							<TR class="even"><TD>Expression Graph/Heatmaps</TD><TD>Y</TD><TD>Y</TD></TR>
-							<TR class="odd"><TD>TPM Summaries</TD><TD>Y</TD><TD>Y</TD></TR>
-							<TR class="even"><TD>Heritability</TD><TD>Y</TD><TD>Y</TD></TR>
+							<TR class="even"><TD>Expression Graph/Heatmaps</TD><TD>Coming Soon</TD><TD>Y</TD></TR>
+							<TR class="odd"><TD>TPM Summaries</TD><TD>Coming Soon</TD><TD>Y</TD></TR>
+							<TR class="even"><TD>Heritability</TD><TD>Coming Soon</TD><TD>Y</TD></TR>
 							<TR class="odd"><TD>eQTLs</TD><TD>Coming Soon</TD><TD>Y</TD></TR>
 							<TR class="even"><TD>WGCNA Modules</TD><TD>Coming Soon</TD><TD>Y</TD></TR>
 							</tbody>
@@ -1285,8 +1381,8 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
             $('select#genomeVerCB').val(genomeVer);
         }
         if(genomeVer ==="rn7"){
-			 if(dataVer!=("hrdp7") && dataVer!="hrdp6"){
-				 dataVer="hrdp7";
+			 if(dataVer!=("hrdp7.1") && dataVer!="hrdp6"){
+				 dataVer="hrdp7.1";
 			 }
 		}else if (genomeVer==="rn6"){
 			 if(dataVer!="hrdp5"){
@@ -1463,10 +1559,10 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 
 			}
 			$('input#genomeVer').val(tmpGV);
-			tmpDV="hrdpv7";
+			tmpDV="hrdpv7.1";
 			if(tmpGV==="rn7"){
-				tmpDV="hrdp7";
-				$('#dataVerCB option[value="hrdp7"]').prop("disabled",false);
+				tmpDV="hrdp7.1";
+				$('#dataVerCB option[value="hrdp7.1"]').prop("disabled",false);
 				$('#dataVerCB option[value="hrdp6"]').prop("disabled",false);
 				$('#dataVerCB option[value="hrdp5"]').prop("disabled",true);
 				$('#dataVerCB option[value="hrdp3"]').prop("disabled",true);
@@ -1475,7 +1571,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 			}
 			else if(tmpGV==="rn6"){
 				   tmpDV="hrdp5";
-				   $('#dataVerCB option[value="hrdp7"]').prop("disabled",true);
+				   $('#dataVerCB option[value="hrdp7.1"]').prop("disabled",true);
 				   $('#dataVerCB option[value="hrdp6"]').prop("disabled",true);
 				   $('#dataVerCB option[value="hrdp5"]').prop("disabled",false);
 				   $('#dataVerCB option[value="hrdp3"]').prop("disabled",true);
@@ -1484,7 +1580,7 @@ Click on the Translate Region to Mouse/Rat to find regions on the Mouse/Rat geno
 			}else if(tmpGV==="rn5"){
 				   tmpDV="hrdp3";
 
-				   $('#dataVerCB option[value="hrdp7"]').prop("disabled",true);
+				   $('#dataVerCB option[value="hrdp7.1"]').prop("disabled",true);
 				   $('#dataVerCB option[value="hrdp6"]').prop("disabled",true);
 				   $('#dataVerCB option[value="hrdp5"]').prop("disabled",true);
 				   $('#dataVerCB option[value="hrdp3"]').prop("disabled",false);
@@ -1582,7 +1678,7 @@ Hint: Try other synonyms if the first ID that you enter is not found.
     <BR><BR>
     It is possible that the ID is from an older ensembl/genome version or an intermediate version of the ensembl
     database that is not supported on PhenoGen. We only support the latest
-    version of the Ensembl database for each genome version. Currently v79 for rn5 and v105 for rn6 and v106 for rn7.
+    version of the Ensembl database for each genome version. Currently v79 for rn5 and v105 for rn6 and v111 for rn7.
 
     <%}%>
 </div>
@@ -1715,15 +1811,15 @@ Hint: Try other synonyms if the first ID that you enter is not found.
         }, 10);
     });
 
-    if(dataVer !="hrdp7"){
+    if(dataVer !="hrdp7.1"){
                  $("div#warningOldVersion").show();
     }
 </script>
 
 <%if (popup) {%>
-<div style="text-align:center;">
-    <span class="button" onclick="window.close()" style="width:150px;">Close this Window</span>
-</div>
+	<div style="text-align:center;">
+		<span class="button" onclick="window.close()" style="width:150px;">Close this Window</span>
+	</div>
 <%}%>
 </div>
 </div>

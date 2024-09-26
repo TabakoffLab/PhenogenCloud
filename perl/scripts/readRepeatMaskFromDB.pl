@@ -13,7 +13,7 @@ sub readRepeatMaskFromDB{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$organism,$geneStart,$geneStop,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$organism,$geneStart,$geneStop,$connect)=@_;
 	
 	#reading from UCSC database so need to convert 1 based coordinates to 0 based
         $geneStart--;
@@ -35,7 +35,7 @@ sub readRepeatMaskFromDB{
 	}
 	
 	# PERL DBI CONNECT
-	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 		$query ="SELECT m.milliDiv,m.milliDel,m.milliIns,m.swScore,m.genoName,m.genoStart,m.genoEnd,m.repName,m.repClass,m.repFamily
 			FROM rmsk m
@@ -77,7 +77,7 @@ sub readRepeatMaskFromDB{
                         $cntRepeat++;
 	}
 	$query_handle->finish();
-	$connect->disconnect();
+	#$connect->disconnect();
 	
 	return (\%repeatHOH);
 }

@@ -40,6 +40,7 @@ public class AsyncBrowserRegion extends Thread {
     private String ucscDB = "";
     private String org = "";
     private String dataVer = "";
+    private String hash = "";
 
     private int minCoord = 0;
     private int maxCoord = 0;
@@ -58,10 +59,9 @@ public class AsyncBrowserRegion extends Thread {
     private GeneDataTools gdt = null;
 
 
-    public AsyncBrowserRegion(HttpSession inSession, DataSource pool, String organism, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, String ucscDB, String ensemblPath, int usageID, boolean runAGDT, GeneDataTools gdt, String dataVer) {
+    public AsyncBrowserRegion(HttpSession inSession, DataSource pool, String organism, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, String ucscDB, String ensemblPath, int usageID, boolean runAGDT, GeneDataTools gdt, String dataVer, String hash) {
         this.session = inSession;
         this.outputDir = outputDir;
-        this.threadList = gdt.getThreadList();
         log = Logger.getRootLogger();
         log.debug("in AsynGeneDataTools()");
 
@@ -76,7 +76,8 @@ public class AsyncBrowserRegion extends Thread {
         this.org = organism;
         this.runAGDT = runAGDT;
         this.gdt = gdt;
-        this.threadList = gdt.getThreadList();
+        this.hash = hash;
+
 
         this.genomeVer = genomeVer;
         this.dataVer = dataVer;
@@ -103,7 +104,7 @@ public class AsyncBrowserRegion extends Thread {
         //wait for other Expr threads to finish
         boolean waiting = true;
         int myIndex = -1;
-        if (threadList.size() > 0) {
+        /*if (threadList.size() > 0) {
             while (waiting) {
                 int waitingOnCount = 0;
                 boolean reachedMySelf = false;
@@ -128,7 +129,7 @@ public class AsyncBrowserRegion extends Thread {
                     }
                 }
             }
-        }
+        }*/
         Date start = new Date();
         //try{
         log.debug("STARTING");
@@ -136,19 +137,24 @@ public class AsyncBrowserRegion extends Thread {
         createRegionImagesXMLFiles(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB, dataVer);
         if (runAGDT) {
             AsyncGeneDataTools agdt;
-            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, dataVer, "", gdt);
-            agdt.start();
+            String hash = chrom + ":" + minCoord + "-" + maxCoord + "_" + dataVer + "_" + genomeVer + ":AGDT";
+            agdt = new AsyncGeneDataTools(session, pool, outputDir, chrom, minCoord, maxCoord, arrayTypeID, rnaDatasetID, usageID, genomeVer, false, dataVer, "", gdt, hash);
+            if (gdt.appendRunningMap(hash, "True")) {
+                gdt.appendThreadList(agdt);
+            }
+            /*agdt.start();
             try {
                 agdt.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 log.error("Error waiting on AsyncGeneDataTools:" + chrom + ":" + minCoord + "-" + maxCoord + ":", e);
-            }
+            }*/
         }
         createRegionXML(outputDir, org, genomeVer, arrayTypeID, rnaDatasetID, ucscDB, dataVer);
         done = true;
         doneThread = true;
-        threadList.remove(thisThread);
+        //threadList.remove(thisThread);
+        gdt.removeRunning(hash, thisThread);
     }
 
     public HashMap<String, String> getGenomeVersionSource(String genomeVer) {

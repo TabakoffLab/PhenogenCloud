@@ -219,7 +219,7 @@ sub createXMLFile {
     #
 
     # Read in the arguments for the subroutine
-    my ($outputDir, $species, $type, $geneNames, $bedFileFolder, $arrayTypeID, $rnaDatasetID, $publicID, $genomeVer, $dsn, $usr, $passwd, $ensHost, $ensPort, $ensUsr, $ensPasswd, $mdsn, $muser, $mpass) = @_;
+    my ($outputDir, $species, $type, $geneNames, $bedFileFolder, $arrayTypeID, $rnaDatasetID, $publicID, $genomeVer,$dataVer, $dsn, $usr, $passwd, $ensHost, $ensPort, $ensUsr, $ensPasswd, $mdsn, $muser, $mpass) = @_;
 
     my @geneNamesList = split(/,/, $geneNames);
     my $geneNameGlobal = $geneNamesList[0];
@@ -986,8 +986,9 @@ sub createXMLFile {
 
     my $xml = new XML::Simple(RootName => 'GeneList');
     my $data = $xml->XMLout(\%GeneHOH);
+
     # open xml file
-    open XMLFILE, ">", $outputDir . "/Region.xml" or die " Could not open XML file Region.xml for writing $!\n\n";
+    open XMLFILE, ">", $outputDir . "/".$dataVer."_Region.xml" or die " Could not open XML file Region.xml for writing $!\n\n";
     # write the header
     print XMLFILE '<?xml version="1.0" encoding="UTF-8"?>';
     print XMLFILE "\n\n";
@@ -1046,7 +1047,9 @@ my $arg16 = $ARGV[15];
 my $arg17 = $ARGV[16];
 my $arg18 = $ARGV[17];
 my $arg19 = $ARGV[18];
-createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10, $arg11, $arg12, $arg13, $arg14, $arg15, $arg16, $arg17, $arg18, $arg19);
+my $arg20 = $ARGV[19];
+
+createXMLFile($arg1, $arg2, $arg3, $arg4, $arg5, $arg6, $arg7, $arg8, $arg9, $arg10, $arg11, $arg12, $arg13, $arg14, $arg15, $arg16, $arg17, $arg18, $arg19,$arg20);
 
 
 # Example call:

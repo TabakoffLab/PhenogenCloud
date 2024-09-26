@@ -5,7 +5,7 @@
 
 <!-- This file is used by users downloading large files -->
 <%
-	int download_id = Integer.parseInt((String) request.getParameter("id"));
+	int download_id = Integer.parseInt(request.getParameter("id"));
 	String redirectString = FilterInput.getFilteredLocalURLInput(new Download().getDownload(download_id, pool).getURL(),mySessionHandler.getHost());
         
 	log.debug("redirectString = "+redirectString);

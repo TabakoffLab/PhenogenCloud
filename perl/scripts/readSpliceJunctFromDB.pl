@@ -32,7 +32,7 @@ sub addChr{
 
 
 sub readSpliceJunctFromDB{
-	my($geneChrom,$organism,$geneStart,$geneStop,$publicUserID,$panel,$tissue,$genomeVer,$dsn,$usr,$passwd,$dataVer)=@_;
+	my($geneChrom,$organism,$geneStart,$geneStop,$publicUserID,$panel,$tissue,$genomeVer,$connect,$dataVer)=@_;
 
 
 	my %spliceHOH; # giant array of hashes and arrays containing probeset data
@@ -42,7 +42,7 @@ sub readSpliceJunctFromDB{
 		$organism="Rn";
 	}
 	# PERL DBI CONNECT
-	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 
         my $queryDS="select rd2.rna_dataset_id,rd2.build_version from rna_dataset rd2 where
 				rd2.organism = '".$organism."' "."
@@ -141,7 +141,7 @@ sub readSpliceJunctFromDB{
 	}
 	print "Splice Count:".$cntSplice."\n";
 	$query_handle->finish();
-	$connect->disconnect();
+	#$connect->disconnect();
 	return (\%spliceHOH);
 }
 1;

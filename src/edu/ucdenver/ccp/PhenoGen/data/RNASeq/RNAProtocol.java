@@ -11,10 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.sql.DataSource;
+
 import org.apache.log4j.Logger;
 
 /**
- *
  * @author smahaffey
  */
 public class RNAProtocol {
@@ -31,28 +31,28 @@ public class RNAProtocol {
     private String prevVer;
     private String type;
     private String variation;
-    
+
     private DataSource pool;
     private final Logger log;
-    
-    private final String select="select rdp.RNA_SAMPLE_ID,rdp.ORD,rdp.VARIATION_FROM_PROTOCOL,rp.*,rpt.PROTOCOL_TYPE "
-                    + "from RNA_DS_PROTOCOLS rdp, RNA_PROTOCOLS rp, RNA_PROTOCOL_TYPE rpt "
-                    + "where rdp.RNA_PROTOCOL_ID=rp.RNA_PROTOCOL_ID and rp.RNA_PROTOCOL_TYPE_ID=rpt.RNA_PROTOCOL_TYPE_ID";
-     private final String insert="";
-     private final String update="";
-     private final String delete="delete rna_protocols where RNA_PROTOCOL_ID=?";
-    private final String insertPS="Insert into RNA_DS_PROTOCOLS (RNA_SAMPLE_ID,RNA_PROTOCOL_ID,ORD,VARIATION_FROM_PROTOCOL) Values (?,?,?,?)";
-    private final String updatePS="update set ORD=?,VARIATION_FROM_PROTOCOL=? where RNA_SAMPLE_ID=? and RNA_PROTOCOL_ID=?";
-    private final String deleteSampleProtocol="delete RNA_DS_PROTOCOLS where RNA_SAMPLE_ID=? and RNA_PROTOCOL_ID=?";
-    private final String deleteAllBySample="delete RNA_DS_PROTOCOLS where RNA_SAMPLE_ID=?";
-    
-    
-    public RNAProtocol(){
+
+    private final String select = "select rdp.RNA_SAMPLE_ID,rdp.ORD,rdp.VARIATION_FROM_PROTOCOL,rp.*,rpt.PROTOCOL_TYPE "
+            + "from RNA_DS_PROTOCOLS rdp, RNA_PROTOCOLS rp, RNA_PROTOCOL_TYPE rpt "
+            + "where rdp.RNA_PROTOCOL_ID=rp.RNA_PROTOCOL_ID and rp.RNA_PROTOCOL_TYPE_ID=rpt.RNA_PROTOCOL_TYPE_ID";
+    private final String insert = "";
+    private final String update = "";
+    private final String delete = "delete rna_protocols where RNA_PROTOCOL_ID=?";
+    private final String insertPS = "Insert into RNA_DS_PROTOCOLS (RNA_SAMPLE_ID,RNA_PROTOCOL_ID,ORD,VARIATION_FROM_PROTOCOL) Values (?,?,?,?)";
+    private final String updatePS = "update set ORD=?,VARIATION_FROM_PROTOCOL=? where RNA_SAMPLE_ID=? and RNA_PROTOCOL_ID=?";
+    private final String deleteSampleProtocol = "delete RNA_DS_PROTOCOLS where RNA_SAMPLE_ID=? and RNA_PROTOCOL_ID=?";
+    private final String deleteAllBySample = "delete RNA_DS_PROTOCOLS where RNA_SAMPLE_ID=?";
+
+
+    public RNAProtocol() {
         log = Logger.getRootLogger();
     }
-    
-    public RNAProtocol(long rnaSampleID,int order, String notes, long rnaProtocolID, int userID, String title, String description,
-            String version, String fileName, String path, String prevVersion, String type, DataSource pool ){
+
+    public RNAProtocol(long rnaSampleID, int order, String notes, long rnaProtocolID, int userID, String title, String description,
+                       String version, String fileName, String path, String prevVersion, String type, DataSource pool) {
         log = Logger.getRootLogger();
         this.setRnaSampleID(rnaSampleID);
         this.setOrder(order);
@@ -66,40 +66,40 @@ public class RNAProtocol {
         this.setPath(path);
         this.setPrevVer(prevVer);
         this.setType(type);
-        this.pool=pool;
+        this.pool = pool;
     }
-    
-    public ArrayList<RNAProtocol> getProtocolsBySample(long rnaSampleID,DataSource pool){
-        String query=select+" and rdp.rna_sample_id="+rnaSampleID;
-        return getRNAProtocolsByQuery(query,pool);
+
+    public ArrayList<RNAProtocol> getProtocolsBySample(long rnaSampleID, DataSource pool) {
+        String query = select + " and rdp.rna_sample_id=" + rnaSampleID;
+        return getRNAProtocolsByQuery(query, pool);
     }
-    
-    public ArrayList<RNAProtocol> getRNAProtocolsByQuery(String query, DataSource pool){
-        ArrayList<RNAProtocol> ret=new ArrayList<>();
-        try(Connection conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(query)){
-            
-            ResultSet rs=ps.executeQuery();
-            while(rs.next()){
-                RNAProtocol tmp=new RNAProtocol(rs.getInt("RNA_SAMPLE_ID"),
-                                    rs.getInt("ORD"),
-                                    rs.getString("VARIATION_FROM_PROTOCOL"),
-                                    rs.getInt("RNA_PROTOCOL_ID"),
-                                    rs.getInt("USER_ID"),
-                                    rs.getString("TITLE"),
-                                    rs.getString("DESCRIPTION"),
-                                    rs.getString("VERSION"),
-                                    rs.getString("FILENAME"),
-                                    rs.getString("PATH"),
-                                    rs.getString("PREVIOUS_VERSION"),
-                                    rs.getString("PROTOCOL_TYPE"),
-                                    pool);
+
+    public ArrayList<RNAProtocol> getRNAProtocolsByQuery(String query, DataSource pool) {
+        ArrayList<RNAProtocol> ret = new ArrayList<>();
+        try (Connection conn = pool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RNAProtocol tmp = new RNAProtocol(rs.getInt("RNA_SAMPLE_ID"),
+                        rs.getInt("ORD"),
+                        rs.getString("VARIATION_FROM_PROTOCOL"),
+                        rs.getInt("RNA_PROTOCOL_ID"),
+                        rs.getInt("USER_ID"),
+                        rs.getString("TITLE"),
+                        rs.getString("DESCRIPTION"),
+                        rs.getString("VERSION"),
+                        rs.getString("FILENAME"),
+                        rs.getString("PATH"),
+                        rs.getString("PREVIOUS_VERSION"),
+                        rs.getString("PROTOCOL_TYPE"),
+                        pool);
                 ret.add(tmp);
             }
             ps.close();
-            conn.close();
-        }catch(SQLException e){
-            log.error("Error getting RNADataset from \n"+query,e);
+
+        } catch (SQLException e) {
+            log.error("Error getting RNADataset from \n" + query, e);
         }
         return ret;
     }
@@ -153,21 +153,21 @@ public class RNAProtocol {
         }
         return success;
     }*/
-    
-    public boolean addRNAProtocolToSample(long rnaSampleID,long rnaProtocolID,int order, String variance,DataSource pool){
-        boolean success=false;
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement ps=conn.prepareStatement(insertPS);
-            ps.setInt(1, order );
-            ps.setString(2,variance);
+
+    public boolean addRNAProtocolToSample(long rnaSampleID, long rnaProtocolID, int order, String variance, DataSource pool) {
+        boolean success = false;
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(insertPS);
+            ps.setInt(1, order);
+            ps.setString(2, variance);
             ps.setLong(3, rnaSampleID);
             ps.setLong(4, rnaProtocolID);
-            boolean tmpSuccess=ps.execute();
-            if(tmpSuccess){
-                success=true;
+            boolean tmpSuccess = ps.execute();
+            if (tmpSuccess) {
+                success = true;
             }
             ps.close();
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
         return success;
@@ -189,69 +189,71 @@ public class RNAProtocol {
         }
         return success;
     }*/
-    
-    public boolean updateRNASampleProtocol(long RNASampleID,long RNAProtocolID, int order,String variance,DataSource pool){
-        boolean success=false;
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement ps=conn.prepareStatement(updatePS);
-            ps.setInt(1, order );
-            ps.setString(2,variance);
+
+    public boolean updateRNASampleProtocol(long RNASampleID, long RNAProtocolID, int order, String variance, DataSource pool) {
+        boolean success = false;
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(updatePS);
+            ps.setInt(1, order);
+            ps.setString(2, variance);
             ps.setLong(3, rnaSampleID);
             ps.setLong(4, rnaProtocolID);
-            int updated=ps.executeUpdate();
-            if(updated==1){
-                success=true;
+            int updated = ps.executeUpdate();
+            if (updated == 1) {
+                success = true;
             }
             ps.close();
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
         return success;
     }
-    
-    public boolean deleteRNAProtocol(long rnaProtocolID, DataSource pool){
-        boolean success=false;
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement ps=conn.prepareStatement(delete);
+
+    public boolean deleteRNAProtocol(long rnaProtocolID, DataSource pool) {
+        boolean success = false;
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(delete);
             ps.setLong(1, rnaProtocolID);
-            boolean tmpSuccess=ps.execute();
-            if(tmpSuccess){
-                success=true;
+            boolean tmpSuccess = ps.execute();
+            if (tmpSuccess) {
+                success = true;
             }
             ps.close();
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
         return success;
     }
-    public boolean deleteRNAProtocolFromSample(long rnaSampleID,long rnaProtocolID, DataSource pool){
-        boolean success=false;
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement ps=conn.prepareStatement(deleteSampleProtocol);
+
+    public boolean deleteRNAProtocolFromSample(long rnaSampleID, long rnaProtocolID, DataSource pool) {
+        boolean success = false;
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(deleteSampleProtocol);
             ps.setLong(1, rnaSampleID);
             ps.setLong(2, rnaProtocolID);
-            boolean tmpSuccess=ps.execute();
-            if(tmpSuccess){
-                success=true;
+            boolean tmpSuccess = ps.execute();
+            if (tmpSuccess) {
+                success = true;
             }
             ps.close();
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
         return success;
     }
-    public boolean deleteRNAProtocolsFromSample(long rnaSampleID, DataSource pool){
-        boolean success=false;
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement ps=conn.prepareStatement(deleteAllBySample);
+
+    public boolean deleteRNAProtocolsFromSample(long rnaSampleID, DataSource pool) {
+        boolean success = false;
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(deleteAllBySample);
             ps.setLong(1, rnaSampleID);
-            boolean tmpSuccess=ps.execute();
-            if(tmpSuccess){
-                success=true;
+            boolean tmpSuccess = ps.execute();
+            if (tmpSuccess) {
+                success = true;
             }
             ps.close();
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
         return success;
     }
@@ -359,7 +361,6 @@ public class RNAProtocol {
     public void setVariation(String variation) {
         this.variation = variation;
     }
-    
-    
-    
+
+
 }

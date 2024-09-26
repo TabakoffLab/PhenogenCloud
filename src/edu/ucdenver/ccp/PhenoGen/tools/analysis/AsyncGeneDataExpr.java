@@ -58,6 +58,7 @@ public class AsyncGeneDataExpr extends Thread {
     String outputDir = "";
     String pListFile = "";
     boolean doneThread = false;
+    String hash = "";
 
     int maxThreadCount = 3;
 
@@ -70,13 +71,14 @@ public class AsyncGeneDataExpr extends Thread {
     ArrayList<String> tissueList = new ArrayList<String>();
     ArrayList<String> platformList = new ArrayList<String>();
     AsyncGeneDataTools prevThread;
-    ArrayList<Thread> threadList;
+
+    GeneDataTools gdt;
     BufferedWriter outGroup;
     BufferedWriter outIndiv;
     SyncAndClose sac;
 
 
-    public AsyncGeneDataExpr(HttpSession inSession, String pListFile, String outputDir, AsyncGeneDataTools prevThread, ArrayList<Thread> threadList, int maxThreadCount, BufferedWriter outGroup, BufferedWriter outIndiv, SyncAndClose sac, String ver) {
+    public AsyncGeneDataExpr(HttpSession inSession, String pListFile, String outputDir, AsyncGeneDataTools prevThread, GeneDataTools gdt, int maxThreadCount, BufferedWriter outGroup, BufferedWriter outIndiv, SyncAndClose sac, String ver, String hash) {
         this.session = inSession;
         this.pListFile = pListFile;
         this.outputDir = outputDir;
@@ -84,12 +86,13 @@ public class AsyncGeneDataExpr extends Thread {
         log.debug("in AsyncGeneDataExpr()");
         this.session = inSession;
         this.prevThread = prevThread;
-        this.threadList = threadList;
+        this.gdt = gdt;
         this.maxThreadCount = maxThreadCount;
         this.outGroup = outGroup;
         this.outIndiv = outIndiv;
         this.sac = sac;
         this.ver = ver;
+        this.hash = hash;
 
         log.debug("AsyncGeneDataExpr Start");
 
@@ -286,7 +289,7 @@ public class AsyncGeneDataExpr extends Thread {
             log.debug("Done Waiting Starting");
         }
         //wait for other Expr threads to finish
-        boolean waiting = true;
+        /*boolean waiting = true;
         int myIndex = -1;
         while (waiting) {
             int waitingOnCount = 0;
@@ -311,7 +314,7 @@ public class AsyncGeneDataExpr extends Thread {
                     log.error("wait interrupted", er);
                 }
             }
-        }
+        }*/
         Date start = new Date();
         //try{
         log.debug("STARTING");
@@ -378,8 +381,7 @@ public class AsyncGeneDataExpr extends Thread {
             loopcount++;
         }
         doneThread = true;
-
-        threadList.remove(thisThread);
+        gdt.removeRunning(hash, thisThread);
         /*}catch(IOException e){
             sac.done(this, "AsyncGeneDataExpr had errors:"+e.getMessage());
             Date end=new Date();

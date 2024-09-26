@@ -143,24 +143,15 @@ public class GOWorker extends Thread {
 
         }
         //convert Genelist ID to Gene Symbol/Ensembl IDs fill 
-        Connection conn = null;
+
         GeneList tmpGL = new GeneList();
         String[] myGeneArray = null;
         HashMap<String, String> identifiers = new HashMap<String, String>();
         StringBuilder sb = new StringBuilder();
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             myGeneArray = geneList.getGenesAsArray("Original", pool);
-            conn.close();
         } catch (SQLException e) {
 
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                }
-            } catch (SQLException e) {
-            }
         }
         Identifier myIdentifier = new Identifier();
 

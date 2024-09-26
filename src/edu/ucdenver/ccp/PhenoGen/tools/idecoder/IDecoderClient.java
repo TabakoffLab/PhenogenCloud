@@ -115,18 +115,18 @@ public class IDecoderClient {
             pstmt.setInt(1, geneListID);
             ResultSet rs = pstmt.executeQuery();
             StringBuffer sb = new StringBuffer();
-            boolean first=true;
+            boolean first = true;
             while (rs.next()) {
                 if (!first) {
                     sb.append(",");
-                }else{
-                    first=false;
+                } else {
+                    first = false;
                 }
-                sb.append("'"+rs.getString(1)+"'");
+                sb.append("'" + rs.getString(1) + "'");
             }
             pstmt.close();
-            String idString=sb.toString();
-            resultsHashMap = doSearchIDString(idString,organism, pool);
+            String idString = sb.toString();
+            resultsHashMap = doSearchIDString(idString, organism, pool);
         } catch (SQLException e) {
             log.error("Error:", e);
         }
@@ -291,6 +291,7 @@ public class IDecoderClient {
 
             return doSearch(organism,conn);
         }*/
+
     /**
      * Returns the main HashMap that is used by other methods
      *
@@ -310,14 +311,14 @@ public class IDecoderClient {
      * </pre>
      * @throws Exception from any other method calls
      */
-    private HashMap<Identifier, Set<Identifier>> doSearchIDString(String idString,String organism, DataSource pool) throws SQLException {
+    private HashMap<Identifier, Set<Identifier>> doSearchIDString(String idString, String organism, DataSource pool) throws SQLException {
 
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearch");
-        if(idString.indexOf("[")==-1 && idString.indexOf("]")==-1 && idString.indexOf("{")==-1 && idString.indexOf("}")==-1) {
+        if (idString.indexOf("[") == -1 && idString.indexOf("]") == -1 && idString.indexOf("{") == -1 && idString.indexOf("}") == -1) {
             String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
             if (targetString.indexOf(",") == -1) {
-                targetString.substring(1,targetString.length()-1).trim();
+                targetString.substring(1, targetString.length() - 1).trim();
             }
             //
             // Match on organism if the target is not 'Homologene ID'
@@ -332,7 +333,7 @@ public class IDecoderClient {
                     "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
                     "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
-            String where = " where idl.level<=  "+(num_iterations + 1);
+            String where = " where idl.level<=  " + (num_iterations + 1);
             String whereList = " and idl.id1_number in (Select id_number from identifiers where identifier in ( ";
             String whereTrgt = " and type.name in  ";
             if (targetString.indexOf(",") == -1) {
@@ -373,6 +374,7 @@ public class IDecoderClient {
         log.debug("resultsHashMap contains " + resultsHashMap.size() + " entries");
         return resultsHashMap;
     }
+
     /**
      * Returns the main HashMap that is used by other methods
      *
@@ -396,10 +398,10 @@ public class IDecoderClient {
 
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearch");
-        if(idString.indexOf("[")==-1 && idString.indexOf("]")==-1 && idString.indexOf("{")==-1 && idString.indexOf("}")==-1) {
+        if (idString.indexOf("[") == -1 && idString.indexOf("]") == -1 && idString.indexOf("{") == -1 && idString.indexOf("}") == -1) {
             String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
             if (targetString.indexOf(",") == -1) {
-                targetString = targetString.substring(1,targetString.length()-1).trim();
+                targetString = targetString.substring(1, targetString.length() - 1).trim();
             }
             //
             // Match on organism if the target is not 'Homologene ID'
@@ -414,7 +416,7 @@ public class IDecoderClient {
                     "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
                     "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
-            String where = " where idl.level <= "+(num_iterations + 1);
+            String where = " where idl.level <= " + (num_iterations + 1);
             String whereList = " and idl.id1_number in (Select id_number from identifiers where identifier_lower in ( ";
             String whereTrgt = " and type.name in  ";
             if (targetString.indexOf(",") == -1) {
@@ -481,19 +483,19 @@ public class IDecoderClient {
             pstmt.setInt(1, geneListID);
             ResultSet rs = pstmt.executeQuery();
             StringBuffer sb = new StringBuffer();
-            boolean first=true;
+            boolean first = true;
             while (rs.next()) {
                 if (!first) {
                     sb.append(",");
-                }else{
-                    first=false;
+                } else {
+                    first = false;
                 }
-                sb.append("'"+rs.getString(1).toLowerCase()+"'");
+                sb.append("'" + rs.getString(1).toLowerCase() + "'");
             }
             pstmt.close();
             //log.debug("IDString:\n"+sb.toString());
-            String idString=sb.toString();
-            resultsHashMap = doSearchIDStringLC(idString,organism, pool);
+            String idString = sb.toString();
+            resultsHashMap = doSearchIDStringLC(idString, organism, pool);
         } catch (SQLException e) {
             log.error("Error:", e);
         }
@@ -659,7 +661,7 @@ public class IDecoderClient {
 
     private HashMap<Identifier, Set<Identifier>> doSearch(String gene, String organism, DataSource pool) throws SQLException {
         log.debug("in doSearch passing gene ID");
-        HashMap<Identifier, Set<Identifier>> results = doSearchAll(gene,organism, pool);
+        HashMap<Identifier, Set<Identifier>> results = doSearchAll(gene, organism, pool);
         return results;
     }
 
@@ -736,6 +738,7 @@ public class IDecoderClient {
 
         return results;
     }*/
+
     /**
      * Returns the main HashMap that is used by other methods
      *
@@ -755,13 +758,13 @@ public class IDecoderClient {
      * </pre>
      * @throws Exception from any other method calls
      */
-    private HashMap<Identifier, Set<Identifier>> doSearchAll(String geneIDString,String organism, DataSource pool) throws SQLException {
+    private HashMap<Identifier, Set<Identifier>> doSearchAll(String geneIDString, String organism, DataSource pool) throws SQLException {
         HashMap<Identifier, Set<Identifier>> resultsHashMap = new HashMap<Identifier, Set<Identifier>>();
         log.debug("in doSearchAll");
-        if(geneIDString.indexOf("[")==-1 && geneIDString.indexOf("]")==-1 && geneIDString.indexOf("{")==-1 && geneIDString.indexOf("}")==-1) {
+        if (geneIDString.indexOf("[") == -1 && geneIDString.indexOf("]") == -1 && geneIDString.indexOf("{") == -1 && geneIDString.indexOf("}") == -1) {
             String targetString = " (" + new ObjectHandler().getAsSeparatedString(targetsList, ",", "'") + ") ";
             if (targetString.indexOf(",") == -1) {
-                targetString.substring(1,targetString.length()-1).trim();
+                targetString.substring(1, targetString.length() - 1).trim();
             }
             //
             // Match on organism if the target is not 'Homologene ID'
@@ -777,7 +780,7 @@ public class IDecoderClient {
                     "left outer join identifiers id2 on idl.id2_number=id2.id_number " +
                     "left outer join identifier_types type on type.ident_type_id=idl.IDENT_TYPE_ID ";
 
-            String where = " where idl.level <= "+(num_iterations + 1);
+            String where = " where idl.level <= " + (num_iterations + 1);
             String whereList = " and idl.id1_number in (Select id_number from identifiers where identifier ";
             String singleID = "like '";
             String listIDs = "in (" + geneIDString + ")";
@@ -2760,7 +2763,7 @@ public class IDecoderClient {
         log.debug("in getIdentifiersByInputID passing in geneListID");
 
         setTargets(targets);
-       // log.debug("targetsList = "+targetsList);
+        // log.debug("targetsList = "+targetsList);
 
         HashMap<Identifier, Set<Identifier>> startHashMap = doSearchCaseInsensitive(geneListID, pool);
         //log.debug("startHashMap = "); myDebugger.print(startHashMap);
@@ -2966,10 +2969,10 @@ public class IDecoderClient {
      *
      * @param identifiers   set of Identifiers
      *                      <br><pre>
-     *                           ----------------------------------------------------------------------------------|
-     *                           | Affy MOE430 Identifier 15026_at | Affy Whole Genome Identifier 1296_at  |...    |
-     *                           ----------------------------------------------------------------------------------|
-     *                      </pre>
+     *                                                                                                               ----------------------------------------------------------------------------------|
+     *                                                                                                               | Affy MOE430 Identifier 15026_at | Affy Whole Genome Identifier 1296_at  |...    |
+     *                                                                                                               ----------------------------------------------------------------------------------|
+     *                                                                                                          </pre>
      * @param geneChipNames the names of the type of arrays
      * @return a Set of Identifiers that are for a set of geneChipNames ordered by identifier
      * <br><pre>
@@ -3011,10 +3014,10 @@ public class IDecoderClient {
      *
      * @param identifiers Set of Identifiers
      *                    <br><pre>
-     *                         ----------------------------------------------------------------------------------|
-     *                         | Affy MOE430 Identifier 15026_at | Affy Whole Genome Identifier 1296_at  |...    |
-     *                         ----------------------------------------------------------------------------------|
-     *                    </pre>
+     *                                                                                                     ----------------------------------------------------------------------------------|
+     *                                                                                                     | Affy MOE430 Identifier 15026_at | Affy Whole Genome Identifier 1296_at  |...    |
+     *                                                                                                     ----------------------------------------------------------------------------------|
+     *                                                                                                </pre>
      * @return a TreeMap of geneChipNames mapped to a Set of Identifiers for that geneChipName
      * <br><pre>
      *      -------------------       ------------------------------------------------|
@@ -3437,14 +3440,14 @@ public class IDecoderClient {
      *
      * @param linksHash hash containing target name pointing to a Set of Identifiers
      *                  <br><pre>
-     *                       -----------------------|            ----------------------------------------------------|
-     *                       | Affymetrix ID        | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
-     *                       -----------------------|            ----------------------------------------------------|
-     *                       | SwissProt ID         | ----\      ----------------------------------------------------|
-     *                       -----------------------|      \-->  | Identifier P18111 | Identifier Q8VCF7 | ...  |    |
-     *                       |  ...                 |            ----------------------------------------------------|
-     *                       -----------------------|
-     *                  </pre>
+     *                                                                                           -----------------------|            ----------------------------------------------------|
+     *                                                                                           | Affymetrix ID        | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
+     *                                                                                           -----------------------|            ----------------------------------------------------|
+     *                                                                                           | SwissProt ID         | ----\      ----------------------------------------------------|
+     *                                                                                           -----------------------|      \-->  | Identifier P18111 | Identifier Q8VCF7 | ...  |    |
+     *                                                                                           |  ...                 |            ----------------------------------------------------|
+     *                                                                                           -----------------------|
+     *                                                                                      </pre>
      * @param targets   names of databases for which Identifiers are requested
      * @return a Set of Identifiers
      * <br><pre>
@@ -3473,14 +3476,14 @@ public class IDecoderClient {
      *
      * @param linksHash hash containing target name pointing to a Set of Identifiers
      *                  <br><pre>
-     *                       -----------------------|            ----------------------------------------------------|
-     *                       | Affymetrix ID        | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
-     *                       -----------------------|            ----------------------------------------------------|
-     *                       | SwissProt ID         | ----\      ----------------------------------------------------|
-     *                       -----------------------|      \-->  | Identifier P18111 | Identifier Q8VCF7 | ...  |    |
-     *                       |  ...                 |            ----------------------------------------------------|
-     *                       -----------------------|
-     *                  </pre>
+     *                                                                                           -----------------------|            ----------------------------------------------------|
+     *                                                                                           | Affymetrix ID        | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
+     *                                                                                           -----------------------|            ----------------------------------------------------|
+     *                                                                                           | SwissProt ID         | ----\      ----------------------------------------------------|
+     *                                                                                           -----------------------|      \-->  | Identifier P18111 | Identifier Q8VCF7 | ...  |    |
+     *                                                                                           |  ...                 |            ----------------------------------------------------|
+     *                                                                                           -----------------------|
+     *                                                                                      </pre>
      * @param targets   names of databases for which Identifiers are requested
      * @return a Set of Identifiers
      * <br><pre>
@@ -3513,14 +3516,14 @@ public class IDecoderClient {
      *
      * @param startSet Set of Identifiers returned by {@link #getIdentifiersByInputIDAndTarget(int geneListID, String[] targets, Connection conn) getIdentifiersByInputIDAndTarget()}
      *                 <br><pre>
-     *                      ------------------       -----------------------|            ----------------------------------------------------|
-     *                      | Identifier CDX4 | ->  | Affymetrix ID         | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
-     *                      ------------------|      -----------------------|            ----------------------------------------------------|
-     *                      | Identifier CDX3 | |   | SwissProt ID          | ----\      ----------------------------------------------------|
-     *                      ------------------       -----------------------|      \-->  | Identifier P18111 | Identifier Q8VCF7 | ...  |    |
-     *                                              |  ...                  |            ----------------------------------------------------|
-     *                                              ------ -----------------|
-     *                 </pre>
+     *                                                                                      ------------------       -----------------------|            ----------------------------------------------------|
+     *                                                                                      | Identifier CDX4 | ->  | Affymetrix ID         | ----->     | Identifier 15026_at | Identifier 15296_at |...    |
+     *                                                                                      ------------------|      -----------------------|            ----------------------------------------------------|
+     *                                                                                      | Identifier CDX3 | |   | SwissProt ID          | ----\      ----------------------------------------------------|
+     *                                                                                      ------------------       -----------------------|      \-->  | Identifier P18111 | Identifier Q8VCF7 | ...  |    |
+     *                                                                                                              |  ...                  |            ----------------------------------------------------|
+     *                                                                                                              ------ -----------------|
+     *                                                                                 </pre>
      * @return a Set of Identifiers for a particular target
      * <br><pre>
      *      ----------------------------------------------------|
@@ -3551,12 +3554,12 @@ public class IDecoderClient {
      *
      * @param startSet Set of Identifiers returned by getIdentifiersByInputID
      *                 <br><pre>
-     *                      ------------------       ------------------------------------------------------------------------------------------------|
-     *                      | Identifier CDX4 | -->  | Gene Symbol Identifier CDX4  |SwissProt Identifier P18111| ...                      |
-     *                      ------------------|       ------------------------------------------------------------------------------------------------|
-     *                      | Identifier CDX3 | -->  |SwissProt Identifier Q8VCF7 | ...|
-     *                      ------------------       ------------------------------------------------------------------------------------------------|
-     *                 </pre>
+     *                                                                                      ------------------       ------------------------------------------------------------------------------------------------|
+     *                                                                                      | Identifier CDX4 | -->  | Gene Symbol Identifier CDX4  |SwissProt Identifier P18111| ...                      |
+     *                                                                                      ------------------|       ------------------------------------------------------------------------------------------------|
+     *                                                                                      | Identifier CDX3 | -->  |SwissProt Identifier Q8VCF7 | ...|
+     *                                                                                      ------------------       ------------------------------------------------------------------------------------------------|
+     *                                                                                 </pre>
      * @return a Set of Identifiers for a particular list of targets.  This also sets the originating Identifier.
      * <br><pre>
      *      ------------------------------------------------------------------------------------------------|
@@ -3878,36 +3881,32 @@ public class IDecoderClient {
      * @throws SQLException if there is a problem accessing the database
      */
     public String[] getIdentifierTypes(DataSource pool) throws SQLException {
-        Connection conn = null;
-        conn = pool.getConnection();
-        log.debug("in getIdentifierTypes");
-        String query =
-                "select distinct name " +
-                        "from identifier_types " +
-                        "union " +
-                        "select 'Location' " +
-                        "from dual " +
-                        "union " +
-                        "select 'Genetic Variations' " +
-                        "from dual " +
-                        "order by 1";
+        String[] strings = new String[0];
+        try (Connection conn = pool.getConnection()) {
+            log.debug("in getIdentifierTypes");
+            String query =
+                    "select distinct name " +
+                            "from identifier_types " +
+                            "union " +
+                            "select 'Location' " +
+                            "from dual " +
+                            "union " +
+                            "select 'Genetic Variations' " +
+                            "from dual " +
+                            "order by 1";
 
-        Results myResults = new Results(query, conn);
-        String[] strings = new String[myResults.getNumRows()];
+            Results myResults = new Results(query, conn);
+            strings = new String[myResults.getNumRows()];
 
-        String[] dataRow;
-        int i = 0;
-        while ((dataRow = myResults.getNextRow()) != null) {
-            strings[i] = dataRow[0];
-            i++;
-        }
-        myResults.close();
-        if (conn != null && !conn.isClosed()) {
-            try {
-                conn.close();
-                conn = null;
-            } catch (SQLException e) {
+            String[] dataRow;
+            int i = 0;
+            while ((dataRow = myResults.getNextRow()) != null) {
+                strings[i] = dataRow[0];
+                i++;
             }
+            myResults.close();
+        } catch (SQLException e) {
+            throw new SQLException();
         }
         return strings;
     }
@@ -3949,16 +3948,11 @@ public class IDecoderClient {
 
 
     public String[] getArraysForPlatform(String platform, DataSource pool) throws SQLException {
-        Connection conn = null;
         String[] tmp = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             tmp = getArraysForPlatform(platform, conn);
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
+
             throw new SQLException();
         }
         return tmp;

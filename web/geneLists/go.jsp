@@ -73,6 +73,7 @@
                                 Genome Version to use:<BR>
                                 <select id="genomeVer">
                                     <%if(myOrganism.equals("Rn")){%>
+                                    	<option value="rn7">rn7</option>
                                         <option value="rn6">rn6</option>
                                         <option value="rn5">rn5</option>
                                     <%}else{%>

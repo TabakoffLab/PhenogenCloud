@@ -13,6 +13,7 @@ import edu.ucdenver.ccp.PhenoGen.web.mail.Email;
 /* for handling exceptions in Threads */
 import au.com.forward.threads.ThreadReturn;
 import au.com.forward.threads.ThreadException;
+
 import javax.sql.DataSource;
 
 /* for logging messages */
@@ -28,7 +29,7 @@ public class AsyncUpdateQcStatus implements Runnable {
     private String mainURL;
     private Thread waitThread = null;
     private HttpSession session;
-    private DataSource pool=null;
+    private DataSource pool = null;
 
     public AsyncUpdateQcStatus(HttpSession session,
                                String qcStepComplete,
@@ -63,7 +64,7 @@ public class AsyncUpdateQcStatus implements Runnable {
         Thread thisThread = Thread.currentThread();
         String salutation = userLoggedIn.getFormal_name() + ",\n\n";
         Email myEmail = new Email();
-        Connection conn = null;
+
 
         try {
             //
@@ -78,7 +79,6 @@ public class AsyncUpdateQcStatus implements Runnable {
                 ThreadReturn.join(waitThread);
                 log.debug("just finished waiting on thread " + waitThread.getName());
             }
-
 
 
             selectedDataset.updateQc_complete(qcStepComplete, pool);
@@ -139,14 +139,6 @@ public class AsyncUpdateQcStatus implements Runnable {
                 throw new RuntimeException();
             }
 
-        } finally {
-            //log.debug("executing finally clause in AsyncUpdateQcStatus");
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (Exception e) {
-                }
-            }
         }
     }
 }

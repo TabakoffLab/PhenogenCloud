@@ -11,10 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.sql.DataSource;
+
 import org.apache.log4j.Logger;
 
 /**
- *
  * @author smahaffey
  */
 public class RNAPipeline {
@@ -24,58 +24,56 @@ public class RNAPipeline {
     private String description;
     private long rnaDatasetResultID;
     private long rnaEnvID;
-    
+
     private ArrayList<RNAPipelineSteps> steps;
     private boolean isStepLoaded;
     private DataSource pool;
-    
-    private final String select="select * from RNA_PIPELINE rp";
-    
-    
-    
-    public RNAPipeline(){
+
+    private final String select = "select * from RNA_PIPELINE rp";
+
+
+    public RNAPipeline() {
         log = Logger.getRootLogger();
     }
-    
-    public RNAPipeline(long rnaPipelineID, String title, String description, long rnaDAtasetResultID, long rnaEnvID, DataSource pool){
+
+    public RNAPipeline(long rnaPipelineID, String title, String description, long rnaDAtasetResultID, long rnaEnvID, DataSource pool) {
         this.setRnaPipelineID(rnaPipelineID);
         this.setTitle(title);
         this.setDescription(description);
         this.setRnaDatasetResultID(rnaDAtasetResultID);
         this.setRnaEnvID(rnaEnvID);
-        this.pool=pool;
-        this.isStepLoaded=false;
+        this.pool = pool;
+        this.isStepLoaded = false;
     }
 
-    public ArrayList<RNAPipeline> getRNAPipelineByResultID(long rnaResultID,DataSource pool){
-        String query=select+"  left outer join rna_p2dr rpd on rpd.rna_pipeline_id=rp.rna_pipeline_id where rpd.rna_dataset_result_id="+rnaResultID;
-        return getRNAResultsByQuery(query,pool);
+    public ArrayList<RNAPipeline> getRNAPipelineByResultID(long rnaResultID, DataSource pool) {
+        String query = select + "  left outer join rna_p2dr rpd on rpd.rna_pipeline_id=rp.rna_pipeline_id where rpd.rna_dataset_result_id=" + rnaResultID;
+        return getRNAResultsByQuery(query, pool);
     }
-    
-    private ArrayList<RNAPipeline> getRNAResultsByQuery(String query, DataSource pool){
-        ArrayList<RNAPipeline> ret=new ArrayList<>();
-        try(Connection conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(query)){
-            ResultSet rs=ps.executeQuery();
-            while(rs.next()){
-                RNAPipeline tmp=new RNAPipeline(rs.getLong("RNA_PIPELINE_ID"),
-                                                rs.getString("TITLE"),
-                                                rs.getString("DESCRIPTION"),
-                                                rs.getLong("RNA_DATASET_RESULT_ID"),
-                                                rs.getLong("RNA_ENV_ID"),
-                                                pool);
-                
+
+    private ArrayList<RNAPipeline> getRNAResultsByQuery(String query, DataSource pool) {
+        ArrayList<RNAPipeline> ret = new ArrayList<>();
+        try (Connection conn = pool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RNAPipeline tmp = new RNAPipeline(rs.getLong("RNA_PIPELINE_ID"),
+                        rs.getString("TITLE"),
+                        rs.getString("DESCRIPTION"),
+                        rs.getLong("RNA_DATASET_RESULT_ID"),
+                        rs.getLong("RNA_ENV_ID"),
+                        pool);
+
                 ret.add(tmp);
             }
             ps.close();
-            conn.close();
-        }catch(SQLException e){
-            log.error("Error getting RNADataset from \n"+query,e);
+        } catch (SQLException e) {
+            log.error("Error getting RNADataset from \n" + query, e);
         }
         return ret;
     }
 
-    
+
     public long getRnaPipelineID() {
         return rnaPipelineID;
     }
@@ -109,7 +107,7 @@ public class RNAPipeline {
     }
 
     public ArrayList<RNAPipelineSteps> getSteps() {
-        if(!isStepLoaded){
+        if (!isStepLoaded) {
             loadSteps();
         }
         return steps;
@@ -118,20 +116,21 @@ public class RNAPipeline {
     public void setSteps(ArrayList<RNAPipelineSteps> steps) {
         this.steps = steps;
     }
-    
-    public void setRnaEnvID(long rnaEnvID){
-        this.rnaEnvID=rnaEnvID;
+
+    public void setRnaEnvID(long rnaEnvID) {
+        this.rnaEnvID = rnaEnvID;
     }
-    private void loadSteps(){
-        RNAPipelineSteps rps=new RNAPipelineSteps();
-        try{
-            this.steps=rps.getRNAPipelineStepsByPipelineID(this.rnaPipelineID, this.pool);
-            this.isStepLoaded=true;
-        }catch(Exception e){
-            isStepLoaded=false;
-            steps=new ArrayList<>();
+
+    private void loadSteps() {
+        RNAPipelineSteps rps = new RNAPipelineSteps();
+        try {
+            this.steps = rps.getRNAPipelineStepsByPipelineID(this.rnaPipelineID, this.pool);
+            this.isStepLoaded = true;
+        } catch (Exception e) {
+            isStepLoaded = false;
+            steps = new ArrayList<>();
             e.printStackTrace(System.err);
-            log.error("error retreiving RNAPipelineSteps:",e);
+            log.error("error retreiving RNAPipelineSteps:", e);
         }
     }
 }

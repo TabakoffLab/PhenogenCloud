@@ -4,6 +4,7 @@ PhenogenExpr = function (params) {
     that.displayHerit = false;
     that.dataPrefix = "";
     that.displayCtrl = true;
+    that.geneReport = false;
 
     that.parseParams = function (params) {
         if (params.div) {
@@ -26,6 +27,9 @@ PhenogenExpr = function (params) {
         }
         if (params.displayHerit) {
             that.displayHerit = params.displayHerit;
+        }
+        if (params.geneReport) {
+            that.geneReport = params.geneReport;
         }
     };
 
@@ -155,6 +159,7 @@ PhenogenExpr = function (params) {
 
         }
         d3.select("span#" + that.ctrlDiv + "Titlel").html("Whole Brain Long RNA-Seq Expression");
+
         /*d3.select("span#" + that.ctrlDiv + "Titleb").html("Whole Brain Long RNA-Seq Expression");
         d3.select("span#" + that.ctrlDiv + "Titlel").html("Liver Long RNA-Seq Expression");
         d3.select("span#" + that.ctrlDiv + "Titlek").html("Kidney Long RNA-Seq Expression");
@@ -164,7 +169,13 @@ PhenogenExpr = function (params) {
 
     that.setupCharts = function () {
         //setup charts
-        that.curPrefix = "/tmpData/browserCache/" + genomeVer + "/regionData/" + that.gb.folderName;
+
+        if (that.geneReport && reportMinCoord && reportMaxCoord) {
+            that.curPrefix = "/tmpData/browserCache/" + genomeVer + "/regionData/" + chr + "/" + reportMinCoord + "_" + reportMaxCoord;
+        } else {
+            that.curPrefix = "/tmpData/browserCache/" + genomeVer + "/regionData/" + that.gb.folderName;
+        }
+
         if (that.dataPrefix !== "") {
             that.curPrefix = that.dataPrefix;
             if (location.protocol == 'https:') {
@@ -182,6 +193,7 @@ PhenogenExpr = function (params) {
             that.liverURL = that.curPrefix + "/Liver_sm_expr.json";
             that.displayHerit = false;
         }
+        //console.log("ctrlDiv:" + that.ctrlDiv);
         that.rlChart = chart({
             "data": that.brainURL, "selector": "#chartLeft" + that.ctrlDiv, "allowResize": true,
             "type": that.type, "width": "98%", "height": "70%", "displayHerit": that.displayHerit,

@@ -8,4 +8,4 @@
  *      
 --%>
 
-<div id="login-form" style="color:#FF0000;">The website is temporarily down to update to the newest version.  It is expected to be available Sunday Sept 2nd 2012. Sorry for any inconvenience.</div>
+<div id="login-form" style="color:#FF0000;">The website is temporarily down for database maintenance.  It is expected to be available 7/20/21 7am MDT. Sorry for any inconvenience.</div>

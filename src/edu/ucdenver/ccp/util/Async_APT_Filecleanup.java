@@ -2,6 +2,7 @@ package edu.ucdenver.ccp.util;
 
 
 import javax.mail.MessagingException;
+
 import edu.ucdenver.ccp.PhenoGen.web.mail.Email;
 /* for handling exceptions in Threads */
 import au.com.forward.threads.ThreadReturn;
@@ -23,39 +24,37 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 
-
-public class Async_APT_Filecleanup implements Runnable{
+public class Async_APT_Filecleanup implements Runnable {
 
     private Logger log = null;
     private Thread waitThread = null;
     private String outputDir = "";
     private Dataset selectedDataset;
     private Dataset.DatasetVersion newDatasetVersion;
-    private String userFileRoot="";
-    private String dbExtFilePath="";
-    private Connection dbConn=null;
-    private DataSource pool=null;
-    
+    private String userFileRoot = "";
+    private String dbExtFilePath = "";
+    private Connection dbConn = null;
+    private DataSource pool = null;
 
-    public Async_APT_Filecleanup(Dataset selectedDataset,Dataset.DatasetVersion dsVer,String userFileRoot,String dbExtFilePath,DataSource pool, Thread waitThread) {
+
+    public Async_APT_Filecleanup(Dataset selectedDataset, Dataset.DatasetVersion dsVer, String userFileRoot, String dbExtFilePath, DataSource pool, Thread waitThread) {
         log = Logger.getRootLogger();
         this.waitThread = waitThread;
-        this.selectedDataset=selectedDataset;
-        this.newDatasetVersion=dsVer;
-        this.userFileRoot=userFileRoot;
-        this.outputDir = selectedDataset.getPath()+"v"+dsVer.getVersion();
-        this.pool=pool;
-        this.dbExtFilePath=dbExtFilePath;
-        
+        this.selectedDataset = selectedDataset;
+        this.newDatasetVersion = dsVer;
+        this.userFileRoot = userFileRoot;
+        this.outputDir = selectedDataset.getPath() + "v" + dsVer.getVersion();
+        this.pool = pool;
+        this.dbExtFilePath = dbExtFilePath;
+
     }
-     
-    
+
 
     public void run() throws RuntimeException {
-        FileHandler myFileHandler=new FileHandler();
+        FileHandler myFileHandler = new FileHandler();
         Thread thisThread = Thread.currentThread();
         log.debug("Starting run method of Async_APT_Filecleanup. , thisThread = " + thisThread.getName());
-        String[] rErrorMsg = null;       
+        String[] rErrorMsg = null;
         try {
             //
             // If this thread is interrupted, throw an Exception
@@ -77,93 +76,86 @@ public class Async_APT_Filecleanup implements Runnable{
                 log.debug("waitThread is null");
             }
             log.debug("after waiting on thread");
-            
-            
-            String tmpOracleDir=selectedDataset.getPath()+"oracle/";
-            String tmpOracleDest=dbExtFilePath;
-            ArrayList<File> fileList=new ArrayList<File>();
-            char endChar='a';
-            String oracleFileSufix=".a";
-            String dabgFilePrefix=tmpOracleDir+"dabgdata_"+selectedDataset.getDataset_id()+"_"+newDatasetVersion.getVersion()+oracleFileSufix;
-            String avgFilePrefix=tmpOracleDir+"normdata_"+selectedDataset.getDataset_id()+"_"+newDatasetVersion.getVersion()+oracleFileSufix;
-            boolean lastFile=false;
-            while(!lastFile){
-                String curfilestr=dabgFilePrefix+endChar;
-                File dSrcFile=new File(curfilestr);
-                if(dSrcFile.exists()){
-                    String avgFilestr=avgFilePrefix+endChar;
-                    String dDestFilestr=tmpOracleDest+"dabgdata_"+selectedDataset.getDataset_id()+"_"+newDatasetVersion.getVersion()+oracleFileSufix+endChar;
-                    String aDestFilestr=tmpOracleDest+"normdata_"+selectedDataset.getDataset_id()+"_"+newDatasetVersion.getVersion()+oracleFileSufix+endChar;
-                    File dDestFile=new File(dDestFilestr);
-                    File aSrcFile=new File(avgFilestr);
-                    File aDestFile=new File(aDestFilestr);
-                    try{
-                        myFileHandler.copyFile(dSrcFile,dDestFile);
-                        myFileHandler.copyFile(aSrcFile,aDestFile);
-                    }catch(IOException e){
-                        log.error("Error Copying Data files for External Tables",e);
+
+
+            String tmpOracleDir = selectedDataset.getPath() + "oracle/";
+            String tmpOracleDest = dbExtFilePath;
+            ArrayList<File> fileList = new ArrayList<File>();
+            char endChar = 'a';
+            String oracleFileSufix = ".a";
+            String dabgFilePrefix = tmpOracleDir + "dabgdata_" + selectedDataset.getDataset_id() + "_" + newDatasetVersion.getVersion() + oracleFileSufix;
+            String avgFilePrefix = tmpOracleDir + "normdata_" + selectedDataset.getDataset_id() + "_" + newDatasetVersion.getVersion() + oracleFileSufix;
+            boolean lastFile = false;
+            while (!lastFile) {
+                String curfilestr = dabgFilePrefix + endChar;
+                File dSrcFile = new File(curfilestr);
+                if (dSrcFile.exists()) {
+                    String avgFilestr = avgFilePrefix + endChar;
+                    String dDestFilestr = tmpOracleDest + "dabgdata_" + selectedDataset.getDataset_id() + "_" + newDatasetVersion.getVersion() + oracleFileSufix + endChar;
+                    String aDestFilestr = tmpOracleDest + "normdata_" + selectedDataset.getDataset_id() + "_" + newDatasetVersion.getVersion() + oracleFileSufix + endChar;
+                    File dDestFile = new File(dDestFilestr);
+                    File aSrcFile = new File(avgFilestr);
+                    File aDestFile = new File(aDestFilestr);
+                    try {
+                        myFileHandler.copyFile(dSrcFile, dDestFile);
+                        myFileHandler.copyFile(aSrcFile, aDestFile);
+                    } catch (IOException e) {
+                        log.error("Error Copying Data files for External Tables", e);
                     }
                     endChar++;
-                }else{
-                    lastFile=true;
+                } else {
+                    lastFile = true;
                 }
             }
-            String headerFilestr=tmpOracleDir+"normheader_"+selectedDataset.getDataset_id()+"_"+newDatasetVersion.getVersion()+".txt";
-            String destHeaderstr=tmpOracleDest+"normheader_"+selectedDataset.getDataset_id()+"_"+newDatasetVersion.getVersion()+".txt";
-            File header=new File(headerFilestr);
-            File destheader=new File(destHeaderstr);
-            if(header.exists()){
-                try{
-                    myFileHandler.copyFile(header,destheader);
-                }catch(IOException e){
-                    log.error("Error Copying Header file for External Tables",e);
+            String headerFilestr = tmpOracleDir + "normheader_" + selectedDataset.getDataset_id() + "_" + newDatasetVersion.getVersion() + ".txt";
+            String destHeaderstr = tmpOracleDest + "normheader_" + selectedDataset.getDataset_id() + "_" + newDatasetVersion.getVersion() + ".txt";
+            File header = new File(headerFilestr);
+            File destheader = new File(destHeaderstr);
+            if (header.exists()) {
+                try {
+                    myFileHandler.copyFile(header, destheader);
+                } catch (IOException e) {
+                    log.error("Error Copying Header file for External Tables", e);
                 }
             }
-            headerFilestr=tmpOracleDir+"dabgheader_"+selectedDataset.getDataset_id()+"_"+newDatasetVersion.getVersion()+".txt";
-            destHeaderstr=tmpOracleDest+"dabgheader_"+selectedDataset.getDataset_id()+"_"+newDatasetVersion.getVersion()+".txt";
-            header=new File(headerFilestr);
-            destheader=new File(destHeaderstr);
-            if(header.exists()){
-                try{
-                    myFileHandler.copyFile(header,destheader);
-                }catch(IOException e){
-                    log.error("Error Copying Header file for External Tables",e);
+            headerFilestr = tmpOracleDir + "dabgheader_" + selectedDataset.getDataset_id() + "_" + newDatasetVersion.getVersion() + ".txt";
+            destHeaderstr = tmpOracleDest + "dabgheader_" + selectedDataset.getDataset_id() + "_" + newDatasetVersion.getVersion() + ".txt";
+            header = new File(headerFilestr);
+            destheader = new File(destHeaderstr);
+            if (header.exists()) {
+                try {
+                    myFileHandler.copyFile(header, destheader);
+                } catch (IOException e) {
+                    log.error("Error Copying Header file for External Tables", e);
                 }
             }
 
             //Call filter prep
-            String filterprep="{call filterprep.combinedprep(" + newDatasetVersion.getDataset().getDataset_id() + "," + newDatasetVersion.getVersion() + ")}";
-            try{
-                dbConn=pool.getConnection();
+            String filterprep = "{call filterprep.combinedprep(" + newDatasetVersion.getDataset().getDataset_id() + "," + newDatasetVersion.getVersion() + ")}";
+            try (Connection dbConn = pool.getConnection()) {
                 CallableStatement cs = dbConn.prepareCall(filterprep);
                 cs.execute();
                 cs.close();
-                dbConn.close();
-                dbConn=null;
+
                 //clean up v# files
-                log.debug("Deleting:"+outputDir);
-                File dir=new File(outputDir);
-                File[] list=dir.listFiles();
-                for(int i=0;i<list.length;i++){
+                log.debug("Deleting:" + outputDir);
+                File dir = new File(outputDir);
+                File[] list = dir.listFiles();
+                for (int i = 0; i < list.length; i++) {
                     delete(list[i]);
                 }
                 dir.delete();
 
                 //clean up /oracle files
-                dir=new File(selectedDataset.getPath()+"oracle");
-                list=dir.listFiles();
-                for(int i=0;i<list.length;i++){
+                dir = new File(selectedDataset.getPath() + "oracle");
+                list = dir.listFiles();
+                for (int i = 0; i < list.length; i++) {
                     delete(list[i]);
                 }
                 dir.delete();
-            }catch(SQLException sqle){
-                log.error("Error Inserting Dataset into Database.",sqle);
-            }finally{
-                            if (dbConn != null) {
-                                 try { dbConn.close(); } catch (SQLException e) { ; }
-                                 dbConn = null;
-                            }
-                     }
+            } catch (SQLException sqle) {
+                log.error("Error Inserting Dataset into Database.", sqle);
+            }
             //
             // If this thread is interrupted, throw an Exception
             //
@@ -171,7 +163,7 @@ public class Async_APT_Filecleanup implements Runnable{
 
         } catch (Throwable t) {
             //log.error("In exception of Async_HDF5_FileHandler for thread " + thisThread.getName(), t);
-            
+
             if (t instanceof ThreadException) {
                 //log.error("throwable exception is a ThreadException. cause = " + t.getCause().getMessage(),t);
                 //
@@ -207,11 +199,11 @@ public class Async_APT_Filecleanup implements Runnable{
         //log.debug("done with Async_HDF5_FileHandler run method for this thread: " + thisThread.getName());
 
     }
-    
-    private void delete(File file){
-        if(file.isDirectory()){
-            File[] tmplist=file.listFiles();
-            for(int i=0;i<tmplist.length;i++){
+
+    private void delete(File file) {
+        if (file.isDirectory()) {
+            File[] tmplist = file.listFiles();
+            for (int i = 0; i < tmplist.length; i++) {
                 delete(tmplist[i]);
             }
         }

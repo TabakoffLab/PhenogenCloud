@@ -179,7 +179,7 @@ sub readAffyProbesetDataFromDB{
 		}
 		$query_handle1->finish();
 		$query_handle->finish();
-		$connect->disconnect();
+		#$connect->disconnect();
 		push @probesetHOH,
 			{
 				type            => $tmpType,
@@ -208,7 +208,7 @@ sub readAffyProbesetDataFromDBwoHeritDABG{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$geneStart,$geneStop,$arrayTypeID,$genomeVer,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$geneStart,$geneStop,$arrayTypeID,$genomeVer,$connect)=@_;
 	
 	#open PSFILE, $psOutputFileName;//Added to output for R but now not needed.  R will read in XML file
 	print "read probesets chr:$geneChrom\n";
@@ -226,7 +226,7 @@ sub readAffyProbesetDataFromDBwoHeritDABG{
 	#$dsn = "dbi:$platform:$service_name";
 	
 	# PERL DBI CONNECT
-	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	my $geneChromNumber = addChr($geneChrom,"subtract");
     $org="Rn";
@@ -331,7 +331,7 @@ sub readAffyProbesetDataFromDBwoHeritDABG{
 	}
 	$query_handle1->finish();
 	$query_handle->finish();
-	$connect->disconnect();
+	#$connect->disconnect();
 	push @probesetHOH,
 			{
 				type => $tmpType,
@@ -357,7 +357,7 @@ sub readTissueAffyProbesetDataFromDB{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$geneStart,$geneStop,$arrayTypeID,$rnaDatasetID,$percCutoff,$genomeVer,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$geneStart,$geneStop,$arrayTypeID,$rnaDatasetID,$percCutoff,$genomeVer,$connect)=@_;
 	
 	#open PSFILE, $psOutputFileName;//Added to output for R but now not needed.  R will read in XML file
 	print "read tissue probesets chr:$geneChrom\n$arrayTypeID\n$rnaDatasetID\n$percCutoff";
@@ -374,7 +374,7 @@ sub readTissueAffyProbesetDataFromDB{
 	#$dsn = "dbi:$platform:$service_name";
 	
 	# PERL DBI CONNECT
-	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	my $geneChromNumber = $geneChrom;
 	if(length($geneChromNumber)>2){
@@ -435,7 +435,7 @@ sub readTissueAffyProbesetDataFromDB{
 		$probesetHOH{$dbtissue}{count}=$tmpcount;
 	}
 	$query_handle->finish();
-	$connect->disconnect();
+	#$connect->disconnect();
 	
 	#close PSFILE;
 	return (\%probesetHOH);
@@ -450,7 +450,7 @@ sub readAffyProbesetDataFromDBwoProbes{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$geneStart,$geneStop,$arrayTypeID,$genomeVer,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$geneStart,$geneStop,$arrayTypeID,$genomeVer,$connect)=@_;
 	
 	#open PSFILE, $psOutputFileName;//Added to output for R but now not needed.  R will read in XML file
 	print "read probesets chr:$geneChrom\n";
@@ -468,7 +468,7 @@ sub readAffyProbesetDataFromDBwoProbes{
 	#$dsn = "dbi:$platform:$service_name";
 	
 	# PERL DBI CONNECT
-	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	my $geneChromNumber = $geneChrom;
     if(length($geneChromNumber)>2){
@@ -574,7 +574,7 @@ sub readAffyProbesetDataFromDBwoProbes{
 	}
 	$query_handle1->finish();
 	$query_handle->finish();
-	$connect->disconnect();
+
 	#close PSFILE;
 	return (\@probesetHOH);
 }
@@ -589,7 +589,7 @@ sub readTissueEQTLProbesetDataFromDB{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$geneStart,$geneStop,$arrayTypeID,$rnaDatasetID,$lodCutoff,$genomeVer,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$geneStart,$geneStop,$arrayTypeID,$rnaDatasetID,$lodCutoff,$genomeVer,$connect)=@_;
 	
 	#open PSFILE, $psOutputFileName;//Added to output for R but now not needed.  R will read in XML file
 	print "read tissue probesets chr:$geneChrom\n$arrayTypeID\n$rnaDatasetID\n$lodCutoff";
@@ -667,7 +667,7 @@ sub readTissueEQTLProbesetDataFromDB{
 	}
 	$query_handle1->finish();
 	$query_handle->finish();
-	$connect->disconnect();
+	#$connect->disconnect();
 	
 	#close PSFILE;
 	return (\%probesetHOH);

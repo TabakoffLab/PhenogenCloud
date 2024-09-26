@@ -72,6 +72,7 @@ public class GeneDataTools {
     private String returnOutputDir = "";
     private String returnGeneSymbol = "";
     private boolean isSessionSet = false;
+    private int maxProc = 3;
 
     //private String insertUsage="insert into TRANS_DETAIL_USAGE (INPUT_ID,IDECODER_RESULT,RUN_DATE,ORGANISM) values (?,?,?,?)";
     //String updateSQL="update TRANS_DETAIL_USAGE set TIME_TO_RETURN=? , RESULT=? where TRANS_DETAIL_ID=?";
@@ -116,6 +117,57 @@ public class GeneDataTools {
     public void appendThreadList(Thread newThread) {
         log.debug("TL_size:" + threadList.size());
         threadList.add(newThread);
+
+        // cleanup check for running or remove non running.
+        checkStartThreads();
+    }
+
+    private void checkStartThreads() {
+        log.debug("threadMap Size:" + threadHashMap.size());
+        log.debug("thread list Size:" + threadList.size());
+        int curRunning = 0;
+        ArrayList<Thread> toDelete = new ArrayList<Thread>();
+
+        for (int i = 0; i < threadList.size(); i++) {
+            Thread checkThread = (Thread) threadList.get(i);
+
+            if (checkThread.getState() == Thread.State.RUNNABLE) {
+                curRunning++;
+            } else if (checkThread.getState() == Thread.State.TERMINATED) {
+                toDelete.add(checkThread);
+            } /*else if (checkThread.getState() == Thread.State.BLOCKED) {
+                try {
+                    checkThread.interrupt();
+                } catch (Exception e) {
+                }
+                toDelete.add(checkThread);
+            }*/
+        }
+        if (curRunning < maxProc) {
+            int started = 0;
+            int running = 0;
+            for (int i = 0; i < threadList.size() && running <= maxProc; i++) {
+                Thread checkThread = (Thread) threadList.get(i);
+                if (checkThread.isAlive()) {
+                    running++;
+                } else if (running < maxProc) {
+                    try {
+                        checkThread.start();
+                        started++;
+                        running++;
+                    } catch (Exception e) {
+                        log.error("ThreadList start exception:", e);
+                        threadList.remove(checkThread);
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < toDelete.size(); i++) {
+            Thread checkThread = (Thread) toDelete.get(i);
+            threadList.remove(checkThread);
+        }
+
     }
 
     public boolean appendRunningMap(String key, String val) {
@@ -127,8 +179,11 @@ public class GeneDataTools {
         return ret;
     }
 
-    public void removeRunning(String key) {
+    public void removeRunning(String key, Thread threadToRemove) {
+        threadList.remove(threadToRemove);
         threadHashMap.remove(key);
+        // start next thread.
+        checkStartThreads();
     }
 
     public Map getRunningMap() {
@@ -492,37 +547,48 @@ public class GeneDataTools {
             String folderName = ensemblID1;
             //String publicPath = H5File.substring(H5File.indexOf("/Datasets/") + 10);
             //publicPath = publicPath.substring(0, publicPath.indexOf("/Affy.NormVer.h5"));
-
+            ArrayList<String> steps = new ArrayList<String>();
             try {
                 File geneDir = new File(outputDir);
                 File errorFile = new File(outputDir + "errMsg.txt");
                 if (geneDir.exists()) {
+                    steps.add("Dir exists");
                     Date lastMod = new Date(geneDir.lastModified());
-                    Date prev1Months = new Date(start.getTime() - (30 * 24 * 60 * 60 * 1000));
-                    if (lastMod.before(prev1Months) || errorFile.exists()) {
+                    Date prev2Months = new Date(start.getTime() - (60 * 24 * 60 * 60 * 1000));
+                    if (genomeVer.equals("rn7") && dataVer.equals("hrdp7.1") && lastMod.before(prev2Months) || errorFile.exists()) {
+                        steps.add("before delete existing");
                         if (myFH.deleteAllFilesPlusDirectory(geneDir)) {
                         }
+                        steps.add("after delete existing");
                         error = generateFiles(organism, genomeVer, source.get("ensembl"), rOutputPath, ensemblIDList, folderName, ensemblID1, RNADatasetID, arrayTypeID, panel, dataVer);
+                        steps.add("after generate files");
                         result = "old files, regenerated all files";
                     } else {
                         //do nothing just need to set session var
                         String errors;
+                        steps.add("checking errors");
                         errors = loadErrorMessage();
                         if (errors.equals("")) {
+                            steps.add("no errors");
                             //String[] results=this.createImage("probe,numExonPlus,numExonMinus,noncoding,smallnc,refseq", organism,outputDir,chrom,minCoord,maxCoord);
                             //getUCSCUrl(results[1].replaceFirst(".png", ".url"));
                             //getUCSCUrls(ensemblID1);
                             result = "cache hit files not generated";
                         } else {
+                            steps.add("errors deleting dir");
                             if (myFH.deleteAllFilesPlusDirectory(geneDir)) {
                             }
+                            steps.add("after delete before generate");
                             error = generateFiles(organism, genomeVer, source.get("ensembl"), rOutputPath, ensemblIDList, folderName, ensemblID1, RNADatasetID, arrayTypeID, panel, dataVer);
+                            steps.add("after generate");
                             result = "old files, regenerated all files";
 
                         }
                     }
                 } else {
+                    steps.add("Dir doesn't exist");
                     error = generateFiles(organism, genomeVer, source.get("ensembl"), rOutputPath, ensemblIDList, folderName, ensemblID1, RNADatasetID, arrayTypeID, panel, dataVer);
+                    steps.add("done calling generateFiles");
                     if (!error) {
                         result = "NewGene generated successfully";
                     }
@@ -538,6 +604,11 @@ public class GeneDataTools {
                 for (int i = 0; i < tmpEx.length; i++) {
                     fullerrmsg = fullerrmsg + "\n" + tmpEx[i];
                 }
+                for (int i = 0; i < steps.size(); i++) {
+                    fullerrmsg = fullerrmsg + "\n" + steps.get(i);
+                }
+                fullerrmsg = fullerrmsg + "\n\nParams:" + inputID + "\n" + ensemblIDList + "\n" + genomeVer + ":" + dataVer + "\n" + panel + "\n" + organism + "\n" + RNADatasetID + "\n" + arrayTypeID + "\n" + eQTL;
+                log.debug("There was an error while getting gene centric results.\n" + fullerrmsg);
                 myAdminEmail.setSubject("Exception thrown getting Gene Centric Results");
                 myAdminEmail.setContent("There was an error while getting gene centric results.\n" + fullerrmsg);
                 try {
@@ -570,7 +641,10 @@ public class GeneDataTools {
         if (!error) {
 
             try {
-                loc = myFH.getFileContents(new File(outputDir + "location.txt"));
+                File file = new File(outputDir + "location.txt");
+                if (file.exists()) {
+                    loc = myFH.getFileContents(file);
+                }
             } catch (IOException e) {
                 log.error("Couldn't load location for gene.", e);
             }
@@ -595,7 +669,10 @@ public class GeneDataTools {
             endRegion = new Date();
         } else {
             try {
-                loc = myFH.getFileContents(new File(outputDir + "location.txt"));
+                File file = new File(outputDir + "location.txt");
+                if (file.exists()) {
+                    loc = myFH.getFileContents(new File(outputDir + "location.txt"));
+                }
             } catch (IOException e) {
                 log.error("Couldn't load location for gene.", e);
             }
@@ -641,7 +718,7 @@ public class GeneDataTools {
         return ret;
     }
 
-    public HashMap<String, Integer> getRegionTrackList(String chromosome, int min, int max, String panel, String myOrganism, String genomeVer, int rnaDatasetID, int arrayTypeID, String track) {
+    public HashMap<String, Integer> getRegionTrackList(String chromosome, int min, int max, String panel, String myOrganism, String genomeVer, int rnaDatasetID, int arrayTypeID, String track, String dataVer) {
         HashMap<String, Integer> ret = new HashMap<String, Integer>();
         chromosome = chromosome.toLowerCase();
         if (!chromosome.startsWith("chr")) {
@@ -717,8 +794,12 @@ public class GeneDataTools {
         }
 
         this.pathReady = true;
-
-        ret = Gene.readGeneIDList(outputDir + track + ".xml");
+        if (genomeVer.equals("rn7")) {
+            log.debug("genelistfile:\n" + outputDir + dataVer + "_" + track + ".xml");
+            ret = Gene.readGeneIDList(outputDir + dataVer + "_" + track + ".xml");
+        } else {
+            ret = Gene.readGeneIDList(outputDir + track + ".xml");
+        }
         log.debug("getRegionData() returning gene list of size:" + ret.size());
         return ret;
     }
@@ -728,6 +809,7 @@ public class GeneDataTools {
                                               String organism, String genomeVer, int RNADatasetID, int arrayTypeID, double pValue, boolean withEQTL, boolean withRNASeqQTL, String track, String dataVer) {
         return this.getRegionDataMain(chromosome, minCoord, maxCoord, panel, organism, genomeVer, RNADatasetID, arrayTypeID, pValue, withEQTL, withRNASeqQTL, track + ".xml", dataVer);
     }
+
 
    /* public ArrayList<Gene> getMergedRegionData(String chromosome, int minCoord, int maxCoord,
                                                String panel,
@@ -878,8 +960,13 @@ public class GeneDataTools {
             }
             this.setPublicVariables(error, genomeVer, folderName);
             this.pathReady = true;
-
-            ret = Gene.readGenes(outputDir + file);
+            if (genomeVer.equals("rn7")) {
+                log.debug(outputDir + dataVer + "_" + file);
+                ret = Gene.readGenes(outputDir + dataVer + "_" + file);
+            } else {
+                log.debug(outputDir + file);
+                ret = Gene.readGenes(outputDir + file);
+            }
             log.debug("getRegionData() returning gene list of size:" + ret.size());
             if (withRNASeqEQTL) {
                 if (genomeVer.equals("rn6")) {
@@ -1111,10 +1198,12 @@ public class GeneDataTools {
             //log.debug("make output dir");
             outDirF.mkdirs();
         }
-        AsyncBrowserRegion abr = new AsyncBrowserRegion(session, pool, organism, outputDir, chrom, minCoord, maxCoord, arrayTypeID, RNADatasetID, genomeVer, ucscDB, ensemblPath, usageID, true, this, dataVer);
-        threadList.add(abr);
+        String hash = chrom + ":" + minCoord + "-" + maxCoord + "_" + dataVer + "_" + genomeVer + ":browserRegion";
+        AsyncBrowserRegion abr = new AsyncBrowserRegion(session, pool, organism, outputDir, chrom, minCoord, maxCoord, arrayTypeID, RNADatasetID, genomeVer, ucscDB, ensemblPath, usageID, true, this, dataVer, hash);
+        if (this.appendRunningMap(hash, "True")) {
+            this.appendThreadList(abr);
+        }
 
-        abr.start();
 
         //boolean createdXML=this.createRegionImagesXMLFiles(folderName,organism,genomeVer,ensemblPath,arrayTypeID,RNADatasetID,ucscDB);
         //AsyncGeneDataTools prevThread=callAsyncGeneDataTools(chrom, minCoord, maxCoord,arrayTypeID,RNADatasetID,genomeVer,false);
@@ -1427,10 +1516,18 @@ public class GeneDataTools {
     public boolean createXMLFiles(String organism, String genomeVer, String ensemblIDList, String ensemblID1, String ensemblPath) {
         boolean completedSuccessfully = false;
         if (ensemblIDList != null && ensemblID1 != null && !ensemblIDList.equals("") && !ensemblID1.equals("")) {
+            ArrayList<String> steps = new ArrayList<String>();
             try {
                 log.debug(ensemblIDList + "\n\n" + ensemblID1);
                 //Connection tmpConn=pool.getConnection();
-                int publicUserID = new User().getUser_id("public", pool);
+                steps.add("before User");
+                int publicUserID = 306;
+                try {
+                    publicUserID = new User().getUser_id("public", pool);
+                } catch (Exception e) {
+                    log.error("Using Default Public user due to error:", e);
+                }
+                steps.add("after User");
                 //tmpConn.close();
                 log.debug("createXML outputDir:" + outputDir);
                 File outDir = new File(outputDir);
@@ -1476,9 +1573,9 @@ public class GeneDataTools {
                 perlArgs[12] = ensUser;
                 perlArgs[13] = ensPassword;
                 perlArgs[14] = genomeVer;
-
-                log.debug("after perl args");
-                log.debug("setup params");
+                steps.add("after perl args");
+                //log.debug("after perl args");
+                //log.debug("setup params");
                 //set environment variables so you can access oracle pulled from perlEnvVar session variable which is a comma separated list
                 String[] envVar = perlEnvVar.split(",");
 
@@ -1486,7 +1583,7 @@ public class GeneDataTools {
                     if (envVar[i].contains("/ensembl")) {
                         envVar[i] = envVar[i].replaceFirst("/ensembl", "/" + ensemblPath);
                     }
-                    log.debug(i + " EnvVar::" + envVar[i]);
+                    //log.debug(i + " EnvVar::" + envVar[i]);
                 }
 
                 log.debug("setup envVar");
@@ -1495,6 +1592,7 @@ public class GeneDataTools {
                 boolean exception = false;
                 boolean missingDB = false;
                 log.debug("setup exec");
+                steps.add("setup exec");
                 try {
 
                     myExec_session.runExec();
@@ -1531,9 +1629,15 @@ public class GeneDataTools {
 
                     String errors = myExec_session.getErrors();
 
+                    String fullSteps = "";
+                    for (int i = 0; i < steps.size(); i++) {
+                        fullSteps = fullSteps + steps.get(i) + "\n";
+                    }
+
                     myAdminEmail.setContent("There was an error while running "
                             + perlArgs[1] + " (" + perlArgs[2] + " , " + perlArgs[3] + " , " + perlArgs[4] + " , " + perlArgs[5] + " , " + perlArgs[6] +
-                            ")\ngenomeVer:" + genomeVer + "\n" + errors);
+                            ")\ngenomeVer:" + genomeVer + "\n" + errors + "\n\n" + fullSteps);
+                    log.debug("CreateXMLFiles Error:\n" + fullSteps);
                     if (myExec_session.isError()) {
                         try {
                             if (!missingDB && errors != null && errors.length() > 0) {
@@ -2273,15 +2377,23 @@ public class GeneDataTools {
 
     public AsyncGeneDataTools callAsyncGeneDataTools(String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String genomeVer, boolean isENSGene, String dataVer) {
         AsyncGeneDataTools agdt;
-        agdt = new AsyncGeneDataTools(session, pool, outputDir, chr, min, max, arrayTypeID, rnaDS_ID, usageID, genomeVer, isENSGene, dataVer, "", this);
+        String hash = chrom + ":" + minCoord + "-" + maxCoord + "_" + dataVer + "_" + genomeVer + ":AGDT";
+        log.debug("gdt.callAsyncGeneDataTools():" + hash);
+        agdt = new AsyncGeneDataTools(session, pool, outputDir, chr, min, max, arrayTypeID, rnaDS_ID, usageID, genomeVer, isENSGene, dataVer, "", this, hash);
+        log.debug("after new object method");
+        if (this.appendRunningMap(hash, "True")) {
+            log.debug("after true appendRunningMap");
+            this.appendThreadList(agdt);
+            log.debug("after appendThreadList");
+        }
         //log.debug("Getting ready to start");
-        agdt.start();
+        //agdt.start();
         //log.debug("Started AsyncGeneDataTools");
         return agdt;
     }
 
 
-    public boolean callWriteXML(String id, String organism, String genomeVer, String chr, int min, int max, int arrayTypeID, int rnaDS_ID) {
+    public boolean callWriteXML(String id, String organism, String genomeVer, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, String dataVer) {
         boolean completedSuccessfully = false;
         log.debug("callWriteXML()" + id + "," + organism + "," + genomeVer + "," + arrayTypeID + "," + rnaDS_ID);
         try {
@@ -2291,7 +2403,7 @@ public class GeneDataTools {
             String tmpoutputDir = fullPath + "tmpData/browserCache/" + genomeVer + "/geneData/" + id + "/";
             HashMap<String, String> source = this.getGenomeVersionSource(genomeVer);
             String ensemblPath = source.get("ensembl");
-            File test = new File(tmpoutputDir + "Region.xml");
+            File test = new File(tmpoutputDir + dataVer + "_Region.xml");
             long testLM = test.lastModified();
             testLM = (new Date().getTime()) - testLM;
             long fifteenMin = 15 * 60 * 1000;
@@ -2326,7 +2438,7 @@ public class GeneDataTools {
                 log.debug("loaded properties");
 
                 //construct perl Args
-                String[] perlArgs = new String[21];
+                String[] perlArgs = new String[22];
                 perlArgs[0] = "perl";
                 perlArgs[1] = perlDir + "writeXML_RNA.pl";
                 perlArgs[2] = tmpoutputDir;
@@ -2342,16 +2454,17 @@ public class GeneDataTools {
                 perlArgs[8] = Integer.toString(rnaDS_ID);
                 perlArgs[9] = Integer.toString(publicUserID);
                 perlArgs[10] = genomeVer;
-                perlArgs[11] = dsn;
-                perlArgs[12] = dbUser;
-                perlArgs[13] = dbPassword;
-                perlArgs[14] = ensHost;
-                perlArgs[15] = ensPort;
-                perlArgs[16] = ensUser;
-                perlArgs[17] = ensPassword;
-                perlArgs[18] = mongoHost;
-                perlArgs[19] = mongoUser;
-                perlArgs[20] = mongoPassword;
+                perlArgs[11] = dataVer;
+                perlArgs[12] = dsn;
+                perlArgs[13] = dbUser;
+                perlArgs[14] = dbPassword;
+                perlArgs[15] = ensHost;
+                perlArgs[16] = ensPort;
+                perlArgs[17] = ensUser;
+                perlArgs[18] = ensPassword;
+                perlArgs[19] = mongoHost;
+                perlArgs[20] = mongoUser;
+                perlArgs[21] = mongoPassword;
 
 
                 log.debug("setup params");
@@ -2943,8 +3056,8 @@ public class GeneDataTools {
             String dsList = "97,98,189";
             if (genomeVer.equals("rn7") || dataVer.equals("hrdp6")) {
                 dsList = "190,191,192,193";
-            } else if (genomeVer.equals("rn7") || dataVer.equals("hrdp7")) {
-                dsList = "204,205,206,207";
+            } else if (genomeVer.equals("rn7") || dataVer.equals("hrdp7.1")) {
+                dsList = "213,214,215,216,218,219";
             }
             //get region Phenogen Gene IDs
             String heritQ = "select rt.merge_gene_id, rt.herit_gene,rt.rna_dataset_id,rta.annotation from rna_transcripts rt " +
@@ -3112,7 +3225,6 @@ public class GeneDataTools {
                 }
             }
             ps.close();
-            conn.close();
             //log.debug("HashMap size:"+probesets.size());
         } catch (SQLException e) {
             log.error("Error retreiving Herit/DABG.", e);
@@ -3212,7 +3324,7 @@ public class GeneDataTools {
                     }
                 }
                 ps.close();
-                conn.close();
+
                 //log.debug("EQTL size:"+eqtls.size());
                 //log.debug("Tissue Size:"+tissues.size());
             } catch (SQLException e) {
@@ -3354,7 +3466,7 @@ public class GeneDataTools {
                 transcriptClusters.add(curTC);
             }
             ps.close();
-            conn.close();
+            //conn.close();
             log.debug("Transcript Cluster Size:" + transcriptClusters.size());
                 /*if(cacheHM.containsKey(tmpRegion)){
                     HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
@@ -4185,7 +4297,7 @@ public class GeneDataTools {
                     }
                     ps.close();
                 }*/
-            conn.close();
+            //conn.close();
             Set keys = tmpHM.keySet();
             Iterator itr = keys.iterator();
             try {
@@ -4669,7 +4781,9 @@ public class GeneDataTools {
                     cacheHM.put(tmpRegion,regionHM);
                     this.cacheList.add(tmpRegion);
                 }*/
-            conn.close();
+
+
+            //conn.close();
 
         } catch (SQLException e) {
             log.error("Error retreiving SMNCs.", e);
@@ -4744,7 +4858,7 @@ public class GeneDataTools {
                     bqtl.add(tmpB);
                 }
                 ps.close();
-                conn.close();
+                //conn.close();
                 /*if(cacheHM.containsKey(tmpRegion)){
                     HashMap regionHM=(HashMap)cacheHM.get(tmpRegion);
                     regionHM.put("bqtlParams",curParams);
@@ -4795,11 +4909,11 @@ public class GeneDataTools {
         String query = "select pq.*,c.name from public_qtls pq, chromosomes c " +
                 "where pq.genome_id='" + genomeVer + "' and pq.rgd_id=" + id +
                 "and pq.chromosome=c.chromosome_id";
-        Connection conn = null;
+
         try {
-            try {
+            try (Connection conn = pool.getConnection()) {
                 log.debug("SQL bQTL FROM QUERY\n" + query);
-                conn = pool.getConnection();
+
                 PreparedStatement ps = conn.prepareStatement(query);
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
@@ -4825,7 +4939,6 @@ public class GeneDataTools {
                     bqtl = new BQTL(id, mgiID, rgdID, symbol, name, trait, subTrait, traitMethod, phenotype, diseases, rgdRef, pubmedRef, mapMethod, relQTLs, candidGene, lod, pvalue, start, stop, chromosome);
                 }
                 ps.close();
-                conn.close();
             } catch (SQLException e) {
                 log.error("Error retreiving bQTLs.", e);
                 e.printStackTrace(System.err);
@@ -4837,12 +4950,6 @@ public class GeneDataTools {
                     myAdminEmail.sendEmailToAdministrator((String) session.getAttribute("adminEmail"));
                 } catch (Exception mailException) {
                     log.error("error sending message", mailException);
-                }
-            } finally {
-                try {
-                    if (conn != null)
-                        conn.close();
-                } catch (SQLException ex) {
                 }
             }
         } catch (Exception er) {

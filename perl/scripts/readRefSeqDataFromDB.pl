@@ -21,7 +21,7 @@ sub readRefSeqDataFromDB{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$organism,$geneStart,$geneStop,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$organism,$geneStart,$geneStop,$connect,$genomeVer)=@_;
 	
 	#Initializing Arrays
 
@@ -40,7 +40,7 @@ sub readRefSeqDataFromDB{
 	}
 	
 	# PERL DBI CONNECT
-	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	$query ="SELECT g.name,g.chrom,g.strand,g.txStart,g.txEnd,g.cdsStart,g.cdsEnd,g.exonStarts,g.exonEnds,g.name2,s.status
 			FROM refGene g, refSeqStatus s
@@ -50,7 +50,7 @@ sub readRefSeqDataFromDB{
 			order by g.txStart,g.name2;";
 
 	#if DB is rn6 or mm10 use new query
-	if(index($dsn,"rn7")>-1 || index($dsn,"rn6")>-1 || index($dsn,"mm10")>-1){
+	if( $genomeVer eq "rn7" || $genomeVer eq "rn6" || $genomeVer eq "mm10" ){
 		$query ="SELECT g.name,g.chrom,g.strand,g.txStart,g.txEnd,g.cdsStart,g.cdsEnd,g.exonStarts,g.exonEnds,g.name2,s.status
 			FROM ncbiRefSeq g, ncbiRefSeqLink s
 			where g.chrom='".$geneChrom."'
@@ -201,7 +201,7 @@ sub readRefSeqDataFromDB{
 		}
 	}
 	$query_handle->finish();
-	$connect->disconnect();
+	#$connect->disconnect();
 	
 	if($cntGene>0){
 		$geneHOH{Gene}[$cntGene-1]{start}=$geneMin;

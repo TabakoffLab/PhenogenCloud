@@ -403,8 +403,8 @@ public class User {
      *
      * @param user_id the id of the PI
      * @param conn    the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return a comma-separated string of user_names
+     * @throws SQLException if an error occurs while accessing the database
      */
     public String getSubordinates(int user_id, DataSource pool) throws SQLException {
 
@@ -419,7 +419,7 @@ public class User {
 
         String subordinates = "";
         //log.debug("query = "+query);
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, user_id, conn);
 
             subordinates = "(" +
@@ -431,7 +431,7 @@ public class User {
             }
 
             myResults.close();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             log.error("In exception of getSubordinates", e);
             throw e;
         }
@@ -444,8 +444,8 @@ public class User {
      *
      * @param user_id the id of the user
      * @param conn    the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return the user_id of the PI
+     * @throws SQLException if an error occurs while accessing the database
      */
 
     public int getPi_user_id(int user_id, DataSource pool) throws SQLException {
@@ -459,13 +459,13 @@ public class User {
 
         //log.debug("query = "+query);
         int pi_user_id = -99;
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, user_id, conn);
 
             pi_user_id = myResults.getIntValueFromFirstRow();
 
             myResults.close();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             log.error("In exception of getPI_User_ID", e);
             throw e;
         }
@@ -484,22 +484,20 @@ public class User {
                         "where pi_user_id = ?";
 
         boolean principal_investigator = false;
-        Connection conn = pool.getConnection();
-        Results myResults = new Results(query, this.user_id, conn);
+        try (Connection conn = pool.getConnection()) {
+            Results myResults = new Results(query, this.user_id, conn);
+            int subordinates = myResults.getIntValueFromFirstRow();
+            if (subordinates == 0) {
+                log.debug("user is not a principal_investigator");
+                principal_investigator = false;
+            } else {
+                log.debug("user is a principal_investigator");
+                principal_investigator = true;
+            }
 
-        int subordinates = myResults.getIntValueFromFirstRow();
-        if (subordinates == 0) {
-            log.debug("user is not a principal_investigator");
-            principal_investigator = false;
-        } else {
-            log.debug("user is a principal_investigator");
-            principal_investigator = true;
-        }
-
-        myResults.close();
-        try {
-            conn.close();
-        } catch (Exception e) {
+            myResults.close();
+        } catch (SQLException e) {
+            log.error("In exception of getPI_User_ID", e);
         }
         return principal_investigator;
     }
@@ -513,7 +511,7 @@ public class User {
                         "where username like 'public'";
 
         boolean ispublic = false;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -525,8 +523,8 @@ public class User {
 
             }
             ps.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -551,12 +549,12 @@ public class User {
 
         boolean hasRole = false;
         String value = "";
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{user_name, password, role}, conn);
             value = myResults.getStringValueFromFirstRow();
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         if (value.equals("x")) {
@@ -574,8 +572,8 @@ public class User {
      * Gets all the users
      *
      * @param conn the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return an array of User objects
+     * @throws SQLException if an error occurs while accessing the database
      */
     public User[] getAllUsers(DataSource pool) throws SQLException {
 
@@ -586,7 +584,7 @@ public class User {
 
         //log.debug("in getAllUsers");
         List<User> userList = new ArrayList<User>();
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -597,8 +595,8 @@ public class User {
                 userList.add(newUser);
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         User[] myUsers = (User[]) userList.toArray(new User[userList.size()]);
@@ -609,8 +607,8 @@ public class User {
      * Gets the users who are not yet approved.
      *
      * @param conn the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return an array of User objects
+     * @throws SQLException if an error occurs while accessing the database
      */
     public User[] getUnApprovedUsers(DataSource pool) throws SQLException {
         String query =
@@ -623,7 +621,7 @@ public class User {
         log.debug("in getUnApprovedUsers");
         //log.debug("query = " + query);
         User[] myUsers = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, conn);
             List<User> userList = new ArrayList<User>();
             String[] dataRow;
@@ -633,8 +631,8 @@ public class User {
             }
             myUsers = (User[]) userList.toArray(new User[userList.size()]);
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return myUsers;
@@ -644,8 +642,8 @@ public class User {
      * Gets the principal investigators.
      *
      * @param conn the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return a LinkedHashMap of the PI's user_id mapped to the name
+     * @throws SQLException if an error occurs while accessing the database
      */
     public LinkedHashMap getAllPrincipalInvestigators(DataSource pool) throws SQLException {
         String query =
@@ -662,14 +660,14 @@ public class User {
         log.debug("in getAllPrincipalInvestigators");
         //log.debug("query = "+query);
         LinkedHashMap<String, String> piHash = new LinkedHashMap<String, String>();
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
                 piHash.put(dataRow[0], dataRow[1]);
             }
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -680,8 +678,8 @@ public class User {
      * Gets the principal investigator for each user_name.
      *
      * @param conn the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return the a HashMap of the user_name mapped to a principal investigator User object
+     * @throws SQLException if an error occurs while accessing the database
      */
     public HashMap getPrincipalInvestigatorsByUser(DataSource pool) throws SQLException {
 
@@ -696,7 +694,7 @@ public class User {
 
         String[] dataRow;
         HashMap<String, User> piHashMap = new HashMap<String, User>();
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, conn);
             int piNumRows = myResults.getNumRows();
             if (piNumRows > 0) {
@@ -706,8 +704,8 @@ public class User {
                 }
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return piHashMap;
@@ -717,8 +715,8 @@ public class User {
      * Retrieves the principal investigators along with a comma-delimited string of the users reporting to them.
      *
      * @param conn the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return a Hashtable mapping the PI's name to a List of subordinate names
+     * @throws SQLException if an error occurs while accessing the database
      */
     public Hashtable<String, List<String>> getSubordinateListByPI(DataSource pool) throws SQLException {
 
@@ -753,11 +751,11 @@ public class User {
 
         //log.debug("query = "+query);
         Hashtable<String, List<String>> piHash = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, conn);
             piHash = new ObjectHandler().getResultsAsHashtablePlusList(myResults);
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return piHash;
@@ -767,10 +765,10 @@ public class User {
      * Gets the user information as a string.
      *
      * @param conn the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return a string that looks like: Title. First_name Last_name from the
      * Institution in City, State (Email address: Email
      * Phone number: Telephone)
+     * @throws SQLException if an error occurs while accessing the database
      */
 
     public String getUserInfoAsString(DataSource pool) throws SQLException {
@@ -796,8 +794,8 @@ public class User {
      *
      * @param user_id the identifier for a user
      * @param conn    the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return the user_name of the user
+     * @throws SQLException if an error occurs while accessing the database
      */
     public String getUser_name(int user_id, DataSource pool) throws SQLException {
         log.debug("in getUser_name. ");
@@ -806,12 +804,12 @@ public class User {
                         "from USERS " +
                         "where user_id = ?";
         //log.debug("query = " + query);
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, user_id, conn);
             String user_name = myResults.getStringValueFromFirstRow();
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return user_name;
@@ -822,8 +820,8 @@ public class User {
      * Gets the person who approves website access
      *
      * @param conn the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return the User object of the person who can approve access
+     * @throws SQLException if an error occurs while accessing the database
      */
     public User getRegistrationApprover(DataSource pool) throws SQLException {
         log.debug("in RegistrationApprover");
@@ -837,8 +835,8 @@ public class User {
      *
      * @param user_id the identifier of the user
      * @param conn    the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return a User object
+     * @throws SQLException if an error occurs while accessing the database
      */
     public User getUser(int user_id, DataSource pool) throws SQLException {
 
@@ -854,7 +852,7 @@ public class User {
 
 
         User myUser = new User();
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, user_id, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -883,13 +881,12 @@ public class User {
 
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return myUser;
     }
-
 
 
     /**
@@ -897,8 +894,8 @@ public class User {
      *
      * @param user_name the user_name of the user
      * @param conn      the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return a User object
+     * @throws SQLException if an error occurs while accessing the database
      */
     public User getUser(String user_name, DataSource pool) throws SQLException {
 
@@ -912,14 +909,13 @@ public class User {
     }
 
 
-
     /**
      * Gets the user_id for this user_name
      *
      * @param user_name the user_name of the user
      * @param conn      the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return the user_id
+     * @throws SQLException if an error occurs while accessing the database
      */
     public int getUser_id(String user_name, DataSource pool) throws SQLException {
 
@@ -932,13 +928,13 @@ public class User {
 
         //log.debug("query = " + query);
         int user_id = -99;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, user_name, conn);
             user_id = myResults.getIntValueFromFirstRow();
             //log.debug("user_id="+user_id);
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -950,8 +946,8 @@ public class User {
      *
      * @param email the user's email address
      * @param conn  the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return the user's password
+     * @throws SQLException if an error occurs while accessing the database
      */
     public String getUserPassword(String email, DataSource pool) throws SQLException {
         log.debug("in getUserPassword");
@@ -961,7 +957,7 @@ public class User {
                         "from USERS u " +
                         "where upper(u.email) = ?";
         String password = "";
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, email.toUpperCase(), conn);
             String[] dataRow;
 
@@ -969,8 +965,8 @@ public class User {
                 password = dataRow[0];
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return password;
@@ -982,8 +978,8 @@ public class User {
      * @param first_name the user's first name
      * @param last_name  the user's last name
      * @param conn       the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return an array containing the user's password in [0] and the email in [1]
+     * @throws SQLException if an error occurs while accessing the database
      */
     public String[] getUserPassword(String first_name, String last_name, DataSource pool) throws SQLException {
         log.debug("in getUserPassword passing in first and last name");
@@ -994,7 +990,7 @@ public class User {
                         "where upper(u.first_name) = ? " +
                         "and upper(u.last_name) = ?";
         String[] values = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, first_name.toUpperCase(), last_name.toUpperCase(), conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -1003,8 +999,8 @@ public class User {
                 values[1] = dataRow[1];
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return values;
@@ -1016,8 +1012,8 @@ public class User {
      *
      * @param myUser the User object being tested
      * @param conn   the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return the user_id of a user that currently exists
+     * @throws SQLException if an error occurs while accessing the database
      */
     public int checkUserExists(User myUser, DataSource pool) throws SQLException {
         log.debug("in checkUserExists");
@@ -1028,7 +1024,7 @@ public class User {
                         + "where (user_name = ? "
                         + "or (first_name = ? and last_name = ?))";
         int user_id = -99;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{myUser.getUser_name(), myUser.getFirst_name(), myUser.getLast_name()}, conn);
 
             user_id = myResults.getIntValueFromFirstRow();
@@ -1036,8 +1032,8 @@ public class User {
             user_id = (user_id == -99 ? -1 : user_id);
 
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -1051,8 +1047,8 @@ public class User {
      * @param user_name the user_name for the user
      * @param password  the password for the user
      * @param conn      the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return a User object
+     * @throws SQLException if an error occurs while accessing the database
      */
     public User getUser(String user_name, String password, DataSource pool) throws SQLException {
 
@@ -1068,14 +1064,14 @@ public class User {
                         + "and password = ? "
                         + "and approved = 'Y'";
         int user_id = -99;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{user_name, password}, conn);
 
             user_id = myResults.getIntValueFromFirstRow();
 
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         user_id = (user_id == -99 ? -1 : user_id);
@@ -1111,7 +1107,7 @@ public class User {
                             + "'N')";
             PreparedStatement pstmt = null;
             java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-            try(Connection conn=pool.getConnection()) {
+            try (Connection conn = pool.getConnection()) {
                 pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
                 pstmt.setString(1, myUser.getTitle());
                 pstmt.setString(2, myUser.getFirst_name());
@@ -1275,7 +1271,6 @@ public class User {
         }
         pstmt.close();
     }*/
-
     public String[] getUserChipsForUserStatements(String typeOfQuery) {
 
         String[] query = new String[1];
@@ -1298,7 +1293,7 @@ public class User {
 
         List<List<String[]>> allResults = null;
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             allResults = new Results().getAllResults(query, userID, conn);
         } catch (SQLException e) {
             log.error("In exception of getUserChipsForUser", e);
@@ -1317,7 +1312,7 @@ public class User {
 
         PreparedStatement pstmt = null;
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             for (int i = 0; i < query.length; i++) {
                 pstmt = conn.prepareStatement(query[i],
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -1339,8 +1334,8 @@ public class User {
      *
      * @param hybridIDs the list of hybridIDs
      * @param conn      the database connection
-     * @throws Exception if an error occurs in sending email
      * @return an array of owner IDs
+     * @throws Exception if an error occurs in sending email
      */
     public int[] getChipsNeedingPermission(String hybridIDs, DataSource pool) throws SQLException {
         log.info("in getChipsNeedingPermission");
@@ -1355,12 +1350,12 @@ public class User {
                         " order by uc.owner_user_id";
         log.debug("query = " + query);
         int[] owners = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, this.getUser_id(), conn);
             owners = new ObjectHandler().getResultsAsIntArray(myResults, 0);
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return owners;
@@ -1390,12 +1385,12 @@ public class User {
 
         //log.debug("query = "+query);
         String arrayList = "";
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{user_id, owner_id}, conn);
             arrayList = new ObjectHandler().getResultsAsSeparatedString(myResults, ",", "'", 0);
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -1407,8 +1402,8 @@ public class User {
      *
      * @param user_id the id of the user
      * @param conn    the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return a comma-separated string of hybrid ids
+     * @throws SQLException if an error occurs while accessing the database
      */
     public String getMyArrays(int user_id, DataSource pool) throws SQLException {
 
@@ -1422,15 +1417,15 @@ public class User {
                         "order by uc.hybrid_id";
 
         //log.debug("query = "+query);
-        String hybridIDs=null;
-        try(Connection conn=pool.getConnection()){
+        String hybridIDs = null;
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, user_id, conn);
             //log.debug("number of Arrays = "+myResults.getNumRows());
             hybridIDs = "(" + (myResults.getNumRows() == 0 ? "" :
-                            new ObjectHandler().getResultsAsSeparatedString(myResults, ",", "", 0)) + ")";
+                    new ObjectHandler().getResultsAsSeparatedString(myResults, ",", "", 0)) + ")";
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -1443,8 +1438,8 @@ public class User {
      *
      * @param owner_id the id of the owner
      * @param conn     the database connection
-     * @throws SQLException if an error occurs while accessing the database
      * @return a Results object
+     * @throws SQLException if an error occurs while accessing the database
      */
     public Results getPendingRequests(int owner_id, DataSource pool) throws SQLException {
 
@@ -1459,10 +1454,10 @@ public class User {
                         "order by uc.hybrid_id, 2";
         //log.debug("query = "+query);
         Results myResults = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             myResults = new Results(query, owner_id, conn);
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return myResults;
@@ -1482,7 +1477,7 @@ public class User {
 
         PreparedStatement pstmt = null;
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-        try (Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -1580,7 +1575,7 @@ public class User {
         // prior to calling this method, userToDelete.setUserMainDir() must be called to set the
         // directory to delete
         //
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
             int userID = userToDelete.getUser_id();
             String userMainDir = userToDelete.getUserMainDir();
@@ -1590,7 +1585,7 @@ public class User {
             new Promoter().deleteAllPromoterResultsForUser(userID, pool);
             new GeneList().deleteUserGeneListsForUser(userID, pool);
             PreparedStatement pstmt = null;
-            boolean skipDeleteFiles=false;
+            boolean skipDeleteFiles = false;
             try {
                 String getDatasets =
                         "select dataset_id from datasets " +
@@ -1662,17 +1657,17 @@ public class User {
                 conn.commit();
             } catch (SQLException e) {
                 log.debug("error in deleteUser");
-                skipDeleteFiles=true;
+                skipDeleteFiles = true;
                 conn.rollback();
                 throw e;
             }
             conn.setAutoCommit(true);
-            if(!skipDeleteFiles) {
+            if (!skipDeleteFiles) {
                 log.debug("now deleting the user's directory.  Planning to delete everything in " + userToDelete.getUserMainDir());
                 new FileHandler().deleteAllFilesPlusDirectory(new File(userToDelete.getUserMainDir()));
             }
-        }catch(Exception e){
-            log.debug("SQL Exception:",e);
+        } catch (Exception e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
     }
@@ -1860,14 +1855,14 @@ public class User {
                             "set approved = 'Y' " +
                             "where user_id = ?";
             //log.debug("query = " + query);
-            try(Connection conn=pool.getConnection()){
+            try (Connection conn = pool.getConnection()) {
                 PreparedStatement pstmt = conn.prepareStatement(query,
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_UPDATABLE);
                 pstmt.setInt(1, requestor.getUser_id());
                 pstmt.executeUpdate();
-            }catch(SQLException e){
-                log.debug("SQL Exception:",e);
+            } catch (SQLException e) {
+                log.debug("SQL Exception:", e);
                 throw e;
             }
 
@@ -1932,7 +1927,7 @@ public class User {
 
             log.debug("in updateArrayApproval for approvals. ");
             //log.debug("query = " + query);
-            try(Connection conn=pool.getConnection()){
+            try (Connection conn = pool.getConnection()) {
                 PreparedStatement pstmt = conn.prepareStatement(query,
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_UPDATABLE);
@@ -1976,8 +1971,8 @@ public class User {
                 pstmt.executeUpdate();
 
                 pstmt.close();
-            }catch(SQLException e){
-                log.debug("SQL Exception:",e);
+            } catch (SQLException e) {
+                log.debug("SQL Exception:", e);
                 throw e;
             }
 
@@ -1995,7 +1990,7 @@ public class User {
             //log.debug("query = " + query);
             PreparedStatement pstmt = null;
 
-            try(Connection conn=pool.getConnection()) {
+            try (Connection conn = pool.getConnection()) {
                 pstmt = conn.prepareStatement(query,
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_UPDATABLE);
@@ -2117,12 +2112,12 @@ public class User {
 
         Results myResults = null;
 
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             myResults = new Results(query, conn);
             userId = myResults.getIntValueFromFirstRow();
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         if (userId > 0) {
@@ -2154,12 +2149,12 @@ public class User {
                         "UPPER(first_name) like '%" + piFirstName.toUpperCase() + "%' and UPPER(last_name) like '%" + piLastName.toUpperCase() + "%'";
 
         Results myResults = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             myResults = new Results(query, conn);
             numberOfUsersFound = myResults.getIntValueFromFirstRow();
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return numberOfUsersFound;

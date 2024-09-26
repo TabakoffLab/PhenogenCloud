@@ -1,12 +1,10 @@
 package edu.ucdenver.ccp.PhenoGen.data;
 
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
-
 
 
 import edu.ucdenver.ccp.util.sql.Results;
@@ -15,8 +13,9 @@ import edu.ucdenver.ccp.util.FileHandler;
 import edu.ucdenver.ccp.util.ObjectHandler;
 import edu.ucdenver.ccp.PhenoGen.util.DbUtils;
 //import edu.ucdenver.ccp.PhenoGen.util.AsyncCopyFiles;
-import edu.ucdenver.ccp.PhenoGen.web.mail.Email; 
-import edu.ucdenver.ccp.PhenoGen.web.SessionHandler; 
+import edu.ucdenver.ccp.PhenoGen.web.mail.Email;
+import edu.ucdenver.ccp.PhenoGen.web.SessionHandler;
+
 import java.util.ArrayList;
 import javax.sql.DataSource;
 
@@ -24,51 +23,50 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 /**
- * Class for handling data related to filter and statistics methods applied to a version of a dataset.  
+ * Class for handling data related to filter and statistics methods applied to a version of a dataset.
  * <br>
- *  @author  Spencer Mahaffey
+ *
+ * @author Spencer Mahaffey
  */
 
 public class FilterStep {
-  	///DB Access Variables
-        String selectq ="select * ";
-        String fromq= "from FILTER_PARAMETERS ";
-        String whereStatGroupID="where FILTER_GROUP_ID=? ";
-        String orderq="ORDER BY STEP_NUMBER ";
-        String updateq="UPDATE FILTER_PARAMTERS SET FILTER_NAME=?,FILTER_PARAMETERS=?,STEP_COUNT=? WHERE STEP_NUMBER=? AND FILTER_GROUP_ID=?";
-        String insertq="INSERT INTO FILTER_PARAMETERS (FILTER_GROUP_ID,FILTER_NAME,FILTER_PARAMETERS,STEP_NUMBER,STEP_COUNT) VALUES (?,?,?,?,?)";
-       
-    
-  	String filterName="";
-        FilterGroup fg;
-        String filterParam="";
-        int stepNumber=-1;
-        int stepCount=-1;
-        private Logger log=null;
-        
-        public FilterStep(){
-            log = Logger.getRootLogger();
+    /// DB Access Variables
+    String selectq = "select * ";
+    String fromq = "from FILTER_PARAMETERS ";
+    String whereStatGroupID = "where FILTER_GROUP_ID=? ";
+    String orderq = "ORDER BY STEP_NUMBER ";
+    String updateq = "UPDATE FILTER_PARAMTERS SET FILTER_NAME=?,FILTER_PARAMETERS=?,STEP_COUNT=? WHERE STEP_NUMBER=? AND FILTER_GROUP_ID=?";
+    String insertq = "INSERT INTO FILTER_PARAMETERS (FILTER_GROUP_ID,FILTER_NAME,FILTER_PARAMETERS,STEP_NUMBER,STEP_COUNT) VALUES (?,?,?,?,?)";
+
+
+    String filterName = "";
+    FilterGroup fg;
+    String filterParam = "";
+    int stepNumber = -1;
+    int stepCount = -1;
+    private Logger log = null;
+
+    public FilterStep() {
+        log = Logger.getRootLogger();
+    }
+
+    public FilterStep[] getFilterSteps(FilterGroup fg, DataSource pool) {
+        FilterStep[] ret = this.getFilterSteps(fg.getFilterGroupID(), pool);
+        for (int i = 0; i < ret.length; i++) {
+            ret[i].setFilterGroup(fg);
         }
-        
-        public FilterStep[] getFilterSteps(FilterGroup fg, DataSource pool){
-            FilterStep[] ret=this.getFilterSteps(fg.getFilterGroupID(),pool);
-            for(int i=0;i<ret.length;i++){
-                ret[i].setFilterGroup(fg);
-            }
-            return ret;
-        }
-        
-    public FilterStep[] getFilterSteps(int FilterGroupID, DataSource pool){
-        ArrayList<FilterStep> steps=new ArrayList<FilterStep>();
-        Connection conn=null;
-        try {
-            String query=selectq+fromq+whereStatGroupID;
-            conn=pool.getConnection();
+        return ret;
+    }
+
+    public FilterStep[] getFilterSteps(int FilterGroupID, DataSource pool) {
+        ArrayList<FilterStep> steps = new ArrayList<FilterStep>();
+        try (Connection conn = pool.getConnection()) {
+            String query = selectq + fromq + whereStatGroupID;
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, FilterGroupID);
             ResultSet rs = ps.executeQuery();
-            while(rs.next()){
-                FilterStep tmps=new FilterStep();
+            while (rs.next()) {
+                FilterStep tmps = new FilterStep();
                 tmps.setFilterName(rs.getString("FILTER_NAME"));
                 tmps.setFilterParameter(rs.getString("FILTER_PARAMETERS"));
                 tmps.setStepNumber(rs.getInt("STEP_NUMBER"));
@@ -76,24 +74,16 @@ public class FilterStep {
                 steps.add(tmps);
             }
             ps.close();
-            conn.close();
-            conn=null;
+
         } catch (SQLException ex) {
-            log.error("FilterStep SQL ERROR:"+ex);
-        }finally{
-                   if (conn != null) {
-                        try { conn.close(); } catch (SQLException e) { ; }
-                        conn = null;
-                   }
-                }
+            log.error("FilterStep SQL ERROR:" + ex);
+        }
         return steps.toArray(new FilterStep[0]);
     }
-    
-    public void addStep(int filterGroupID, String method,String parameters, int step_count, int stepNumber, DataSource pool){
-        Connection conn=null;
-        try {
-            String query=insertq;
-            conn=pool.getConnection();
+
+    public void addStep(int filterGroupID, String method, String parameters, int step_count, int stepNumber, DataSource pool) {
+        try (Connection conn = pool.getConnection()) {
+            String query = insertq;
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, filterGroupID);
             ps.setString(2, method);
@@ -102,24 +92,15 @@ public class FilterStep {
             ps.setInt(5, step_count);
             ps.executeUpdate();
             ps.close();
-            conn.close();
-            conn=null;
         } catch (SQLException ex) {
-            log.error("FilterStep SQL ERROR:"+ex);
-        }finally{
-                   if (conn != null) {
-                        try { conn.close(); } catch (SQLException e) { ; }
-                        conn = null;
-                   }
-                }
-        
+            log.error("FilterStep SQL ERROR:" + ex);
+        }
+
     }
-    
-    public void updateStep(String method,String param,int stepCount,DataSource pool){
-        Connection conn=null;
-        try {
-            String query=updateq;
-            conn=pool.getConnection();
+
+    public void updateStep(String method, String param, int stepCount, DataSource pool) {
+        try (Connection conn = pool.getConnection()) {
+            String query = updateq;
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, method);
             ps.setString(2, param);
@@ -132,17 +113,9 @@ public class FilterStep {
             this.setFilterParameter(param);
             this.setStepCount(stepCount);
             ps.close();
-            conn.close();
-            conn=null;
         } catch (SQLException ex) {
-            
-            log.error("FilterStep SQL ERROR:"+ex);
-        }finally{
-                   if (conn != null) {
-                        try { conn.close(); } catch (SQLException e) { ; }
-                        conn = null;
-                   }
-                }
+            log.error("FilterStep SQL ERROR:" + ex);
+        }
     }
 
     public FilterGroup getFilterGroup() {
@@ -184,7 +157,7 @@ public class FilterStep {
     public void setStepNumber(int stepNumber) {
         this.stepNumber = stepNumber;
     }
-        
-    
+
+
 }
 

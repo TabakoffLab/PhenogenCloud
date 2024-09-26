@@ -117,8 +117,7 @@
         String toHash = "generateTrack:" + chromosome + "_" + min + "_" + max + "_" + panel + "_" + track + "_" + myOrganism + "_" + genomeVer + "_" + rnaDatasetID + "_" + arrayTypeID + "_" + folderName + "_" + binSize + "_" + version +"_"+dataVer+ "_" + countType + "_" + bedFile + "_" + outputFile + "_" + type + "_" + web;
         if (!gdt.isRunning(toHash)) {
             AsyncGenerateTrack agt = new AsyncGenerateTrack(gdt, session, pool);
-            gdt.appendRunningMap(toHash, "True");
-            gdt.appendThreadList(agt);
+
             if (!track.startsWith("custom") && bedFile.equals("") && outputFile.equals("")) {
                 log.debug("calling GenerateTrack:"+track+":"+dataVer);
                 agt.setupGenerateTrackXML(chromosome, min, max, panel, track, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, folderName, binSize, version, countType, toHash,dataVer);
@@ -144,7 +143,10 @@
                     }
                 }
             }
-            agt.start();
+            if(gdt.appendRunningMap(toHash, "True")){
+            	gdt.appendThreadList(agt);
+            }
+            //agt.start();
             status = "success";
         } else {
             status = "already running/queued";

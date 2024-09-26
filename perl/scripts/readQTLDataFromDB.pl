@@ -40,7 +40,7 @@ sub readQTLDataFromDB{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$organism,$geneStart,$geneStop,$genomeVer,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$organism,$geneStart,$geneStop,$genomeVer,$connect)=@_;
 	
 	
 	#Initializing Arrays
@@ -55,7 +55,7 @@ sub readQTLDataFromDB{
 	}
 	
 	# PERL DBI CONNECT
-	$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#$connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	
 	# PREPARE THE QUERY for probesets
@@ -96,7 +96,7 @@ sub readQTLDataFromDB{
 		$cntQTL++;
 	}
 	$query_handle->finish();
-	$connect->disconnect();
+	#$connect->disconnect();
 	#close PSFILE;
 	
 	#print "Gene".scalar(keys %geneHOH)."\n";

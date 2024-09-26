@@ -1091,7 +1091,7 @@ public class Dataset {
             Results myResults = new Results(query, this.getDataset_id(), conn);
             hybridIDsSet = myObjectHandler.getResultsAsSet(myResults, 0);
             myResults.close();
-            conn.close();
+
         } catch (SQLException e) {
             throw e;
         }

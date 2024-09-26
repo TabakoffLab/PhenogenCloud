@@ -19,8 +19,16 @@
 	if((String) session.getAttribute("userID") != null && 
 		!((String) session.getAttribute("userID")).equals("-1")) { 
 		loggedIn = true;
-	} 
-	
+	}
+
+    String paramStr="";
+	Map params=request.getParameterMap();
+    Set keys=params.keySet();
+    Iterator<String> keyItr=keys.iterator();
+    while(keyItr.hasNext()){
+        String key=keyItr.next();
+        paramStr=paramStr+key+"="+request.getParameter(key)+"\n";
+    }
         String errorMsg = (String) session.getAttribute("errorMsg");
         String sendEmail = (String) session.getAttribute("sendEmail");
 
@@ -30,7 +38,7 @@
         	myEmail.setSubject("User '"+ userName + 
 			"' encountered system error '" + errorMsg +  
 			"' on PhenoGen website"); 
-		myEmail.setContent("System error " + errorMsg + " when on page "+caller);
+		myEmail.setContent("System error " + errorMsg + " when on page "+caller+"\n\nParams:"+paramStr);
 		log.debug("Sending an email message notifying phenogen.help that an error has occurred.");
         	try {
         		myEmail.sendEmailToAdministrator(adminEmail);

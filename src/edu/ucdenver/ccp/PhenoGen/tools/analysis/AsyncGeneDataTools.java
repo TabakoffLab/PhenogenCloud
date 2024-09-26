@@ -76,9 +76,11 @@ public class AsyncGeneDataTools extends Thread {
     private String[] tissues = new String[2];
     private GeneDataTools gdt = null;
     private ExecHandler myExec_session = null;
+    int maxThreadCount = 3;
+    String hashValue = "";
 
 
-    public AsyncGeneDataTools(HttpSession inSession, DataSource pool, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, int usageID, String genomeVer, boolean isEnsemblGene, String dataVer, String ensemblID1, GeneDataTools gdt) {
+    public AsyncGeneDataTools(HttpSession inSession, DataSource pool, String outputDir, String chr, int min, int max, int arrayTypeID, int rnaDS_ID, int usageID, String genomeVer, boolean isEnsemblGene, String dataVer, String ensemblID1, GeneDataTools gdt, String hashValue) {
         this.session = inSession;
         this.outputDir = outputDir;
         log = Logger.getRootLogger();
@@ -96,6 +98,8 @@ public class AsyncGeneDataTools extends Thread {
         this.dataVer = dataVer;
         this.ensemblID1 = ensemblID1;
         this.gdt = gdt;
+
+        this.hashValue = hashValue;
 
         log.debug("start");
 
@@ -139,6 +143,7 @@ public class AsyncGeneDataTools extends Thread {
     public void run() throws RuntimeException {
         log.debug("AsyncGeneDataTools - running");
         done = false;
+        Thread thisThread = Thread.currentThread();
         try {
             String tmpOutDir = "";
             if (gdt == null) {
@@ -146,12 +151,44 @@ public class AsyncGeneDataTools extends Thread {
             } else {
                 tmpOutDir = gdt.getFullPath() + "tmpData/browserCache/" + genomeVer + "/regionData/" + chrom + "/" + minCoord + "_" + maxCoord + "/";
             }
+            //wait for other Expr threads to finish
+            /*boolean waiting = true;
+            int myIndex = -1;
+            if (threadList.size() > 0) {
+                log.debug("AsyncGenerateTrack - non-zero threadlist - expr-" + chrom + "/" + minCoord + "_" + maxCoord + "/");
+                while (waiting) {
+                    int waitingOnCount = 0;
+                    boolean reachedMySelf = false;
+                    for (int i = 0; i < threadList.size() && !reachedMySelf; i++) {
+                        if (thisThread.equals(threadList.get(i))) {
+                            reachedMySelf = true;
+                            myIndex = i;
+                        } else {
+                            if (((Thread) threadList.get(i)).isAlive()) {
+                                waitingOnCount++;
+                            }
+                        }
+                    }
+                    if (waitingOnCount < maxThreadCount) {
+                        waiting = false;
+                    } else {
+                        try {
+                            //log.debug("WAITING PREVTHREAD");
+                            thisThread.sleep(2000);
+                        } catch (InterruptedException er) {
+                            log.error("wait interrupted", er);
+                        }
+                    }
+                }
+            }*/
+
+
             outputRNASeqExprFiles(tmpOutDir, chrom, minCoord, maxCoord, genomeVer, dataVer);
             log.debug("AsyncGeneDataTools - after ExprFiles:" + chrom + ":" + minCoord + ":" + maxCoord);
             if (genomeVer.toLowerCase().equals("rn7")) {
                 String newVer = "hrdp6";
                 if (dataVer.equals("hrdp6")) {
-                    newVer = "hrdp7";
+                    newVer = "hrdp7.1";
                 }
                 outputRNASeqExprFiles(tmpOutDir, chrom, minCoord, maxCoord, genomeVer, newVer);
             }
@@ -187,6 +224,7 @@ public class AsyncGeneDataTools extends Thread {
             }
         }
         done = true;
+        gdt.removeRunning(hashValue, thisThread);
     }
 
     private void outputProbesetIDFiles(String outputDir, String chr, int min, int max, int arrayTypeID, String genomeVer) {
@@ -346,7 +384,6 @@ public class AsyncGeneDataTools extends Thread {
                 }
             }
             ps.close();
-            conn.close();
         } catch (SQLException ex) {
             log.error("Error getting transcript probesets", ex);
         }
@@ -418,7 +455,6 @@ public class AsyncGeneDataTools extends Thread {
                 //log.debug("*********"+tissue+":"+build+":"+rs.getInt(1)+":"+rs.getInt(4));
             }
             ps.close();
-            conn.close();
         } catch (SQLException e) {
             success = false;
             log.error("Error in outputRNASeqExprFiles", e);
@@ -536,7 +572,7 @@ public class AsyncGeneDataTools extends Thread {
                     }
                     ps.close();
                 }
-                conn.close();
+
                 //log.debug("after R2");
                 //log.debug("PERLGENELIST:\n"+perlGeneList);
                 String heritFile = outputDir + dataVer + "_" + curTissue.getTissue() + "_herit.txt";
@@ -707,7 +743,7 @@ public class AsyncGeneDataTools extends Thread {
                     
                 }
                 ps.close();*/
-                conn.close();
+                //conn.close();
             } catch (SQLException e) {
                 log.error("\n\nError in outputRNASeqExprFiles", e);
             }
