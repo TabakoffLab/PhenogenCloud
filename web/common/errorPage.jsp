@@ -28,7 +28,14 @@
         String userName = "";
         String analysisPath = ""; 
         String content = ""; 
-
+	String paramStr="";
+    	Map params=request.getParameterMap();
+        Set keys=params.keySet();
+        Iterator<String> keyItr=keys.iterator();
+        while(keyItr.hasNext()){
+            String key=keyItr.next();
+            paramStr=paramStr+key+"="+request.getParameter(key)+"\n";
+        }
 	String sessionAlive = (String) request.getSession(false).getAttribute("userID");
 	if(session.getAttribute("errorPageMsg")!=null){
 		errorPageMsg=(String)session.getAttribute("errorPageMsg");
