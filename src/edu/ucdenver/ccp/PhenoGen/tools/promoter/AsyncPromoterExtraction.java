@@ -75,7 +75,6 @@ public class AsyncPromoterExtraction implements Runnable {
                                    GeneListAnalysis myGeneListAnalysis) {
 
         log = Logger.getRootLogger();
-
         this.session = session;
         this.fileName = fileName;
         this.upstreamStart = upstreamStart;
@@ -84,7 +83,6 @@ public class AsyncPromoterExtraction implements Runnable {
         this.geneFile = geneDir + "genelist.txt";
         this.runningMeme = runningMeme;
         this.myGeneListAnalysis = myGeneListAnalysis;
-
         this.geneArray = ((GeneList) session.getAttribute("selectedGeneList")).getGenes();
         this.perlDir = (String) session.getAttribute("perlDir") + "scripts/";
         this.perlEnvVar = (String) session.getAttribute("perlEnvVar");
@@ -327,4 +325,4 @@ public class AsyncPromoterExtraction implements Runnable {
         log.debug("done with AsyncPromoterExtraction run method");
     }
 }
- 
+

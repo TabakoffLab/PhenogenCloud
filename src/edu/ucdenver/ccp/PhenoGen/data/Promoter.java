@@ -198,7 +198,7 @@ public class Promoter {
                         "(promoter_id, gene_list_id, gene_id) values " +
                         "(?, ?, ?)";
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -216,9 +216,8 @@ public class Promoter {
             }
 
             pstmt.close();
-            conn.close();
         } catch (SQLException e) {
-            log.debug("SQL Exception:",e);
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -355,10 +354,8 @@ public class Promoter {
         //"and pr.user_id = u.user_id";
         log.debug("in getPromoterResult");
         //log.debug("query = " + query);
-        Connection conn = null;
         Promoter newPromoter = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, promoter_id, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -367,23 +364,11 @@ public class Promoter {
             myResults.close();
         } catch (SQLException e) {
             throw e;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
 
 
         return newPromoter;
     }
-
-
-
-
 
 
     /**
@@ -433,7 +418,7 @@ public class Promoter {
         query[1] =
                 "delete from promoter_result_genes prg  " +
                         "where promoter_id = ?";
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             for (int i = 0; i < query.length; i++) {
                 //log.debug("i = " + i + ", query = " + query[i]);
                 PreparedStatement pstmt = conn.prepareStatement(query[i],
@@ -444,9 +429,8 @@ public class Promoter {
                 pstmt.executeUpdate();
                 pstmt.close();
             }
-            conn.close();
         } catch (SQLException e) {
-            log.debug("SQL Exception:",e);
+            log.debug("SQL Exception:", e);
             throw e;
         }
     }
@@ -506,7 +490,7 @@ public class Promoter {
 
         List<List<String[]>> allResults = null;
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             allResults = new Results().getAllResults(query, userID, conn);
         } catch (SQLException e) {
             log.error("In exception of getAllPromoterResultsForUser", e);
@@ -525,7 +509,7 @@ public class Promoter {
 
         PreparedStatement pstmt = null;
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             for (int i = 0; i < query.length; i++) {
                 log.debug("i = " + i + ", query = " + query[i]);
                 pstmt = conn.prepareStatement(query[i],
@@ -585,7 +569,7 @@ public class Promoter {
                         "where analysis_type = 'oPOSSUM' " +
                         "and gene_list_id = ? ";
 
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             for (int i = 0; i < query.length; i++) {
                 //log.debug("i = " + i + ", query = " + query[i]);
                 PreparedStatement pstmt = conn.prepareStatement(query[i],
@@ -596,8 +580,8 @@ public class Promoter {
                 pstmt.executeUpdate();
                 pstmt.close();
             }
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 

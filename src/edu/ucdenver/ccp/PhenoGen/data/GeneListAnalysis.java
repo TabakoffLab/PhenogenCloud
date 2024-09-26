@@ -203,7 +203,7 @@ public class GeneListAnalysis {
      * @throws SQLException if a database error occurs
      */
     public int createGeneListAnalysis(DataSource pool) throws SQLException {
-        int analysis_id =-99 ;
+        int analysis_id = -99;
         GeneList myGeneList = new GeneList();
         log.debug("analysis_id = , gene_list_id = " + this.getGene_list_id());
         String query =
@@ -213,7 +213,7 @@ public class GeneListAnalysis {
                         "( ?, ?, ?, ?, " +
                         "?, ?, ?, ?, ?, ?)";
 
-        try( Connection conn=pool.getConnection() ) {
+        try (Connection conn = pool.getConnection()) {
             log.debug("in GeneListAnalysis.createGeneListAnalysis.");
             PreparedStatement pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             //pstmt.setInt(1, analysis_id);
@@ -277,7 +277,7 @@ public class GeneListAnalysis {
         //log.debug("in getAllGeneListAnalysisResults");
         //log.debug("query = " + query);
         List<GeneListAnalysis> myGeneListAnalysisResults = new ArrayList<GeneListAnalysis>();
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, gene_list_id, conn);
             String[] dataRow;
 
@@ -287,18 +287,14 @@ public class GeneListAnalysis {
                 myGeneListAnalysisResults.add(newGeneListAnalysis);
             }
             myResults.close();
-            conn.close();
         } catch (SQLException e) {
             log.debug("SQL Error:", e);
             throw e;
         }
         GeneListAnalysis[] myGeneListAnalysisResultArray = (GeneListAnalysis[]) myGeneListAnalysisResults.toArray(
-                        new GeneListAnalysis[myGeneListAnalysisResults.size()]);
+                new GeneListAnalysis[myGeneListAnalysisResults.size()]);
         return myGeneListAnalysisResultArray;
     }
-
-
-
 
 
     /**
@@ -316,7 +312,7 @@ public class GeneListAnalysis {
                                                          String analysis_type, DataSource pool) throws SQLException {
         SQLException err = null;
         GeneListAnalysis[] ret = new GeneListAnalysis[0];
-        try(Connection conn = pool.getConnection() ) {
+        try (Connection conn = pool.getConnection()) {
 
             String query =
                     "select ga.analysis_id, " +
@@ -363,15 +359,15 @@ public class GeneListAnalysis {
             myResults.close();
 
             ret = myGeneListAnalysisResults.toArray(new GeneListAnalysis[myGeneListAnalysisResults.size()]);
-            conn.close();
 
             log.debug("finished getGeneListAnalysisResults");
         } catch (SQLException e) {
-            log.debug("SQL ERROR: ",e);
+            log.debug("SQL ERROR: ", e);
             throw e;
         }
         return ret;
     }
+
     /**
      * Returns the particular gene list analysis type results for this user and/or gene_list_id
      *
@@ -412,7 +408,7 @@ public class GeneListAnalysis {
         log.debug("in getGeneListAnalysisResults");
         log.debug("query = " + query);
         List<GeneListAnalysis> myGeneListAnalysisResults = new ArrayList<GeneListAnalysis>();
-        try( Connection conn = pool.getConnection() ) {
+        try (Connection conn = pool.getConnection()) {
             Object[] parameters = new Object[3];
             parameters[0] = user_id;
             parameters[1] = analysis_type;
@@ -432,8 +428,8 @@ public class GeneListAnalysis {
             ret = myGeneListAnalysisResults.toArray(new GeneListAnalysis[myGeneListAnalysisResults.size()]);
             log.debug("finished getGeneListAnalysisResults");
         } catch (SQLException e) {
-            log.debug("SQL Exception:",e);
-           throw e;
+            log.debug("SQL Exception:", e);
+            throw e;
         }
         return ret;
     }
@@ -487,7 +483,7 @@ public class GeneListAnalysis {
 
         SQLException err = null;
         GeneListAnalysis newGeneListAnalysis = new GeneListAnalysis();
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
 
             String query =
                     "select ga.analysis_id, " +
@@ -523,10 +519,9 @@ public class GeneListAnalysis {
             myResults.close();
 
 
-            conn.close();
         } catch (SQLException e) {
-            log.debug("SQL Error:",e);
-            throw(e);
+            log.debug("SQL Error:", e);
+            throw (e);
         }
         return newGeneListAnalysis;
     }
@@ -543,7 +538,7 @@ public class GeneListAnalysis {
 
         SQLException err = null;
         GeneListAnalysis newGeneListAnalysis = new GeneListAnalysis();
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             String query =
                     "select ga.analysis_id, " +
                             "ga.description, " +
@@ -576,16 +571,14 @@ public class GeneListAnalysis {
                 newGeneListAnalysis.setAnalysisGeneList(new GeneList().getGeneList(newGeneListAnalysis.getGene_list_id(), pool));
             }
             myResults.close();
-            conn.close();
+
         } catch (SQLException e) {
-            log.debug("SQL Error:",e);
-            throw(e);
+            log.debug("SQL Error:", e);
+            throw (e);
         }
 
         return newGeneListAnalysis;
     }
-
-
 
 
     /**
@@ -622,15 +615,15 @@ public class GeneListAnalysis {
                         "where analysis_id = ?";
 
         log.debug("in updateVisible.  analysis = " + this.getDescription());
-        try(Connection conn = pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
             pstmt.setInt(1, this.getAnalysis_id());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            log.debug("SQL Error:",e);
-            throw(e);
+            log.debug("SQL Error:", e);
+            throw (e);
         }
     }
 
@@ -646,7 +639,7 @@ public class GeneListAnalysis {
                 "update gene_list_analyses " +
                         "set status = ? " +
                         "where analysis_id = ?";
-        try(Connection conn =pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
 
             log.debug("in updateStatus.  analysis = " + this.getDescription());
             PreparedStatement pstmt = conn.prepareStatement(query,
@@ -656,8 +649,8 @@ public class GeneListAnalysis {
             pstmt.setInt(2, this.getAnalysis_id());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            log.debug("SQL Error:",e);
-            throw(e);
+            log.debug("SQL Error:", e);
+            throw (e);
         }
     }
 
@@ -669,7 +662,7 @@ public class GeneListAnalysis {
 
     public void updatePath(DataSource pool, String path) throws SQLException {
         this.setPath(path);
-        try(Connection conn =pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             String query =
                     "update gene_list_analyses " +
                             "set path = ? " +
@@ -682,10 +675,10 @@ public class GeneListAnalysis {
             pstmt.setString(1, this.getPath());
             pstmt.setInt(2, this.getAnalysis_id());
             pstmt.executeUpdate();
-            conn.close();
+
         } catch (SQLException e) {
-            log.debug("SQL Error:",e);
-            throw(e);
+            log.debug("SQL Error:", e);
+            throw (e);
         }
     }
 
@@ -696,7 +689,7 @@ public class GeneListAnalysis {
      */
 
     public void updateStatusVisible(DataSource pool, String status) throws SQLException {
-        try(Connection conn =pool.getConnection())  {
+        try (Connection conn = pool.getConnection()) {
             String query =
                     "update gene_list_analyses " +
                             "set status = ?, visible = 1" +
@@ -710,8 +703,8 @@ public class GeneListAnalysis {
             pstmt.setInt(2, this.getAnalysis_id());
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            log.debug("SQL Error:",e);
-            throw(e);
+            log.debug("SQL Error:", e);
+            throw (e);
         }
     }
 
@@ -746,7 +739,7 @@ public class GeneListAnalysis {
                         "where parameter_group_id = ?";
 
         PreparedStatement pstmt = null;
-        try(Connection conn = pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
             try {
                 int paramGroupID = thisGLA.getParameter_group_id();
@@ -770,7 +763,7 @@ public class GeneListAnalysis {
                 pstmt.executeUpdate();
                 pstmt.close();
                 conn.commit();
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 log.error("In exception of deleteGeneListAnalysisResult", e);
                 conn.rollback();
                 throw e;
@@ -806,7 +799,7 @@ public class GeneListAnalysis {
 
         GeneListAnalysis thisGLA = getGeneListAnalysis(analysis_id, pool);
 
-        try( Connection conn = pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
             try {
                 int paramGroupID = thisGLA.getParameter_group_id();
@@ -828,7 +821,7 @@ public class GeneListAnalysis {
                 pstmt.executeUpdate();
                 conn.commit();
                 conn.setAutoCommit(true);
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 log.error("In exception of deleteGeneListAnalysisResult", e);
                 conn.rollback();
                 throw e;
@@ -837,9 +830,6 @@ public class GeneListAnalysis {
             throw e;
         }
     }
-
-
-
 
 
     /**
@@ -883,7 +873,7 @@ public class GeneListAnalysis {
             if (filesInDir[i].getName().indexOf(thisGLA.getCreate_date_as_string()) > -1 ||
                     filesInDir[i].getName().indexOf(thisGLA.getCreate_date_for_filename()) > -1 ||
                     thisGLA.getAnalysis_type().equals("GO") || thisGLA.getAnalysis_type().equals("multiMiR")
-                    ) {
+            ) {
                 try {
                     if (!filesInDir[i].delete()) {
                         emptyFolder = false;
@@ -942,7 +932,7 @@ public class GeneListAnalysis {
             if (filesInDir[i].getName().indexOf(thisGLA.getCreate_date_as_string()) > -1 ||
                     filesInDir[i].getName().indexOf(thisGLA.getCreate_date_for_filename()) > -1 ||
                     thisGLA.getAnalysis_type().equals("GO") || thisGLA.getAnalysis_type().equals("multiMiR")
-                    ) {
+            ) {
                 try {
                     if (!filesInDir[i].delete()) {
                         emptyFolder = false;
@@ -963,8 +953,6 @@ public class GeneListAnalysis {
     }
 
 
-
-
     /**
      * Deletes all gene list analyses records for a gene list
      *
@@ -976,7 +964,7 @@ public class GeneListAnalysis {
         String select = "select analysis_id " +
                 "from gene_list_analyses " +
                 "where gene_list_id = ?";
-        try(Connection conn = pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(select,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -990,12 +978,10 @@ public class GeneListAnalysis {
             }
             pstmt.close();
         } catch (SQLException e) {
-            log.debug("SQL Error:",e);
-            throw(e);
+            log.debug("SQL Error:", e);
+            throw (e);
         }
     }
-
-
 
 
     public String toString() {

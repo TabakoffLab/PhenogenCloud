@@ -70,7 +70,7 @@ public class GeneList {
     private String gene_list_owner;
     private String organism;
     private String userIsOwner;
-    private String alternateIdentifierSource="";
+    private String alternateIdentifierSource = "";
     private int alternateIdentifierSourceID;
     private String alternateIdentifierSourceLinkColumn;
     private String create_date_as_string;
@@ -401,8 +401,8 @@ public class GeneList {
      *
      * @param geneListID the identifier of the gene list
      * @param conn       the database connection
-     * @throws SQLException if a database error occurs
      * @return the GeneList object
+     * @throws SQLException if a database error occurs
      */
     public GeneList getGeneList(int geneListID, DataSource pool) throws SQLException {
         GeneList myGeneList = null;
@@ -414,7 +414,7 @@ public class GeneList {
                         "where gl.gene_list_id = ? " +
                         geneListGroupByClause;
         log.debug(query);
-        try(Connection conn = pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, geneListID, conn);
             String[] dataRow = myResults.getNextRow();
             myGeneList = setupGeneListValues(dataRow);
@@ -436,8 +436,6 @@ public class GeneList {
     }
 
 
-
-
     /**
      * Constructs the path where the files for the public GeneLists are stored
      *
@@ -454,8 +452,8 @@ public class GeneList {
      *
      * @param parameterGroupID the identifier of the parameter group that contains the phenotype data
      * @param pool             the database connection pool
-     * @throws SQLException if a database error occurs
      * @return an array of gene lists that are associated with the phenotype
+     * @throws SQLException if a database error occurs
      */
     public GeneList[] getGeneListsForPhenotype(int parameterGroupID, DataSource pool) throws SQLException {
         GeneList[] tmp = null;
@@ -476,7 +474,7 @@ public class GeneList {
 
         log.debug("In getGeneListsForPhenotype");
         List<GeneList> geneLists = new ArrayList<GeneList>();
-        try(Connection conn = pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, parameterGroupID, conn);
             String dataRow[] = null;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -484,7 +482,6 @@ public class GeneList {
                 geneLists.add(thisGeneList);
             }
             myResults.close();
-            conn.close();
         } catch (SQLException e) {
             throw e;
         }
@@ -499,9 +496,9 @@ public class GeneList {
      * @param fieldValues     mapping of keys to values from data entered by the user
      * @param selectedDataset the Dataset being analyzed
      * @param pool            the database connection
-     * @throws SQLException if a database error occurs
-     * @throws IOException if an IO error occurs
      * @return an array of gene lists that are associated with the phenotype
+     * @throws SQLException if a database error occurs
+     * @throws IOException  if an IO error occurs
      */
     public File writeGeneListToFile(Dataset selectedDataset, Hashtable<String, String> fieldValues, DataSource pool) throws SQLException, IOException {
         log.debug("in writeGeneListToFile. geneListID = " + this.getGene_list_id());
@@ -516,7 +513,7 @@ public class GeneList {
 
             String[] geneListArray = null;
 
-            getGenesAsArray("Original",pool);
+            getGenesAsArray("Original", pool);
 
             //log.debug("geneListArray = "); myDebugger.print(geneListArray);
             if (((String) fieldValues.get("translateGeneList")).equals("Y")) {
@@ -610,13 +607,14 @@ public class GeneList {
         //log.debug("adjPValueIdx = "+adjPValueIdx);
         return indexHash;
     }
+
     /**
      * Gets the values used as headings for a statistical analysis.
      *
      * @param geneListID the identifier of the gene list
      * @param conn       the database connection
-     * @throws SQLException if a database error occurs
      * @return an array of column headings
+     * @throws SQLException if a database error occurs
      */
     public String[] getColumnHeadings(int geneListID, DataSource pool) throws SQLException {
         //log.debug("in getColumnHeadings. geneListID = " + geneListID);
@@ -638,7 +636,7 @@ public class GeneList {
                         "order by sc.sort_order, if(gv.group_number='NA', 0, cast(gv.group_number as UNSIGNED))";
 
         //log.debug("query = "+query);
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, geneListID, conn);
             String[] dataRow;
 
@@ -654,8 +652,8 @@ public class GeneList {
                 i++;
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -666,11 +664,11 @@ public class GeneList {
      * Creates a record in the gene_lists table.  Also creates records in the gene_list_users table.
      *
      * @param conn the database connection
-     * @throws SQLException if a database error occurs
      * @return the identifier of the gene list
+     * @throws SQLException if a database error occurs
      */
     public int createGeneList(DataSource pool) throws SQLException {
-        gene_list_id=-99;
+        gene_list_id = -99;
         log.debug("in createGeneList");
         log.debug("gene_list_id = " + gene_list_id + ", and path = " + this.getPath());
 
@@ -686,7 +684,7 @@ public class GeneList {
                         "?)";
 
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-        try(Connection conn1=pool.getConnection()) {
+        try (Connection conn1 = pool.getConnection()) {
             PreparedStatement pstmt = conn1.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             //pstmt.setInt(1, gene_list_id);
             pstmt.setString(1, this.getGene_list_name());
@@ -722,7 +720,6 @@ public class GeneList {
                 //log.debug("here2 this.gene_list_users = "); myDebugger.print(this.getGene_list_users());
                 createGeneListUsers(pool);
             }
-            conn1.close();
         } catch (SQLException e) {
             log.error("Error creating genelist", e);
             throw e;
@@ -761,9 +758,6 @@ public class GeneList {
     }
 
 
-
-
-
     public String[] getUserGeneListsForUserStatements(String typeOfQuery) {
 
         String[] query = new String[1];
@@ -788,9 +782,8 @@ public class GeneList {
 
         List<List<String[]>> allResults = null;
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             allResults = new Results().getAllResults(query, userID, conn);
-            conn.close();
         } catch (SQLException e) {
             log.error("In exception of getUserGeneListsForUser", e);
             throw e;
@@ -807,7 +800,7 @@ public class GeneList {
 
         PreparedStatement pstmt = null;
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             for (int i = 0; i < query.length; i++) {
                 pstmt = conn.prepareStatement(query[i],
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -835,7 +828,7 @@ public class GeneList {
         String query =
                 "delete from user_gene_lists " +
                         "where gene_list_id = ?";
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -843,12 +836,11 @@ public class GeneList {
 
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
     }
-
 
 
     /**
@@ -872,11 +864,10 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public void deleteGeneList(DataSource pool) throws SQLException {
-        Connection conn = null;
         log.debug("in GeneList.delete. gene_list_id = " + this.getGene_list_id());
 
         int gene_list_id = this.getGene_list_id();
-        try {
+        try (Connection conn = pool.getConnection()) {
             deleteGeneListUsers(pool);
             new SessionHandler().deleteSessionActivitiesForGeneList(gene_list_id, pool);
             new LitSearch().deleteAllLitSearchesForGeneList(gene_list_id, pool);
@@ -886,7 +877,6 @@ public class GeneList {
 
             this.setAlternateIdentifierSource("All");
             deleteGenesForGeneList(gene_list_id, pool);
-            conn = pool.getConnection();
             conn.setAutoCommit(false);
             String query =
                     "delete from gene_lists " +
@@ -903,13 +893,8 @@ public class GeneList {
             conn.commit();
 
             conn.setAutoCommit(true);
-            conn.close();
         } catch (SQLException e) {
             log.error("in exception of GeneList.deleteGeneList()", e);
-            if (conn != null && !conn.isClosed()) {
-                conn.rollback();
-                conn.close();
-            }
             throw e;
         }
     }
@@ -922,13 +907,11 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public void deleteGene_values(int gene_list_id, DataSource pool) throws SQLException {
-        Connection conn = null;
         log.debug("in deleteGene_values");
         String query =
                 "delete from gene_values " +
                         "where gene_list_id = ?";
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -936,12 +919,9 @@ public class GeneList {
 
             pstmt.executeUpdate();
             pstmt.close();
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-            throw new SQLException();
+
+            throw e;
         }
     }
 
@@ -958,7 +938,7 @@ public class GeneList {
                 "delete from alternate_identifiers " +
                         "where gene_list_id = ? " +
                         "and source like ? ";
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -967,8 +947,8 @@ public class GeneList {
 
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
     }
@@ -989,7 +969,7 @@ public class GeneList {
         String query =
                 "delete from genes " +
                         "where gene_list_id = ?";
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -997,12 +977,11 @@ public class GeneList {
 
             pstmt.executeUpdate();
             pstmt.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception ",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception ", e);
             throw e;
         }
     }
-
 
 
     /**
@@ -1040,11 +1019,8 @@ public class GeneList {
 
         //log.debug("in createAlternateIdentifiers");
         //log.debug("query = "+query);
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        try {
-            conn = pool.getConnection();
-            pstmt = conn.prepareStatement(query,
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
             pstmt.setInt(1, myGeneList.getGene_list_id());
@@ -1098,18 +1074,9 @@ public class GeneList {
                 //log.debug("getGenesHash and getGenesHashMap are both null");
             }
             pstmt.close();
-            conn.close();
         } catch (SQLException e) {
             log.error("In exception of createAlternateIdentifiers", e);
             throw e;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
     }
 
@@ -1126,9 +1093,7 @@ public class GeneList {
                         "(gene_list_id, user_id) " +
                         "values " +
                         "(?, ?)";
-        Connection conn1 = null;
-        try {
-            conn1 = pool.getConnection();
+        try (Connection conn1 = pool.getConnection()) {
             PreparedStatement pstmt = conn1.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -1148,17 +1113,9 @@ public class GeneList {
                 log.debug("are there any users? NO");
             }
             pstmt.close();
-            conn1.close();
+
         } catch (SQLException e) {
             throw e;
-        } finally {
-            if (conn1 != null && !conn1.isClosed()) {
-                try {
-                    conn1.close();
-                    conn1 = null;
-                } catch (SQLException e) {
-                }
-            }
         }
     }
 
@@ -1281,8 +1238,8 @@ public class GeneList {
      *
      * @param datasetVersion the DatasetVersion object
      * @param conn           the database connection
-     * @throws SQLException if a database error occurs
      * @return An array of GeneList objects
+     * @throws SQLException if a database error occurs
      */
     public GeneList[] getGeneListsForDatasetVersion(Dataset.DatasetVersion datasetVersion, DataSource pool) throws SQLException {
         //log.debug("in getGeneListsforDatasetVersion. dataset_id = " + datasetVersion.getDataset().getDataset_id() + "version = "+datasetVersion.getVersion());
@@ -1298,7 +1255,7 @@ public class GeneList {
         //log.debug("query = "+query);
         List<GeneList> geneLists = new ArrayList<GeneList>();
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{datasetVersion.getDataset().getDataset_id(), datasetVersion.getVersion()}, conn);
             String dataRow[] = null;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -1306,9 +1263,8 @@ public class GeneList {
                 geneLists.add(thisGeneList);
             }
             myResults.close();
-            conn.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -1322,8 +1278,8 @@ public class GeneList {
      *
      * @param user_id The ID of the user
      * @param conn    the database connection
-     * @throws SQLException if a database error occurs
      * @return An array of GeneList objects
+     * @throws SQLException if a database error occurs
      */
     public GeneList[] getGeneListsForAllDatasetsForUser(int user_id, DataSource pool) throws SQLException {
         //log.debug("in getGeneListsForAllDatasetsForUser. user_id = " + user_id);
@@ -1356,7 +1312,7 @@ public class GeneList {
 
         //log.debug("query = "+query);
         List<GeneList> geneLists = new ArrayList<GeneList>();
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             String[] dataRow;
             Results myResults = new Results(query, new Object[]{user_id, user_id}, conn);
 
@@ -1366,8 +1322,8 @@ public class GeneList {
                 geneLists.add(thisGeneList);
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -1385,8 +1341,8 @@ public class GeneList {
      * @param dataset_id The ID of the dataset
      * @param version    The version number of the dataset or -99 to retrieve for all versions
      * @param conn       the database connection
-     * @throws SQLException if a database error occurs
      * @return An array of GeneList objects
+     * @throws SQLException if a database error occurs
      */
     public GeneList[] getGeneListsForDataset(int user_id, int dataset_id, int version, DataSource pool) throws SQLException {
         log.debug("in getGeneListsForDataset. user_id = " + user_id + ", dataset_id = " + dataset_id + ", version = " + version);
@@ -1422,7 +1378,7 @@ public class GeneList {
         }
         Object[] parameters = (Object[]) new ObjectHandler().getAsArray(parameterList, Integer.class);
         List<GeneList> geneLists = new ArrayList<GeneList>();
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, parameters, conn);
 
 
@@ -1431,8 +1387,8 @@ public class GeneList {
                 geneLists.add(thisGeneList);
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception", e);
             throw e;
         }
 
@@ -1446,8 +1402,8 @@ public class GeneList {
      *
      * @param gene_list_id The ID of the gene list
      * @param conn         the database connection
-     * @throws SQLException if a database error occurs
      * @return a PreparedStatement
+     * @throws SQLException if a database error occurs
      */
     public User[] getGeneListUsers(int gene_list_id, DataSource pool) throws SQLException {
         log.debug("In getGeneListUsers");
@@ -1466,7 +1422,7 @@ public class GeneList {
 
         //log.debug("query = "+query);
         List<User> userList = new ArrayList<User>();
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, gene_list_id, conn);
             String[] dataRow;
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -1475,8 +1431,8 @@ public class GeneList {
                 userList.add(thisUser);
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         User[] myUsers = (User[]) myObjectHandler.getAsArray(userList, User.class);
@@ -1497,8 +1453,8 @@ public class GeneList {
      * @param organism      The organism of the gene lists requested or "All" or "MmOrRn" or "MmOrHs"
      * @param geneListTypes Types of genelists to include or "All"
      * @param conn          the database connection
-     * @throws SQLException if a database error occurs
      * @return An array of GeneList objects
+     * @throws SQLException if a database error occurs
      */
     public GeneList[] getGeneLists(int user_id, String organism, String geneListTypes, DataSource pool) throws SQLException {
 
@@ -1573,8 +1529,6 @@ public class GeneList {
         }
 
 
-
-
         log.debug("userid:" + user_id);
         Results myResults = new Results(query, parameters, pool);
         log.debug("geneList:after my Results");
@@ -1594,8 +1548,6 @@ public class GeneList {
 
         return geneListArray;
     }
-
-
 
 
     /**
@@ -1645,7 +1597,6 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public String checkGenes(int geneListID, DataSource pool) throws SQLException {
-        Connection conn = null;
         String query =
                 "select gene_id " +
                         "from genes g, gene_lists gl " +
@@ -1657,18 +1608,15 @@ public class GeneList {
                         "	where i.identifier = g.gene_id " +
                         "	and gl.organism = i.organism)";
         String listOfGenes;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
+
             Results myResults = new Results(query, geneListID, conn);
             listOfGenes = new ObjectHandler().getResultsAsSeparatedString(myResults, "\n", "", 0);
 
             myResults.close();
-            conn.close();
+
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-            throw new SQLException();
+            throw e;
         }
         return listOfGenes;
     }
@@ -1703,7 +1651,7 @@ public class GeneList {
         //log.debug("query = "+query);
         int statisticCode = -99;
         String[] dataRow;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, columnHeading, conn);
 
             while ((dataRow = myResults.getNextRow()) != null) {
@@ -1711,7 +1659,7 @@ public class GeneList {
             }
 
             myResults.close();
-        }catch(SQLException e) {
+        } catch (SQLException e) {
             log.debug("SQL Exception:", e);
             throw e;
         }
@@ -1731,7 +1679,6 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public int createStatisticCode(String columnHeading, int sortOrder, String statisticType, DataSource pool) throws SQLException {
-        Connection conn = null;
         String query =
                 "insert into statistic_codes " +
                         "( description, sort_order, experiment_type) " +
@@ -1741,8 +1688,7 @@ public class GeneList {
         PreparedStatement pstmt = null;
         //log.debug("query = "+query);
         int statisticCode = -99;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             //statisticCode = myDbUtils.getUniqueID("statistic_codes_seq", conn);
             pstmt = conn.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
             //pstmt.setInt(1, statisticCode);
@@ -1755,12 +1701,10 @@ public class GeneList {
                 statisticCode = rs.getInt(1);
             }
             pstmt.close();
-            conn.close();
+
         } catch (SQLException e) {
             log.error("in exception of createStatisticCode", e);
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
+
             throw e;
         }
         return statisticCode;
@@ -1814,7 +1758,7 @@ public class GeneList {
         log.debug("filename = " + filename);
         //log.debug("query = " + query);
         String gene_id = "";
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
 
             conn.setAutoCommit(false);
             String statisticalMethod = "";
@@ -1935,7 +1879,6 @@ public class GeneList {
             createAlternateIdentifiers(this, pool);
             conn.commit();
             conn.setAutoCommit(true);
-            conn.close();
         } catch (SQLException e) {
             if (e.getErrorCode() == 1) {
                 log.error("Got a duplicate key SQLException while in loadFromFile for gene_id = " + gene_id);
@@ -1956,7 +1899,7 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public void loadGeneListFromList(List geneList, int gene_list_id, DataSource pool) throws SQLException, IOException {
-        Connection conn = null;
+
         log.debug("List contains " + geneList.size() + " genes.");
 
         String query =
@@ -1965,8 +1908,7 @@ public class GeneList {
                         "values (?, ?)";
 
         log.info("in loadGeneListFromList");
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -1993,13 +1935,9 @@ public class GeneList {
             conn.commit();
             pstmt.close();
             conn.setAutoCommit(true);
-            conn.close();
+
         } catch (SQLException e) {
             log.error("in exception of loadGeneListFromList", e);
-            if (conn != null && !conn.isClosed()) {
-                conn.rollback();
-                conn.close();
-            }
             throw e;
         }
     }
@@ -2012,7 +1950,6 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public Set<String> getProbeIDsWithNoGeneSymbols(DataSource pool) throws SQLException {
-        Connection conn = null;
         Set<String> setOfIDs = null;
         log.debug("in getProbeIDsWithNoGeneSymbols");
         Array myArray = new edu.ucdenver.ccp.PhenoGen.data.Array();
@@ -2039,18 +1976,13 @@ public class GeneList {
 
         //log.debug("in getProbeIDsWithNoGeneSymbols. gene_list_id = "+this.getGene_list_id());
         //log.debug("query = "+query);
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, this.getGene_list_id(), conn);
 
             setOfIDs = new ObjectHandler().getResultsAsSet(myResults, 0);
             myResults.close();
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-            throw new SQLException();
+            throw e;
         }
         return setOfIDs;
     }
@@ -2088,13 +2020,12 @@ public class GeneList {
 
         //log.debug("in getGeneSymbolsForProbeIDs. gene_list_id = "+this.getGene_list_id());
         //log.debug("query = "+query);
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, this.getGene_list_id(), conn);
             hashOfProbeIDs = new ObjectHandler().getResultsAsHashtablePlusList(myResults);
             myResults.close();
-            conn.close();
         } catch (SQLException e) {
-            log.debug("SQL Exception:",e);
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return hashOfProbeIDs;
@@ -2110,7 +2041,6 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public Set<String> getProbeIDsWithNoGeneSymbolsOrPhysicalLocation(DataSource pool) throws SQLException {
-        Connection conn = null;
         Set<String> setOfIDs = null;
         log.debug("in getProbeIDsWithNoGeneSymbolsOrPhysicalLocation");
         Array myArray = new edu.ucdenver.ccp.PhenoGen.data.Array();
@@ -2138,17 +2068,12 @@ public class GeneList {
 
         //log.debug("in getProbeIDsWithNoGeneSymbolsOrPhysicalLocation. gene_list_id = "+this.getGene_list_id());
         log.debug("query = " + query);
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, this.getGene_list_id(), conn);
             setOfIDs = new ObjectHandler().getResultsAsSet(myResults, 0);
             myResults.close();
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-            throw new SQLException();
+            throw e;
         }
         return setOfIDs;
     }
@@ -2168,9 +2093,9 @@ public class GeneList {
 
         String query =
                 "select g.gene_id from genes g " +
-                        "left join genes g2 on g.gene_id=g2.gene_id "+
-                        "left join identifiers id on g.gene_id = id.identifier "+
-                        "left join identifier_arrays array on id.id_number = array.id_number "+
+                        "left join genes g2 on g.gene_id=g2.gene_id " +
+                        "left join identifiers id on g.gene_id = id.identifier " +
+                        "left join identifier_arrays array on id.id_number = array.id_number " +
                         "where g.gene_list_id = ?  and g2.gene_list_id = ? " +
                         "and g2.gene_id IS NULL " +
                         "and array.array_name in " +
@@ -2189,16 +2114,16 @@ public class GeneList {
 			"('Mouse Genome 430 2.0 Array', "+
 			"'CodeLink Mouse Whole Genome Array') "+
 */
-                        //" order by 1";
+        //" order by 1";
 
         //log.debug("in getNonProbeIDs. gene_list_id = "+this.getGene_list_id());
-        log.debug("query = "+query);
-        try(Connection conn=pool.getConnection()) {
+        log.debug("query = " + query);
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{this.getGene_list_id(), this.getGene_list_id()}, conn);
             setOfIDs = new ObjectHandler().getResultsAsSet(myResults, 0);
             myResults.close();
         } catch (SQLException e) {
-            log.error("SQLException:",e);
+            log.error("SQLException:", e);
             throw e;
         }
         return setOfIDs;
@@ -2214,7 +2139,6 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public Gene[] findContainingGeneLists(int user_id, DataSource pool) throws SQLException {
-        Connection conn = null;
         String query =
                 "select a.gene_id, " +
                         "b.gene_list_id, " +
@@ -2239,8 +2163,7 @@ public class GeneList {
         //log.debug("query = "+query);
         List<Gene> myGenes = new ArrayList<Gene>();
 
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{user_id, this.getGene_list_id()}, conn);
 
             Gene latestGene = new Gene();
@@ -2287,11 +2210,8 @@ public class GeneList {
                 lastGeneID = thisGeneID;
             }
             myResults.close();
-            conn.close();
+
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
             throw e;
         }
         Gene[] myGeneArray = (Gene[]) myObjectHandler.getAsArray(myGenes, Gene.class);
@@ -2310,10 +2230,8 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public Gene[] getGenesAsGeneArray(DataSource pool) throws SQLException {
-        Connection conn = null;
         Gene[] myGeneArray = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             String query =
                     "select g.gene_list_id, " +
                             "g.gene_id \"Original Accession ID\", " +
@@ -2332,8 +2250,8 @@ public class GeneList {
                             "sc.sort_order, " +
                             "if(gv.group_number='NA', 0, cast(gv.group_number as UNSIGNED))";
 
-            log.debug("in getGenesAsGeneArray. gene_list_id = "+this.getGene_list_id());
-            log.debug("query = "+query);
+            log.debug("in getGenesAsGeneArray. gene_list_id = " + this.getGene_list_id());
+            log.debug("query = " + query);
             Gene latestGene = new Gene();
 
             Results myResults = new Results(query, this.getGene_list_id(), conn);
@@ -2404,12 +2322,8 @@ public class GeneList {
 
             myGeneArray = (Gene[]) myObjectHandler.getAsArray(myGenes, Gene.class);
             //log.debug("done with getGenesAsGeneArray. myGeneArray contains this many entries: "+myGeneArray.length);
-
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
+
             throw e;
         }
         return myGeneArray;
@@ -2437,11 +2351,9 @@ public class GeneList {
                 log.error("wrong whichIidentifier sent to getGenesAsSet");
             }
         }
-        log.debug("GeneAsSet size="+geneSet.size());
+        log.debug("GeneAsSet size=" + geneSet.size());
         return geneSet;
     }
-
-
 
 
     /**
@@ -2479,8 +2391,8 @@ public class GeneList {
         String header = "GeneIdentifier\tGene Symbol\n";
         Set<String> geneSet = null;
         List<String> geneStrings;
-            geneSet = getGenesAsSet(whichIdentifier, pool);
-            geneStrings = new ObjectHandler().getAsSeparatedStrings(geneSet, delimiter, "", 1000);
+        geneSet = getGenesAsSet(whichIdentifier, pool);
+        geneStrings = new ObjectHandler().getAsSeparatedStrings(geneSet, delimiter, "", 1000);
 
         geneStrings.add(0, header);
         return geneStrings;
@@ -2503,7 +2415,7 @@ public class GeneList {
 
         String[] geneArray = (String[]) myObjectHandler.getAsArray(geneSet, String.class);
 
-        log.debug("size of GenesAsArray = "+geneArray.length);
+        log.debug("size of GenesAsArray = " + geneArray.length);
         return geneArray;
     }
 
@@ -2563,6 +2475,7 @@ public class GeneList {
 
         return geneString;
     }
+
     /**
      * Gets genes that are part of a gene list plus the statistical values associated with them.  Returns
      * a List of Strings, so this can be used with large gene lists
@@ -2688,8 +2601,6 @@ public class GeneList {
     }
 
 
-
-
     /**
      * Gets genes that are part of a gene list plus the statistical values associated with them.  Returns
      * a List of Strings, so this can be used with large gene lists
@@ -2757,6 +2668,7 @@ public class GeneList {
 
         return geneStrings;
     }
+
     /**
      * Gets genes that are part of a gene list plus the difference in group means or the correlation coefficient.
      *
@@ -2810,7 +2722,6 @@ public class GeneList {
      * @throws SQLException if a database error occurs
      */
     public boolean geneListNameExists(String geneListName, int userID, DataSource pool) throws SQLException {
-        Connection conn = null;
         log.debug("in geneListNameExists");
         String query =
                 "select 'x' " +
@@ -2818,19 +2729,14 @@ public class GeneList {
                         "where gl.gene_list_name = ? " +
                         "and created_by_user_id = ?";
         boolean itExists = false;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{geneListName, userID}, conn);
             if (myResults.getNumRows() >= 1) {
                 itExists = true;
             }
 
             myResults.close();
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
             throw new SQLException();
         }
         return itExists;

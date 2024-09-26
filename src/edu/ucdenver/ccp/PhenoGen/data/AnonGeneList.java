@@ -84,12 +84,11 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
      *
      * @param user_id The ID of the user
      * @param pool    the database connection pool
-     * @throws SQLException if a database error occurs
      * @return An array of GeneList objects
+     * @throws SQLException if a database error occurs
      */
     public AnonGeneList[] getGeneListsForAllDatasetsForUser(String UUID, DataSource pool) throws SQLException {
         //log.debug("in getGeneListsForAllDatasetsForUser. user_id = " + user_id);
-        Connection conn = null;
         String query = selectClause +
   			/*"select "+
 			"gl.gene_list_id, "+
@@ -119,8 +118,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
         //log.debug("query = " + query);
         String[] dataRow;
         List<AnonGeneList> geneLists = new ArrayList<AnonGeneList>();
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, UUID, conn);
 
 
@@ -130,17 +128,8 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
                 geneLists.add(thisGeneList);
             }
             myResults.close();
-            conn.close();
         } catch (SQLException er) {
             throw er;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
         //log.debug("LEN GENELISTS\n"+geneLists.size());
         AnonGeneList[] geneListArray = (AnonGeneList[]) myObjectHandler.getAsArray(geneLists, AnonGeneList.class);
@@ -153,9 +142,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
         String select = "select genelist_id from Anon_rgd_genelist where RGD_ID=?";
         String delete = "delete Anon_rgd_genelist where RGD_ID=?";
         String insert = "insert into Anon_USER_GENELIST (UUID,GENELIST_ID) Values (?,?)";
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
             PreparedStatement ps = conn.prepareStatement(select);
             ps.setString(1, rgdID);
@@ -174,28 +161,15 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
             int delCount = ps.executeUpdate();
             ps.close();
             conn.commit();
-            conn.close();
         } catch (SQLException er) {
             throw er;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
     }
 
     public void linkRGDListToRGDUser(String rgdID, int glID, DataSource pool) throws SQLException {
         log.debug("link RGD");
         String insert = "insert into Anon_RGD_GENELIST (RGD_ID,GENELIST_ID) Values (?,?)";
-        Connection conn = null;
-        try {
-            log.debug("before conn");
-            conn = pool.getConnection();
-            log.debug("after conn");
+        try (Connection conn = pool.getConnection()) {
             conn.setAutoCommit(false);
             PreparedStatement ps = conn.prepareStatement(insert);
             ps.setString(1, rgdID);
@@ -203,18 +177,9 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
             ps.executeUpdate();
             ps.close();
             conn.commit();
-            conn.close();
             log.debug("conn close");
         } catch (SQLException er) {
             throw er;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
     }
 
@@ -229,8 +194,8 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
      * @param user_id  The ID of the user who has access to the gene lists or -99 for all users
      * @param organism The organism of the gene lists requested or "All" or "MmOrRn" or "MmOrHs"
      * @param conn     the database connection
-     * @throws SQLException if a database error occurs
      * @return An array of GeneList objects
+     * @throws SQLException if a database error occurs
      */
     public AnonGeneList[] getGeneLists(String UUID, String organism, DataSource pool) throws SQLException {
 
@@ -246,7 +211,6 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
         }
 
 
-        Connection conn = null;
         String query = selectClause +
                 "from gene_lists gl, Anon_user_genelist aug " +
                 "where gl.gene_list_id = aug.genelist_id " +
@@ -256,27 +220,16 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
 
         String[] dataRow;
         List<AnonGeneList> geneLists = new ArrayList<AnonGeneList>();
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, UUID, conn);
-
             while ((dataRow = myResults.getNextRow()) != null) {
                 AnonGeneList thisGeneList = setupGeneListValues(dataRow);
 
                 geneLists.add(thisGeneList);
             }
             myResults.close();
-            conn.close();
         } catch (SQLException er) {
             throw er;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
 
         AnonGeneList[] geneListArray = (AnonGeneList[]) myObjectHandler.getAsArray(geneLists, AnonGeneList.class);
@@ -287,7 +240,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
 
     public AnonGeneList getGeneList(int geneListID, DataSource pool) throws SQLException {
         AnonGeneList myGeneList = null;
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             log.info("in getGeneList as a GeneList object. geneListID = " + geneListID);
 
             String query =
@@ -328,8 +281,8 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
      * @param organism      The organism of the gene lists requested or "All" or "MmOrRn" or "MmOrHs"
      * @param geneListTypes Types of genelists to include or "All"
      * @param conn          the database connection
-     * @throws SQLException if a database error occurs
      * @return An array of GeneList objects
+     * @throws SQLException if a database error occurs
      */
     public GeneList[] getGeneLists(AnonUser user, String organism, DataSource pool) throws SQLException {
 
@@ -369,30 +322,17 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
 
         String[] dataRow;
         List<GeneList> geneLists = new ArrayList<GeneList>();
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
 
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, user.getUUID(), conn);
-
             while ((dataRow = myResults.getNextRow()) != null) {
                 GeneList thisGeneList = setupGeneListValues(dataRow);
 
                 geneLists.add(thisGeneList);
             }
             myResults.close();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             throw e;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
         GeneList[] geneListArray = (GeneList[]) myObjectHandler.getAsArray(geneLists, GeneList.class);
 
@@ -413,26 +353,16 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
                         "and aug.UUID= ? ";
 
         boolean itExists = false;
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{geneListName, UUID}, conn);
             if (myResults.getNumRows() >= 1) {
                 itExists = true;
             }
 
             myResults.close();
-            conn.close();
+
         } catch (SQLException er) {
             throw er;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
 
 
@@ -458,9 +388,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
                         "?)";
 
         java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
 
             PreparedStatement pstmt = conn.prepareStatement(query,
                     PreparedStatement.RETURN_GENERATED_KEYS);
@@ -488,14 +416,6 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
             log.debug("gene_list_id = " + this.getGene_list_id() + ", and path = " + this.getPath());
         } catch (SQLException er) {
             throw er;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
         return this.getGene_list_id();
     }
@@ -534,7 +454,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
         //log.debug("query = " + query);
         String gene_id = "";
 
-        try(Connection conn = pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             String statisticalMethod = "";
             String[] fields = null;
             String[] headers = null;
@@ -566,7 +486,6 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
             log.debug("creating alternate identifiers");
             createAlternateIdentifiers(this, pool);
             conn.commit();
-            conn.close();
         } catch (SQLException e) {
             if (e.getErrorCode() == 1) {
                 log.error("Got a duplicate key SQLException while in loadFromFile for gene_id = " + gene_id);
@@ -614,9 +533,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
         log.debug("in findContainingGeneLists. gene_list_id = " + this.getGene_list_id());
         //log.debug("query = "+query);
         List<Gene> myGenes = new ArrayList<Gene>();
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{UUID, this.getGene_list_id()}, conn);
 
             Gene latestGene = new Gene();
@@ -666,14 +583,6 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
             myResults.close();
         } catch (SQLException er) {
             throw er;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
 
         Gene[] myGeneArray = (Gene[]) myObjectHandler.getAsArray(myGenes, Gene.class);
@@ -686,9 +595,7 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
         String uuid = "";
         String query = "select UUID from Anon_user_genelist aug " +
                 "where aug.genelist_id = ?";
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, geneListID);
             ResultSet rs = ps.executeQuery();
@@ -696,18 +603,8 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
                 uuid = rs.getString(1);
             }
             ps.close();
-            conn.close();
-            conn = null;
         } catch (SQLException e) {
             throw e;
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (Exception e) {
-            }
         }
         return uuid;
     }
@@ -716,29 +613,17 @@ public class AnonGeneList extends edu.ucdenver.ccp.PhenoGen.data.GeneList {
     public boolean moveGeneListsToSession(String uuidSource, String uuidDest, DataSource pool) throws SQLException {
         boolean ret = false;
         String query = "update Anon_user_genelist set UUID=? where UUID=?";
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, uuidDest);
             ps.setString(2, uuidSource);
             int updated = ps.executeUpdate();
             ps.close();
-            conn.close();
-            conn = null;
             if (updated > 0) {
                 ret = true;
             }
         } catch (SQLException e) {
             throw e;
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (Exception e) {
-            }
         }
         return ret;
     }

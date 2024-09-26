@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.sql.Date;
 import java.util.HashMap;
 import javax.sql.DataSource;
+
 import org.apache.log4j.Logger;
 
 /**
- *
  * @author smahaffey
  */
 public class RNAResult {
@@ -32,12 +32,12 @@ public class RNAResult {
     private String location;
     private String checksum;
     private Date created;
-    
+
     private ArrayList<RNAResultVariable> vars;
     private boolean isVarLoaded;
     private ArrayList<RNAResultFile> files;
     private ArrayList<RNASample> samples;
-    
+
     private RNADataset parentDS;
     private boolean isFileLoaded;
     private boolean isSampleLoaded;
@@ -45,137 +45,144 @@ public class RNAResult {
     private boolean isPipelineLoaded;
     private DataSource pool;
     private Logger log;
-    
-    private final String select="select * from RNA_DATASET_RESULTS rdr ";
-    private final String selectSampleIDs="select RNA_SAMPLE_ID from RNA_RESULT_SAMPLE where RNA_DATASET_RESULT_ID=";
-    private final String insert="Insert into RNA_DATASET_RESULTS (RNA_DATASET_RESULT_ID,RNA_DATASET_ID,RESULT_TYPE,GENOME_ID,VER,VERSION_DATE,VISIBLE,ISPUBLIC,RESULT_LOCATION_TYPE,LOCATION_IDENTIFIER,CHECKSUM,CREATED) Values (?,?,?,?,?,?,?,?,?,?,?,?)";
-    private final String update="update set RESULT_TYPE=?,GENOME_ID=?,VER=?,VERSION_DATE=?,VISIBLE=?,ISPUBLIC=?,RESULT_LOCATION_TYPE=?,LOCATION_IDENTIFIER=?,CHECKSUM=?,CREATED=? where RNA_DATASET_RESULTS_ID=?";
-    private final String delete="delete RNA_DATASET_RESULTS where RNA_DATASET_RESULT_ID= ?";
-    private final String deleteSample="delete RNA_RESULT_SAMPLE where RNA_DATASET_RESULT_ID = ?";
-    private final String getID="select RNA_DATASET_RESULT_SEQ.nextVal from dual";
-    
-    public RNAResult(){
+
+    private final String select = "select * from RNA_DATASET_RESULTS rdr ";
+    private final String selectSampleIDs = "select RNA_SAMPLE_ID from RNA_RESULT_SAMPLE where RNA_DATASET_RESULT_ID=";
+    private final String insert = "Insert into RNA_DATASET_RESULTS (RNA_DATASET_RESULT_ID,RNA_DATASET_ID,RESULT_TYPE,GENOME_ID,VER,VERSION_DATE,VISIBLE,ISPUBLIC,RESULT_LOCATION_TYPE,LOCATION_IDENTIFIER,CHECKSUM,CREATED) Values (?,?,?,?,?,?,?,?,?,?,?,?)";
+    private final String update = "update set RESULT_TYPE=?,GENOME_ID=?,VER=?,VERSION_DATE=?,VISIBLE=?,ISPUBLIC=?,RESULT_LOCATION_TYPE=?,LOCATION_IDENTIFIER=?,CHECKSUM=?,CREATED=? where RNA_DATASET_RESULTS_ID=?";
+    private final String delete = "delete RNA_DATASET_RESULTS where RNA_DATASET_RESULT_ID= ?";
+    private final String deleteSample = "delete RNA_RESULT_SAMPLE where RNA_DATASET_RESULT_ID = ?";
+    private final String getID = "select RNA_DATASET_RESULT_SEQ.nextVal from dual";
+
+    public RNAResult() {
         log = Logger.getRootLogger();
     }
-    
+
     public RNAResult(long rnaDatasetResultID, long rnaDatasetID, String type, String genomeVer, String version,
-            Date versionDate, boolean visible, boolean isPublic, String locationType,String location, 
-            String checksum, Date created,DataSource pool){
+                     Date versionDate, boolean visible, boolean isPublic, String locationType, String location,
+                     String checksum, Date created, DataSource pool) {
         log = Logger.getRootLogger();
-        this.rnaDatasetResultID=rnaDatasetResultID;
-        this.rnaDatasetID=rnaDatasetID;
-        this.type=type;
-        this.genomeVer=genomeVer;
-        this.version=version;
-        this.versionDate=versionDate;
-        this.isVisible=visible;
-        this.isPublic=isPublic;
-        this.locationType=locationType;
-        this.location=location;
-        this.checksum=checksum;
-        this.created=created;
-        this.isFileLoaded=false;
-        this.isVarLoaded=false;
-        this.isPipelineLoaded=false;
-        this.isSampleLoaded=false;
-        this.pool=pool;
+        this.rnaDatasetResultID = rnaDatasetResultID;
+        this.rnaDatasetID = rnaDatasetID;
+        this.type = type;
+        this.genomeVer = genomeVer;
+        this.version = version;
+        this.versionDate = versionDate;
+        this.isVisible = visible;
+        this.isPublic = isPublic;
+        this.locationType = locationType;
+        this.location = location;
+        this.checksum = checksum;
+        this.created = created;
+        this.isFileLoaded = false;
+        this.isVarLoaded = false;
+        this.isPipelineLoaded = false;
+        this.isSampleLoaded = false;
+        this.pool = pool;
     }
-    
-    public RNAResult getRNAResultByID(long rnaDatasetResultID,DataSource pool){
-        String query=select+" where rdr.rna_dataset_result_id="+rnaDatasetResultID;
-        return getRNAResultByQuery(query,pool);
+
+    public RNAResult getRNAResultByID(long rnaDatasetResultID, DataSource pool) {
+        String query = select + " where rdr.rna_dataset_result_id=" + rnaDatasetResultID;
+        return getRNAResultByQuery(query, pool);
     }
-    
-    public ArrayList<RNAResult> getRNAResultsByDataset(long rnaDatasetID,DataSource pool){
-        String query=select+" where rdr.rna_dataset_id="+rnaDatasetID;
-        return getRNAResultsByQuery(query,pool);
+
+    public ArrayList<RNAResult> getRNAResultsByDataset(long rnaDatasetID, DataSource pool) {
+        String query = select + " where rdr.rna_dataset_id=" + rnaDatasetID;
+        return getRNAResultsByQuery(query, pool);
     }
-    
-    private RNAResult getRNAResultByQuery(String query, DataSource pool){
-        RNAResult ret=null;
-        try(Connection conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(query)){
-            
-            ResultSet rs=ps.executeQuery();
-            if(rs.next()){
-                boolean vis=false;
-                boolean isPub=false;
-                if(rs.getInt("VISIBLE")==1){vis=true;}
-                if(rs.getInt("ISPUBLIC")==1){isPub=true;}
-                RNAResult tmp=new RNAResult(rs.getLong("RNA_DATASET_RESULT_ID"),
-                                            rs.getLong("RNA_DATASET_ID"),
-                                            rs.getString("RESULT_TYPE"),
-                                            rs.getString("GENOME_ID"),
-                                            rs.getString("VER"),
-                                            rs.getDate("VERSION_DATE"),
-                                            vis,
-                                            isPub,
-                                            rs.getString("RESULT_LOCATION_TYPE"),
-                                            rs.getString("LOCATION_IDENTIFIER"),
-                                            rs.getString("CHECKSUM"),
-                                            rs.getDate("CREATED"),
-                                            pool);
-                
-                ret=tmp;
+
+    private RNAResult getRNAResultByQuery(String query, DataSource pool) {
+        RNAResult ret = null;
+        try (Connection conn = pool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                boolean vis = false;
+                boolean isPub = false;
+                if (rs.getInt("VISIBLE") == 1) {
+                    vis = true;
+                }
+                if (rs.getInt("ISPUBLIC") == 1) {
+                    isPub = true;
+                }
+                RNAResult tmp = new RNAResult(rs.getLong("RNA_DATASET_RESULT_ID"),
+                        rs.getLong("RNA_DATASET_ID"),
+                        rs.getString("RESULT_TYPE"),
+                        rs.getString("GENOME_ID"),
+                        rs.getString("VER"),
+                        rs.getDate("VERSION_DATE"),
+                        vis,
+                        isPub,
+                        rs.getString("RESULT_LOCATION_TYPE"),
+                        rs.getString("LOCATION_IDENTIFIER"),
+                        rs.getString("CHECKSUM"),
+                        rs.getDate("CREATED"),
+                        pool);
+
+                ret = tmp;
             }
             ps.close();
-            conn.close();
-        }catch(SQLException e){
-            log.error("Error getting RNADataset from \n"+query,e);
-        }
-        return ret;
-    }
-    
-    private ArrayList<RNAResult> getRNAResultsByQuery(String query, DataSource pool){
-        ArrayList<RNAResult> ret=new ArrayList<>();
-        try(Connection conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(query)){
-            
-            ResultSet rs=ps.executeQuery();
-            while(rs.next()){
-                boolean vis=false;
-                boolean isPub=false;
-                if(rs.getInt("VISIBLE")==1){vis=true;}
-                if(rs.getInt("ISPUBLIC")==1){isPub=true;}
-                RNAResult tmp=new RNAResult(rs.getLong("RNA_DATASET_RESULT_ID"),
-                                            rs.getLong("RNA_DATASET_ID"),
-                                            rs.getString("RESULT_TYPE"),
-                                            rs.getString("GENOME_ID"),
-                                            rs.getString("VER"),
-                                            rs.getDate("VERSION_DATE"),
-                                            vis,
-                                            isPub,
-                                            rs.getString("RESULT_LOCATION_TYPE"),
-                                            rs.getString("LOCATION_IDENTIFIER"),
-                                            rs.getString("CHECKSUM"),
-                                            rs.getDate("CREATED"),
-                                            pool);
-                
-                ret.add(tmp);
-            }
-            ps.close();
-            conn.close();
-        }catch(SQLException e){
-            log.error("Error getting RNADataset from \n"+query,e);
+        } catch (SQLException e) {
+            log.error("Error getting RNADataset from \n" + query, e);
         }
         return ret;
     }
 
-    public boolean createRNAResult(RNAResult rr, DataSource pool){
-        boolean success=false;
-        this.pool=pool;
-        if(rr.getRnaDatasetResultID()==0){
-            try(Connection conn=pool.getConnection()){
-                long newID=getNextID();
-                int vis=0;
-                if(rr.isVisible()){
-                    vis=1;
+    private ArrayList<RNAResult> getRNAResultsByQuery(String query, DataSource pool) {
+        ArrayList<RNAResult> ret = new ArrayList<>();
+        try (Connection conn = pool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                boolean vis = false;
+                boolean isPub = false;
+                if (rs.getInt("VISIBLE") == 1) {
+                    vis = true;
                 }
-                int pub=0;
-                if(rr.isPublic()){
-                    pub=1;
+                if (rs.getInt("ISPUBLIC") == 1) {
+                    isPub = true;
                 }
-                PreparedStatement ps=conn.prepareStatement(insert);
+                RNAResult tmp = new RNAResult(rs.getLong("RNA_DATASET_RESULT_ID"),
+                        rs.getLong("RNA_DATASET_ID"),
+                        rs.getString("RESULT_TYPE"),
+                        rs.getString("GENOME_ID"),
+                        rs.getString("VER"),
+                        rs.getDate("VERSION_DATE"),
+                        vis,
+                        isPub,
+                        rs.getString("RESULT_LOCATION_TYPE"),
+                        rs.getString("LOCATION_IDENTIFIER"),
+                        rs.getString("CHECKSUM"),
+                        rs.getDate("CREATED"),
+                        pool);
+
+                ret.add(tmp);
+            }
+            ps.close();
+
+        } catch (SQLException e) {
+            log.error("Error getting RNADataset from \n" + query, e);
+        }
+        return ret;
+    }
+
+    public boolean createRNAResult(RNAResult rr, DataSource pool) {
+        boolean success = false;
+        this.pool = pool;
+        if (rr.getRnaDatasetResultID() == 0) {
+            try (Connection conn = pool.getConnection()) {
+                long newID = getNextID();
+                int vis = 0;
+                if (rr.isVisible()) {
+                    vis = 1;
+                }
+                int pub = 0;
+                if (rr.isPublic()) {
+                    pub = 1;
+                }
+                PreparedStatement ps = conn.prepareStatement(insert);
                 ps.setLong(1, newID);
                 ps.setLong(2, rr.getRnaDatasetID());
                 ps.setString(3, rr.getType());
@@ -185,97 +192,97 @@ public class RNAResult {
                 ps.setInt(7, vis);
                 ps.setInt(8, pub);
                 ps.setString(9, rr.getLocationType());
-                ps.setString(10,rr.getLocation());
-                ps.setString(11,rr.getChecksum());
-                ps.setDate(12,rr.getCreated());
-                boolean tmpSuccess=ps.execute();
+                ps.setString(10, rr.getLocation());
+                ps.setString(11, rr.getChecksum());
+                ps.setDate(12, rr.getCreated());
+                boolean tmpSuccess = ps.execute();
                 rr.setRnaDatasetResultID(newID);
                 //Variables?
-                if(tmpSuccess){
-                    RNAResultVariable myRV=new RNAResultVariable();
-                    ArrayList<RNAResultVariable> rv=rr.getRNAResultVariables();
-                    for(int i=0;i<rv.size()&&tmpSuccess;i++){
-                        tmpSuccess=myRV.createRNAResultVariable(rv.get(i),pool);
+                if (tmpSuccess) {
+                    RNAResultVariable myRV = new RNAResultVariable();
+                    ArrayList<RNAResultVariable> rv = rr.getRNAResultVariables();
+                    for (int i = 0; i < rv.size() && tmpSuccess; i++) {
+                        tmpSuccess = myRV.createRNAResultVariable(rv.get(i), pool);
                     }
                 }
                 //ResultFiles?
-                if(tmpSuccess){
-                    RNAResultFile myRRF=new RNAResultFile();
-                    ArrayList<RNAResultFile> rrf=rr.getRNAResultFiles();
-                    for(int i=0;i<rrf.size()&&tmpSuccess;i++){
-                        tmpSuccess=myRRF.createRNAResultFile(rrf.get(i),pool);
+                if (tmpSuccess) {
+                    RNAResultFile myRRF = new RNAResultFile();
+                    ArrayList<RNAResultFile> rrf = rr.getRNAResultFiles();
+                    for (int i = 0; i < rrf.size() && tmpSuccess; i++) {
+                        tmpSuccess = myRRF.createRNAResultFile(rrf.get(i), pool);
                     }
                 }
-                if(tmpSuccess){
-                    success=true;
+                if (tmpSuccess) {
+                    success = true;
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
 
             }
         }
         return success;
     }
-    
-    public boolean deleteRNAResult(RNAResult rr, DataSource pool){
-        boolean success=false;
-        try{
+
+    public boolean deleteRNAResult(RNAResult rr, DataSource pool) {
+        boolean success = false;
+        try {
             //delete resultsample entries
-            try(Connection conn=pool.getConnection()){
-                PreparedStatement ps=conn.prepareStatement(deleteSample);
+            try (Connection conn = pool.getConnection()) {
+                PreparedStatement ps = conn.prepareStatement(deleteSample);
                 ps.setLong(1, rr.getRnaDatasetResultID());
-                boolean tmpSuccess=ps.execute();
-                if(tmpSuccess){
-                    success=true;
+                boolean tmpSuccess = ps.execute();
+                if (tmpSuccess) {
+                    success = true;
                 }
                 ps.close();
-            }catch(Exception e){
+            } catch (Exception e) {
 
             }
             //delete result file
-             RNAResultFile myRRF=new RNAResultFile();
-            ArrayList<RNAResultFile> toDeleteFile=rr.getRNAResultFiles();
-            for(int i=0;i<toDeleteFile.size();i++){
+            RNAResultFile myRRF = new RNAResultFile();
+            ArrayList<RNAResultFile> toDeleteFile = rr.getRNAResultFiles();
+            for (int i = 0; i < toDeleteFile.size(); i++) {
                 myRRF.deleteRNAResultFile(toDeleteFile.get(i), pool);
             }
             //delete variables
-            RNAResultVariable myRR=new RNAResultVariable();
-            ArrayList<RNAResultVariable> toDeleteVars=rr.getRNAResultVariables();
-            for(int i=0;i<toDeleteVars.size();i++){
-                 myRR.deleteRNAResultVariable(toDeleteVars.get(i), pool);
+            RNAResultVariable myRR = new RNAResultVariable();
+            ArrayList<RNAResultVariable> toDeleteVars = rr.getRNAResultVariables();
+            for (int i = 0; i < toDeleteVars.size(); i++) {
+                myRR.deleteRNAResultVariable(toDeleteVars.get(i), pool);
             }
-           
+
             //delete dataset
-            try(Connection conn=pool.getConnection()){
-                PreparedStatement ps=conn.prepareStatement(delete);
+            try (Connection conn = pool.getConnection()) {
+                PreparedStatement ps = conn.prepareStatement(delete);
                 ps.setLong(1, rr.getRnaDatasetResultID());
-                boolean tmpSuccess=ps.execute();
-                if(tmpSuccess){
-                    success=true;
+                boolean tmpSuccess = ps.execute();
+                if (tmpSuccess) {
+                    success = true;
                 }
                 ps.close();
-            }catch(Exception e){
+            } catch (Exception e) {
 
             }
-            success=true;
-        }catch(Exception e){
-            
+            success = true;
+        } catch (Exception e) {
+
         }
         return success;
     }
-    
-    private long getNextID(){
-        long ret=0;
-        try(Connection conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(getID)){
-            ResultSet rs=ps.executeQuery();
-            ret=rs.getLong(1);
+
+    private long getNextID() {
+        long ret = 0;
+        try (Connection conn = pool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(getID)) {
+            ResultSet rs = ps.executeQuery();
+            ret = rs.getLong(1);
             rs.close();
-        }catch(SQLException e){
-            log.error("Error getting new RNA_Dataset_Result_ID:",e);
+        } catch (SQLException e) {
+            log.error("Error getting new RNA_Dataset_Result_ID:", e);
         }
         return ret;
     }
-    
+
     public long getRnaDatasetResultID() {
         return rnaDatasetResultID;
     }
@@ -373,7 +380,7 @@ public class RNAResult {
     }
 
     public ArrayList<RNAResultVariable> getRNAResultVariables() {
-        if(!this.isVarLoaded){
+        if (!this.isVarLoaded) {
             loadVars();
         }
         return vars;
@@ -384,7 +391,7 @@ public class RNAResult {
     }
 
     public ArrayList<RNAResultFile> getRNAResultFiles() {
-        if(!this.isFileLoaded){
+        if (!this.isFileLoaded) {
             loadFiles();
         }
         return files;
@@ -395,7 +402,7 @@ public class RNAResult {
     }
 
     public ArrayList<RNAPipeline> getPipeline() {
-        if(!this.isPipelineLoaded){
+        if (!this.isPipelineLoaded) {
             loadPipeline();
         }
         return pipelines;
@@ -404,78 +411,83 @@ public class RNAResult {
     public void setPipeline(ArrayList<RNAPipeline> pipeline) {
         this.pipelines = pipeline;
     }
-    
-    public void setDataset(RNADataset par){
-        this.parentDS=par;
+
+    public void setDataset(RNADataset par) {
+        this.parentDS = par;
     }
-    public ArrayList<RNASample> getSamples(){
-        if(!isSampleLoaded){
+
+    public ArrayList<RNASample> getSamples() {
+        if (!isSampleLoaded) {
             loadSamples();
         }
         return samples;
     }
-    private void loadFiles(){
-        RNAResultFile rrf=new RNAResultFile();
-        try{
-            this.files=rrf.getRNAResultFilesByDatasetResult(this.rnaDatasetResultID, this.pool);
-            this.isFileLoaded=true;
-            for(int i=0;i<files.size();i++){
+
+    private void loadFiles() {
+        RNAResultFile rrf = new RNAResultFile();
+        try {
+            this.files = rrf.getRNAResultFilesByDatasetResult(this.rnaDatasetResultID, this.pool);
+            this.isFileLoaded = true;
+            for (int i = 0; i < files.size(); i++) {
                 files.get(i).setDatasetResults(this);
             }
-        }catch(Exception e){
-            isFileLoaded=false;
-            files=new ArrayList<>();
+        } catch (Exception e) {
+            isFileLoaded = false;
+            files = new ArrayList<>();
             e.printStackTrace(System.err);
-            log.error("error retreiving RNAResultFiles for RNAResult:"+rnaDatasetID,e);
+            log.error("error retreiving RNAResultFiles for RNAResult:" + rnaDatasetID, e);
         }
     }
-    private void loadPipeline(){
-        RNAPipeline rp=new RNAPipeline();
-        try{
-            this.pipelines=rp.getRNAPipelineByResultID(this.rnaDatasetResultID, this.pool);
-            this.isPipelineLoaded=true;
-        }catch(Exception e){
-            isPipelineLoaded=false;
-            pipelines=new ArrayList<RNAPipeline>();
+
+    private void loadPipeline() {
+        RNAPipeline rp = new RNAPipeline();
+        try {
+            this.pipelines = rp.getRNAPipelineByResultID(this.rnaDatasetResultID, this.pool);
+            this.isPipelineLoaded = true;
+        } catch (Exception e) {
+            isPipelineLoaded = false;
+            pipelines = new ArrayList<RNAPipeline>();
             e.printStackTrace(System.err);
-            log.error("error retreiving RNAPipeline for RNAResult:"+rnaDatasetID,e);
+            log.error("error retreiving RNAPipeline for RNAResult:" + rnaDatasetID, e);
         }
     }
-    private void loadVars(){
-        RNAResultVariable rrv=new RNAResultVariable();
-        try{
-            this.vars=rrv.getRNAResultVariablesByDataset(this.rnaDatasetResultID, this.pool);
-            this.isVarLoaded=true;
-        }catch(Exception e){
-            isVarLoaded=false;
-            vars=new ArrayList<>();
+
+    private void loadVars() {
+        RNAResultVariable rrv = new RNAResultVariable();
+        try {
+            this.vars = rrv.getRNAResultVariablesByDataset(this.rnaDatasetResultID, this.pool);
+            this.isVarLoaded = true;
+        } catch (Exception e) {
+            isVarLoaded = false;
+            vars = new ArrayList<>();
             e.printStackTrace(System.err);
-            log.error("error retreiving RNAResultVars for RNAResult:"+rnaDatasetID,e);
+            log.error("error retreiving RNAResultVars for RNAResult:" + rnaDatasetID, e);
         }
     }
-    private void loadSamples(){
-        samples=new ArrayList<>();
-        try{
-            ArrayList<RNASample> fullList=this.parentDS.getSamples();
-            HashMap<String,RNASample> hm=new HashMap<String,RNASample>();
-            for(int i=0;i<fullList.size();i++){
-                RNASample tmp=fullList.get(i);
-                hm.put(Long.toString(tmp.getRnaSampleID()),tmp );
+
+    private void loadSamples() {
+        samples = new ArrayList<>();
+        try {
+            ArrayList<RNASample> fullList = this.parentDS.getSamples();
+            HashMap<String, RNASample> hm = new HashMap<String, RNASample>();
+            for (int i = 0; i < fullList.size(); i++) {
+                RNASample tmp = fullList.get(i);
+                hm.put(Long.toString(tmp.getRnaSampleID()), tmp);
             }
-            try(Connection conn=pool.getConnection();
-                PreparedStatement ps=conn.prepareStatement(selectSampleIDs+this.rnaDatasetResultID)){
-                ResultSet rs=ps.executeQuery();
-                while(rs.next()){
-                    long tmp=rs.getLong("RNA_SAMPLE_ID");
-                    if(hm.containsKey(Long.toString(tmp))){
+            try (Connection conn = pool.getConnection();
+                 PreparedStatement ps = conn.prepareStatement(selectSampleIDs + this.rnaDatasetResultID)) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    long tmp = rs.getLong("RNA_SAMPLE_ID");
+                    if (hm.containsKey(Long.toString(tmp))) {
                         samples.add(hm.get(Long.toString(tmp)));
                     }
                 }
-            }catch(SQLException er){
-                log.error("SQLException getting samples for RNAResults",er);
+            } catch (SQLException er) {
+                log.error("SQLException getting samples for RNAResults", er);
             }
-        }catch(Exception e){
-            log.error("Exception getting samples for RNAResults",e);
+        } catch (Exception e) {
+            log.error("Exception getting samples for RNAResults", e);
         }
     }
 }

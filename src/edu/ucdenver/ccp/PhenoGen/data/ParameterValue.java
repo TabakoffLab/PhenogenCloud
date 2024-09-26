@@ -670,7 +670,6 @@ public class ParameterValue implements Comparable {
                 parameter_value_id = rs.getInt(1);
             }
             pstmt.close();
-            conn.close();
         } catch (SQLException er) {
             throw er;
         }
@@ -1164,7 +1163,6 @@ public class ParameterValue implements Comparable {
             }
 
             myResults.close();
-            conn.close();
         } catch (SQLException er) {
             throw er;
         }
@@ -1377,7 +1375,6 @@ public class ParameterValue implements Comparable {
             }
 
             myResults.close();
-            conn.close();
 
         } catch (SQLException e) {
             throw e;
@@ -1688,7 +1685,6 @@ public class ParameterValue implements Comparable {
 
             myResults.close();
             myResults2.close();
-            conn.close();
         } catch (SQLException er) {
             throw er;
         }
@@ -1837,15 +1833,20 @@ public class ParameterValue implements Comparable {
         //log.debug("dataRow= "); new Debugger().print(dataRow);
 
         ParameterValue newParameterValue = new ParameterValue();
-        newParameterValue.setParameter_value_id(Integer.parseInt(dataRow[0]));
-        newParameterValue.setParameter_group_id(Integer.parseInt(dataRow[1]));
+        try {
+            newParameterValue.setParameter_value_id(Integer.parseInt(dataRow[0]));
+        } catch (NumberFormatException e) {
+        }
+        try {
+            newParameterValue.setParameter_group_id(Integer.parseInt(dataRow[1]));
+        } catch (NumberFormatException e) {
+        }
         newParameterValue.setCategory(dataRow[2]);
         newParameterValue.setParameter(dataRow[3]);
         newParameterValue.setValue(dataRow[4]);
         newParameterValue.setCreate_date_as_string(dataRow[5]);
-        newParameterValue.setCreate_date((dataRow[5] != null && !dataRow[5].equals("") ?
-                new ObjectHandler().getDisplayDateAsTimestamp(dataRow[5]) : null));
-        if (dataRow[6] != null && !dataRow[6].equals("")) {
+        newParameterValue.setCreate_date((dataRow[5] != null && !dataRow[5].equals("") ? new ObjectHandler().getDisplayDateAsTimestamp(dataRow[5]) : null));
+        if (dataRow[6] != null && !dataRow[6].equals("") && !dataRow[6].equals("0")) {
             newParameterValue.setDataset_id(Integer.parseInt(dataRow[6]));
             newParameterValue.setVersion(Integer.parseInt(dataRow[7]));
         }

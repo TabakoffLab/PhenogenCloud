@@ -68,17 +68,15 @@ public class WGCNATools {
         }
         String query = "Select distinct module from wgcna_module_info where wdsid=" + dsid + " and gene_id='" + id + "'";
         log.debug("QUERY:" + query);
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
+
             PreparedStatement ps = conn.prepareStatement(query);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 ret.add(rs.getString(1));
             }
             ps.close();
-            conn.close();
-            conn = null;
+
 
         } catch (SQLException e) {
             e.printStackTrace(System.err);
@@ -96,14 +94,6 @@ public class WGCNATools {
             } catch (Exception mailException) {
                 log.error("error sending message", mailException);
                 throw new RuntimeException();
-            }
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException er) {
             }
         }
         return ret;
@@ -514,7 +504,7 @@ public class WGCNATools {
     }
 
     private int[] getWGCNADataset(String panel, String tissue, String org, String genomeVer, String source, String dataVer, String rLevel) {
-        Connection conn = null;
+
         String query = "Select wdsid,rna_dataset_id,level from WGCNA_Dataset where organism=? and tissue=? and panel=? and genome_id=? and type=? and visible=1";
         if (genomeVer.equals("rn7") && rLevel != null && !rLevel.equals("")) {
             query = query + " and level='" + rLevel + "'";
@@ -525,8 +515,7 @@ public class WGCNATools {
             query = query + " and version=?";
         }
         int[] ret = new int[3];
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setString(1, org);
             ps.setString(2, tissue);
@@ -556,8 +545,7 @@ public class WGCNATools {
                 }
             }
             ps.close();
-            conn.close();
-            conn = null;
+
             log.debug("query execute done:" + ret);
         } catch (SQLException e) {
             e.printStackTrace(System.err);
@@ -575,14 +563,6 @@ public class WGCNATools {
             } catch (Exception mailException) {
                 log.error("error sending message", mailException);
                 throw new RuntimeException();
-            }
-        } finally {
-            try {
-                if (conn != null && !conn.isClosed()) {
-                    conn.close();
-                    conn = null;
-                }
-            } catch (SQLException er) {
             }
         }
 
