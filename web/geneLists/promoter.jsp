@@ -184,6 +184,7 @@
                                                                     style = "";
                                                                     optionHash = new LinkedHashMap();
                                                                     if(myOrganism.equals("Rn")){
+                                                                        optionHash.put("rn7", "rn7");
                                                                         optionHash.put("rn6", "rn6");
                                                                         optionHash.put("rn5", "rn5");
                                                                     }else if(myOrganism.equals("Mm")){

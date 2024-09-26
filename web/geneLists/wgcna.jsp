@@ -34,7 +34,7 @@
 
     mySessionHandler.createGeneListActivity("Looked at WGCNA a GeneList", pool);
     String myOrganism = selectedGeneList.getOrganism();
-    String genomeVer = "rn6";
+    String genomeVer = "rn7";
     if (myOrganism.equals("Mm")) {
         genomeVer = "mm10";
     }
@@ -74,6 +74,7 @@
 <div class="leftTitle">WGCNA<span class="helpImage" id="HelpGeneListWGCNATab"><img src="<%=imagesDir%>icons/help.png" </span></div>
 <%if (myOrganism.equals("Rn")) {%>
 <div class="right">Genome Version:<select id="genomeVer">
+	<option value="rn7">rn7</option>
     <option value="rn6">rn6</option>
     <option value="rn5">rn5</option>
 </select></div>
