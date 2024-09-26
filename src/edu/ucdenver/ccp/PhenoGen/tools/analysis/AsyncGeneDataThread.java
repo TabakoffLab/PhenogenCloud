@@ -55,6 +55,7 @@ public class AsyncGeneDataThread extends Thread {
     private String ver = "";
     private String genomeVer = "";
     private String dataVer = "";
+    private String hash = "";
     //private Connection dbConn = null;
     String outputDir = "";
     String pListFile = "";
@@ -65,7 +66,7 @@ public class AsyncGeneDataThread extends Thread {
     double forwardPValueCutoff = 0.01;
 
 
-    public AsyncGeneDataThread(HttpSession inSession, GeneDataTools gdt, String chromosome, int min, int max, int fullmin, int fullmax, String panel, String myOrganism, String genomeVer, int rnaDatasetID, int arrayTypeID, double forwardPValueCutoff, String dataVer) {
+    public AsyncGeneDataThread(HttpSession inSession, GeneDataTools gdt, String chromosome, int min, int max, int fullmin, int fullmax, String panel, String myOrganism, String genomeVer, int rnaDatasetID, int arrayTypeID, double forwardPValueCutoff, String dataVer, String hash) {
         this.session = inSession;
         this.gdt = gdt;
         this.gdt.resetPathReady();
@@ -83,6 +84,7 @@ public class AsyncGeneDataThread extends Thread {
         this.forwardPValueCutoff = forwardPValueCutoff;
         this.genomeVer = genomeVer;
         this.dataVer = dataVer;
+        this.hash = hash;
         log = Logger.getRootLogger();
         log.debug("in GeneDataTools.setSession");
         this.session = inSession;

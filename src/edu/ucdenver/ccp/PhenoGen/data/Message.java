@@ -1,115 +1,111 @@
 package edu.ucdenver.ccp.PhenoGen.data;
-                                                                                                                       
+
 import java.sql.*;
 import java.util.*;
+
 import edu.ucdenver.ccp.util.sql.*;
+
 import javax.sql.DataSource;
-                                                                                                                       
+
 /* for logging messages */
 import org.apache.log4j.Logger;
-                                                                                                                       
+
 /**
  * Class for handling messages.
- *  @author  Cheryl Hornbaker
+ *
+ * @author Cheryl Hornbaker
  */
 
-public class Message{
-  	private String id;
-	private String text;
-  	private String type;
-	
-  	private Logger log=null;
-                                                                                                                       
-  	public Message () {
-        	log = Logger.getRootLogger();
-  	}
+public class Message {
+    private String id;
+    private String text;
+    private String type;
 
-  	public String getId() {
-		return id;
-  	}
+    private Logger log = null;
 
-  	public void setId(String inString) {
-		this.id = inString;
-  	}
+    public Message() {
+        log = Logger.getRootLogger();
+    }
 
-  	public String getText() {
-		return text;
-  	}
+    public String getId() {
+        return id;
+    }
 
-  	public void setText(String inString) {
-		this.text = inString;
-  	}
+    public void setId(String inString) {
+        this.id = inString;
+    }
 
-  	public String getType() {
-		return type;
-  	}
+    public String getText() {
+        return text;
+    }
 
-  	public void setType(String inString) {
-		this.type = inString;
-  	}
+    public void setText(String inString) {
+        this.text = inString;
+    }
 
-	/**
-	 * Retrieves the text for the requested message id.
-	 * @param msgID	the ID of the message
-	 * @param conn	the database connection
-	 * @throws            SQLException if a database error occurs
-	 * @return            the text of the message
-	 */
-  	public String getMessage(String msgID, Connection conn) throws SQLException {
-		
-		String query =
-			"select text "+
-			"from messages "+
-			"where id = ?";
+    public String getType() {
+        return type;
+    }
 
-		//log.debug("query = "+ query);
-		log.debug("in getMessage. msgID = " + msgID);
+    public void setType(String inString) {
+        this.type = inString;
+    }
 
-                Results myResults = new Results(query, msgID, conn);
+    /**
+     * Retrieves the text for the requested message id.
+     *
+     * @param msgID the ID of the message
+     * @param conn  the database connection
+     * @return the text of the message
+     * @throws SQLException if a database error occurs
+     */
+    public String getMessage(String msgID, Connection conn) throws SQLException {
 
-                String message = myResults.getStringValueFromFirstRow();
+        String query =
+                "select text " +
+                        "from messages " +
+                        "where id = ?";
 
-                myResults.close();
+        //log.debug("query = "+ query);
+        log.debug("in getMessage. msgID = " + msgID);
 
-		return message;
-  	}
-        /**
-	 * Retrieves the text for the requested message id.
-	 * @param msgID	the ID of the message
-	 * @param conn	the database connection
-	 * @throws            SQLException if a database error occurs
-	 * @return            the text of the message
-	 */
-  	public String getMessage(String msgID, DataSource pool) throws SQLException {
-		String message="";
-		String query =
-			"select text "+
-			"from messages "+
-			"where id = ?";
+        Results myResults = new Results(query, msgID, conn);
 
-		//log.debug("query = "+ query);
-		log.debug("in getMessage. msgID = " + msgID);
-                Connection conn=null;
-                try{
-                    conn=pool.getConnection();
-                    Results myResults = new Results(query, msgID, conn);
+        String message = myResults.getStringValueFromFirstRow();
 
-                    message = myResults.getStringValueFromFirstRow();
+        myResults.close();
 
-                    myResults.close();
-                    conn.close();
-                    conn=null;
-                }catch(SQLException er){
-                    throw er;
-                }finally{
-                    if(conn!=null && !conn.isClosed()){
-                        try{
-                            conn.close();
-                            conn=null;
-                        }catch(SQLException e){}
-                    }
-                }
-		return message;
-  	}
+        return message;
+    }
+
+    /**
+     * Retrieves the text for the requested message id.
+     *
+     * @param msgID the ID of the message
+     * @param conn  the database connection
+     * @return the text of the message
+     * @throws SQLException if a database error occurs
+     */
+    public String getMessage(String msgID, DataSource pool) throws SQLException {
+        String message = "";
+        String query =
+                "select text " +
+                        "from messages " +
+                        "where id = ?";
+
+        //log.debug("query = "+ query);
+        log.debug("in getMessage. msgID = " + msgID);
+        try (Connection conn = pool.getConnection()) {
+            Results myResults = new Results(query, msgID, conn);
+
+            message = myResults.getStringValueFromFirstRow();
+
+            myResults.close();
+
+        } catch (SQLException er) {
+            throw er;
+        }
+        return message;
+    }
 }
 

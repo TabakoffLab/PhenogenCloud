@@ -263,7 +263,6 @@ public class RNADataset {
                 //ret.setSampleCount(rs.getInt("SAMPLE_COUNT"));
             }
             ps.close();
-            conn.close();
         } catch (SQLException e) {
             log.error("Error getting RNADataset from \n" + query, e);
         }
@@ -301,7 +300,7 @@ public class RNADataset {
                 ret.add(tmp);
             }
             ps.close();
-            conn.close();
+
 
         } catch (SQLException e) {
             log.error("Error getting RNADataset from \n" + query, e);

@@ -12,10 +12,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.sql.DataSource;
+
 import org.apache.log4j.Logger;
 
 /**
- *
  * @author smahaffey
  */
 public class RNARawDataFile {
@@ -36,21 +36,21 @@ public class RNARawDataFile {
     private boolean isSizeLoaded;
     private boolean isPublic;
     private boolean isDownloadable;
-    
+
     private final Logger log;
-    private final String select="select * from RNA_RAW_DATA_FILES rdf ";
-    private final String insert="Insert into RNA_RAW_DATA_FILES (RNA_RAW_DATA_ID,RNA_SAMPLE_ID,RNA_SAMPLE_NAME,BATCH,ORIGINAL_FILE,FILENAME,PATH,CHECKSUM,PAIRED_END,INSTRUMENT,READ_LENGTH,TOTAL_READS,IS_PUBLIC,IS_DOWNLOAD) Values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    private final String update="update set RNA_SAMPLE_ID=?,RNA_SAMPLE_NAME=?,BATCH=?,ORIGINAL_FILE=?,FILENAME=?,PATH=?,PAIRED_END=?,INSTRUMENT=?,READ_LENGTH=?,TOTAL_READS=?,IS_PUBLIC=?,IS_DOWNLOAD=? where RNA_RAW_DATA_ID=?";
-    private final String delete="delete RNA_RAW_DATA_FILES where RNA_RAW_DATA_ID=?";
-    private final String deleteAllBySample="delete RNA_RAW_DATA_FILES where RNA_SAMPLE_ID=?";
-    private final String getID="select RNA_RAW_DATAFILES_SEQ.nextVal from dual";
-    
-    public RNARawDataFile(){
+    private final String select = "select * from RNA_RAW_DATA_FILES rdf ";
+    private final String insert = "Insert into RNA_RAW_DATA_FILES (RNA_RAW_DATA_ID,RNA_SAMPLE_ID,RNA_SAMPLE_NAME,BATCH,ORIGINAL_FILE,FILENAME,PATH,CHECKSUM,PAIRED_END,INSTRUMENT,READ_LENGTH,TOTAL_READS,IS_PUBLIC,IS_DOWNLOAD) Values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    private final String update = "update set RNA_SAMPLE_ID=?,RNA_SAMPLE_NAME=?,BATCH=?,ORIGINAL_FILE=?,FILENAME=?,PATH=?,PAIRED_END=?,INSTRUMENT=?,READ_LENGTH=?,TOTAL_READS=?,IS_PUBLIC=?,IS_DOWNLOAD=? where RNA_RAW_DATA_ID=?";
+    private final String delete = "delete RNA_RAW_DATA_FILES where RNA_RAW_DATA_ID=?";
+    private final String deleteAllBySample = "delete RNA_RAW_DATA_FILES where RNA_SAMPLE_ID=?";
+    private final String getID = "select RNA_RAW_DATAFILES_SEQ.nextVal from dual";
+
+    public RNARawDataFile() {
         log = Logger.getRootLogger();
     }
-    
-    public RNARawDataFile(long rawDataID,long rnaSampleID, String sampleName, String batch,String origFileName, String fileName,
-            String path, String checksum, boolean paired, String instrument,int readLen,long totalReads,boolean isPublic,boolean isDownload){
+
+    public RNARawDataFile(long rawDataID, long rnaSampleID, String sampleName, String batch, String origFileName, String fileName,
+                          String path, String checksum, boolean paired, String instrument, int readLen, long totalReads, boolean isPublic, boolean isDownload) {
         log = Logger.getRootLogger();
         this.setRawDataID(rawDataID);
         this.setRnaSampleID(rnaSampleID);
@@ -66,60 +66,66 @@ public class RNARawDataFile {
         this.setTotalReads(totalReads);
         this.setIsPublic(isPublic);
         this.setIsDownloadable(isDownload);
-        isSizeLoaded=false;
-        size=0;
-        sizeUnit="MB";
-        
+        isSizeLoaded = false;
+        size = 0;
+        sizeUnit = "MB";
+
     }
 
-    public ArrayList<RNARawDataFile> getRawDataFilesBySample(long rnaSampleID,DataSource pool){
-        String query=select+" where rna_sample_id="+rnaSampleID;
-        return getRNARawDataFileByQuery(query,pool);
+    public ArrayList<RNARawDataFile> getRawDataFilesBySample(long rnaSampleID, DataSource pool) {
+        String query = select + " where rna_sample_id=" + rnaSampleID;
+        return getRNARawDataFileByQuery(query, pool);
     }
-    
-    public ArrayList<RNARawDataFile> getRNARawDataFileByQuery(String query, DataSource pool){
-        ArrayList<RNARawDataFile> ret=new ArrayList<>();
-        try(Connection conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(query)){
-            
-            ResultSet rs=ps.executeQuery();
-            while(rs.next()){
-                boolean pair=false;
-                if(rs.getInt("PAIRED_END")==1){pair=true;}
-                boolean pub=false;
-                if(rs.getInt("IS_PUBLIC")==1){pub=true;}
-                boolean down=false;
-                if(rs.getInt("IS_DOWNLOAD")==1){down=true;}
-                RNARawDataFile tmp=new RNARawDataFile(rs.getLong("RNA_RAW_DATA_ID"),
-                                    rs.getLong("RNA_SAMPLE_ID"),
-                                    rs.getString("RNA_SAMPLE_NAME"),
-                                    rs.getString("BATCH"),
-                                    rs.getString("ORIGINAL_FILE"),
-                                    rs.getString("FILENAME"),
-                                    rs.getString("PATH"),
-                                    rs.getString("CHECKSUM"),
-                                    pair,
-                                    rs.getString("INSTRUMENT"),
-                                    rs.getInt("READ_LENGTH"),
-                                    rs.getLong("TOTAL_READS"),
-                                    pub,
-                                    down);
+
+    public ArrayList<RNARawDataFile> getRNARawDataFileByQuery(String query, DataSource pool) {
+        ArrayList<RNARawDataFile> ret = new ArrayList<>();
+        try (Connection conn = pool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                boolean pair = false;
+                if (rs.getInt("PAIRED_END") == 1) {
+                    pair = true;
+                }
+                boolean pub = false;
+                if (rs.getInt("IS_PUBLIC") == 1) {
+                    pub = true;
+                }
+                boolean down = false;
+                if (rs.getInt("IS_DOWNLOAD") == 1) {
+                    down = true;
+                }
+                RNARawDataFile tmp = new RNARawDataFile(rs.getLong("RNA_RAW_DATA_ID"),
+                        rs.getLong("RNA_SAMPLE_ID"),
+                        rs.getString("RNA_SAMPLE_NAME"),
+                        rs.getString("BATCH"),
+                        rs.getString("ORIGINAL_FILE"),
+                        rs.getString("FILENAME"),
+                        rs.getString("PATH"),
+                        rs.getString("CHECKSUM"),
+                        pair,
+                        rs.getString("INSTRUMENT"),
+                        rs.getInt("READ_LENGTH"),
+                        rs.getLong("TOTAL_READS"),
+                        pub,
+                        down);
                 ret.add(tmp);
             }
             ps.close();
-            conn.close();
-        }catch(SQLException e){
-            log.error("Error getting RNADataset from \n"+query,e);
+
+        } catch (SQLException e) {
+            log.error("Error getting RNADataset from \n" + query, e);
         }
         return ret;
     }
-    
-    public boolean createRNARawDataFile(RNARawDataFile rdf, DataSource pool){
-        boolean success=false;
-        if(rdf.getRawDataID()==0){
-            try(Connection conn=pool.getConnection()){
-                long newID=getNextID(pool);
-                PreparedStatement ps=conn.prepareStatement(insert);
+
+    public boolean createRNARawDataFile(RNARawDataFile rdf, DataSource pool) {
+        boolean success = false;
+        if (rdf.getRawDataID() == 0) {
+            try (Connection conn = pool.getConnection()) {
+                long newID = getNextID(pool);
+                PreparedStatement ps = conn.prepareStatement(insert);
                 ps.setLong(1, newID);
                 ps.setLong(2, rdf.getRnaSampleID());
                 ps.setString(3, rdf.getSampleName());
@@ -128,112 +134,114 @@ public class RNARawDataFile {
                 ps.setString(6, rdf.getFileName());
                 ps.setString(7, rdf.getPath());
                 ps.setString(8, rdf.getChecksum());
-                if(rdf.getPaired()){
+                if (rdf.getPaired()) {
                     ps.setInt(9, 1);
-                }else{
+                } else {
                     ps.setInt(9, 0);
                 }
-                ps.setString(10,rdf.getInstrument());
+                ps.setString(10, rdf.getInstrument());
                 ps.setInt(11, rdf.getReadLen());
                 ps.setLong(12, rdf.getTotalReads());
-                if(rdf.isPublic()){
+                if (rdf.isPublic()) {
                     ps.setInt(13, 1);
-                }else{
+                } else {
                     ps.setInt(13, 0);
                 }
-                if(rdf.isDownloadable()){
+                if (rdf.isDownloadable()) {
                     ps.setInt(14, 1);
-                }else{
+                } else {
                     ps.setInt(14, 0);
                 }
-                boolean tmpSuccess=ps.execute();
+                boolean tmpSuccess = ps.execute();
                 rdf.setRnaSampleID(newID);
-                if(tmpSuccess){
-                    success=true;
+                if (tmpSuccess) {
+                    success = true;
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
 
             }
         }
         return success;
     }
-    
-    public boolean updateRNARawDataFile(RNARawDataFile rdf, DataSource pool){
-        boolean success=false;
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement ps=conn.prepareStatement(update);
+
+    public boolean updateRNARawDataFile(RNARawDataFile rdf, DataSource pool) {
+        boolean success = false;
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(update);
             ps.setLong(1, rdf.getRnaSampleID());
             ps.setString(2, rdf.getSampleName());
             ps.setString(3, rdf.getBatch());
             ps.setString(4, rdf.getOrigFileName());
             ps.setString(5, rdf.getFileName());
             ps.setString(6, rdf.getPath());
-            if(rdf.getPaired()){
-                ps.setInt(7,1);
-            }else{
-                ps.setInt(7,0);
+            if (rdf.getPaired()) {
+                ps.setInt(7, 1);
+            } else {
+                ps.setInt(7, 0);
             }
             ps.setString(8, rdf.getInstrument());
             ps.setInt(9, rdf.getReadLen());
-            ps.setLong(10,rdf.getTotalReads());
-            if(rdf.isPublic()){
-                ps.setInt(11,1);
-            }else{
-                ps.setInt(11,0);
+            ps.setLong(10, rdf.getTotalReads());
+            if (rdf.isPublic()) {
+                ps.setInt(11, 1);
+            } else {
+                ps.setInt(11, 0);
             }
-            if(rdf.isDownloadable()){
-                ps.setInt(12,1);
-            }else{
-                ps.setInt(12,0);
+            if (rdf.isDownloadable()) {
+                ps.setInt(12, 1);
+            } else {
+                ps.setInt(12, 0);
             }
             ps.setLong(13, rdf.getRawDataID());
-            int numUpdated=ps.executeUpdate();
-            if(numUpdated==1){
-                success=true;
+            int numUpdated = ps.executeUpdate();
+            if (numUpdated == 1) {
+                success = true;
             }
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
         return success;
     }
-    
-    public boolean deleteRNARawDataFile(long rnaDataFileID, DataSource pool){
-        boolean success=false;
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement ps=conn.prepareStatement(delete);
+
+    public boolean deleteRNARawDataFile(long rnaDataFileID, DataSource pool) {
+        boolean success = false;
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(delete);
             ps.setLong(1, rnaDataFileID);
-            success=true;
+            success = true;
             ps.close();
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
         return success;
     }
-    public boolean deleteRNARawDataFileBySample(long rnaSampleID, DataSource pool){
-        boolean success=false;
-        try(Connection conn=pool.getConnection()){
-            PreparedStatement ps=conn.prepareStatement(deleteAllBySample);
+
+    public boolean deleteRNARawDataFileBySample(long rnaSampleID, DataSource pool) {
+        boolean success = false;
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement ps = conn.prepareStatement(deleteAllBySample);
             ps.setLong(1, rnaSampleID);
-            success=true;
+            success = true;
             ps.close();
-        }catch(Exception e){
-            
+        } catch (Exception e) {
+
         }
         return success;
     }
-    private long getNextID(DataSource pool){
-        long ret=0;
-        try(Connection conn=pool.getConnection();
-            PreparedStatement ps=conn.prepareStatement(getID)){
-            ResultSet rs=ps.executeQuery();
-            ret=rs.getLong(1);
+
+    private long getNextID(DataSource pool) {
+        long ret = 0;
+        try (Connection conn = pool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(getID)) {
+            ResultSet rs = ps.executeQuery();
+            ret = rs.getLong(1);
             rs.close();
-        }catch(SQLException e){
-            log.error("Error getting new RNA_RAW_DATAFILE_ID:",e);
+        } catch (SQLException e) {
+            log.error("Error getting new RNA_RAW_DATAFILE_ID:", e);
         }
         return ret;
     }
-    
+
     public long getRawDataID() {
         return rawDataID;
     }
@@ -345,19 +353,19 @@ public class RNARawDataFile {
     public void setIsDownloadable(boolean isDownloadable) {
         this.isDownloadable = isDownloadable;
     }
-    
-    public double getSize(){
-        if(!isSizeLoaded){
-            File tmp=new File(path+fileName);
-            double tmpDiv=1024;
-            if(sizeUnit.equals("GB")){
-                tmpDiv=1024*1024*1024;
-            }else if(sizeUnit.equals("MB")){
-                tmpDiv=1024*1024;
+
+    public double getSize() {
+        if (!isSizeLoaded) {
+            File tmp = new File(path + fileName);
+            double tmpDiv = 1024;
+            if (sizeUnit.equals("GB")) {
+                tmpDiv = 1024 * 1024 * 1024;
+            } else if (sizeUnit.equals("MB")) {
+                tmpDiv = 1024 * 1024;
             }
-            size=tmp.length()/tmpDiv;
+            size = tmp.length() / tmpDiv;
         }
         return size;
     }
-    
+
 }

@@ -16,7 +16,7 @@ sub readPredictedPolyADataFromDB{
 	# Stop position on the chromosome
 
 	# Read inputs
-	my($geneChrom,$organism,$geneStart,$geneStop,$dsn,$usr,$passwd)=@_;   
+	my($geneChrom,$organism,$geneStart,$geneStop,$connect)=@_;
 
 
 	my %polyaHOH; # giant array of hashes and arrays containing probeset data
@@ -28,7 +28,7 @@ sub readPredictedPolyADataFromDB{
 	}
 	
 	# PERL DBI CONNECT
-	my $connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
+	#my $connect = DBI->connect($dsn, $usr, $passwd) or die ($DBI::errstr ."\n");
 	
 	# PREPARE THE QUERY for probesets
 	my $query ="Select p.pp_id,p.site_start,p.site_stop,p.motif,p.strand,p.pvalue,p.chromosome
@@ -80,7 +80,7 @@ sub readPredictedPolyADataFromDB{
 	}
 	print "PolyA Count:".$cntPoly."\n";
 	$query_handle->finish();
-	$connect->disconnect();
+	#$connect->disconnect();
 	return (\%polyaHOH);
 }
 

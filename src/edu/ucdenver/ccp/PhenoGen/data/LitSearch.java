@@ -210,7 +210,7 @@ public class LitSearch {
         PreparedStatement pstmtKeywords = null;
         log.debug("# of categories = " + myLitSearch.getCategories().size());
 
-        try (Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             pstmtCategories = conn.prepareStatement(insertCategories,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -280,7 +280,7 @@ public class LitSearch {
 
         String[] dataRow;
         String[] myIdentifiers = new String[0];
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{gene_id, coref_id}, conn);
             myIdentifiers = new String[myResults.getNumRows()];
             int i = 0;
@@ -289,8 +289,8 @@ public class LitSearch {
                 i++;
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return myIdentifiers;
@@ -324,7 +324,7 @@ public class LitSearch {
         log.debug("in getAlternateIDs used in litsearch");
         String[] dataRow;
         String[] myIdentifiers = new String[0];
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{search_id, gene_id}, conn);
             myIdentifiers = new String[myResults.getNumRows()];
 
@@ -334,8 +334,8 @@ public class LitSearch {
                 i++;
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -370,7 +370,7 @@ public class LitSearch {
 
         String[] dataRow;
         String[] myKeywords = new String[0];
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{search_id}, conn);
             myKeywords = new String[myResults.getNumRows()];
 
@@ -380,8 +380,8 @@ public class LitSearch {
                 i++;
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -413,7 +413,7 @@ public class LitSearch {
 
         String[] dataRow;
         LinkedHashMap<String, String> myCategories = new LinkedHashMap<String, String>();
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             Results myResults = new Results(query, new Object[]{search_id}, conn);
 
 
@@ -421,8 +421,8 @@ public class LitSearch {
                 myCategories.put(dataRow[0], dataRow[1]);
             }
             myResults.close();
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -455,10 +455,10 @@ public class LitSearch {
         log.debug("in getCoRefAbstracts");
         //log.debug("query = " + query);
         Results myResults = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             myResults = new Results(query, coref_id, conn);
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return myResults;
@@ -518,10 +518,10 @@ public class LitSearch {
 
         Object[] parameters = (Object[]) parameterList.toArray(new Object[parameterList.size()]);
         Results myResults = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             myResults = new Results(query, parameters, conn);
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return myResults;
@@ -536,7 +536,7 @@ public class LitSearch {
      * @return a Results object
      * @throws SQLException if a database error occurs
      */
-    public Results getCoReferences(int search_id,DataSource pool) throws SQLException {
+    public Results getCoReferences(int search_id, DataSource pool) throws SQLException {
 
         String query =
                 "select crr.coref_id, " +
@@ -554,10 +554,10 @@ public class LitSearch {
         log.debug("in getCoReferences");
         //log.debug("query = "+ query);
         Results myResults = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             myResults = new Results(query, search_id, conn);
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return myResults;
@@ -628,10 +628,10 @@ public class LitSearch {
         log.debug("in getPubMedCountsByCategory");
         //log.debug("query = "+ query);
         Results myResults = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             myResults = new Results(query, new Object[]{search_id, search_id, search_id}, conn);
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
         return myResults;
@@ -649,10 +649,10 @@ public class LitSearch {
 
         log.debug("in getCategoriesAndKeywords ");
         Results myResults = null;
-        try(Connection conn=pool.getConnection()){
+        try (Connection conn = pool.getConnection()) {
             myResults = new Results(query, new Object[]{search_id, search_id}, conn);
-        }catch(SQLException e){
-            log.debug("SQL Exception:",e);
+        } catch (SQLException e) {
+            log.debug("SQL Exception:", e);
             throw e;
         }
 
@@ -878,15 +878,10 @@ public class LitSearch {
         query[7] =
                 "delete from gene_list_analyses " +
                         "where analysis_id = ?";
-
-
-        PreparedStatement pstmt = null;
-        Connection conn = null;
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             for (int i = 0; i < query.length; i++) {
                 log.debug("i = " + i + ", query = " + query[i]);
-                pstmt = conn.prepareStatement(query[i],
+                PreparedStatement pstmt = conn.prepareStatement(query[i],
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_UPDATABLE);
                 pstmt.setInt(1, search_id);
@@ -894,19 +889,10 @@ public class LitSearch {
                 pstmt.executeUpdate();
                 pstmt.close();
             }
-            conn.close();
-            conn = null;
+
         } catch (SQLException e) {
             log.error("In exception of deleteLitSearch", e);
             throw e;
-        } finally {
-            if (conn != null && !conn.isClosed()) {
-                try {
-                    conn.close();
-                    conn = null;
-                } catch (SQLException e) {
-                }
-            }
         }
 
     }
@@ -996,7 +982,7 @@ public class LitSearch {
                     pstmt.executeUpdate();
                     pstmt.close();
                 }
-            }catch(SQLException e){
+            } catch (SQLException e) {
                 log.error("In exception of deleteAllLitSearchesForGeneList", e);
                 conn.rollback();
             }
@@ -1126,7 +1112,7 @@ public class LitSearch {
 
         List<List<String[]>> allResults = null;
 
-        try (Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             allResults = new Results().getAllResults(query, userID, conn);
 
         } catch (SQLException e) {
@@ -1146,7 +1132,7 @@ public class LitSearch {
 
         PreparedStatement pstmt = null;
 
-        try(Connection conn=pool.getConnection()) {
+        try (Connection conn = pool.getConnection()) {
             for (int i = 0; i < query.length; i++) {
                 log.debug("i = " + i + ", query = " + query[i]);
                 pstmt = conn.prepareStatement(query[i],

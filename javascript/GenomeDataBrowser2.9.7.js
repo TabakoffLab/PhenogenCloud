@@ -89,7 +89,7 @@ mouseOnly.probeMouse = 1;
 
 var mmVer = "Mouse(<span id=\"verSelect\"></span>) Strain:C57BL/6J";
 var rnVer = "Rat(<span id=\"verSelect\"></span>) HRDP version:<span id=\"hrdpSelect\"></span> Strain:BN";
-var siteVer = "PhenoGen v3.9.5(5/16/2024)";
+var siteVer = "PhenoGen v3.9.6(8/23/2024)";
 
 var trackBinCutoff = 10000;
 var customTrackLevel = -1;
@@ -305,35 +305,39 @@ function zoomOut(level, zoomScale) {
     }
     tmp.start = tmp.start - expandBy;
     tmp.stop = tmp.stop + expandBy;
-    svgList[level].xScale.domain([tmp.start, tmp.stop]);
-    if (!history[level]) {
-        history[level] = [];
-    }
-    history[level].push(tmp);
-    svgList[level].scaleSVG.select(".x.axis").call(svgList[level].xAxis);
-    svgList[level].redraw();
-    if (!isNaN(zoomUpdateHandle)) {
-        clearTimeout(zoomUpdateHandle);
-        zoomUpdateHandle = Math.NaN;
-    }
-    zoomUpdateHandle = setTimeout(function () {
-        if (level === 0) {
-            updatePage(svgList[level]);
+    if (tmp.stop - tmp.start < 10000000) {
+        svgList[level].xScale.domain([tmp.start, tmp.stop]);
+        if (!history[level]) {
+            history[level] = [];
         }
-        svgList[level].updateFullData();
-        if (level === 0) {
-            setTimeout(function () {
-                DisplayRegionReport();
-            }, 100);
+        history[level].push(tmp);
+        svgList[level].scaleSVG.select(".x.axis").call(svgList[level].xAxis);
+        svgList[level].redraw();
+        if (!isNaN(zoomUpdateHandle)) {
+            clearTimeout(zoomUpdateHandle);
+            zoomUpdateHandle = Math.NaN;
         }
-    }, 300);
-    if (level === 0) {
-        $('#geneTxt').val(chr + ":" + tmp.start + "-" + tmp.stop);
+        zoomUpdateHandle = setTimeout(function () {
+            if (level === 0) {
+                updatePage(svgList[level]);
+            }
+            svgList[level].updateFullData();
+            if (level === 0) {
+                setTimeout(function () {
+                    DisplayRegionReport();
+                }, 100);
+            }
+        }, 300);
+        if (level === 0) {
+            $('#geneTxt').val(chr + ":" + tmp.start + "-" + tmp.stop);
+        }
+        /*if(ga){
+            ga('send','event','calledZoomOut',level);
+        }*/
+        gtag('event', level, {'event_category': 'calledZoomOut'});
+    } else {
+        alert("maximum viewable area is 10Mb.")
     }
-    /*if(ga){
-		ga('send','event','calledZoomOut',level);
-	}*/
-    gtag('event', level, {'event_category': 'calledZoomOut'});
 }
 
 //setup event handlers
@@ -418,14 +422,17 @@ function mmove() {
                 if (rupx !== 0) {
                     minx = Math.round(svgList[i].downscalex.domain()[0]);
                     maxx = Math.round(svgList[i].mw * (svgList[i].downx - svgList[i].downscalex.domain()[0]) / rupx + svgList[i].downscalex.domain()[0]);
-
-                    if (maxx <= svgList[i].xMax && minx >= svgList[i].xMin) {
-                        if (i === 0) {
-                            $('#geneTxt').val(chr + ":" + minx + "-" + maxx);
+                    if (maxx - minx < 10000000) {
+                        if (maxx <= svgList[i].xMax && minx >= svgList[i].xMin) {
+                            if (i === 0) {
+                                $('#geneTxt').val(chr + ":" + minx + "-" + maxx);
+                            }
+                            svgList[i].xScale.domain([minx, maxx]);
+                            svgList[i].scaleSVG.select(".x.axis").call(svgList[i].xAxis);
+                            svgList[i].redraw();
                         }
-                        svgList[i].xScale.domain([minx, maxx]);
-                        svgList[i].scaleSVG.select(".x.axis").call(svgList[i].xAxis);
-                        svgList[i].redraw();
+                    } else {
+                        alert("Maximum view is 10Megabases.");
                     }
                 }
             } else if (!isNaN(svgList[i].downPanx)) {
@@ -435,16 +442,19 @@ function mmove() {
                     scaleDist = (svgList[i].downscalex.domain()[1] - svgList[i].downscalex.domain()[0]) / svgList[i].mw;
                     minx = Math.round(svgList[i].downscalex.domain()[0] + dist * scaleDist);
                     maxx = Math.round(dist * scaleDist + svgList[i].downscalex.domain()[1]);
-                    if (maxx <= svgList[i].xMax && minx >= svgList[i].xMin) {
-                        if (i === 0) {
-                            $('#geneTxt').val(chr + ":" + minx + "-" + maxx);
+                    if (maxx - minx < 10000000) {
+                        if (maxx <= svgList[i].xMax && minx >= svgList[i].xMin) {
+                            if (i === 0) {
+                                $('#geneTxt').val(chr + ":" + minx + "-" + maxx);
+                            }
+                            svgList[i].xScale.domain([minx, maxx]);
+                            svgList[i].scaleSVG.select(".x.axis").call(svgList[i].xAxis);
+                            svgList[i].redraw();
+                            svgList[i].downPanx = p[0];
                         }
-                        svgList[i].xScale.domain([minx, maxx]);
-                        svgList[i].scaleSVG.select(".x.axis").call(svgList[i].xAxis);
-                        svgList[i].redraw();
-                        svgList[i].downPanx = p[0];
+                    } else {
+                        alert("Maximum view is 10Megabases.");
                     }
-
                 }
             } else if (!isNaN(svgList[i].downZoomx)) {
                 start = svgList[i].downZoomx;
@@ -459,11 +469,15 @@ function mmove() {
                 }
                 minx = Math.round(svgList[i].xScale.invert(start));
                 maxx = Math.round(svgList[i].xScale.invert(start + width));
-                d3.select("#Level" + svgList[i].levelNumber).selectAll("svg rect.zoomRect")
-                    .attr("x", start)
-                    .attr("width", width);
-                d3.select("#Level" + svgList[i].levelNumber).selectAll("svg text#zoomTextStart").attr("x", start).attr("y", 15).text(numberWithCommas(minx));
-                d3.select("#Level" + svgList[i].levelNumber).selectAll("svg text#zoomTextEnd").attr("x", start + width).attr("y", 50).text(numberWithCommas(maxx));
+                if (maxx - minx < 10000000) {
+                    d3.select("#Level" + svgList[i].levelNumber).selectAll("svg rect.zoomRect")
+                        .attr("x", start)
+                        .attr("width", width);
+                    d3.select("#Level" + svgList[i].levelNumber).selectAll("svg text#zoomTextStart").attr("x", start).attr("y", 15).text(numberWithCommas(minx));
+                    d3.select("#Level" + svgList[i].levelNumber).selectAll("svg text#zoomTextEnd").attr("x", start + width).attr("y", 50).text(numberWithCommas(maxx));
+                } else {
+                    alert("Maximum view is 10Megabases.");
+                }
             }
         }
     }
@@ -2280,6 +2294,7 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
     that.mdown = function () {
         if (that.overSettings == 0) {
             if ((that.defaultMouseFunct !== "dragzoom" && d3.event.altKey) || (that.defaultMouseFunct === "dragzoom" && !d3.event.altKey)) {
+                console.log("zoom++");
                 var p = d3.mouse(that.vis.node());
                 that.downZoomx = p[0];
                 that.scaleSVG.append("rect")
@@ -3373,28 +3388,28 @@ function GenomeSVG(div, imageWidth, minCoord, maxCoord, levelNumber, title, type
                 $('span#hrdpSelect').css("display", "inline-block");
 
                 if (genomeVer === "rn7") {
-                    console.log("append:v6");
+                    //console.log("append:v6");
                     var rn6Opt = tmpSelh.append('option')
                         .attr('value', 'hrdp6')
                         .html('HRDP v6');
                     if (dataVer === "hrdp6") {
                         rn6Opt.attr('selected', 'selected');
                     }
-                    console.log("append:v7");
+                    //console.log("append:v7");
                     var rn7Opt = tmpSelh.append('option')
-                        .attr('value', 'hrdp7')
-                        .html('HRDP v7');
-                    if (dataVer === "hrdp7") {
+                        .attr('value', 'hrdp7.1')
+                        .html('HRDP v7.1');
+                    if (dataVer === "hrdp7.1") {
                         rn7Opt.attr('selected', 'selected');
                     }
                 } else if (genomeVer === "rn6") {
-                    console.log("append:v5");
+                    //console.log("append:v5");
                     var rn5pt = tmpSelh.append('option')
                         .attr('value', 'hrdp5')
                         .html('HRDP v5');
                     rn5pt.attr('selected', 'selected');
                 } else if (genomeVer === "rn5") {
-                    console.log("append:v4");
+                    //console.log("append:v4");
                     var rn5pt = tmpSelh.append('option')
                         .attr('value', 'hrdp3')
                         .html('HRDP v4');

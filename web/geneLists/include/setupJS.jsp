@@ -57,7 +57,7 @@
                                 jQuery("#delete-errmsg").html(data2);
                                 jQuery( "#dialog-delete-error" ).dialog("open");
                             }
-                            runGetResults(-1);
+                            runGetResults(-1,geneListID);
                     },
                     error: function(xhr, status, error) {
                            jQuery("#delete-errmsg").html(error);
@@ -67,12 +67,12 @@
     }
     
     function runGetResults(retry){
-        var id=<%=selectedGeneList.getGene_list_id()%>;
+        var glID=<%=selectedGeneList.getGene_list_id()%>;
         jQuery('#resultList').html("<div id=\"waitLoadResults\" align=\"center\" style=\"position:relative;top:0px;\"><img src=\"<%=imagesDir%>wait.gif\" alt=\"Loading Results...\" text-align=\"center\" ><BR />Loading Results...</div>"+jQuery('#resultList').html());
         jQuery.ajax({
                 url: analysisPath,
                 type: 'GET',
-                data: {geneListID:id},
+                data: {geneListID:glID},
                 dataType: 'html',
                 success: function(data2){ 
                             var time=20000;

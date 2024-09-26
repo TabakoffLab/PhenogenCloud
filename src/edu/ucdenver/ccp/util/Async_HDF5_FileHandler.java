@@ -338,7 +338,7 @@ public class Async_HDF5_FileHandler implements Runnable {
             }*/
         }
         if (!error) {
-            try {
+            try (Connection conn = pool.getConnection()) {
                 //check version
                 if (file.isOpen() && file.versionExists(version)) {
                     Date start = new Date();
@@ -350,7 +350,6 @@ public class Async_HDF5_FileHandler implements Runnable {
                     System.out.println("Open version");
                     //get included probesets from DB
                     String query = "Select probeset_id from exon_user_filter_temp where dataset_id=? and dataset_version=? and user_id=? and cumulative_filter=1 order by probeset_id";
-                    conn = pool.getConnection();
                     PreparedStatement ps = conn.prepareStatement(query);
                     ps.setInt(1, pds.getDataset_id());
                     ps.setInt(2, v);
@@ -362,8 +361,6 @@ public class Async_HDF5_FileHandler implements Runnable {
                         list.add(rs.getInt("probeset_id"));
                     }
                     rs.close();
-                    conn.close();
-                    conn = null;
                     //convert to probeset list to long[]
                     long[] probelist = new long[list.size()];
                     for (int i = 0; i < list.size(); i++) {
@@ -390,15 +387,6 @@ public class Async_HDF5_FileHandler implements Runnable {
                 } catch (Exception er) {
                 }
                 log.error("Error creating HDF5 file", e);
-            } finally {
-                if (conn != null) {
-                    try {
-                        conn.close();
-                    } catch (SQLException e) {
-                        ;
-                    }
-                    conn = null;
-                }
             }
 
         } else {
@@ -504,26 +492,15 @@ public class Async_HDF5_FileHandler implements Runnable {
             }
             if (success) {
                 String resetQ = "{call filter.reset(" + pds.getDataset_id() + "," + v + "," + userID + ",?)}";
-                try {
-                    conn = pool.getConnection();
+                try (Connection conn = pool.getConnection()) {
                     CallableStatement cs = conn.prepareCall(resetQ);
                     cs.setInt(1, 3);
                     cs.executeUpdate();
                     cs.close();
                     conn.commit();
-                    conn.close();
-                    conn = null;
+
                 } catch (SQLException e) {
                     log.error("Error removing temporary filter", e);
-                } finally {
-                    if (conn != null) {
-                        try {
-                            conn.close();
-                        } catch (SQLException e) {
-                            ;
-                        }
-                        conn = null;
-                    }
                 }
             }
         }

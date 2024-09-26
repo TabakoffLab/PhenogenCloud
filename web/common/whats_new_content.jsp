@@ -28,6 +28,17 @@ span.control{
 		background:#989898;
 	}
 </style>
+<div class="whats_new version"><p><H3>Version 3.9.6</H3><BR> 8/23/2024</p></div>
+	Genome Transcriptome Browser has HRDP v7.1 data
+    <UL>
+                                        <LI>HRDP v7.1 Tracks: Transcriptome, Splice Junction Tracks</LI>
+                                        <LI>REST API updated with latest transcriptome</LI>
+                                        <LI>UCSC Genome Browser links updated with latest transcriptome</LI>
+                                        <LI>Coming soon: expression, eQTLs, and WGCNA - HRDP v6(rn7) is still available simply select the HRDP version to display.</LI>
+
+                        </UL>
+
+<HR>
 <div class="whats_new version"><p><H3>Version 3.9.5</H3><BR> 5/14/2024</p></div>
 	Genome Transcriptome Browser has HRDP v7 data
     <UL>

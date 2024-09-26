@@ -430,7 +430,7 @@
                             genomeVer:genomeVer
                     };
                     loadDivWithPage("div#geneEQTL",jspPage,scrollToDiv,params,
-                                    "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+                                    "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>",0;
             }else if(id==="geneApp"){
                     /*$.ajax({
                                     url: contextRoot+"web/GeneCentric/callPanelExpr.jsp",
@@ -447,7 +447,7 @@
                             id:selectedID
                     };
                     loadDivWithPage("div#geneMIrna",jspPage,scrollToDiv,params,
-                                    "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+                                    "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>",0);
             }else if(id==="miGenerna"){
                     var jspPage=contextRoot+"web/GeneCentric/miGeneRnaAjax.jsp";
                     var params={
@@ -455,7 +455,7 @@
                             id:geneSymStr
                     };
                     loadDivWithPage("div#miGenerna",jspPage,scrollToDiv,params,
-                                    "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+                                    "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>",0);
             }else if(id==="geneWGCNA"){
                     $("div#regionWGCNAEQTL").html("");
                     var jspPage=contextRoot+"web/GeneCentric/wgcnaGene.jsp";
@@ -465,7 +465,7 @@
                             genomeVer:genomeVer
                     };
                     loadDivWithPage("div#geneWGCNA",jspPage,scrollToDiv,params,
-                                    "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+                                    "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>",0);
             }
         }
         setTimeout(function(){

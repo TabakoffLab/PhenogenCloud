@@ -326,7 +326,11 @@ $(this).removeClass("less");
             }*/
             HashMap<String, HashMap<String,HashMap<String,Double>>> tpmData= new HashMap<String, HashMap<String,HashMap<String,Double>>>();
 			if(genomeVer.equals("rn7")){
-				tpmData=gdt.getTPMHerit( sb.substring(1), "190,191,192,193");
+                if(dataVer.equals("hrdp6")){
+					tpmData=gdt.getTPMHerit( sb.substring(1), "190,191,192,193");
+                }else if(dataVer.equals("hrdp7.1")){
+                    tpmData=gdt.getTPMHerit( sb.substring(1), "213,214,215,216,218,219");
+                }
 			}
             if (!chr.startsWith("chr")) {
                 chr = "chr" + chr;
@@ -902,28 +906,26 @@ $(this).removeClass("less");
     </div>
 
     <div style="display:none;" id="geneEQTL">
-    	<span class="hrdp7Warn" style="color:#FF0000;<%if(!dataVer.equals("hrdp7")){%>display:none;<%}%>"> eQTLs are not yet available for HRDP v7.  You can view eQTLs now with HRDP v6 simply switch HRDP versions above.  Check back soon for HRDP v7 eQTLS. </span>
+    	<span class="hrdp7Warn" style="color:#FF0000;<%if(!dataVer.equals("hrdp7.1")){%>display:none;<%}%>"> eQTLs are not yet available for HRDP v7.1.  You can view eQTLs now with HRDP v6 simply switch HRDP versions above.  Check back soon for HRDP v7.1 eQTLS. </span>
     </div>
 
     <div style="display:none;" id="geneApp">
-        <div id="geneAppsrcCtrl" class="srcCtrl" style="text-align:center;"></div>
-        <div class="help" style="width:100%;display:inline-block;text-align:center;"></div>
-        <div class="exprCol" id="expBrain" style="display:inline-block;">
-            <div style="width:100%;text-align: center;"><H2><span id="geneAppTitleb"></span></h2></div>
-            <BR>
-            <div id="chartBraingeneApp" style="width:98%;"></div>
+    	<span class="hrdp7Warn" style="color:#FF0000;<%if(!dataVer.equals("hrdp7.1")){%>display:none;<%}%>"> Expression is not yet available for HRDP v7.1.  You can view eQTLs now with HRDP v6 simply switch HRDP versions above.  Check back soon for HRDP v7.1 eQTLS. </span>
+    	<%if(!dataVer.equals("hrdp7.1")){%>
+			<div id="geneAppsrcCtrl" class="srcCtrl" style="text-align:center;"></div>
+			<div class="help" style="width:100%;display:inline-block;text-align:center;"></div>
+			<div class="exprCol" id="expLeft" style="display:inline-block;">
+				<div style="width:100%;text-align: center;"><H2><span id="geneAppTitlel"></span></h2></div>
+				<BR>
+				<div id="chartLeftgeneApp" style="width:98%;"></div>
 
-        </div>
-        <div class="exprCol" id="expLiver" style="display:inline-block;">
-            <div style="width:100%;text-align: center;"><H2><span id="geneAppTitlel"></span></h2></div>
-            <BR>
-            <div id="chartLivergeneApp" style="width:98%;"></div>
-        </div>
-        <div class="exprCol" id="expKidney" style="display:inline-block;">
-            <div style="width:100%;text-align: center;"><H2><span id="geneAppTitlek"></span></h2></div>
-            <BR>
-            <div id="chartKidneygeneApp" style="width:98%;"></div>
-        </div>
+			</div>
+			<div class="exprCol" id="expRight" style="display:inline-block;">
+				<div style="width:100%;text-align: center;"><H2><span id="geneAppTitler"></span></h2></div>
+				<BR>
+				<div id="chartRightgeneApp" style="width:98%;"></div>
+			</div>
+		<%}%>
     </div>
 
     <div style="display:none;" id="geneMIrna">
@@ -932,7 +934,7 @@ $(this).removeClass("less");
     <div style="display:none;" id="miGenerna">
     </div>
     <div style="display:none;" id="geneWGCNA">
-    	<span class="hrdp7Warn" style="color:#FF0000; <%if(!dataVer.equals("hrdp7")){%>display:none;<%}%>" > WGCNA modules are not yet available for HRDP v7.  You can view WGCNA modules now with HRDP v6 simply switch HRDP versions above.  Check back soon for HRDP v7 WGCNA modules. </span>
+    	<span class="hrdp7Warn" style="color:#FF0000; <%if(!dataVer.equals("hrdp7.1")){%>display:none;<%}%>" > WGCNA modules are not yet available for HRDP v7.1.  You can view WGCNA modules now with HRDP v6 simply switch HRDP versions above.  Check back soon for HRDP v7.1 WGCNA modules. </span>
     </div>
     <div style="display:none;" id="chilibot">
         <table>
@@ -973,7 +975,9 @@ $(this).removeClass("less");
 <script type="text/javascript">
     var idStr = "<%=id%>";
     var geneSymStr = "<%=curGene.getGeneSymbol()%>";
-    var version = <%if(genomeVer.equals("rn7")){%>6<%}else{%>5<%}%>;
+    var version = <%if(genomeVer.equals("rn7")){if(dataVer.equals("hrdp6")){%>6<%}else{%>7.1<%}}else{%>5<%}%>;
+    var reportMinCoord=<%=curGene.getStart()%>;
+    var reportMaxCoord=<%=curGene.getEnd()%>;
 
     var rows = $("table#tblGeneDabg tr");
     stripeTable(rows);
@@ -1026,7 +1030,7 @@ $(this).removeClass("less");
 
     function loadGeneReportTabs(id, scrollToDiv) {
         if (id === "geneEQTL") {
-            if(dataVer==="hrdp7"){
+            if(dataVer==="hrdp7.1"){
 
             }else{
 				var jspPage = contextRoot + "web/GeneCentric/geneEQTLAjax.jsp";
@@ -1039,7 +1043,7 @@ $(this).removeClass("less");
 					version: version
 				};
 				loadDivWithPage("div#geneEQTL", jspPage, scrollToDiv, params,
-					"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+					"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>",0);
             }
         } else if (id === "geneApp") {
             setTimeout(function () {
@@ -1062,7 +1066,7 @@ $(this).removeClass("less");
                 id: selectedID
             };
             loadDivWithPage("div#geneMIrna", jspPage, scrollToDiv, params,
-                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>",0);
         } else if (id === "miGenerna") {
             var jspPage = contextRoot + "web/GeneCentric/miGeneRnaAjax.jsp";
             var params = {
@@ -1070,9 +1074,9 @@ $(this).removeClass("less");
                 id: geneSymStr
             };
             loadDivWithPage("div#miGenerna", jspPage, scrollToDiv, params,
-                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+                "<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>",0);
         } else if (id === "geneWGCNA") {
-            if(dataVer==="hrdp7"){
+            if(dataVer==="hrdp7.1"){
 
             }else{
 				$("div#regionWGCNAEQTL").html("");
@@ -1083,7 +1087,7 @@ $(this).removeClass("less");
 					genomeVer: genomeVer
 				};
 				loadDivWithPage("div#geneWGCNA", jspPage, scrollToDiv, params,
-					"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>");
+					"<span style=\"text-align:center;width:100%;\"><img src=\"web/images/ucsc-loading.gif\"><BR>Loading...</span>",0);
 			}
         }
     }
@@ -1118,6 +1122,12 @@ $(this).removeClass("less");
         if (location.protocol == 'http:') {
             tmpURL = tmpURL.replace("https://", "http://");
         }
+        if(tmpURL.indexOf("geneData")>0){
+            tmpURL=tmpURL.substring(0,tmpURL.indexOf("geneData"));
+            tmpURL=tmpURL+"/regionData/"+chr+"/"+gs.initMin+"_"+gs.initMax;
+
+        }
+        tmpURL = "/tmpData/browserCache/" + genomeVer + "/regionData/" + chr + "/" + reportMinCoord + "_" + reportMaxCoord;
         console.log("tmpURL:" + tmpURL);
         peGR = PhenogenExpr({
             "dataPrefix": tmpURL,
@@ -1125,10 +1135,11 @@ $(this).removeClass("less");
             "genomeBrowser": gs,
             "type": "scatter",
             "featureType": "Long",
-            "displayCtrl": false
+            "displayCtrl": true,
+            "geneReport":true
         });
         if ($(window).width() < 1500 && peGR) {
-            if (peGR.rbChart) {
+            /*if (peGR.rbChart) {
                 peGR.rbChart.setWidth("98%");
             }
             if (peGR.rlChart) {
@@ -1136,7 +1147,7 @@ $(this).removeClass("less");
             }
             if (peGR.rkChart) {
                 peGR.rkChart.setWidth("98%");
-            }
+            }*/
         }
         createDialog("#GN2SNPBrowserForm", {
             width: 900,

@@ -106,7 +106,7 @@
             folderName = tmpURL.substring(second + 1, tmpURL.length() - 1);
         }
         if (!track.equals("")) {
-            geneHM = gdt.getRegionTrackList(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, track);
+            geneHM = gdt.getRegionTrackList(chromosome, min, max, panel, myOrganism, genomeVer, rnaDatasetID, arrayTypeID, track,dataVer);
             log.debug("HM totalsize:" + geneHM.size());
         }
     }
@@ -191,8 +191,8 @@
         if (genomeVer.equals("rn7")) {
             if(dataVer.equals("hrdp6")){
             	hrdpVer = "HRDP v6";
-            }else if(dataVer.equals("hrdp7")){
-                hrdpVer = "HRDP v7";
+            }else if(dataVer.equals("hrdp7.1")){
+                hrdpVer = "HRDP v7.1";
             }
         }
         String[] hTissues = new String[0];
@@ -478,7 +478,11 @@
                 if (genomeVer.equals("rn6")) {
                     tpm = gdt.getTPM(geneIDList.substring(1), "97,98,189");
                 } else if (genomeVer.equals("rn7")) {
-                    tpm = gdt.getTPM(geneIDList.substring(1), "190,191,192,193");
+                    if(dataVer.equals("hrdp6")){
+                    	tpm = gdt.getTPM(geneIDList.substring(1), "190,191,192,193");
+                    }else{
+                        tpm = gdt.getTPM(geneIDList.substring(1), "213,214,215,216,218,219");
+                    }
                 }
             }
             for (int i = 0; i < fullGeneList.size(); i++) {

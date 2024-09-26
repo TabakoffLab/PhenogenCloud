@@ -186,7 +186,7 @@
             with the UCSC Genome browser you can select tracks to display below the image.
         </div>
         <BR><BR>
-        <H1 style="background: #3c3c3c;text-align: center;"> HRDP v7 - rn7 - Feb 2024</H1>
+        <H1 style="background: #3c3c3c;text-align: center;"> HRDP v7.1 - rn7 - Aug 2024</H1>
         <span style="text-align: center;">
         		<H2>IsoSeq Alignments:</H2>
                         <BR>
@@ -224,10 +224,10 @@
 							</thead>
 							<tbody>
 							<TR>
-							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Brain%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/brain/HRDP.Brain.v7.bb%20description=%22PhenoGen%20Whole%20Brain%20HRDPv7%20Transcriptome%22%20color=126,181,214%20visibility=pack">PhenoGen Whole Brain HRDPv7 Transcriptome</a></TD>
-							<TD>Whole brain ribosome depleted totalRNA transcriptome reconstruction. (73 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
-							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/liver/HRDP.Liver.v7.bb%20description=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20color=187,190,221%20visibility=pack">PhenoGen Liver HRDPv7 Transcriptome (HRDPv7)</a></TD>
-							<TD>Liver ribosome depleted totalRNA transcriptome reconstruction. (62 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
+							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Brain%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/brain/HRDP.v7.1.Brain.MF.bb%20description=%22PhenoGen%20Whole%20Brain%20HRDPv7%20Transcriptome%22%20color=126,181,214%20visibility=pack">PhenoGen Whole Brain HRDPv7 Transcriptome</a></TD>
+							<TD>Whole brain ribosome depleted totalRNA transcriptome reconstruction. (73 strains) v7.1 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
+							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/liver/HRDP.v7.1.Liver.MF.bb%20description=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20color=187,190,221%20visibility=pack">PhenoGen Liver HRDPv7 Transcriptome (HRDPv7)</a></TD>
+							<TD>Liver ribosome depleted totalRNA transcriptome reconstruction. (62 strains) v7.1 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
 							</TR>
 
 							<TR>
@@ -292,7 +292,7 @@
                                                                                      		<thead><TR class="col_title"><TH>Track Name (UCSC Track Link)</TH><TH>Description</TH></TR></thead>
                                                                                      		<tbody>
                                                                                      		<TR>
-                                                                                     		<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Brain%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/brain/HRDP.Brain.v7.bb%20description=%22PhenoGen%20Whole%20Brain%20HRDPv7%20Transcriptome%22%20color=126,181,214%20visibility=pack">PhenoGen Whole Brain HRDPv7 Transcriptome</a></TD><TD>Whole brain ribosome depleted totalRNA transcriptome reconstruction. (73 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
+                                                                                     		<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Brain%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/brain/HRDP.v7.1.Brain.MF.bb%20description=%22PhenoGen%20Whole%20Brain%20HRDPv7%20Transcriptome%22%20color=126,181,214%20visibility=pack">PhenoGen Whole Brain HRDPv7 Transcriptome</a></TD><TD>Whole brain ribosome depleted totalRNA transcriptome reconstruction. (73 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
                                                                                      		</TR>
 
                                                                                      		<TR>
@@ -304,7 +304,7 @@
                                                                                      		</TR>
 
                                                                                      		<TR>
-																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/liver/HRDP.Liver.v7.bb%20description=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20color=187,190,221%20visibility=pack">PhenoGen Liver HRDPv7 Transcriptome (HRDPv7)</a></TD><TD>Liver ribosome depleted totalRNA transcriptome reconstruction. (62 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
+																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/liver/HRDP.v7.1.Liver.MF.bb%20description=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20color=187,190,221%20visibility=pack">PhenoGen Liver HRDPv7 Transcriptome (HRDPv7)</a></TD><TD>Liver ribosome depleted totalRNA transcriptome reconstruction. (62 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
 																							</TR>
 
 																							<TR>
@@ -316,7 +316,7 @@
 																							</TR>
 
 																							<TR>
-																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Heart%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/heart/HRDP.Heart.v7.bb%20description=%22PhenoGen%20Heart%20HRDPv7%20Transcriptome%22%20color=220,114,82%20visibility=pack">PhenoGen Heart HRDPv7 Transcriptome</a></TD><TD>Heart ribosome depleted totalRNA transcriptome reconstruction (21 strains)</TD>
+																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Heart%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/heart/HRDP.v7.1.Heart.bb%20description=%22PhenoGen%20Heart%20HRDPv7%20Transcriptome%22%20color=220,114,82%20visibility=pack">PhenoGen Heart HRDPv7 Transcriptome</a></TD><TD>Heart ribosome depleted totalRNA transcriptome reconstruction (21 strains)</TD>
 																							</TR>
 
 																							<TR>
@@ -328,7 +328,7 @@
 																							</TR>
 
 																							<TR>
-																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Kidney%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/kidney/HRDP.Kidney.v7.bb%20description=%22PhenoGen%20Kidney%20HRDPv7%20Transcriptome%22%20color=253,180,98%20visibility=pack">PhenoGen Kidney HRDPv7 Transcriptome</a></TD><TD>Kidney ribosome depleted totalRNA transcriptome reconstruction. (28 strain)</TD>
+																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Kidney%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/kidney/HRDP.v7.1.Kidney.bb%20description=%22PhenoGen%20Kidney%20HRDPv7%20Transcriptome%22%20color=253,180,98%20visibility=pack">PhenoGen Kidney HRDPv7 Transcriptome</a></TD><TD>Kidney ribosome depleted totalRNA transcriptome reconstruction. (28 strain)</TD>
 																							</TR>
 
 																							<TR>
@@ -338,7 +338,7 @@
 																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22Kidney%20TotalRNA%20Minus%205%20Billion%20Reads%20(HRDPv7)%22%20type=bigWig%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/kidney/sampled/Merged.5bReads.minus.bw%20description=%22Kidney%20TotalRNA%20Minus%205%20Billion%20Reads%20(HRDPv7)%22%20color=255,200,118%20autoScale=on%20visibility=full">Kidney TotalRNA Minus 5 Billion Reads (HRDPv7)</a></TD><TD>Liver minus strand read depth using 5 billion reads randomly sampled from all of the samples merged together.</TD>
 																							</TR>
 																							<TR>
-																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20MultiTissue%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/HRDP.Merged.v7.bb%20description=%22PhenoGen%20MultiTissue%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20color=159,79,146%20visibility=hide">PhenoGen MultiTissue HRDPv7 Transcriptome (HRDPv7)</a></TD><TD>Merged across tissues/strains/sex ribosome depleted totalRNA transcriptome reconstruction (73 strains/Male and Female data).</TD>
+																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20MultiTissue%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/HRDP.v7.1.Merged.bb%20description=%22PhenoGen%20MultiTissue%20HRDPv7%20Transcriptome%20(HRDPv7)%22%20color=159,79,146%20visibility=hide">PhenoGen MultiTissue HRDPv7 Transcriptome (HRDPv7)</a></TD><TD>Merged across tissues/strains/sex ribosome depleted totalRNA transcriptome reconstruction (73 strains/Male and Female data).</TD>
 																							</TR>
 
 
@@ -353,7 +353,7 @@
 																							<thead><TR class="col_title"><TH>Track Name (UCSC Track Link)</TH><TH>Description</TH></TR></thead>
 																							<tbody>
 																							<TR>
-																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Brain%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/brain/HRDP.Brain.v7.bb%20description=%22PhenoGen%20Whole%20Brain%20HRDPv7%20Transcriptome%22%20color=126,181,214%20visibility=pack">PhenoGen Whole Brain HRDPv7 Transcriptome</a></TD><TD>Whole brain ribosome depleted totalRNA transcriptome reconstruction. (73 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
+																							<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Brain%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/brain/HRDP.v7.1.Brain.MF.bb%20description=%22PhenoGen%20Whole%20Brain%20HRDPv7%20Transcriptome%22%20color=126,181,214%20visibility=pack">PhenoGen Whole Brain HRDPv7 Transcriptome</a></TD><TD>Whole brain ribosome depleted totalRNA transcriptome reconstruction. (73 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
 																							</TR>
 
 																							<TR>
@@ -377,7 +377,7 @@
 																								<thead><TR class="col_title"><TH>Track Name (UCSC Track Link)</TH><TH>Description</TH></TR></thead>
 																								<tbody>
 																								<TR>
-																								<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/liver/HRDP.Liver.v7.bb%20description=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%22%20color=187,190,221%20visibility=pack">PhenoGen Liver HRDPv7 Transcriptome</a></TD><TD>Liver ribosome depleted totalRNA transcriptome reconstruction. (62 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
+																								<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/liver/HRDP.v7.1.Liver.MF.bb%20description=%22PhenoGen%20Liver%20HRDPv7%20Transcriptome%22%20color=187,190,221%20visibility=pack">PhenoGen Liver HRDPv7 Transcriptome</a></TD><TD>Liver ribosome depleted totalRNA transcriptome reconstruction. (62 strains) v7 includes male data and female data at Pre-Estrous, Estrous, and Post-Estrous time points.</TD>
 																								</TR>
 
 																								<TR>
@@ -401,7 +401,7 @@
 																								<thead><TR class="col_title"><TH>Track Name (UCSC Track Link)</TH><TH>Description</TH></TR></thead>
 																								<tbody>
 																								<TR>
-																								<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Kidney%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/kidney/HRDP.Kidney.v7.bb%20description=%22PhenoGen%20Kidney%20HRDPv7%20Transcriptome%22%20color=253,180,98%20visibility=pack">PhenoGen Kidney HRDPv7 Transcriptome</a></TD><TD>Kidney ribosome depleted totalRNA transcriptome reconstruction. (28 strains)</TD>
+																								<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Kidney%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/kidney/HRDP.v7.1.Kidney.bb%20description=%22PhenoGen%20Kidney%20HRDPv7%20Transcriptome%22%20color=253,180,98%20visibility=pack">PhenoGen Kidney HRDPv7 Transcriptome</a></TD><TD>Kidney ribosome depleted totalRNA transcriptome reconstruction. (28 strains)</TD>
 																								</TR>
 
 																								<TR>
@@ -425,7 +425,7 @@
 																								<thead><TR class="col_title"><TH>Track Name (UCSC Track Link)</TH><TH>Description</TH></TR></thead>
 																								<tbody>
 																								<TR>
-																								<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Heart%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/heart/HRDP.Heart.v7.bb%20description=%22PhenoGen%20Heart%20HRDPv7%20Transcriptome%22%20color=220,114,82%20visibility=pack">PhenoGen Heart HRDPv7 Transcriptome</a></TD><TD>Heart ribosome depleted totalRNA transcriptome reconstruction. (21 strains)</TD>
+																								<TD><a target="_blank" href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=rn7&hgct_customText=track%20name=%22PhenoGen%20Heart%20HRDPv7%20Transcriptome%22%20type=bigBed%20bigDataUrl=https://phenogen.org/public_ucsc/rn7/v7/heart/HRDP.v7.1.Heart.bb%20description=%22PhenoGen%20Heart%20HRDPv7%20Transcriptome%22%20color=220,114,82%20visibility=pack">PhenoGen Heart HRDPv7 Transcriptome</a></TD><TD>Heart ribosome depleted totalRNA transcriptome reconstruction. (21 strains)</TD>
 																								</TR>
 
 																								<TR>

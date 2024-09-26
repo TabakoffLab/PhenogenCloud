@@ -45,20 +45,22 @@
 			}else if(results[i].getStatus().equals("Complete")){
 					complete=true;
 			}
-                    ParameterValue myPV=new ParameterValue();
-                    ParameterValue[] pv=myPV.getParameterValues(results[i].getParameter_group_id(),pool);
-                    ParameterValue gvParam=myPV.getParameterValueFromMyParameterValues(pv,"Genome Version");
-                    String thisGenomeVer="";
-                    if(gvParam!=null){
-                        thisGenomeVer=gvParam.getValue();
-                    }
-                    String[] ver=new String[1];
-                    ver[0]="?";
-                    String verPath=userLoggedIn.getUserGeneListsDir()+ results[i].getAnalysisGeneList().getGene_list_name_no_spaces() +"/GO/"+results[i].getPath()+"/ver.txt";
-                    File verFile=new File(verPath);
-                    if(verFile.exists()){
-                        ver=myFH.getFileContents(verFile);
-                    }
+			ParameterValue myPV=new ParameterValue();
+			String thisGenomeVer="";
+			if(results[i].getParameter_group_id()>0){
+				ParameterValue[] pv=myPV.getParameterValues(results[i].getParameter_group_id(),pool);
+				ParameterValue gvParam=myPV.getParameterValueFromMyParameterValues(pv,"Genome Version");
+				if(gvParam!=null){
+					thisGenomeVer=gvParam.getValue();
+				}
+			}
+			String[] ver=new String[1];
+			ver[0]="?";
+			String verPath=userLoggedIn.getUserGeneListsDir()+ results[i].getAnalysisGeneList().getGene_list_name_no_spaces() +"/GO/"+results[i].getPath()+"/ver.txt";
+			File verFile=new File(verPath);
+			if(verFile.exists()){
+				ver=myFH.getFileContents(verFile);
+			}
 		%>
         	<TR class="arid<%=results[i].getAnalysis_id()%>">
             	<TD><%=results[i].getName()%></TD>

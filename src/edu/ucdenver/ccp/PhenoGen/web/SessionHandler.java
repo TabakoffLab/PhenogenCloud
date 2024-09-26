@@ -661,9 +661,9 @@ public class SessionHandler {
     }
 
     public void createSession(SessionHandler mySessionHandler, DataSource pool) throws SQLException {
-        Connection conn = null;
+        //Connection conn = null;
 
-        try {
+        try (Connection conn = pool.getConnection();) {
 
             String query =
                     "insert into SESSIONS " +
@@ -677,7 +677,7 @@ public class SessionHandler {
             //log.debug("query = "+ query);
             try {
                 java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
-                conn = pool.getConnection();
+                //conn = pool.getConnection();
                 pstmt = conn.prepareStatement(query,
                         ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.CONCUR_UPDATABLE);
@@ -687,7 +687,6 @@ public class SessionHandler {
 
                 pstmt.executeUpdate();
                 pstmt.close();
-
             } catch (SQLException e) {
                 log.debug("Exception:::" + e.getMessage());
                 if (e.getMessage().contains("Duplicate entry ")) {
@@ -697,45 +696,36 @@ public class SessionHandler {
                     throw e;
                 }
             }
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
             throw new SQLException();
         }
     }
 
 
     public void logoutSession(DataSource pool) throws SQLException {
-        Connection conn = null;
+        try (Connection conn = pool.getConnection()) {
 
-        try {
-            conn = pool.getConnection();
             log.debug("in logoutSession.  SessionID = " + this.getSession_id());
 
-            if (conn != null) {
-                String query =
-                        "update SESSIONS " +
-                                "set logout_time = ? " +
-                                "where session_id = ?";
 
-                java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
+            String query =
+                    "update SESSIONS " +
+                            "set logout_time = ? " +
+                            "where session_id = ?";
 
-                PreparedStatement pstmt = conn.prepareStatement(query,
-                        ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.CONCUR_UPDATABLE);
-                pstmt.setTimestamp(1, now);
-                pstmt.setString(2, this.getSession_id());
+            java.sql.Timestamp now = new java.sql.Timestamp(System.currentTimeMillis());
 
-                pstmt.executeUpdate();
+            PreparedStatement pstmt = conn.prepareStatement(query,
+                    ResultSet.TYPE_SCROLL_INSENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            pstmt.setTimestamp(1, now);
+            pstmt.setString(2, this.getSession_id());
 
-            }
-            conn.close();
+            pstmt.executeUpdate();
+
+
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
+
             throw new SQLException();
         }
     }
@@ -747,19 +737,13 @@ public class SessionHandler {
      * @throws SQLException if a database error occurs
      */
     public void updateLoginSession(SessionHandler mySessionHandler, DataSource pool) throws SQLException {
-        Connection conn = null;
-
-        try {
-
+        try (Connection conn = pool.getConnection()) {
             log.debug("in updateLoginSession.  SessionID = " + this.getSession_id());
-
-
             String query =
                     "update SESSIONS " +
                             "set  user_id = ? " +
                             "where session_id = ?";
 
-            conn = pool.getConnection();
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -767,13 +751,8 @@ public class SessionHandler {
             pstmt.setString(2, this.getSession_id());
 
             pstmt.executeUpdate();
-
-
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
+
             throw new SQLException();
         }
     }
@@ -809,10 +788,9 @@ public class SessionHandler {
      * @throws SQLException if a database error occurs
      */
     public void createSessionActivity(SessionHandler mySessionHandler, DataSource pool) throws SQLException {
-        Connection conn = null;
+
         // Added this here to handle cases when user session is inactive
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             //session_activity_id = myDbUtils.getUniqueID("session_activities_seq", conn);
             //log.debug("session_activity_id = " + session_activity_id);
 
@@ -842,19 +820,9 @@ public class SessionHandler {
 
             pstmt.executeUpdate();
             pstmt.close();
-            conn.close();
-            conn = null;
+
         } catch (SQLException e) {
             log.error("SQLException:", e);
-        } finally {
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException e) {
-                    ;
-                }
-                conn = null;
-            }
         }
     }
 
@@ -1032,7 +1000,6 @@ public class SessionHandler {
      * @throws SQLException if a database error occurs
      */
     public void deleteSessionActivitiesForDatasetVersion(Dataset.DatasetVersion thisVersion, DataSource pool) throws SQLException {
-        Connection conn = null;
         log.debug("in deleteAllSessionActivitiesForDatasetVersion");
 
         String query =
@@ -1041,8 +1008,7 @@ public class SessionHandler {
                         "version = '' " +
                         "where dataset_id = ? " +
                         "and version = ?";
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -1051,11 +1017,9 @@ public class SessionHandler {
 
             pstmt.executeUpdate();
             pstmt.close();
-            conn.close();
+
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
+
             throw new SQLException();
         }
     }
@@ -1069,14 +1033,13 @@ public class SessionHandler {
      * @throws SQLException if a database error occurs
      */
     public void deleteSessionActivitiesForGeneList(int gene_list_id, DataSource pool) throws SQLException {
-        Connection conn = null;
+
         log.debug("In deleteSessionActivitiesForGeneList");
         String query =
                 "update session_activities " +
                         "set gene_list_id = '' " +
                         "where gene_list_id = ?";
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -1084,11 +1047,8 @@ public class SessionHandler {
 
             pstmt.executeUpdate();
             pstmt.close();
-            conn.close();
+
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
             throw new SQLException();
         }
     }
@@ -1103,14 +1063,12 @@ public class SessionHandler {
      * @throws SQLException if a database error occurs
      */
     public void deleteSessionActivitiesForExperiment(int exp_id, DataSource pool) throws SQLException {
-        Connection conn = null;
         log.debug("In deleteSessionActivitiesForExperiment");
         String query =
                 "update session_activities " +
                         "set exp_id = '' " +
                         "where exp_id = ?";
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             PreparedStatement pstmt = conn.prepareStatement(query,
                     ResultSet.TYPE_SCROLL_INSENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
@@ -1118,11 +1076,7 @@ public class SessionHandler {
 
             pstmt.executeUpdate();
             pstmt.close();
-            conn.close();
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
             throw new SQLException();
         }
     }
@@ -1135,7 +1089,7 @@ public class SessionHandler {
      * @throws SQLException if a database error occurs
      */
     public void deleteOldSessions(DataSource pool) throws SQLException {
-        Connection conn = null;
+
         String[] query = new String[3];
 
         query[0] =
@@ -1155,8 +1109,7 @@ public class SessionHandler {
         query[2] =
                 "delete from SESSIONS " +
                         "where login_time < sysdate - 90";
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             log.debug("in deleteOldSessions");
 
             for (int i = 0; i < query.length; i++) {
@@ -1167,11 +1120,9 @@ public class SessionHandler {
                 pstmt.executeUpdate();
                 pstmt.close();
             }
-            conn.close();
+
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
+
             throw new SQLException();
         }
     }
@@ -1206,12 +1157,12 @@ public class SessionHandler {
 
 
     public List<List<String[]>> getSessionsForUser(int userID, DataSource pool) throws SQLException {
-        Connection conn = null;
+
         List<List<String[]>> allResults = null;
         String[] query = getSessionsForUserStatements("SELECT10");
 
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
+
             log.debug("in getSessionsForUser. userID = " + userID);
 
             try {
@@ -1222,11 +1173,9 @@ public class SessionHandler {
                 throw e;
             }
 
-            conn.close();
+
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
+
             throw new SQLException();
         }
         log.debug("returning allResults.length = " + allResults.size());
@@ -1242,10 +1191,7 @@ public class SessionHandler {
      * @throws SQLException if a database error occurs
      */
     public void deleteSessionsForUser(int userID, DataSource pool) throws SQLException {
-        Connection conn = null;
-
-        try {
-            conn = pool.getConnection();
+        try (Connection conn = pool.getConnection()) {
             log.debug("in deleteSessionsForUser");
 
             String[] query = getSessionsForUserStatements("DELETE");
@@ -1258,11 +1204,8 @@ public class SessionHandler {
                 pstmt.executeUpdate();
                 pstmt.close();
             }
-            conn.close();
+
         } catch (SQLException e) {
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
             throw new SQLException();
         }
     }
